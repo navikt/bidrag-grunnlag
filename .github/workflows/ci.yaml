@@ -86,8 +86,6 @@ jobs:
   bump_dev_version:
     runs-on: ubuntu-latest
     name: Bump SNAPSHOT version
-    if: github.ref == 'refs/heads/main'
-    needs: run_cucumber_tests
 
     steps:
       - uses: actions/checkout@v2
