@@ -10,11 +10,11 @@
   </parent>
 
   <groupId>no.nav.bidrag</groupId>
-  <artifactId>bidrag-stonad</artifactId>
-  <version>0.0.15-SNAPSHOT</version>
+  <artifactId>bidrag-grunnlag</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
 
-  <name>bidrag-stonad</name>
-  <description>Behandling av stønad i Bidrag</description>
+  <name>bidrag-grunnlag</name>
+  <description>Behandling av grunnlag i Bidrag</description>
 
   <properties>
 
@@ -46,10 +46,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.kafka</groupId>
-      <artifactId>spring-kafka</artifactId>
     </dependency>
 
     <!-- kotlin -->
@@ -148,11 +144,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.kafka</groupId>
-      <artifactId>spring-kafka-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

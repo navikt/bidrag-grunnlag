@@ -1,6 +1,3 @@
-name: bidrag-stonad-feature
-ingress: https://bidrag-stonad-feature.dev.intern.nav.no
-dbname: bidrag-stonad-feature
-kafka:
-  pool: nav-dev
-kafka-topic-vedtak: bidrag.vedtak-feature
+name: bidrag-grunnlag-feature
+ingress: https://bidrag-grunnlag-feature.dev.intern.nav.no
+dbname: bidrag-grunnlag-feature

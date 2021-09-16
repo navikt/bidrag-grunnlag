@@ -1,4 +1,4 @@
-package no.nav.bidrag.stonad.aop
+package no.nav.bidrag.grunnlag.aop
 
 import no.nav.bidrag.commons.ExceptionLogger
 import org.aspectj.lang.JoinPoint
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Aspect
 @Component
 class ExceptionLoggerAspect(private val exceptionLogger: ExceptionLogger) {
-    @AfterThrowing(pointcut = "within (no.nav.bidrag.stonad.service..*)", throwing = "exception")
+    @AfterThrowing(pointcut = "within (no.nav.bidrag.grunnlag.service..*)", throwing = "exception")
     fun logException(joinPoint: JoinPoint, exception: Exception?) {
         exceptionLogger.logException(exception, "${joinPoint.sourceLocation.withinType}")
     }

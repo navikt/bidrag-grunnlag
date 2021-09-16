@@ -6,7 +6,7 @@
 
 server:
   servlet:
-    context-path: /bidrag-stonad
+    context-path: /bidrag-grunnlag
 management:
   endpoints:
     web:
@@ -24,23 +24,6 @@ management:
 ####################################################################
 
 spring:
-  kafka:
-    bootstrap-servers: ${KAFKA_BROKERS}
-    properties:
-      security.protocol: SSL
-      ssl:
-        keystore:
-          type: PKCS12
-          location: ${KAFKA_KEYSTORE_PATH}
-          password: ${KAFKA_CREDSTORE_PASSWORD}
-        truststore:
-          location: ${KAFKA_TRUSTSTORE_PATH}
-          password: ${KAFKA_CREDSTORE_PASSWORD}
-        endpoint.identification.algorithm:
-        producer:
-          key-serializer: org.apache.kafka.common.serialization.StringSerializer
-          value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
   config.activate.on-profile: live
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -90,6 +73,6 @@ spring:
   flyway.enabled: false
   datasource.type: com.zaxxer.hikari.HikariDataSource
   datasource.url: jdbc:h2:mem:default
-#  datasource.url: jdbc:h2:file:/Users/R153961/Dev/bidrag-stonad/src/main/resources/data
+#  datasource.url: jdbc:h2:file:/Users/R153961/Dev/bidrag-grunnlag/src/main/resources/data
   h2.console.enabled: true
   jpa.hibernate.hbmddl-auto: create-drop
