@@ -1,4 +1,4 @@
-name: release bidrag-stonad
+name: release bidrag-grunnlag
 on:
   push:
     branches:

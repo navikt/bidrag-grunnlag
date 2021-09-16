@@ -1,11 +1,7 @@
-package no.nav.bidrag.stonad
+package no.nav.bidrag.grunnlag
 
 import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
-import no.nav.bidrag.stonad.BidragStonadLocal.Companion.TEST_PROFILE
-import no.nav.bidrag.stonad.hendelse.PojoVedtakHendelseListener
-import no.nav.bidrag.stonad.hendelse.VedtakHendelseListener
-import no.nav.bidrag.stonad.service.BehandleHendelseService
-import no.nav.bidrag.stonad.service.JsonMapperService
+import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
 import no.nav.security.token.support.test.jersey.TestTokenGeneratorResource
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Bean
@@ -15,7 +11,7 @@ import org.springframework.http.HttpHeaders
 
 @Configuration
 @Profile(TEST_PROFILE)
-class BidragStonadTestConfig {
+class BidragGrunnlagTestConfig {
 
     @Bean
     fun securedTestRestTemplate(testRestTemplate: TestRestTemplate?): HttpHeaderTestRestTemplate? {
@@ -28,9 +24,4 @@ class BidragStonadTestConfig {
         val testTokenGeneratorResource = TestTokenGeneratorResource()
         return "Bearer " + testTokenGeneratorResource.issueToken("localhost-idtoken")
     }
-
-    @Bean
-    fun vedtakHendelseListener(
-        jsonMapperService: JsonMapperService, behandeHendelseService: BehandleHendelseService
-    ): VedtakHendelseListener = PojoVedtakHendelseListener(jsonMapperService, behandeHendelseService)
 }

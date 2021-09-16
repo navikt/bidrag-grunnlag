@@ -1,4 +1,4 @@
-package no.nav.bidrag.stonad
+package no.nav.bidrag.grunnlag
 
 import org.flywaydb.core.Flyway
 import org.springframework.beans.factory.annotation.Autowired

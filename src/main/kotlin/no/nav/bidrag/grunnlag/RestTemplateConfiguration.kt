@@ -1,4 +1,4 @@
-package no.nav.bidrag.stonad
+package no.nav.bidrag.grunnlag
 
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate

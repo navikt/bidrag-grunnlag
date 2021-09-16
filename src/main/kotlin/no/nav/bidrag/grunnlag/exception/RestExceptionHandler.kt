@@ -1,4 +1,4 @@
-package no.nav.bidrag.stonad.exception
+package no.nav.bidrag.grunnlag.exception
 
 import no.nav.bidrag.commons.ExceptionLogger
 import org.springframework.http.HttpHeaders
