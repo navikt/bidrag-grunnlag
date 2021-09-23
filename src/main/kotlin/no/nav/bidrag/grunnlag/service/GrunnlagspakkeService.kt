@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.api.FinnGrunnlagResponse
+import no.nav.bidrag.grunnlag.api.HentGrunnlagResponse
 import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
@@ -20,11 +20,11 @@ class GrunnlagspakkeService (val persistenceService: PersistenceService){
 
   }
 
-  fun finnGrunnlag(grunnlagspakkeId: Int): FinnGrunnlagResponse {
-    val grunnlagspakkeDto = persistenceService.finnGrunnlagspakke(grunnlagspakkeId)
+  fun hentGrunnlag(grunnlagspakkeId: Int): HentGrunnlagResponse {
+    val grunnlagspakkeDto = persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
 //    if (grunnlagspakkeDto != null) {
 //    val inntektListe = persistenceService.finnInntekterForGrunnlagspakke(grunnlagspakkeId)
-      return FinnGrunnlagResponse(
+      return HentGrunnlagResponse(
         grunnlagspakkeDto.grunnlagspakkeId, grunnlagspakkeDto.opprettetAv, grunnlagspakkeDto.opprettetTimestamp,
         grunnlagspakkeDto.endretTimestamp)
 //      } else return null

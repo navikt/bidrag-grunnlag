@@ -11,10 +11,11 @@ data class NyGrunnlagspakkeRequest (
   val opprettetAv: String = ""
 )
 
-fun NyGrunnlagspakkeRequest.toGrunnlagspakkeDto() = with(::GrunnlagspakkeDto) {
+fun NyGrunnlagspakkeRequest.toGrunnlagspakkeDto(opprettetAv: String) = with(::GrunnlagspakkeDto) {
   val propertiesByName = NyGrunnlagspakkeRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      GrunnlagspakkeDto::opprettetAv.name -> opprettetAv
       else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeDto)
     }
   })

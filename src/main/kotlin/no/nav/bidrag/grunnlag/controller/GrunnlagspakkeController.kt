@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
-import no.nav.bidrag.grunnlag.api.FinnGrunnlagResponse
+import no.nav.bidrag.grunnlag.api.HentGrunnlagResponse
 import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
@@ -55,8 +55,8 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun finnGrunnlagspakke(@PathVariable grunnlagspakkeId: Int): ResponseEntity<FinnGrunnlagResponse>? {
-    val grunnlagspakkeFunnet = grunnlagspakkeService.finnGrunnlag(grunnlagspakkeId)
+  fun finnGrunnlagspakke(@PathVariable grunnlagspakkeId: Int): ResponseEntity<HentGrunnlagResponse>? {
+    val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlag(grunnlagspakkeId)
     LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
     return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
 

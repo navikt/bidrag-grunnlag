@@ -4,7 +4,7 @@ import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.api.FinnGrunnlagResponse
+import no.nav.bidrag.grunnlag.api.HentGrunnlagResponse
 import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
@@ -91,7 +91,7 @@ class GrunnlagspakkeControllerTest {
       "${fullUrlForHentGrunnlagspakke()}/${nyGrunnlagspakkeOpprettet.grunnlagspakkeId}",
       HttpMethod.GET,
       null,
-      FinnGrunnlagResponse::class.java
+      HentGrunnlagResponse::class.java
     )
 
     assertAll(

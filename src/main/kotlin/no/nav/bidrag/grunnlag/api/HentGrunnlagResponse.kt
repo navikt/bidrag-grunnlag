@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.api
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
-data class FinnGrunnlagResponse (
+data class HentGrunnlagResponse (
 
   @Schema(description = "grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
