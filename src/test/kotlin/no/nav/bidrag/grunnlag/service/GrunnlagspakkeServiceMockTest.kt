@@ -3,8 +3,10 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyInntektRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektDto
+import no.nav.bidrag.grunnlag.dto.InntektspostDto
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
@@ -35,6 +37,9 @@ class GrunnlagspakkeServiceMockTest {
   @Captor
   private lateinit var inntektDtoCaptor: ArgumentCaptor<InntektDto>
 
+  @Captor
+  private lateinit var inntektspostDtoCaptor: ArgumentCaptor<InntektspostDto>
+
   @Test
   fun `Skal opprette ny grunnlagspakke`() {
     Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor)))
@@ -50,7 +55,8 @@ class GrunnlagspakkeServiceMockTest {
   }
 
   @Test
-  fun `Skal opprette ny grunnlagspakke og tilhørende grunnlag`() {
+  @Suppress("NonAsciiCharacters")
+  fun `Skal opprette grunnlagspakke med tilhørende grunnlag`() {
 
     Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor)))
       .thenReturn(byggGrunnlagspakkeDto())
@@ -58,8 +64,14 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggInntektDto())
 
     val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
+
     val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
+    val inntektDtoListe = inntektDtoCaptor.allValues
+    val inntektspostDtoListe = inntektspostDtoCaptor.allValues
+
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(2)).opprettNyInntekt(MockitoHelper.any(InntektDto::class.java))
+
     assertAll(
       Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull() },
       // sjekk GrunnlagspakkeDto

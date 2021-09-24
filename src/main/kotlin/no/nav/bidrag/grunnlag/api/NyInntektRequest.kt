@@ -24,6 +24,8 @@ data class NyInntektRequest(
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
   val aktiv: Boolean = true,
 
+  @Schema(description = "Liste over alle inntektsposter som inngår i inntekten")
+  val inntektspostListe: List<NyInntektspostRequest> = emptyList()
 )
 
 fun NyInntektRequest.toInntektDto(grunnlagspakkeId: Int) = with(::InntektDto) {

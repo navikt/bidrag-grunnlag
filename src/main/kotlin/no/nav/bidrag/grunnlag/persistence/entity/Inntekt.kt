@@ -18,10 +18,10 @@ data class Inntekt(
   @Column(name = "inntekt_id")
   val inntektId: Int = 0,
 
-  @Column(name = "grunnlagspakke_id")
+  @Column(nullable = false, name = "grunnlagspakke_id")
   val grunnlagspakkeId: Int = 0,
 
-  @Column(name = "person_id")
+  @Column(nullable = false, name = "person_id")
   val personId: Int = 0,
 
   @Column(nullable = false, name = "type")

@@ -2,8 +2,10 @@ package no.nav.bidrag.grunnlag
 
 import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.NyInntektRequest
+import no.nav.bidrag.grunnlag.api.NyInntektspostRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektDto
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -20,7 +22,20 @@ class TestUtil {
       type = "Lønnsinntekt",
       gyldigFra = LocalDate.now(),
       gyldigTil = LocalDate.now(),
-      aktiv = true
+      aktiv = true,
+      inntektspostListe = listOf(
+        NyInntektspostRequest(
+          utbetalingsperiode = "202109",
+          opptjeningsperiodeFra = LocalDate.now(),
+          opptjeningsperiodeTil = LocalDate.now(),
+          opplysningspliktigId = "123",
+          inntektType = "Lonn",
+          fordelType = "Kontantytelse",
+          beskrivelse = "Ferielonn",
+          belop = BigDecimal.ZERO
+        )
+      )
+
     )
 
     fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
