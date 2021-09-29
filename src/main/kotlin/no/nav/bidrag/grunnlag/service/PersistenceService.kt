@@ -56,18 +56,18 @@ class PersistenceService(
 
 
   // Returnerer lagret, komplett grunnlagspakke
-  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
+  fun hentGrunnlagspakke(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): HentGrunnlagspakkeResponse {
     val grunnlagspakke = HentGrunnlagspakkeResponse(
-      grunnlagspakkeId, finnAlleInntekter(grunnlagspakkeId)
+      oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, finnAlleInntekter(oppdaterGrunnlagspakkeRequest)
 
     )
 
     return grunnlagspakke
   }
 
-  fun finnAlleInntekter(grunnlagspakkeId: Int): List<HentInntektResponse> {
+  fun finnAlleInntekter(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): List<HentInntektResponse> {
     val hentInntektResponseListe = mutableListOf<HentInntektResponse>()
-    inntektRepository.hentInntekter(grunnlagspakkeId)
+    inntektRepository.hentInntekter(oppdaterGrunnlagspakkeRequest)
       .forEach { inntekt ->
         val hentInntektspostListe = mutableListOf<HentInntektspostResponse>()
         inntektspostRepository.hentInntektsposter(inntekt.inntektId)

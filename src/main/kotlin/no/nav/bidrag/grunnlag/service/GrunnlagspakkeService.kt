@@ -29,8 +29,8 @@ class GrunnlagspakkeService(val persistenceService: PersistenceService) {
     return OppdaterGrunnlagspakkeResponse("Statuskode etter oppdatering: ")
   }
 
-  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
-    return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
+  fun hentGrunnlagspakke(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): HentGrunnlagspakkeResponse {
+    return persistenceService.hentGrunnlagspakke(oppdaterGrunnlagspakkeRequest)
 
   }
 
