@@ -7,7 +7,7 @@ import java.time.LocalDate
 import kotlin.reflect.full.memberProperties
 
 @Schema(description ="Egenskaper ved en inntekt")
-data class NyInntektRequest(
+data class OpprettInntektRequest(
 
   @Schema(description = "Id til personen inntekten er rapport på")
   val personId: Int = 0,
@@ -25,11 +25,11 @@ data class NyInntektRequest(
   val aktiv: Boolean = true,
 
   @Schema(description = "Liste over alle inntektsposter som inngår i inntekten")
-  val inntektspostListe: List<NyInntektspostRequest> = emptyList()
+  val inntektspostListe: List<OpprettInntektspostRequest> = emptyList()
 )
 
-fun NyInntektRequest.toInntektDto(grunnlagspakkeId: Int) = with(::InntektDto) {
-  val propertiesByName = NyInntektRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektRequest.toInntektDto(grunnlagspakkeId: Int) = with(::InntektDto) {
+  val propertiesByName = OpprettInntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       InntektDto::grunnlagspakkeId.name -> grunnlagspakkeId
@@ -38,8 +38,8 @@ fun NyInntektRequest.toInntektDto(grunnlagspakkeId: Int) = with(::InntektDto) {
   })
 }
 
-fun NyInntektRequest.toInntektDto() = with(::InntektDto) {
-  val propertiesByName = NyInntektRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektRequest.toInntektDto() = with(::InntektDto) {
+  val propertiesByName = OpprettInntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       InntektDto::inntektId.name -> 0

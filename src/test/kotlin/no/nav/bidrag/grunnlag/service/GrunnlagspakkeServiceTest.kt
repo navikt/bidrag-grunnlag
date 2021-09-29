@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
-import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -41,12 +41,12 @@ class GrunnlagspakkeServiceTest {
   fun `skal opprette ny grunnlagspakke`() {
     // Oppretter ny grunnlagspakke
 
-    val nyGrunnlagspakkeRequest = NyGrunnlagspakkeRequest(
+    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(
       "X123456"
     )
 
     val nyGrunnlagspakkeOpprettet =
-      grunnlagspakkeService.opprettGrunnlagspakke(nyGrunnlagspakkeRequest)
+      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
     assertAll(
       Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull }

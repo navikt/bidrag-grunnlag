@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
-import no.nav.bidrag.grunnlag.api.HentGrunnlagResponse
-import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
@@ -35,12 +37,34 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun opprettNyGrunnlagspakke(@RequestBody request: NyGrunnlagspakkeRequest): ResponseEntity<NyGrunnlagspakkeResponse>? {
+  fun opprettNyGrunnlagspakke(@RequestBody request: OpprettGrunnlagspakkeRequest): ResponseEntity<OpprettGrunnlagspakkeResponse>? {
     val grunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke er opprettet: $grunnlagspakkeOpprettet")
     return ResponseEntity(grunnlagspakkeOpprettet, HttpStatus.OK)
 
   }
+
+
+  @PostMapping(GRUNNLAGSPAKKE_OPPDATER)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Trigger innhenting av grunnlag for grunnlagspakke")
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Grunnlagspakke oppdatert"),
+      ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
+      ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
+      ApiResponse(responseCode = "404", description = "grunnlagspakke ikke funnet"),
+      ApiResponse(responseCode = "500", description = "Serverfeil"),
+      ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
+    ]
+  )
+
+  fun oppdaterGrunnlagspakke(@RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
+    val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
+    LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
+    return ResponseEntity(OppdaterGrunnlagspakkeResponse("Oppdatering OK"), HttpStatus.OK)
+
+  }
+
 
   @GetMapping("$GRUNNLAGSPAKKE_HENT/{grunnlagspakkeId}")
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Finn alle data for en grunnlagspakke")
@@ -55,8 +79,8 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun finnGrunnlagspakke(@PathVariable grunnlagspakkeId: Int): ResponseEntity<HentGrunnlagResponse>? {
-    val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlag(grunnlagspakkeId)
+  fun hentGrunnlagspakke(@PathVariable grunnlagspakkeId: Int): ResponseEntity<HentGrunnlagspakkeResponse>? {
+    val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeId)
     LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
     return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
 
@@ -65,7 +89,8 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
 
   companion object {
     const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke/ny"
-    const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke"
+    const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/oppdater"
+    const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/hent"
     private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
 
   }

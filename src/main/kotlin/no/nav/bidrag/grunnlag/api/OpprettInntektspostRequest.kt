@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.api
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.dto.InntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostDto
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -9,7 +8,7 @@ import java.time.LocalDate
 import kotlin.reflect.full.memberProperties
 
 @Schema(description ="Egenskaper ved en inntektspost")
-data class NyInntektspostRequest(
+data class OpprettInntektspostRequest(
 
   @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
   val utbetalingsperiode: String = "",
@@ -36,8 +35,8 @@ data class NyInntektspostRequest(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun NyInntektspostRequest.toInntektspostDto(inntektId: Int) = with(::InntektspostDto) {
-  val propertiesByName = NyInntektspostRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektspostRequest.toInntektspostDto(inntektId: Int) = with(::InntektspostDto) {
+  val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       InntektspostDto::inntektId.name -> inntektId
@@ -46,8 +45,8 @@ fun NyInntektspostRequest.toInntektspostDto(inntektId: Int) = with(::Inntektspos
   })
 }
 
-fun NyInntektspostRequest.toInntektspostDto() = with(::InntektspostDto) {
-  val propertiesByName = NyInntektspostRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektspostRequest.toInntektspostDto() = with(::InntektspostDto) {
+  val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       InntektspostDto::inntektspostId.name -> 0

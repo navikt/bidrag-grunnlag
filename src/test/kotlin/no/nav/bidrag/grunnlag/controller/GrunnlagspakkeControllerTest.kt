@@ -4,9 +4,11 @@ import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.api.HentGrunnlagResponse
-import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.NyGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -64,12 +66,12 @@ class GrunnlagspakkeControllerTest {
   @Test
   fun `skal opprette ny grunnlagspakke`() {
 
-    // Oppretter ny forekomst av stønad
+    // Oppretter ny forekomst av grunnlagspakke
     val response = securedTestRestTemplate.exchange(
       fullUrlForNyGrunnlagspakke(),
       HttpMethod.POST,
       byggNyGrunnlagspakkeRequest(),
-      NyGrunnlagspakkeResponse::class.java
+      OpprettGrunnlagspakkeResponse::class.java
     )
 
     assertAll(
@@ -79,6 +81,33 @@ class GrunnlagspakkeControllerTest {
     )
     grunnlagspakkeRepository.deleteAll()
   }
+
+  @Test
+  fun `skal oppdatere en grunnlagspakke`() {
+
+    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(GrunnlagspakkeDto(
+      opprettetAv = "X123456"
+    ))
+
+    // Sender inn request for å oppdatere grunnlagspakke med grunnlagsdata
+    val response = securedTestRestTemplate.exchange(
+      fullUrlForOppdaterGrunnlagspakke(),
+      HttpMethod.POST,
+      byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId),
+      OppdaterGrunnlagspakkeResponse::class.java
+    )
+
+    assertAll(
+      Executable { assertThat(response).isNotNull() },
+      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
+      Executable { assertThat(response?.body).isNotNull },
+      Executable { assertThat(response?.body?.status).isEqualTo("Oppdatering OK") },
+    )
+    grunnlagspakkeRepository.deleteAll()
+
+
+  }
+
 
   @Test
   fun `skal finne data for en grunnlagspakke`() {
@@ -91,14 +120,14 @@ class GrunnlagspakkeControllerTest {
       "${fullUrlForHentGrunnlagspakke()}/${nyGrunnlagspakkeOpprettet.grunnlagspakkeId}",
       HttpMethod.GET,
       null,
-      HentGrunnlagResponse::class.java
+      HentGrunnlagspakkeResponse::class.java
     )
 
     assertAll(
       Executable { assertThat(response).isNotNull() },
       Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
       Executable { assertThat(response?.body).isNotNull },
-      Executable { assertThat(response?.body?.opprettetAv).isEqualTo(nyGrunnlagspakkeOpprettet.opprettetAv) },
+      Executable { assertThat(response?.body?.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId) },
     )
     grunnlagspakkeRepository.deleteAll()
 
@@ -110,12 +139,20 @@ class GrunnlagspakkeControllerTest {
     return UriComponentsBuilder.fromHttpUrl(makeFullContextPath() + GrunnlagspakkeController.GRUNNLAGSPAKKE_NY).toUriString()
   }
 
+  private fun fullUrlForOppdaterGrunnlagspakke(): String {
+    return UriComponentsBuilder.fromHttpUrl(makeFullContextPath() + GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER).toUriString()
+  }
+
   private fun fullUrlForHentGrunnlagspakke(): String {
     return UriComponentsBuilder.fromHttpUrl(makeFullContextPath() + GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT).toUriString()
   }
 
-  private fun byggNyGrunnlagspakkeRequest(): HttpEntity<NyGrunnlagspakkeRequest> {
+  private fun byggNyGrunnlagspakkeRequest(): HttpEntity<OpprettGrunnlagspakkeRequest> {
     return initHttpEntity(TestUtil.byggNyGrunnlagspakkeRequest())
+  }
+
+  private fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int): HttpEntity<OppdaterGrunnlagspakkeRequest> {
+    return initHttpEntity(TestUtil.byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId))
   }
 
   private fun makeFullContextPath(): String {
