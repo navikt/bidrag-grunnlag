@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS inntektspost
         REFERENCES inntekt (inntekt_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    UNIQUE (inntekt_id, utbetalingsperiode, opplysningspliktig_id, inntekt_type, fordel, beskrivelse)
+    UNIQUE (inntekt_id, utbetalingsperiode, opplysningspliktig_id, inntekt_type, fordel_type, beskrivelse)
 )
 
     TABLESPACE pg_default;
