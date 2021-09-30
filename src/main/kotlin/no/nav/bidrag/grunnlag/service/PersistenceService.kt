@@ -42,13 +42,13 @@ class PersistenceService(
 
   }
 
-  fun lagreInntekt(inntektDto: InntektDto): InntektDto {
+  fun opprettInntekt(inntektDto: InntektDto): InntektDto {
     val nyInntekt = inntektDto.toInntektEntity()
     val inntekt = inntektRepository.save(nyInntekt)
     return inntekt.toInntektDto()
   }
 
-  fun lagreInntektspost(inntektspostDto: InntektspostDto): InntektspostDto {
+  fun opprettInntektspost(inntektspostDto: InntektspostDto): InntektspostDto {
     val nyInntektspost = inntektspostDto.toInntektspostEntity()
     val inntektspost = inntektspostRepository.save(nyInntektspost)
     return inntektspost.toInntektspostDto()
@@ -56,18 +56,18 @@ class PersistenceService(
 
 
   // Returnerer lagret, komplett grunnlagspakke
-  fun hentGrunnlagspakke(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): HentGrunnlagspakkeResponse {
+  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
     val grunnlagspakke = HentGrunnlagspakkeResponse(
-      oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, finnAlleInntekter(oppdaterGrunnlagspakkeRequest)
+      grunnlagspakkeId, hentAlleInntekter(grunnlagspakkeId)
 
     )
 
     return grunnlagspakke
   }
 
-  fun finnAlleInntekter(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): List<HentInntektResponse> {
+  fun hentAlleInntekter(grunnlagspakkeId: Int): List<HentInntektResponse> {
     val hentInntektResponseListe = mutableListOf<HentInntektResponse>()
-    inntektRepository.hentInntekter(oppdaterGrunnlagspakkeRequest)
+    inntektRepository.hentInntekter(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentInntektspostListe = mutableListOf<HentInntektspostResponse>()
         inntektspostRepository.hentInntektsposter(inntekt.inntektId)

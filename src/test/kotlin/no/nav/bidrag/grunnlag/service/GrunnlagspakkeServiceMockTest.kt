@@ -62,22 +62,22 @@ class GrunnlagspakkeServiceMockTest {
 
     Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor)))
       .thenReturn(byggGrunnlagspakkeDto())
-    Mockito.`when`(persistenceServiceMock.lagreInntekt(MockitoHelper.capture(inntektDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettInntekt(MockitoHelper.capture(inntektDtoCaptor)))
       .thenReturn(byggInntektDto())
-    Mockito.`when`(persistenceServiceMock.lagreInntektspost(MockitoHelper.capture(inntektspostDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettInntektspost(MockitoHelper.capture(inntektspostDtoCaptor)))
       .thenReturn(byggInntektspostDto())
 
     val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
-    val nyInntektOpprettet = persistenceServiceMock.lagreInntekt(byggInntektDto())
-    val nyInntektspostOpprettet = persistenceServiceMock.lagreInntektspost(byggInntektspostDto())
+    val nyInntektOpprettet = persistenceServiceMock.opprettInntekt(byggInntektDto())
+    val nyInntektspostOpprettet = persistenceServiceMock.opprettInntektspost(byggInntektspostDto())
 
     val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
     val inntektDtoListe = inntektDtoCaptor.allValues
     val inntektspostDtoListe = inntektspostDtoCaptor.allValues
 
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).lagreInntekt(MockitoHelper.any(InntektDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).lagreInntektspost(MockitoHelper.any(InntektspostDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntekt(MockitoHelper.any(InntektDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektspost(MockitoHelper.any(InntektspostDto::class.java))
 
     assertAll(
       Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull() },
