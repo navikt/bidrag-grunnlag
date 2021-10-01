@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query
 interface InntektRepository : JpaRepository<Inntekt, Int?> {
 
   @Query(
-    "select int from Inntekt int where int.grunnlagspakkeId = :grunnlagspakkeId"
+    "select int from Inntekt int where int.grunnlagspakkeId = :grunnlagspakkeId and int.aktiv = true"
   )
   fun hentInntekter(grunnlagspakkeId: Int): List<Inntekt>
 
