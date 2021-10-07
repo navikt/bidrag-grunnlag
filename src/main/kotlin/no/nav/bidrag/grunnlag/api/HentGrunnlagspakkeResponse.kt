@@ -8,6 +8,9 @@ data class HentGrunnlagspakkeResponse(
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Liste over innhentede inntekter og underliggende poster")
-  val inntektListe: List<HentInntektResponse> = emptyList()
+  val inntektListe: List<HentInntektResponse> = emptyList(),
+
+  @Schema(description = "Liste over innhentede stønader")
+  val stonadListe: List<HentStonadResponse> = emptyList()
 
 )

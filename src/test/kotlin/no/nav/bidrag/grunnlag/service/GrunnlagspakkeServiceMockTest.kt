@@ -4,9 +4,11 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektspostDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggStonadDto
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.StonadDto
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
@@ -42,6 +44,9 @@ class GrunnlagspakkeServiceMockTest {
   @Captor
   private lateinit var inntektspostDtoCaptor: ArgumentCaptor<InntektspostDto>
 
+  @Captor
+  private lateinit var stonadDtoCaptor: ArgumentCaptor<StonadDto>
+
   @Test
   fun `Skal opprette ny grunnlagspakke`() {
     Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor)))
@@ -66,18 +71,23 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggInntektDto())
     Mockito.`when`(persistenceServiceMock.opprettInntektspost(MockitoHelper.capture(inntektspostDtoCaptor)))
       .thenReturn(byggInntektspostDto())
+    Mockito.`when`(persistenceServiceMock.opprettStonad(MockitoHelper.capture(stonadDtoCaptor)))
+      .thenReturn(byggStonadDto())
 
     val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val nyInntektOpprettet = persistenceServiceMock.opprettInntekt(byggInntektDto())
     val nyInntektspostOpprettet = persistenceServiceMock.opprettInntektspost(byggInntektspostDto())
+    val nyStonadOpprettet = persistenceServiceMock.opprettStonad(byggStonadDto())
 
     val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
     val inntektDtoListe = inntektDtoCaptor.allValues
     val inntektspostDtoListe = inntektspostDtoCaptor.allValues
+    val stonadDtoListe = stonadDtoCaptor.allValues
 
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntekt(MockitoHelper.any(InntektDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektspost(MockitoHelper.any(InntektspostDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettStonad(MockitoHelper.any(StonadDto::class.java))
 
     assertAll(
       Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull() },
@@ -88,6 +98,9 @@ class GrunnlagspakkeServiceMockTest {
 
       Executable { assertThat(nyInntektspostOpprettet).isNotNull() },
       Executable { assertThat(nyInntektspostOpprettet.inntektspostId).isNotNull() },
+
+      Executable { assertThat(nyStonadOpprettet).isNotNull() },
+      Executable { assertThat(nyStonadOpprettet.stonadId).isNotNull() },
 
       // sjekk GrunnlagspakkeDto
       Executable { assertThat(grunnlagspakkeDto).isNotNull() },
@@ -103,7 +116,6 @@ class GrunnlagspakkeServiceMockTest {
 
       // sjekk InntektspostDto
       Executable { assertThat(inntektspostDtoListe.size).isEqualTo(1) },
-
       Executable { assertThat(inntektspostDtoListe[0].utbetalingsperiode).isEqualTo("202108") },
       Executable { assertThat(inntektspostDtoListe[0].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-07-01")) },
       Executable { assertThat(inntektspostDtoListe[0].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
@@ -112,6 +124,14 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(inntektspostDtoListe[0].fordelType).isEqualTo(("Kontantytelse")) },
       Executable { assertThat(inntektspostDtoListe[0].beskrivelse).isEqualTo(("Loenn/ferieLoenn")) },
       Executable { assertThat(inntektspostDtoListe[0].belop).isEqualTo(BigDecimal.valueOf(50000)) },
+
+      // sjekk StonadDto
+      Executable { assertThat(stonadDtoListe[0].personId).isEqualTo(1234567) },
+      Executable { assertThat(stonadDtoListe[0].type).isEqualTo("Utvidet barnetrygd") },
+      Executable { assertThat(stonadDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+      Executable { assertThat(stonadDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
+      Executable { assertThat(stonadDtoListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) },
+      Executable { assertThat(stonadDtoListe[0].manueltBeregnet).isFalse },
 
     )
   }
