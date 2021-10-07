@@ -3,19 +3,24 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.grunnlag.api.HentInntektResponse
 import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.HentInntektspostResponse
+import no.nav.bidrag.grunnlag.api.HentStonadResponse
 import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.StonadDto
 import no.nav.bidrag.grunnlag.dto.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.dto.toInntektEntity
 import no.nav.bidrag.grunnlag.dto.toInntektspostEntity
+import no.nav.bidrag.grunnlag.dto.toStonadEntity
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.entity.toInntektDto
 import no.nav.bidrag.grunnlag.persistence.entity.toInntektspostDto
+import no.nav.bidrag.grunnlag.persistence.entity.toStonadDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.persistence.repository.InntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.InntektspostRepository
+import no.nav.bidrag.grunnlag.persistence.repository.StonadRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -23,7 +28,8 @@ import org.springframework.stereotype.Service
 class PersistenceService(
   val grunnlagspakkeRepository: GrunnlagspakkeRepository,
   val inntektRepository: InntektRepository,
-  val inntektspostRepository: InntektspostRepository
+  val inntektspostRepository: InntektspostRepository,
+  val stonadRepository: StonadRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -55,10 +61,17 @@ class PersistenceService(
   }
 
 
+  fun opprettStonad(stonadDto: StonadDto): StonadDto {
+    val nyStonad = stonadDto.toStonadEntity()
+    val stonad = stonadRepository.save(nyStonad)
+    return stonad.toStonadDto()
+  }
+
+
   // Returnerer lagret, komplett grunnlagspakke
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
     val grunnlagspakke = HentGrunnlagspakkeResponse(
-      grunnlagspakkeId, hentAlleInntekter(grunnlagspakkeId)
+      grunnlagspakkeId, hentAlleInntekter(grunnlagspakkeId), hentStonader(grunnlagspakkeId)
 
     )
 
@@ -97,6 +110,27 @@ class PersistenceService(
     return hentInntektResponseListe
 
   }
+
+  fun hentStonader(grunnlagspakkeId: Int): List<HentStonadResponse> {
+    val hentStonadResponseListe = mutableListOf<HentStonadResponse>()
+    stonadRepository.hentStonader(grunnlagspakkeId)
+      .forEach { stonad ->
+        hentStonadResponseListe.add(
+          HentStonadResponse(
+            stonad.personId,
+            stonad.type,
+            stonad.periodeFra,
+            stonad.periodeTil,
+            stonad.belop,
+            stonad.manueltBeregnet
+          )
+        )
+      }
+
+    return hentStonadResponseListe
+
+  }
+
 
 
 }

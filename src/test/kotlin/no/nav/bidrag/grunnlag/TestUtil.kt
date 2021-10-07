@@ -6,6 +6,7 @@ import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.StonadDto
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -94,6 +95,18 @@ class TestUtil {
       fordelType = "Kontantytelse",
       beskrivelse = "Loenn/ferieLoenn",
       belop = BigDecimal.valueOf(50000),
+    )
+
+    fun byggStonadDto() = StonadDto(
+      stonadId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      personId = 1234567,
+      type = "Utvidet barnetrygd",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      belop = BigDecimal.valueOf(12468.01),
+      manueltBeregnet = false
+
     )
 
   }
