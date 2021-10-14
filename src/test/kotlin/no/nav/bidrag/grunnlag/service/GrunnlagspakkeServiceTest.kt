@@ -2,16 +2,16 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OpprettInntektspostRequest
 import no.nav.bidrag.grunnlag.dto.InntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostDto
 import no.nav.bidrag.grunnlag.dto.StonadDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -26,6 +26,7 @@ import java.time.LocalDateTime
   classes = [BidragGrunnlagLocal::class],
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
+@Disabled
 class GrunnlagspakkeServiceTest {
 
   @Autowired
@@ -365,5 +366,4 @@ class GrunnlagspakkeServiceTest {
 
       )
   }
-
 }

@@ -61,7 +61,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
   fun oppdaterGrunnlagspakke(@RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
     val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
-    return ResponseEntity(OppdaterGrunnlagspakkeResponse("Oppdatering OK"), HttpStatus.OK)
+    return ResponseEntity(grunnlagspakkeOppdatert, HttpStatus.OK)
 
   }
 
@@ -86,13 +86,10 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
 
   }
 
-
   companion object {
     const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke/ny"
     const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/oppdater"
     const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/hent"
     private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
-
   }
-
 }

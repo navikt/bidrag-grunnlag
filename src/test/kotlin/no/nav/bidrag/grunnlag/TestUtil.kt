@@ -3,6 +3,9 @@ package no.nav.bidrag.grunnlag
 import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.consumer.familiebasak.BisysStønadstype
+import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.familiebasak.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostDto
@@ -10,6 +13,7 @@ import no.nav.bidrag.grunnlag.dto.StonadDto
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 class TestUtil {
 
@@ -23,9 +27,9 @@ class TestUtil {
       grunnlagspakkeId = grunnlagspakkeId,
       behandlingType = "BIDRAG",
       identListe = listOf("123456789", "234567890", "345678901"),
-      periodeFom = "202107",
-      periodeTom = "202108",
-      gyldigTom = "202108"
+      periodeFom = "2021-07",
+      periodeTom = "2021-08",
+      gyldigTom = "2021-08"
     )
 
 
@@ -61,7 +65,6 @@ class TestUtil {
           belop = BigDecimal.valueOf(50000),
         )
       )
-
     )*/
 
     fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
@@ -108,6 +111,21 @@ class TestUtil {
       manueltBeregnet = false
 
     )
+
+    fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
+      byggUtvidetBarnetrygdPeriode()
+    )
+
+    fun byggUtvidetBarnetrygdPeriode() : List<UtvidetBarnetrygdPeriode> {
+      val utvidetBarnetrygdPeriode = UtvidetBarnetrygdPeriode(
+        stønadstype = BisysStønadstype.UTVIDET,
+        fomMåned = YearMonth.now(),
+        tomMåned = YearMonth.now(),
+        beløp = 1000.00,
+        manueltBeregnet = false
+      )
+      return mutableListOf(utvidetBarnetrygdPeriode)
+    }
 
   }
 }
