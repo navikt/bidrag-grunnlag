@@ -1,13 +1,6 @@
 package no.nav.bidrag.grunnlag.api
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.dto.InntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
-import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Inntekt
-import java.time.LocalDate
-import java.time.LocalDateTime
-import kotlin.reflect.full.memberProperties
 
 data class HentInntektResponse(
 

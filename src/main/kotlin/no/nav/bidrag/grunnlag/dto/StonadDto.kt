@@ -35,6 +35,9 @@ data class StonadDto (
   @Schema(description = "Angir om stønaden er manuelt beregnet")
   val manueltBeregnet: Boolean = false,
 
+  @Schema(description = "Hentet tidspunkt")
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
+
 )
 
 fun StonadDto.toStonadEntity() = with(::Stonad) {

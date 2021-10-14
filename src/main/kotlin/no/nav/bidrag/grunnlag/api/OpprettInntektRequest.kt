@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.api
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.dto.InntektDto
+import no.nav.bidrag.grunnlag.dto.InntektSkattDto
 import java.time.LocalDate
 
 import kotlin.reflect.full.memberProperties
@@ -28,21 +28,21 @@ data class OpprettInntektRequest(
   val inntektspostListe: List<OpprettInntektspostRequest> = emptyList()
 )
 
-fun OpprettInntektRequest.toInntektDto(grunnlagspakkeId: Int) = with(::InntektDto) {
+fun OpprettInntektRequest.toInntektDto(grunnlagspakkeId: Int) = with(::InntektSkattDto) {
   val propertiesByName = OpprettInntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      InntektDto::grunnlagspakkeId.name -> grunnlagspakkeId
+      InntektSkattDto::grunnlagspakkeId.name -> grunnlagspakkeId
       else -> propertiesByName[parameter.name]?.get(this@toInntektDto)
     }
   })
 }
 
-fun OpprettInntektRequest.toInntektDto() = with(::InntektDto) {
+fun OpprettInntektRequest.toInntektDto() = with(::InntektSkattDto) {
   val propertiesByName = OpprettInntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      InntektDto::inntektId.name -> 0
+      InntektSkattDto::inntektId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toInntektDto)
     }
   })

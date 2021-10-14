@@ -2,9 +2,8 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OpprettInntektspostRequest
-import no.nav.bidrag.grunnlag.dto.InntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.StonadDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -77,12 +76,12 @@ class GrunnlagspakkeServiceTest {
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
-    val inntektDto = InntektDto(
+    val inntektDto = InntektSkattDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = 1234567,
       type = "Loennsinntekt",
-      gyldigFra = LocalDate.parse("2021-05-01"),
-      gyldigTil = LocalDate.parse("2021-06-01"),
+      periodeFra = LocalDate.parse("2021-05-01"),
+      periodeTil = LocalDate.parse("2021-06-01"),
       aktiv = true,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
@@ -92,13 +91,13 @@ class GrunnlagspakkeServiceTest {
     val opprettetInntekt = persistenceService.opprettInntekt(inntektDto)
 
     persistenceService.opprettInntektspost(
-      InntektspostDto(
+      InntektspostAinntektDto(
         inntektId = opprettetInntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2021-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-06-01"),
         opplysningspliktigId = "1234567890",
-        inntektType = "Loenn",
+        type = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
         belop = BigDecimal.valueOf(17000.01)
@@ -106,13 +105,13 @@ class GrunnlagspakkeServiceTest {
     )
 
     persistenceService.opprettInntektspost(
-      InntektspostDto(
+      InntektspostAinntektDto(
         inntektId = opprettetInntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2021-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-06-01"),
         opplysningspliktigId = "1234567890",
-        inntektType = "Loenn",
+        type = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/ferieLoenn",
         belop = BigDecimal.valueOf(50000.01)
@@ -120,12 +119,12 @@ class GrunnlagspakkeServiceTest {
     )
 
     // tester at inntekt som er merket med aktiv = false ikke hentes
-    val innaktivInntektDto = InntektDto(
+    val innaktivInntektDto = InntektSkattDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = 1234567,
       type = "Loennsinntekt",
-      gyldigFra = LocalDate.parse("2020-05-01"),
-      gyldigTil = LocalDate.parse("2020-06-01"),
+      periodeFra = LocalDate.parse("2020-05-01"),
+      periodeTil = LocalDate.parse("2020-06-01"),
       aktiv = false,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
@@ -135,13 +134,13 @@ class GrunnlagspakkeServiceTest {
     val innaktivInntekt = persistenceService.opprettInntekt(innaktivInntektDto)
 
     persistenceService.opprettInntektspost(
-      InntektspostDto(
+      InntektspostAinntektDto(
         inntektId = innaktivInntekt.inntektId,
         utbetalingsperiode = "202006",
         opptjeningsperiodeFra = LocalDate.parse("2020-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2020-06-01"),
         opplysningspliktigId = "1234567890",
-        inntektType = "Loenn",
+        type = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
         belop = BigDecimal.valueOf(50000.01)
@@ -150,12 +149,12 @@ class GrunnlagspakkeServiceTest {
 
 
     // Legger inn inntekt for person nr 2
-    val inntektDto2 = InntektDto(
+    val inntektDto2 = InntektSkattDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = 999999,
       type = "Loennsinntekt",
-      gyldigFra = LocalDate.parse("2021-06-01"),
-      gyldigTil = LocalDate.parse("2021-07-01"),
+      periodeFra = LocalDate.parse("2021-06-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
@@ -165,13 +164,13 @@ class GrunnlagspakkeServiceTest {
     val opprettetInntekt2 = persistenceService.opprettInntekt(inntektDto2)
 
     persistenceService.opprettInntektspost(
-      InntektspostDto(
+      InntektspostAinntektDto(
         inntektId = opprettetInntekt2.inntektId,
         utbetalingsperiode = "202107",
         opptjeningsperiodeFra = LocalDate.parse("2021-06-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-07-01"),
         opplysningspliktigId = "9876543210",
-        inntektType = "Loenn",
+        type = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
         belop = BigDecimal.valueOf(666000.01)

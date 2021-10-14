@@ -4,8 +4,8 @@ import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.StonadDto
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -71,27 +71,27 @@ class TestUtil {
       endretTimestamp = LocalDateTime.now()
     )
 
-    fun byggInntektDto() = InntektDto(
+    fun byggInntektDto() = InntektSkattDto(
       inntektId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = 1234567,
       type = "Loennsinntekt",
-      gyldigFra = LocalDate.parse("2021-07-01"),
-      gyldigTil = LocalDate.parse("2021-08-01"),
+      periodeFra = LocalDate.parse("2021-07-01"),
+      periodeTil = LocalDate.parse("2021-08-01"),
       aktiv = true,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
       brukTil = null
     )
 
-    fun byggInntektspostDto() = InntektspostDto(
+    fun byggInntektspostDto() = InntektspostAinntektDto(
       inntektspostId = (1..100).random(),
       inntektId = (1..100).random(),
       utbetalingsperiode = "202108",
       opptjeningsperiodeFra = LocalDate.parse("2021-07-01"),
       opptjeningsperiodeTil = LocalDate.parse("2021-08-01"),
       opplysningspliktigId = "123",
-      inntektType = "Loenn",
+      type = "Loenn",
       fordelType = "Kontantytelse",
       beskrivelse = "Loenn/ferieLoenn",
       belop = BigDecimal.valueOf(50000),

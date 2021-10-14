@@ -10,8 +10,8 @@ import no.nav.bidrag.grunnlag.api.OpprettInntektspostRequest
 import no.nav.bidrag.grunnlag.api.toInntektDto
 import no.nav.bidrag.grunnlag.api.toInntektspostDto
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -35,11 +35,11 @@ class GrunnlagspakkeService(val persistenceService: PersistenceService) {
   }
 
 
-  private fun opprettInntekt(opprettInntektRequest: OpprettInntektRequest, grunnlagspakkeId: Int): InntektDto {
+  private fun opprettInntekt(opprettInntektRequest: OpprettInntektRequest, grunnlagspakkeId: Int): InntektSkattDto {
     return persistenceService.opprettInntekt(opprettInntektRequest.toInntektDto(grunnlagspakkeId))
   }
 
-  private fun opprettInntektspost(opprettInntektspostRequest: OpprettInntektspostRequest, inntektId: Int): InntektspostDto {
+  private fun opprettInntektspost(opprettInntektspostRequest: OpprettInntektspostRequest, inntektId: Int): InntektspostAinntektDto {
     return persistenceService.opprettInntektspost(opprettInntektspostRequest.toInntektspostDto(inntektId))
   }
 

@@ -1,15 +1,12 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Inntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Inntektspost
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class InntektspostDto (
+data class InntektspostAinntektDto (
 
   @Schema(description = "Inntektspost-id")
   val inntektspostId: Int = 0,
@@ -30,7 +27,7 @@ data class InntektspostDto (
   val opplysningspliktigId: String = "",
 
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
-  val inntektType: String = "",
+  val type: String = "",
 
   @Schema(description = "Type fordel, Kontantytelse, Naturalytelse, Utgiftsgodtgjorelse")
   val fordelType: String = "",
@@ -42,11 +39,11 @@ data class InntektspostDto (
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun InntektspostDto.toInntektspostEntity() = with(::Inntektspost) {
-  val propertiesByName = InntektspostDto::class.memberProperties.associateBy { it.name }
+fun InntektspostAinntektDto.toInntektspostAinntektEntity() = with(::InntektspostAinntekt) {
+  val propertiesByName = InntektspostAinntektDto::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostEntity)
+      else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektEntity)
     }
   })
 

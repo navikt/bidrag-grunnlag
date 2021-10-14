@@ -6,8 +6,8 @@ import no.nav.bidrag.grunnlag.api.HentInntektspostResponse
 import no.nav.bidrag.grunnlag.api.HentStonadResponse
 import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.StonadDto
 import no.nav.bidrag.grunnlag.dto.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.dto.toInntektEntity
@@ -48,14 +48,14 @@ class PersistenceService(
 
   }
 
-  fun opprettInntekt(inntektDto: InntektDto): InntektDto {
+  fun opprettInntekt(inntektDto: InntektSkattDto): InntektSkattDto {
     val nyInntekt = inntektDto.toInntektEntity()
     val inntekt = inntektRepository.save(nyInntekt)
     return inntekt.toInntektDto()
   }
 
-  fun opprettInntektspost(inntektspostDto: InntektspostDto): InntektspostDto {
-    val nyInntektspost = inntektspostDto.toInntektspostEntity()
+  fun opprettInntektspost(inntektspostAinntektDto: InntektspostAinntektDto): InntektspostAinntektDto {
+    val nyInntektspost = inntektspostAinntektDto.toInntektspostEntity()
     val inntektspost = inntektspostRepository.save(nyInntektspost)
     return inntektspost.toInntektspostDto()
   }
@@ -91,7 +91,7 @@ class PersistenceService(
                 inntektspost.opptjeningsperiodeFra,
                 inntektspost.opptjeningsperiodeTil,
                 inntektspost.opplysningspliktigId,
-                inntektspost.inntektType,
+                inntektspost.type,
                 inntektspost.fordelType,
                 inntektspost.beskrivelse,
                 inntektspost.belop

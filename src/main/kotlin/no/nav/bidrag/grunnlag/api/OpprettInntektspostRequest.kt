@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.api
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -35,21 +35,21 @@ data class OpprettInntektspostRequest(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun OpprettInntektspostRequest.toInntektspostDto(inntektId: Int) = with(::InntektspostDto) {
+fun OpprettInntektspostRequest.toInntektspostDto(inntektId: Int) = with(::InntektspostAinntektDto) {
   val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      InntektspostDto::inntektId.name -> inntektId
+      InntektspostAinntektDto::inntektId.name -> inntektId
       else -> propertiesByName[parameter.name]?.get(this@toInntektspostDto)
     }
   })
 }
 
-fun OpprettInntektspostRequest.toInntektspostDto() = with(::InntektspostDto) {
+fun OpprettInntektspostRequest.toInntektspostDto() = with(::InntektspostAinntektDto) {
   val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      InntektspostDto::inntektspostId.name -> 0
+      InntektspostAinntektDto::inntektspostId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toInntektspostDto)
     }
   })

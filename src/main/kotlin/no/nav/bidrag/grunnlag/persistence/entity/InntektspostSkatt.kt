@@ -1,11 +1,9 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -14,7 +12,7 @@ import javax.persistence.Id
 import kotlin.reflect.full.memberProperties
 
 @Entity
-data class Inntektspost(
+data class InntektspostSkatt(
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +34,8 @@ data class Inntektspost(
   @Column(nullable = false, name = "opplysningspliktig_id")
   val opplysningspliktigId: String = "",
 
-  @Column(nullable = false, name = "inntekt_type")
-  val inntektType: String = "",
+  @Column(nullable = false, name = "type")
+  val type: String = "",
 
   @Column(nullable = false, name = "fordel_type")
   val fordelType: String = "",
@@ -49,11 +47,11 @@ data class Inntektspost(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun Inntektspost.toInntektspostDto() = with(::InntektspostDto) {
-  val propertiesByName = Inntektspost::class.memberProperties.associateBy { it.name }
+fun InntektspostSkatt.toInntektspostSkattDto() = with(::InntektspostSkattDto) {
+  val propertiesByName = InntektspostSkatt::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostDto)
+      else -> propertiesByName[parameter.name]?.get(this@toInntektspostSkattDto)
     }
   })
 }

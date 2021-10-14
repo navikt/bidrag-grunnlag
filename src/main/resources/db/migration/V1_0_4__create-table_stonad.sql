@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS stonad
     periode_til date,
     belop float NOT NULL,
     manuelt_beregnet boolean DEFAULT false NOT NULL,
+    hentet_tidspunkt timestamp DEFAULT now() NOT NULL,
     CONSTRAINT stonader_pkey PRIMARY KEY (stonad_id),
     CONSTRAINT grunnlagspakke_fkey FOREIGN KEY (grunnlagspakke_id)
         REFERENCES grunnlagspakke (grunnlagspakke_id) MATCH SIMPLE

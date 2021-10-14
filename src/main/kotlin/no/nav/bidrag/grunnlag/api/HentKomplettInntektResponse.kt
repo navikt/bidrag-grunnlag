@@ -1,13 +1,9 @@
 package no.nav.bidrag.grunnlag.api
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.dto.InntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
-import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Inntekt
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.reflect.full.memberProperties
 
 data class HentKomplettInntektResponse(
 
@@ -42,6 +38,6 @@ data class HentKomplettInntektResponse(
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Liste over poster for innhentede inntekter")
-  val inntektspostListe: List<InntektspostDto> = emptyList(),
+  val inntektspostListe: List<InntektspostAinntektDto> = emptyList(),
 
   )
