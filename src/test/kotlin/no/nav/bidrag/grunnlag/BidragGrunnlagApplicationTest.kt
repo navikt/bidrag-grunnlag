@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -13,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = [BidragGrunnlagLocal::class])
 @ActiveProfiles(TEST_PROFILE)
 @DisplayName("BidragGrunnlag")
+@Disabled
 class BidragGrunnlagApplicationTest {
 
   @Test

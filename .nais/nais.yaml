@@ -13,6 +13,9 @@ spec:
     inbound:
       rules:
         - application: {{ name }}
+    outbound:
+      external:
+        - host: {{ azure.familiebasak_url }}
   image: {{ image }}
   liveness:
     path: /bidrag-grunnlag/actuator/health
@@ -36,6 +39,11 @@ spec:
       memory: 1024Mi
   ingresses:
     - {{ ingress }}
+  env:
+    - name: FAMILIEBASAK_URL
+      value: https://{{ azure.familiebasak_url }}
+    - name: FAMILIEBASAK_SCOPE
+      value: {{ azure.familiebasak_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}

@@ -1,3 +1,6 @@
 name: bidrag-grunnlag
 ingress: https://bidrag-grunnlag.dev.intern.nav.no
+azure:
+  familiebasak_url: familie-ba-sak.dev-fss-pub.nais.io
+  familiebasak_scope: dev-fss.teamfamilie.familie-ba-sak
 dbname: bidrag-grunnlag-main
