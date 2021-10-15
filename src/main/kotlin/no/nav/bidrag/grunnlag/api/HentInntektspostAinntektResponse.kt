@@ -1,15 +1,10 @@
 package no.nav.bidrag.grunnlag.api
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Inntekt
-import no.nav.bidrag.grunnlag.persistence.entity.Inntektspost
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
-import kotlin.reflect.full.memberProperties
 
-data class HentInntektspostResponse (
+data class HentInntektspostAinntektResponse (
 
   @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
   val utbetalingsperiode: String = "",

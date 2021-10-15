@@ -1,22 +1,21 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Inntekt
+import no.nav.bidrag.grunnlag.persistence.entity.InntektAinntekt
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class InntektAinntektDto (
+data class InntektAinntektDto(
 
-  @Schema(description = "AInntekt-id")
+  @Schema(description = "Inntekt-id")
   val inntektId: Int = 0,
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Id til personen inntekten er rapport for")
-  val personId: Int = 0,
+  val personId: String = "",
 
   @Schema(description = "Periode fra-dato")
   val periodeFra: LocalDate = LocalDate.now(),
@@ -39,7 +38,7 @@ data class InntektAinntektDto (
   )
 
 fun InntektAinntektDto.toInntektAinntektEntity() = with(::InntektAinntekt) {
-  val propertiesByName = InntektDto::class.memberProperties.associateBy { it.name }
+  val propertiesByName = InntektAinntektDto::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       else -> propertiesByName[parameter.name]?.get(this@toInntektAinntektEntity)

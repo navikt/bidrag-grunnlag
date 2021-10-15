@@ -1,16 +1,16 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.OpprettInntektRequest
-import no.nav.bidrag.grunnlag.api.OpprettInntektspostRequest
-import no.nav.bidrag.grunnlag.api.toInntektDto
-import no.nav.bidrag.grunnlag.api.toInntektspostDto
+import no.nav.bidrag.grunnlag.api.OpprettInntektAinntektRequest
+import no.nav.bidrag.grunnlag.api.OpprettInntektspostAinntektRequest
+import no.nav.bidrag.grunnlag.api.toInntektAinntektDto
+import no.nav.bidrag.grunnlag.api.toInntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -35,12 +35,12 @@ class GrunnlagspakkeService(val persistenceService: PersistenceService) {
   }
 
 
-  private fun opprettInntekt(opprettInntektRequest: OpprettInntektRequest, grunnlagspakkeId: Int): InntektSkattDto {
-    return persistenceService.opprettInntekt(opprettInntektRequest.toInntektDto(grunnlagspakkeId))
+  private fun opprettInntektAinntekt(opprettInntektAinntektRequest: OpprettInntektAinntektRequest, grunnlagspakkeId: Int): InntektAinntektDto {
+    return persistenceService.opprettInntektAinntekt(opprettInntektAinntektRequest.toInntektAinntektDto(grunnlagspakkeId))
   }
 
-  private fun opprettInntektspost(opprettInntektspostRequest: OpprettInntektspostRequest, inntektId: Int): InntektspostAinntektDto {
-    return persistenceService.opprettInntektspost(opprettInntektspostRequest.toInntektspostDto(inntektId))
+  private fun opprettInntektspostAinntekt(opprettInntektspostAinntektRequest: OpprettInntektspostAinntektRequest, inntektId: Int): InntektspostAinntektDto {
+    return persistenceService.opprettInntektspostAinntekt(opprettInntektspostAinntektRequest.toInntektspostAinntektDto(inntektId))
   }
 
 

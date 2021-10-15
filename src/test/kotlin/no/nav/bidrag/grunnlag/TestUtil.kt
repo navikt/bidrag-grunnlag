@@ -4,9 +4,11 @@ import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektSkattDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
-import no.nav.bidrag.grunnlag.dto.StonadDto
+import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
+import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -71,11 +73,11 @@ class TestUtil {
       endretTimestamp = LocalDateTime.now()
     )
 
-    fun byggInntektDto() = InntektSkattDto(
+    fun byggInntektAinntektDto() = InntektAinntektDto(
       inntektId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
-      personId = 1234567,
-      type = "Loennsinntekt",
+      personId = "1234567",
+//      type = "Loennsinntekt",
       periodeFra = LocalDate.parse("2021-07-01"),
       periodeTil = LocalDate.parse("2021-08-01"),
       aktiv = true,
@@ -84,7 +86,7 @@ class TestUtil {
       brukTil = null
     )
 
-    fun byggInntektspostDto() = InntektspostAinntektDto(
+    fun byggInntektspostAinntektDto() = InntektspostAinntektDto(
       inntektspostId = (1..100).random(),
       inntektId = (1..100).random(),
       utbetalingsperiode = "202108",
@@ -97,10 +99,29 @@ class TestUtil {
       belop = BigDecimal.valueOf(50000),
     )
 
-    fun byggStonadDto() = StonadDto(
-      stonadId = (1..100).random(),
+    fun byggInntektSkattDto() = InntektSkattDto(
+      inntektId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
-      personId = 1234567,
+      personId = "7654321",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-12-01"),
+      aktiv = true,
+      hentetTidspunkt = LocalDateTime.now(),
+      brukFra = LocalDateTime.now(),
+      brukTil = null
+    )
+
+    fun byggInntektspostSkattDto() = InntektspostSkattDto(
+      inntektspostId = (1..100).random(),
+      inntektId = (1..100).random(),
+      type = "Loenn",
+      belop = BigDecimal.valueOf(50000),
+    )
+
+    fun byggUtvidetBarnetrygdOgSmaabarnstilleggDto() = UtvidetBarnetrygdOgSmaabarnstilleggDto(
+      ubstId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      personId = "1234567",
       type = "Utvidet barnetrygd",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),

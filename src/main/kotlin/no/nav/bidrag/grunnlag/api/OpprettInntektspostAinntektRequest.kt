@@ -8,7 +8,7 @@ import java.time.LocalDate
 import kotlin.reflect.full.memberProperties
 
 @Schema(description ="Egenskaper ved en inntektspost")
-data class OpprettInntektspostRequest(
+data class OpprettInntektspostAinntektRequest(
 
   @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
   val utbetalingsperiode: String = "",
@@ -35,22 +35,22 @@ data class OpprettInntektspostRequest(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun OpprettInntektspostRequest.toInntektspostDto(inntektId: Int) = with(::InntektspostAinntektDto) {
-  val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektspostAinntektRequest.toInntektspostAinntektDto(inntektId: Int) = with(::InntektspostAinntektDto) {
+  val propertiesByName = OpprettInntektspostAinntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       InntektspostAinntektDto::inntektId.name -> inntektId
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostDto)
+      else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektDto)
     }
   })
 }
 
-fun OpprettInntektspostRequest.toInntektspostDto() = with(::InntektspostAinntektDto) {
-  val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektspostAinntektRequest.toInntektspostAinntektDto() = with(::InntektspostAinntektDto) {
+  val propertiesByName = OpprettInntektspostAinntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       InntektspostAinntektDto::inntektspostId.name -> 0
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostDto)
+      else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektDto)
     }
   })
 }

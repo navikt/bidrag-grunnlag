@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
 import java.math.BigDecimal
 import java.time.LocalDate

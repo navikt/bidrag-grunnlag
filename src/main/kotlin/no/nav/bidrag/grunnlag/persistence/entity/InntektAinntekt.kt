@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektSkattDto
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -22,7 +21,7 @@ data class InntektAinntekt(
   val grunnlagspakkeId: Int = 0,
 
   @Column(nullable = false, name = "person_id")
-  val personId: Int = 0,
+  val personId: String = "",
 
   @Column(nullable = false, name = "periode_fra")
   val periodeFra: LocalDate = LocalDate.now(),
