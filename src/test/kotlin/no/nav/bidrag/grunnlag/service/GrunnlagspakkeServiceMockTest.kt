@@ -5,6 +5,8 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektAinntektDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektspostAinntektDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggUtvidetBarnetrygdOgSmaabarnstilleggDto
+
+import no.nav.bidrag.grunnlag.consumer.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektSkattDto
@@ -35,6 +37,9 @@ class GrunnlagspakkeServiceMockTest {
 
   @Mock
   private lateinit var persistenceServiceMock: PersistenceService
+
+  @Mock
+  private lateinit var familieBaSakConsumerMock: FamilieBaSakConsumer
 
   @Captor
   private lateinit var grunnlagspakkeDtoCaptor: ArgumentCaptor<GrunnlagspakkeDto>
@@ -116,6 +121,7 @@ class GrunnlagspakkeServiceMockTest {
 
       // sjekk InntektspostDto
       Executable { assertThat(inntektspostDtoListe.size).isEqualTo(1) },
+
       Executable { assertThat(inntektspostDtoListe[0].utbetalingsperiode).isEqualTo("202108") },
       Executable { assertThat(inntektspostDtoListe[0].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-07-01")) },
       Executable { assertThat(inntektspostDtoListe[0].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
@@ -134,12 +140,33 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(ubstListe[0].manueltBeregnet).isFalse },
 
     )
+
   }
+
+//  @Test
+//  @Suppress("NonAsciiCharacters")
+//  fun `Skal oppdatere grunnlagspakke`() {
+//    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java)))
+//      .thenReturn(byggGrunnlagspakkeDto())
+//    Mockito.`when`(familieBaSakConsumerMock.hentFamilieBaSak(MockitoHelper.any(FamilieBaSakRequest::class.java)))
+//      .thenReturn(byggFamilieBaSakResponse())
+//
+//    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
+//    val nyGrunnlagspakkeOpprettet =
+//      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
+//
+//    val oppdatertGrunnlagspakke =
+//      grunnlagspakkeService.oppdaterGrunnlagspakke(TestUtil.byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId))
+//
+//    assertAll(
+//      Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull },
+//      Executable { assertThat(oppdatertGrunnlagspakke).isNotNull }
+//    )
+//  }
 
   object MockitoHelper {
     // use this in place of captor.capture() if you are trying to capture an argument that is not nullable
     fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
     fun <T> any(type: Class<T>): T = Mockito.any(type)
   }
-
 }

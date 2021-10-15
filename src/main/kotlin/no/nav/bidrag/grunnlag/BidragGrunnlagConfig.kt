@@ -5,60 +5,67 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
+import no.nav.bidrag.commons.CorrelationId
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.CorrelationIdFilter
-import no.nav.security.token.support.core.context.TokenValidationContext
-import no.nav.security.token.support.core.context.TokenValidationContextHolder
-import no.nav.security.token.support.core.jwt.JwtToken
+import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.grunnlag.consumer.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.service.SecurityTokenService
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.web.client.RootUriTemplateHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.util.Optional
+import org.springframework.context.annotation.Scope
 
 const val LIVE_PROFILE = "live"
 
 @Configuration
 @OpenAPIDefinition(
-    info = Info(title = "bidrag-grunnlag", version = "v1"),
-    security = [SecurityRequirement(name = "bearer-key")])
+  info = Info(title = "bidrag-grunnlag", version = "v1"),
+  security = [SecurityRequirement(name = "bearer-key")]
+)
 @EnableJwtTokenValidation
 @SecurityScheme(
-    bearerFormat = "JWT",
-    name = "bearer-key",
-    scheme = "bearer",
-    type = SecuritySchemeType.HTTP
+  bearerFormat = "JWT",
+  name = "bearer-key",
+  scheme = "bearer",
+  type = SecuritySchemeType.HTTP
 )
 class BidragGrunnlagConfig {
 
-    @Bean
-    fun exceptionLogger(): ExceptionLogger {
-        return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
-    }
+  companion object {
 
-    @Bean
-    fun correlationIdFilter(): CorrelationIdFilter {
-        return CorrelationIdFilter()
-    }
-}
+    @JvmStatic
+    private val LOGGER = LoggerFactory.getLogger(BidragGrunnlagConfig::class.java)
+  }
 
-@Bean
-fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder?): OidcTokenManager? {
-    return OidcTokenManager {
-        Optional.ofNullable(tokenValidationContextHolder)
-            .map { obj: TokenValidationContextHolder -> obj.tokenValidationContext }
-            .map { tokenValidationContext: TokenValidationContext ->
-                tokenValidationContext.getJwtTokenAsOptional(ISSUER)
-            }
-            .map { obj: Optional<JwtToken?> -> obj.get() }
-            .map { obj: JwtToken -> obj.tokenAsString }
-            .orElseThrow {
-                IllegalStateException(
-                    "Kunne ikke videresende Bearer-token"
-                )
-            }
-    }
-}
+  @Bean
+  fun exceptionLogger(): ExceptionLogger {
+    return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
+  }
 
-fun interface OidcTokenManager {
-    fun hentIdToken(): String?
+  @Bean
+  fun correlationIdFilter(): CorrelationIdFilter {
+    return CorrelationIdFilter()
+  }
+
+  @Bean
+  @Scope("prototype")
+  fun restTemplate(): HttpHeaderRestTemplate {
+    val httpHeaderRestTemplate = HttpHeaderRestTemplate()
+    httpHeaderRestTemplate.addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER) { CorrelationId.fetchCorrelationIdForThread() }
+    return httpHeaderRestTemplate
+  }
+
+  @Bean
+  fun familieBaSakConsumer(
+    @Value("\${FAMILIEBASAK_URL}") url: String, restTemplate: HttpHeaderRestTemplate, securityTokenService: SecurityTokenService
+  ): FamilieBaSakConsumer {
+    LOGGER.info("Url satt i config: $url")
+    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiebasak"))
+    return FamilieBaSakConsumer(restTemplate)
+  }
 }

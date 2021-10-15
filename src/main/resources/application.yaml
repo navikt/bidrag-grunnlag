@@ -40,6 +40,24 @@ spring:
   jpa:
     hibernate.connection.provider_class: org.hibernate.hikaricp.internal.HikariCPConnectionProvider
     database: postgresql
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AZURE_OPENID_CONFIG_ISSUER}
+          accepted-audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}
+      client:
+        registration:
+          familiebasak:
+            provider: aad
+            client-id: ${AZURE_APP_CLIENT_ID}
+            client-secret: ${AZURE_APP_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            scope: api://${FAMILIEBASAK_SCOPE}/.default
+        provider:
+          aad:
+            token-uri: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+            jwk-set-uri: ${AZURE_OPENID_CONFIG_JWKS_URI}
 
 # OIDC
 no.nav.security.jwt:
@@ -47,6 +65,7 @@ no.nav.security.jwt:
     aad:
       discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
       accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}
+
 
 ---
 
@@ -73,6 +92,8 @@ spring:
   flyway.enabled: false
   datasource.type: com.zaxxer.hikari.HikariDataSource
   datasource.url: jdbc:h2:mem:default
-#  datasource.url: jdbc:h2:file:/Users/R153961/Dev/bidrag-grunnlag/src/main/resources/data
+  #  datasource.url: jdbc:h2:file:/Users/R153961/Dev/bidrag-grunnlag/src/main/resources/data
   h2.console.enabled: true
   jpa.hibernate.hbmddl-auto: create-drop
+
+FAMILIEBASAK_URL: https://familie-ba-sak.dev-fss-pub.nais.io

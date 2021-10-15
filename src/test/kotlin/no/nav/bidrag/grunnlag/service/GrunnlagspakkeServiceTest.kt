@@ -7,12 +7,14 @@ import no.nav.bidrag.grunnlag.dto.InntektSkattDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,6 +29,7 @@ import java.time.LocalDateTime
   classes = [BidragGrunnlagLocal::class],
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
+@Disabled
 class GrunnlagspakkeServiceTest {
 
   @Autowired
@@ -263,5 +266,4 @@ class GrunnlagspakkeServiceTest {
 
       )
   }
-
 }

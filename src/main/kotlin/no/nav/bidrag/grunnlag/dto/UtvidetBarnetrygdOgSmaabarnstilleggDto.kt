@@ -2,9 +2,10 @@ package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
+import java.time.LocalDateTime
+
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
 data class UtvidetBarnetrygdOgSmaabarnstilleggDto(

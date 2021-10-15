@@ -24,4 +24,4 @@ data class HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
   @Schema(description = "Angir om stønaden er manuelt beregnet")
   val manueltBeregnet: Boolean = false
 
-  )
+)
