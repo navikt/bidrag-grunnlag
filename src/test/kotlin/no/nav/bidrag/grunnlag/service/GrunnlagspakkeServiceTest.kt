@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
-import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektSkattDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto

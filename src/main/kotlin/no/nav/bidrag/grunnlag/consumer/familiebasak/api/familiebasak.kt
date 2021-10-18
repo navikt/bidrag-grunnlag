@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.consumer.familiebasak
+package no.nav.bidrag.grunnlag.consumer.familiebasak.api
 
 import java.time.LocalDate
 import java.time.YearMonth

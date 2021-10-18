@@ -4,10 +4,11 @@ import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -81,6 +82,7 @@ class GrunnlagspakkeControllerTest {
     )
     grunnlagspakkeRepository.deleteAll()
   }
+
 
 //  @Test
 //  fun `skal oppdatere en grunnlagspakke`() {

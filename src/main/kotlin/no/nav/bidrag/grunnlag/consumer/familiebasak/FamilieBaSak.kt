@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.consumer
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakRequest
-import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders

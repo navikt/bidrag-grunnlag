@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.api
+package no.nav.bidrag.grunnlag.api.skatt
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto

@@ -1,12 +1,12 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.api.HentInntektAinntektResponse
-import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.HentInntektSkattResponse
-import no.nav.bidrag.grunnlag.api.HentInntektspostAinntektResponse
-import no.nav.bidrag.grunnlag.api.HentInntektspostSkattResponse
+import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.skatt.HentInntektSkattResponse
+import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektspostAinntektResponse
+import no.nav.bidrag.grunnlag.api.skatt.HentInntektspostSkattResponse
 import no.nav.bidrag.grunnlag.api.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
-import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektSkattDto

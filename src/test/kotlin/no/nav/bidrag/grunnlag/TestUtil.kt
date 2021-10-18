@@ -1,11 +1,11 @@
 package no.nav.bidrag.grunnlag
 
-import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.consumer.familiebasak.BisysStønadstype
-import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakResponse
-import no.nav.bidrag.grunnlag.consumer.familiebasak.UtvidetBarnetrygdPeriode
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektSkattDto
