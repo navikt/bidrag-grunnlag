@@ -5,24 +5,20 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.ainntekt.OpprettInntektAinntektRequest
+/*import no.nav.bidrag.grunnlag.api.ainntekt.OpprettInntektAinntektRequest
 import no.nav.bidrag.grunnlag.api.ainntekt.OpprettInntektspostAinntektRequest
 import no.nav.bidrag.grunnlag.api.ainntekt.toInntektAinntektDto
 import no.nav.bidrag.grunnlag.api.ainntekt.toInntektspostAinntektDto
 import no.nav.bidrag.grunnlag.api.skatt.OpprettInntektSkattRequest
 import no.nav.bidrag.grunnlag.api.skatt.OpprettInntektspostSkattRequest
 import no.nav.bidrag.grunnlag.api.skatt.toInntektSkattDto
-import no.nav.bidrag.grunnlag.api.skatt.toInntektspostSkattDto
-import no.nav.bidrag.grunnlag.api.ubst.OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest
-import no.nav.bidrag.grunnlag.api.ubst.toUtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.api.skatt.toInntektspostSkattDto*/
+/*import no.nav.bidrag.grunnlag.api.ubst.OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest
+import no.nav.bidrag.grunnlag.api.ubst.toUtvidetBarnetrygdOgSmaabarnstilleggDto*/
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
-import no.nav.bidrag.grunnlag.dto.InntektSkattDto
-import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 
 import org.slf4j.LoggerFactory
@@ -65,15 +61,17 @@ class GrunnlagspakkeService(
   }
 
   fun innhentGrunnlagForskudd(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): OppdaterGrunnlagspakkeResponse {
-    var status: String = "Ok"
+    var status = ""
     oppdaterGrunnlagspakkeRequest.identListe.forEach() { personId ->
 //      hentInntektAinntekt(personId)
 //      hentInntektSkatt(personId)
-      val utvidetBarnetrygdOgSmaabarnstilleggListe = hentOgLagreUtvidetBarnetrygdOgSmaabarnstillegg(personId, oppdaterGrunnlagspakkeRequest.periodeFom)
+      val utvidetBarnetrygdOgSmaabarnstilleggListe = hentOgLagreUtvidetBarnetrygdOgSmaabarnstillegg(
+        oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, personId, oppdaterGrunnlagspakkeRequest.periodeFom)
+
       utvidetBarnetrygdOgSmaabarnstilleggListe.forEach(){ ubst ->
         persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(ubst)
-
       }
+      status = "Antall elementer funnet: ${utvidetBarnetrygdOgSmaabarnstilleggListe.size}"
     }
 
     return OppdaterGrunnlagspakkeResponse(status)
@@ -81,10 +79,10 @@ class GrunnlagspakkeService(
   }
 
 
-  fun hentOgLagreUtvidetBarnetrygdOgSmaabarnstillegg(personId: String, periodeFom: String)
-      : List<OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest> {
+  fun hentOgLagreUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String)
+      : List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
 
-    val ubstListe = mutableListOf<OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest>()
+    val ubstDtoListe = mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
     val familieBaSakRequest = FamilieBaSakRequest(
       personIdent = personId,
       fraDato = LocalDate.parse("$periodeFom-01")
@@ -99,8 +97,9 @@ class GrunnlagspakkeService(
 
     if (familieBaSakResponse.perioder.isNotEmpty()) {
       familieBaSakResponse.perioder.forEach() { ubst ->
-        ubstListe.add(
-          OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest(
+        ubstDtoListe.add(
+          UtvidetBarnetrygdOgSmaabarnstilleggDto(
+            grunnlagspakkeId = grunnlagspakkeId,
             personId = personId,
             type = ubst.stonadstype.toString(),
             periodeFra = LocalDate.parse(ubst.fomMaaned.toString() + "01"),
@@ -112,10 +111,10 @@ class GrunnlagspakkeService(
         )
       }
     }
-    return ubstListe
+    return ubstDtoListe
     }
 
-
+/*
 private fun opprettInntektAinntekt(
   opprettInntektAinntektRequest: OpprettInntektAinntektRequest,
   grunnlagspakkeId: Int
@@ -170,7 +169,7 @@ private fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(
       grunnlagspakkeId
     )
   )
-}
+}*/
 
 fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
   return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
