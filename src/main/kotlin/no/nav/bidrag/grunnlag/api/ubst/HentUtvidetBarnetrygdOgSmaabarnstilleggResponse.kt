@@ -1,15 +1,15 @@
-package no.nav.bidrag.grunnlag.api
+package no.nav.bidrag.grunnlag.api.ubst
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class HentStonadResponse(
+data class HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
 
-  @Schema(description = "Id til personen inntekten er rapport for")
-  val personId: Int = 0,
+  @Schema(description = "Id til personen ubst er rapport for")
+  val personId: String = "",
 
-  @Schema(description = "Type stønad")
+  @Schema(description = "Type stønad, utvidet barnetrygd eller småbarnstillegg")
   val type: String = "",
 
   @Schema(description = "Periode fra- og med måned")

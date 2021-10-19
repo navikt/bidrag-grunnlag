@@ -1,12 +1,12 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.Inntekt
+import no.nav.bidrag.grunnlag.persistence.entity.InntektSkatt
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class InntektDto (
+data class InntektSkattDto(
 
   @Schema(description = "Inntekt-id")
   val inntektId: Int = 0,
@@ -15,36 +15,33 @@ data class InntektDto (
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Id til personen inntekten er rapport for")
-  val personId: Int = 0,
+  val personId: String = "",
 
-  @Schema(description = "Type/kilde til inntektsopplysninger")
-  val type: String = "",
+  @Schema(description = "Periode fra-dato")
+  val periodeFra: LocalDate = LocalDate.now(),
 
-  @Schema(description = "Gyldig fra-dato")
-  val gyldigFra: LocalDate = LocalDate.now(),
-
-  @Schema(description = "Gyldig til-dato")
-  val gyldigTil: LocalDate = LocalDate.now(),
+  @Schema(description = "Periode til-dato")
+  val periodeTil: LocalDate = LocalDate.now(),
 
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
   val aktiv: Boolean = true,
-
-  @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 
   @Schema(description = "Tidspunkt inntekten taes i bruk")
   val brukFra: LocalDateTime = LocalDateTime.now(),
 
   @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
-  val brukTil: LocalDateTime? = null
+  val brukTil: LocalDateTime? = null,
 
-)
+  @Schema(description = "Hentet tidspunkt")
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 
-fun InntektDto.toInntektEntity() = with(::Inntekt) {
-  val propertiesByName = InntektDto::class.memberProperties.associateBy { it.name }
+  )
+
+fun InntektSkattDto.toInntektSkattEntity() = with(::InntektSkatt) {
+  val propertiesByName = InntektSkattDto::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toInntektEntity)
+      else -> propertiesByName[parameter.name]?.get(this@toInntektSkattEntity)
     }
   })
 

@@ -1,14 +1,14 @@
-package no.nav.bidrag.grunnlag.api
+package no.nav.bidrag.grunnlag.api.ainntekt
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.dto.InntektspostDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import java.math.BigDecimal
 import java.time.LocalDate
 
 import kotlin.reflect.full.memberProperties
 
 @Schema(description ="Egenskaper ved en inntektspost")
-data class OpprettInntektspostRequest(
+data class OpprettInntektspostAinntektRequest(
 
   @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
   val utbetalingsperiode: String = "",
@@ -35,22 +35,22 @@ data class OpprettInntektspostRequest(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun OpprettInntektspostRequest.toInntektspostDto(inntektId: Int) = with(::InntektspostDto) {
-  val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektspostAinntektRequest.toInntektspostAinntektDto(inntektId: Int) = with(::InntektspostAinntektDto) {
+  val propertiesByName = OpprettInntektspostAinntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      InntektspostDto::inntektId.name -> inntektId
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostDto)
+      InntektspostAinntektDto::inntektId.name -> inntektId
+      else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektDto)
     }
   })
 }
 
-fun OpprettInntektspostRequest.toInntektspostDto() = with(::InntektspostDto) {
-  val propertiesByName = OpprettInntektspostRequest::class.memberProperties.associateBy { it.name }
+fun OpprettInntektspostAinntektRequest.toInntektspostAinntektDto() = with(::InntektspostAinntektDto) {
+  val propertiesByName = OpprettInntektspostAinntektRequest::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      InntektspostDto::inntektspostId.name -> 0
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostDto)
+      InntektspostAinntektDto::inntektspostId.name -> 0
+      else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektDto)
     }
   })
 }

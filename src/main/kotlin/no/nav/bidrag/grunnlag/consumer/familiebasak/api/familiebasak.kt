@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.consumer.familiebasak
+package no.nav.bidrag.grunnlag.consumer.familiebasak.api
 
 import java.time.LocalDate
 import java.time.YearMonth
@@ -8,16 +8,17 @@ data class FamilieBaSakRequest(
   val fraDato: LocalDate
 )
 
-data class FamilieBaSakResponse(val perioder: List<UtvidetBarnetrygdPeriode>)
-data class UtvidetBarnetrygdPeriode(
-  val stønadstype: BisysStønadstype,
-  val fomMåned: YearMonth,
-  val tomMåned: YearMonth?,
-  val beløp: Double,
+data class FamilieBaSakResponse(val perioder: List<UtvidetBarnetrygdOgSmaabarnstilleggPeriode>)
+
+data class UtvidetBarnetrygdOgSmaabarnstilleggPeriode(
+  val stonadstype: BisysStonadstype,
+  val fomMaaned: YearMonth,
+  val tomMaaned: YearMonth?,
+  val belop: Double,
   val manueltBeregnet: Boolean,
 )
 
-enum class BisysStønadstype {
+enum class BisysStonadstype {
   UTVIDET,
   SMÅBARNSTILLEGG
 }

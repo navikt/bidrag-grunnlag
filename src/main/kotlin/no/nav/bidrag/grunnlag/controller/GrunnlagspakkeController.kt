@@ -5,11 +5,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
-import no.nav.bidrag.grunnlag.api.HentGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OppdaterGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.OpprettGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
@@ -57,7 +57,6 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
       ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
     ]
   )
-
   fun oppdaterGrunnlagspakke(@RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
     val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
