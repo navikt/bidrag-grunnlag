@@ -1,3 +1,4 @@
+/*
 package no.nav.bidrag.grunnlag.api.skatt
 
 import io.swagger.v3.oas.annotations.media.Schema
@@ -46,4 +47,4 @@ fun OpprettInntektSkattRequest.toInntektSkattDto() = with(::InntektSkattDto) {
       else -> propertiesByName[parameter.name]?.get(this@toInntektSkattDto)
     }
   })
-}
+}*/
