@@ -5,7 +5,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentInntektSkattResponse
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektspostAinntektResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentInntektspostSkattResponse
-import no.nav.bidrag.grunnlag.api.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
+import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
@@ -166,15 +166,15 @@ class PersistenceService(
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> {
     val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
     utvidetBarnetrygdOgSmaabarnstilleggRepository.hentStonader(grunnlagspakkeId)
-      .forEach { stonad ->
+      .forEach { ubst ->
         hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
           HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
-            stonad.personId,
-            stonad.type,
-            stonad.periodeFra,
-            stonad.periodeTil,
-            stonad.belop,
-            stonad.manueltBeregnet
+            ubst.personId,
+            ubst.type,
+            ubst.periodeFra,
+            ubst.periodeTil,
+            ubst.belop,
+            ubst.manueltBeregnet
           )
         )
       }

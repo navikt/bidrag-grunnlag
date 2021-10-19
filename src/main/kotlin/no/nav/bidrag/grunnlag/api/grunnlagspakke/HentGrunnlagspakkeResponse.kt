@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.api.grunnlagspakke
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentInntektSkattResponse
-import no.nav.bidrag.grunnlag.api.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
+import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 
 data class HentGrunnlagspakkeResponse(
 

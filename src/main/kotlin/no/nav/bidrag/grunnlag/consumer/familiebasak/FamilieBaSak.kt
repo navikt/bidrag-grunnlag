@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.consumer
+package no.nav.bidrag.grunnlag.consumer.familiebasak
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest

@@ -3,9 +3,9 @@ package no.nav.bidrag.grunnlag
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStonadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
-import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdOgSmaabarnstilleggPeriode
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektSkattDto
@@ -118,7 +118,7 @@ class TestUtil {
       inntektspostId = (1..100).random(),
       inntektId = (1..100).random(),
       type = "Loenn",
-      belop = BigDecimal.valueOf(50000),
+      belop = BigDecimal.valueOf(171717),
     )
 
     fun byggUtvidetBarnetrygdOgSmaabarnstilleggDto() = UtvidetBarnetrygdOgSmaabarnstilleggDto(
@@ -137,15 +137,15 @@ class TestUtil {
       byggUtvidetBarnetrygdPeriode()
     )
 
-    fun byggUtvidetBarnetrygdPeriode() : List<UtvidetBarnetrygdPeriode> {
-      val utvidetBarnetrygdPeriode = UtvidetBarnetrygdPeriode(
-        stønadstype = BisysStønadstype.UTVIDET,
-        fomMåned = YearMonth.now(),
-        tomMåned = YearMonth.now(),
-        beløp = 1000.00,
+    fun byggUtvidetBarnetrygdPeriode() : List<UtvidetBarnetrygdOgSmaabarnstilleggPeriode> {
+      val utvidetBarnetrygdOgSmaabarnstilleggPeriode = UtvidetBarnetrygdOgSmaabarnstilleggPeriode(
+        stonadstype = BisysStonadstype.UTVIDET,
+        fomMaaned = YearMonth.now(),
+        tomMaaned = YearMonth.now(),
+        belop = 1000.00,
         manueltBeregnet = false
       )
-      return mutableListOf(utvidetBarnetrygdPeriode)
+      return mutableListOf(utvidetBarnetrygdOgSmaabarnstilleggPeriode)
     }
 
   }

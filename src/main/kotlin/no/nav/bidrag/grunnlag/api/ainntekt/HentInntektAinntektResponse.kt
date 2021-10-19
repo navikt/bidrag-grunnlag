@@ -6,11 +6,6 @@ data class HentInntektAinntektResponse(
 
   @Schema(description = "Id til personen inntekten er rapport for")
   val personId: String = "",
-/*
-
-  @Schema(description = "Type/kilde til inntektsopplysninger")
-  val type: String = "",
-*/
 
   @Schema(description = "Liste over poster for innhentede inntekter")
   val inntektspostAinntektListe: List<HentInntektspostAinntektResponse> = emptyList(),
