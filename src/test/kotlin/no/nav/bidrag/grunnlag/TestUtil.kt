@@ -139,7 +139,8 @@ class TestUtil {
 
     fun byggUtvidetBarnetrygdPeriode() : List<UtvidetBarnetrygdOgSmaabarnstilleggPeriode> {
       val utvidetBarnetrygdOgSmaabarnstilleggPeriode = UtvidetBarnetrygdOgSmaabarnstilleggPeriode(
-        stonadstype = BisysStonadstype.UTVIDET,
+//        stonadstype = BisysStonadstype.UTVIDET,
+        stonadstype = "UTVIDET",
         fomMaaned = YearMonth.now(),
         tomMaaned = YearMonth.now(),
         belop = 1000.00,

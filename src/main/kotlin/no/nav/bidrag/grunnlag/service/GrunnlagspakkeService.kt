@@ -65,10 +65,13 @@ class GrunnlagspakkeService(
     oppdaterGrunnlagspakkeRequest.identListe.forEach() { personId ->
 //      hentInntektAinntekt(personId)
 //      hentInntektSkatt(personId)
-      val utvidetBarnetrygdOgSmaabarnstilleggListe = hentOgLagreUtvidetBarnetrygdOgSmaabarnstillegg(
-        oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, personId, oppdaterGrunnlagspakkeRequest.periodeFom)
+      val utvidetBarnetrygdOgSmaabarnstilleggListe = hentUtvidetBarnetrygdOgSmaabarnstillegg(
+        oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
+        personId,
+        oppdaterGrunnlagspakkeRequest.periodeFom
+      )
 
-      utvidetBarnetrygdOgSmaabarnstilleggListe.forEach(){ ubst ->
+      utvidetBarnetrygdOgSmaabarnstilleggListe.forEach() { ubst ->
         persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(ubst)
       }
       status = "Antall elementer funnet: ${utvidetBarnetrygdOgSmaabarnstilleggListe.size}"
@@ -79,7 +82,11 @@ class GrunnlagspakkeService(
   }
 
 
-  fun hentOgLagreUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String)
+  fun hentUtvidetBarnetrygdOgSmaabarnstillegg(
+    grunnlagspakkeId: Int,
+    personId: String,
+    periodeFom: String
+  )
       : List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
 
     val ubstDtoListe = mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
@@ -88,8 +95,14 @@ class GrunnlagspakkeService(
       fraDato = LocalDate.parse("$periodeFom-01")
     )
 
-    LOGGER.info("Kaller familie-ba-sak med personIdent ********${familieBaSakRequest.personIdent.substring(IntRange(8, 10))} " +
-        "og fraDato " + "${familieBaSakRequest.fraDato}")
+    LOGGER.info(
+      "Kaller familie-ba-sak med personIdent ********${
+        familieBaSakRequest.personIdent.substring(
+          IntRange(8, 10)
+        )
+      } " +
+          "og fraDato " + "${familieBaSakRequest.fraDato}"
+    )
 
     val familieBaSakResponse = familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)
 
@@ -112,7 +125,7 @@ class GrunnlagspakkeService(
       }
     }
     return ubstDtoListe
-    }
+  }
 
 /*
 private fun opprettInntektAinntekt(
@@ -171,9 +184,9 @@ private fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(
   )
 }*/
 
-fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
-  return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
-}
+  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
+    return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
+  }
 }
 
 enum class BehandlingType {

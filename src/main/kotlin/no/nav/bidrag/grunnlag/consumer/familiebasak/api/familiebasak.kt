@@ -11,7 +11,8 @@ data class FamilieBaSakRequest(
 data class FamilieBaSakResponse(val perioder: List<UtvidetBarnetrygdOgSmaabarnstilleggPeriode>)
 
 data class UtvidetBarnetrygdOgSmaabarnstilleggPeriode(
-  val stonadstype: BisysStonadstype,
+//  val stonadstype: BisysStonadstype,
+  val stonadstype: String,
   val fomMaaned: YearMonth,
   val tomMaaned: YearMonth?,
   val belop: Double,
