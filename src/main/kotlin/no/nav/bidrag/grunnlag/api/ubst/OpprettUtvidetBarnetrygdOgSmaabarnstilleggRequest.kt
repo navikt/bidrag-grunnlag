@@ -1,3 +1,4 @@
+/*
 package no.nav.bidrag.grunnlag.api.ubst
 
 import io.swagger.v3.oas.annotations.media.Schema
@@ -50,3 +51,4 @@ fun OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest.toUtvidetBarnetrygdOgSmaab
       }
     })
   }
+*/

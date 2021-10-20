@@ -1,3 +1,4 @@
+/*
 package no.nav.bidrag.grunnlag.api.ainntekt
 
 import io.swagger.v3.oas.annotations.media.Schema
@@ -53,4 +54,4 @@ fun OpprettInntektspostAinntektRequest.toInntektspostAinntektDto() = with(::Innt
       else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektDto)
     }
   })
-}
+}*/

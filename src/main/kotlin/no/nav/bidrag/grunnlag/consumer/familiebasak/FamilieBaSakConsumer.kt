@@ -19,7 +19,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
   }
 
   fun hentFamilieBaSak(request: FamilieBaSakRequest): FamilieBaSakResponse {
-    LOGGER.info("Henter utvidet barnetrygd eller småbarnstillegg fra familie-ba-sak")
+    LOGGER.info("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
 
     val response = restTemplate.exchange(
       FAMILIEBASAK_CONTEXT,
