@@ -111,9 +111,9 @@ class GrunnlagspakkeService(
             grunnlagspakkeId = grunnlagspakkeId,
             personId = personId,
             type = ubst.stønadstype.toString(),
-            periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "01"),
+            periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
             // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-            periodeTil = LocalDate.parse(ubst.tomMåned.toString() + "01").plusMonths(1),
+            periodeTil = LocalDate.parse(ubst.tomMåned.toString() + "-01").plusMonths(1),
             belop = BigDecimal.valueOf(ubst.beløp),
             manueltBeregnet = ubst.manueltBeregnet
           )
