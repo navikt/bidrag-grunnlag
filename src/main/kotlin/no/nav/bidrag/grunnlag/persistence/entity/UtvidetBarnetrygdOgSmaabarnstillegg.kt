@@ -31,7 +31,7 @@ data class UtvidetBarnetrygdOgSmaabarnstillegg(
   val periodeFra: LocalDate = LocalDate.now(),
 
   @Column(nullable = false, name = "periode_til")
-  val periodeTil: LocalDate = LocalDate.now(),
+  val periodeTil: LocalDate? = LocalDate.now(),
 
   @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO,

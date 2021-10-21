@@ -26,7 +26,7 @@ data class UtvidetBarnetrygdOgSmaabarnstilleggDto(
   val periodeFra: LocalDate = LocalDate.now(),
 
   @Schema(description = "Periode til- og med måned")
-  val periodeTil: LocalDate = LocalDate.now(),
+  val periodeTil: LocalDate? = LocalDate.now(),
 
   @Schema(description = "Belop")
   val belop: BigDecimal = BigDecimal.ZERO,
