@@ -82,11 +82,7 @@ class GrunnlagspakkeService(
   }
 
 
-  fun hentUtvidetBarnetrygdOgSmaabarnstillegg(
-    grunnlagspakkeId: Int,
-    personId: String,
-    periodeFom: String
-  )
+  fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String)
       : List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
 
     val ubstDtoListe = mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
@@ -114,11 +110,11 @@ class GrunnlagspakkeService(
           UtvidetBarnetrygdOgSmaabarnstilleggDto(
             grunnlagspakkeId = grunnlagspakkeId,
             personId = personId,
-            type = ubst.stonadstype.toString(),
-            periodeFra = LocalDate.parse(ubst.fomMaaned.toString() + "01"),
+            type = ubst.stønadstype.toString(),
+            periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "01"),
             // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-            periodeTil = LocalDate.parse(ubst.tomMaaned.toString() + "01").plusMonths(1),
-            belop = BigDecimal.valueOf(ubst.belop),
+            periodeTil = LocalDate.parse(ubst.tomMåned.toString() + "01").plusMonths(1),
+            belop = BigDecimal.valueOf(ubst.beløp),
             manueltBeregnet = ubst.manueltBeregnet
           )
         )

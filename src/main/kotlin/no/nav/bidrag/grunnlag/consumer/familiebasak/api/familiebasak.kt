@@ -7,19 +7,15 @@ data class FamilieBaSakRequest(
   val personIdent: String,
   val fraDato: LocalDate
 )
-
-data class FamilieBaSakResponse(val perioder: List<UtvidetBarnetrygdOgSmaabarnstilleggPeriode>)
-
-data class UtvidetBarnetrygdOgSmaabarnstilleggPeriode(
-//  val stonadstype: BisysStonadstype,
-  val stonadstype: String,
-  val fomMaaned: YearMonth,
-  val tomMaaned: YearMonth?,
-  val belop: Double,
+data class FamilieBaSakResponse(val perioder: List<UtvidetBarnetrygdPeriode>)
+data class UtvidetBarnetrygdPeriode(
+  val stønadstype: BisysStønadstype,
+  val fomMåned: YearMonth,
+  val tomMåned: YearMonth?,
+  val beløp: Double,
   val manueltBeregnet: Boolean,
 )
-
-enum class BisysStonadstype {
+enum class BisysStønadstype {
   UTVIDET,
   SMÅBARNSTILLEGG
 }
