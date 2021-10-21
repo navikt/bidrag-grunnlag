@@ -104,7 +104,7 @@ class GrunnlagspakkeService(
 
     LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
 
-    if (familieBaSakResponse.perioder.isNotEmpty()) {
+    if (familieBaSakResponse.perioder.isNotEmpty())
       familieBaSakResponse.perioder.forEach() { ubst ->
         ubstDtoListe.add(
           UtvidetBarnetrygdOgSmaabarnstilleggDto(
@@ -113,13 +113,12 @@ class GrunnlagspakkeService(
             type = ubst.stønadstype.toString(),
             periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
             // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-            periodeTil = LocalDate.parse(ubst.tomMåned.toString() + "-01").plusMonths(1),
+            periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01").plusMonths(1) else null,
             belop = BigDecimal.valueOf(ubst.beløp),
             manueltBeregnet = ubst.manueltBeregnet
           )
         )
       }
-    }
     return ubstDtoListe
   }
 
