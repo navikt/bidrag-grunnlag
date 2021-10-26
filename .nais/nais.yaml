@@ -16,6 +16,7 @@ spec:
     outbound:
       external:
         - host: {{ azure.familiebasak_url }}
+        - host: {{ azure.bidraggcpproxy_url }}
   image: {{ image }}
   liveness:
     path: /bidrag-grunnlag/actuator/health
@@ -44,6 +45,10 @@ spec:
       value: https://{{ azure.familiebasak_url }}
     - name: FAMILIEBASAK_SCOPE
       value: {{ azure.familiebasak_scope }}
+    - name: BIDRAGGCPPROXY_URL
+      value: https://{{ azure.bidraggcpproxy_url }}
+    - name: BIDRAGGCPPROXY_SCOPE
+      value: {{ azure.bidraggcpproxy_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}

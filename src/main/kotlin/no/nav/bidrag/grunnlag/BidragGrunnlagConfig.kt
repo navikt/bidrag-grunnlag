@@ -9,6 +9,7 @@ import no.nav.bidrag.commons.CorrelationId
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.service.SecurityTokenService
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
@@ -67,5 +68,15 @@ class BidragGrunnlagConfig {
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
     restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiebasak"))
     return FamilieBaSakConsumer(restTemplate)
+  }
+
+  @Bean
+  fun bidragGcpProxyConsumer(
+    @Value("\${BIDRAGGCPPROXY_URL}") url: String, restTemplate: HttpHeaderRestTemplate, securityTokenService: SecurityTokenService
+  ): BidragGcpProxyConsumer {
+    LOGGER.info("Url satt i config: $url")
+    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidraggcpproxy"))
+    return BidragGcpProxyConsumer(restTemplate)
   }
 }
