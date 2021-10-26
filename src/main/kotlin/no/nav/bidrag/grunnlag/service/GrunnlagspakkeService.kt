@@ -61,6 +61,8 @@ class GrunnlagspakkeService(
 
     var status = ""
     oppdaterGrunnlagspakkeRequest.identListe.forEach() { personId ->
+
+      // Henter a-inntekt
       val aInntektListe = hentInntektAinntekt(
         personId,
         oppdaterGrunnlagspakkeRequest.periodeFom,
@@ -73,8 +75,7 @@ class GrunnlagspakkeService(
       }
       status = "Antall elementer funnet: ${aInntektListe.size}"
 
-//      hentInntektSkatt(personId)
-
+      // Henter utvidet barnetrygd og småbarnstillegg
       val utvidetBarnetrygdOgSmaabarnstilleggListe = hentUtvidetBarnetrygdOgSmaabarnstillegg(
         oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
         personId,
