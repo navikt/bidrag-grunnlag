@@ -7,6 +7,7 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektspostAinntektDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektspostSkattDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggUtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
@@ -43,6 +44,9 @@ class GrunnlagspakkeServiceMockTest {
 
   @Mock
   private lateinit var familieBaSakConsumerMock: FamilieBaSakConsumer
+
+  @Mock
+  private lateinit var bidragGcpProxyConsumerMock: BidragGcpProxyConsumer
 
   @Captor
   private lateinit var grunnlagspakkeDtoCaptor: ArgumentCaptor<GrunnlagspakkeDto>
@@ -177,7 +181,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(ubstListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) },
       Executable { assertThat(ubstListe[0].manueltBeregnet).isFalse },
 
-    )
+      )
 
   }
 

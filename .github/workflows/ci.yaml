@@ -54,7 +54,6 @@ jobs:
           docker image build --tag ${IMAGE} .
           echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${GITHUB_REPOSITORY} --password-stdin
           docker image push ${IMAGE}
-
   deploy:
     runs-on: ubuntu-latest
     name: Deploy docker image to dev
@@ -86,30 +85,22 @@ jobs:
   bump_dev_version:
     runs-on: ubuntu-latest
     name: Bump SNAPSHOT version
+    if: github.ref == 'refs/heads/main'
+    needs: deploy
 
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
-      - uses: navikt/bidrag-maven/setup@v5
-        with:
-          repositories: maven-central=https://repo.maven.apache.org/maven2,github-packages=https://maven.pkg.github.com/navikt/maven-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - run: mvn release:update-versions
-
       - run: |
           BUMPED_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo ::set-output name=version::${BUMPED_VERSION}
         id: snapshot
-
       - uses: navikt/bidrag-git/commit@v5
         with:
           commit_message: "Bumped to new version: ${{ steps.snapshot.outputs.version }}"

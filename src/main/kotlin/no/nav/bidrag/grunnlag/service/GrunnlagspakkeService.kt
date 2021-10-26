@@ -5,22 +5,13 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
-/*import no.nav.bidrag.grunnlag.api.ainntekt.OpprettInntektAinntektRequest
-import no.nav.bidrag.grunnlag.api.ainntekt.OpprettInntektspostAinntektRequest
-import no.nav.bidrag.grunnlag.api.ainntekt.toInntektAinntektDto
-import no.nav.bidrag.grunnlag.api.ainntekt.toInntektspostAinntektDto
-import no.nav.bidrag.grunnlag.api.skatt.OpprettInntektSkattRequest
-import no.nav.bidrag.grunnlag.api.skatt.OpprettInntektspostSkattRequest
-import no.nav.bidrag.grunnlag.api.skatt.toInntektSkattDto
-import no.nav.bidrag.grunnlag.api.skatt.toInntektspostSkattDto*/
-/*import no.nav.bidrag.grunnlag.api.ubst.OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest
-import no.nav.bidrag.grunnlag.api.ubst.toUtvidetBarnetrygdOgSmaabarnstilleggDto*/
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
+import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
-
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,13 +22,19 @@ import java.time.LocalDate
 @Transactional
 class GrunnlagspakkeService(
   private val persistenceService: PersistenceService,
-  private val familieBaSakConsumer: FamilieBaSakConsumer
+  private val familieBaSakConsumer: FamilieBaSakConsumer,
+  private val bidragGcpProxyConsumer: BidragGcpProxyConsumer
 ) {
 
   companion object {
 
     @JvmStatic
     private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeService::class.java)
+
+    const val BIDRAG_FILTER = "BidragA-Inntekt"
+    const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
+    const val BIDRAG_FORMAAL = "Bidrag"
+    const val FORSKUDD_FORMAAL = "Bidragsforskudd"
   }
 
   fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequest: OpprettGrunnlagspakkeRequest): OpprettGrunnlagspakkeResponse {
@@ -61,10 +58,23 @@ class GrunnlagspakkeService(
   }
 
   fun innhentGrunnlagForskudd(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): OppdaterGrunnlagspakkeResponse {
+
     var status = ""
     oppdaterGrunnlagspakkeRequest.identListe.forEach() { personId ->
-//      hentInntektAinntekt(personId)
+      val aInntektListe = hentInntektAinntekt(
+        personId,
+        oppdaterGrunnlagspakkeRequest.periodeFom,
+        oppdaterGrunnlagspakkeRequest.periodeTom,
+        oppdaterGrunnlagspakkeRequest.behandlingType
+      )
+
+      aInntektListe.forEach() { aInntekt ->
+        persistenceService.opprettInntektAinntekt(aInntekt)
+      }
+      status = "Antall elementer funnet: ${aInntektListe.size}"
+
 //      hentInntektSkatt(personId)
+
       val utvidetBarnetrygdOgSmaabarnstilleggListe = hentUtvidetBarnetrygdOgSmaabarnstillegg(
         oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
         personId,
@@ -78,9 +88,37 @@ class GrunnlagspakkeService(
     }
 
     return OppdaterGrunnlagspakkeResponse(status)
-
   }
 
+  private fun hentInntektAinntekt(ident: String, maanedFom: String, maanedTom: String, behandlingType: String): List<InntektAinntektDto> {
+
+    val aInntektDtoListe = mutableListOf<InntektAinntektDto>()
+    val hentInntektRequest = HentInntektRequest(
+      ident = ident,
+      maanedFom = maanedFom,
+      maanedTom = maanedTom,
+      ainntektsfilter = if (behandlingType == BehandlingType.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER,
+      formaal = if (behandlingType == BehandlingType.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
+    )
+    LOGGER.info(
+      "Kaller bidrag-gcp-proxy (Inntektskomponenten) med ident = ********${hentInntektRequest.ident.substring(IntRange(8, 10))}, " +
+          "maanedFom = ${hentInntektRequest.maanedFom}, maanedTom = ${hentInntektRequest.maanedTom}, " +
+          "ainntektsfilter = ${hentInntektRequest.ainntektsfilter}, formaal = ${hentInntektRequest.formaal}"
+    )
+
+    val hentInntektResponse = bidragGcpProxyConsumer.hentInntekt(hentInntektRequest)
+
+    LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektResponse")
+
+    if (hentInntektResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
+      return emptyList()
+    }
+
+    hentInntektResponse.arbeidsInntektMaaned.forEach() { aInntektDtoListe ->
+      //TODO
+    }
+    return aInntektDtoListe
+  }
 
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String)
       : List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
@@ -133,7 +171,6 @@ private fun opprettInntektAinntekt(
     )
   )
 }
-
 private fun opprettInntektspostAinntekt(
   opprettInntektspostAinntektRequest: OpprettInntektspostAinntektRequest,
   inntektId: Int
@@ -144,8 +181,6 @@ private fun opprettInntektspostAinntekt(
     )
   )
 }
-
-
 private fun opprettInntektSkatt(
   opprettInntektSkattRequest: OpprettInntektSkattRequest,
   grunnlagspakkeId: Int
@@ -156,7 +191,6 @@ private fun opprettInntektSkatt(
     )
   )
 }
-
 private fun opprettInntektspostSkatt(
   opprettInntektspostSkattRequest: OpprettInntektspostSkattRequest,
   inntektId: Int
@@ -167,7 +201,6 @@ private fun opprettInntektspostSkatt(
     )
   )
 }
-
 private fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(
   opprettUtvidetBarnetrygdOgSmaabarnstilleggRequest:
   OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest, grunnlagspakkeId: Int

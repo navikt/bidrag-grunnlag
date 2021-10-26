@@ -3,4 +3,6 @@ ingress: https://bidrag-grunnlag.dev.intern.nav.no
 azure:
   familiebasak_url: familie-ba-sak.dev-fss-pub.nais.io
   familiebasak_scope: dev-fss.teamfamilie.familie-ba-sak
+  bidraggcpproxy_url: bidrag-gcp-proxy.dev-fss-pub.nais.io/bidrag-gcp-proxy
+  bidraggcpproxy_scope: dev-fss.bidrag.bidrag-gcp-proxy
 dbname: bidrag-grunnlag-main
