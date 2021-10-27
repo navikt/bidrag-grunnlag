@@ -9,6 +9,7 @@ import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.BeforeEach
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -29,7 +31,8 @@ import java.time.LocalDateTime
   classes = [BidragGrunnlagLocal::class],
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-@Disabled
+@EnableMockOAuth2Server
+@AutoConfigureWireMock(port = 0)
 class GrunnlagspakkeServiceTest {
 
   @Autowired
