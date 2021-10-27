@@ -61,39 +61,34 @@ class GrunnlagspakkeService(
 
     var status = ""
     oppdaterGrunnlagspakkeRequest.identListe.forEach() { personId ->
+      // Innhenter alle grunnlag som er aktuelle for forskudd
 
       // Henter a-inntekt
-      val aInntektListe = hentInntektAinntekt(
+      val antallFunnetAinntekt = oppdaterInntektAinntekt(
         personId,
         oppdaterGrunnlagspakkeRequest.periodeFom,
         oppdaterGrunnlagspakkeRequest.periodeTom,
         oppdaterGrunnlagspakkeRequest.behandlingType
       )
 
-      aInntektListe.forEach() { aInntekt ->
-        persistenceService.opprettInntektAinntekt(aInntekt)
-      }
-      status = "Antall elementer funnet: ${aInntektListe.size}"
+      status = "Antall elementer funnet: $antallFunnetAinntekt"
 
       // Henter utvidet barnetrygd og småbarnstillegg
-      val utvidetBarnetrygdOgSmaabarnstilleggListe = hentUtvidetBarnetrygdOgSmaabarnstillegg(
+      val antallFunnetUbst = oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
         personId,
         oppdaterGrunnlagspakkeRequest.periodeFom
       )
-
-      utvidetBarnetrygdOgSmaabarnstilleggListe.forEach() { ubst ->
-        persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(ubst)
-      }
-      status = "Antall elementer funnet: ${utvidetBarnetrygdOgSmaabarnstilleggListe.size}"
+      status = "Antall elementer funnet utvidet barnetrygd og småbarnstillegg: ${antallFunnetUbst}"
     }
 
     return OppdaterGrunnlagspakkeResponse(status)
   }
 
-  private fun hentInntektAinntekt(ident: String, maanedFom: String, maanedTom: String, behandlingType: String): List<InntektAinntektDto> {
+  private fun oppdaterInntektAinntekt(ident: String, maanedFom: String, maanedTom: String, behandlingType: String): Int {
 
-    val aInntektDtoListe = mutableListOf<InntektAinntektDto>()
+    var antallFunnet: Int = 0
+
     val hentInntektRequest = HentInntektRequest(
       ident = ident,
       maanedFom = maanedFom,
@@ -102,7 +97,11 @@ class GrunnlagspakkeService(
       formaal = if (behandlingType == BehandlingType.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
     )
     LOGGER.info(
-      "Kaller bidrag-gcp-proxy (Inntektskomponenten) med ident = ********${hentInntektRequest.ident.substring(IntRange(8, 10))}, " +
+      "Kaller bidrag-gcp-proxy (Inntektskomponenten) med ident = ********${
+        hentInntektRequest.ident.substring(
+          IntRange(8, 10)
+        )
+      }, " +
           "maanedFom = ${hentInntektRequest.maanedFom}, maanedTom = ${hentInntektRequest.maanedTom}, " +
           "ainntektsfilter = ${hentInntektRequest.ainntektsfilter}, formaal = ${hentInntektRequest.formaal}"
     )
@@ -112,19 +111,19 @@ class GrunnlagspakkeService(
     LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektResponse")
 
     if (hentInntektResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
-      return emptyList()
+      return 0
     }
 
     hentInntektResponse.arbeidsInntektMaaned.forEach() { aInntektDtoListe ->
       //TODO
+
     }
-    return aInntektDtoListe
+    return antallFunnet
   }
 
-  fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String)
-      : List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
+  fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String): Int {
 
-    val ubstDtoListe = mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
+    var antallFunnet: Int = 0
     val familieBaSakRequest = FamilieBaSakRequest(
       personIdent = personId,
       fraDato = LocalDate.parse("$periodeFom-01")
@@ -145,7 +144,8 @@ class GrunnlagspakkeService(
 
     if (familieBaSakResponse.perioder.isNotEmpty())
       familieBaSakResponse.perioder.forEach() { ubst ->
-        ubstDtoListe.add(
+        antallFunnet++
+        persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
           UtvidetBarnetrygdOgSmaabarnstilleggDto(
             grunnlagspakkeId = grunnlagspakkeId,
             personId = personId,
@@ -158,7 +158,7 @@ class GrunnlagspakkeService(
           )
         )
       }
-    return ubstDtoListe
+    return antallFunnet
   }
 
 /*

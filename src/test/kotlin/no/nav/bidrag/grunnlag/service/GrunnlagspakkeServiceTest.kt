@@ -76,7 +76,7 @@ class GrunnlagspakkeServiceTest {
 
   @Test
   @Suppress("NonAsciiCharacters")
-  fun `Test på hente grunnlagspakke med aktive inntekter + stønader`() {
+  fun `Test på hente grunnlagspakke med aktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
