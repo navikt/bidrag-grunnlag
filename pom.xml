@@ -29,7 +29,7 @@
     <bidrag-commons-test.version>0.2.1</bidrag-commons-test.version>
     <bidrag-tilgangskontroll.version>1.9.19</bidrag-tilgangskontroll.version>
     <springdoc-openapi-ui.version>1.5.10</springdoc-openapi-ui.version>
-    <nimbus-jose-jwt.version>8.22</nimbus-jose-jwt.version>
+    <nimbus-jose-jwt.version>9.15.2</nimbus-jose-jwt.version>
     <springframework-cloud.version>3.0.4</springframework-cloud.version>
 
   </properties>
@@ -163,12 +163,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>no.nav.security</groupId>
-      <artifactId>token-validation-test-support</artifactId>
-      <version>${token-support.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mockito.kotlin</groupId>
       <artifactId>mockito-kotlin</artifactId>
       <version>3.2.0</version>
@@ -181,6 +175,18 @@
       <groupId>no.nav.security</groupId>
       <artifactId>token-validation-spring-test</artifactId>
       <version>${token-support.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>mockwebserver</artifactId>
+      <version>4.9.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>4.9.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -2,7 +2,6 @@ package no.nav.bidrag.grunnlag
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,8 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = [BidragGrunnlagLocal::class])
 @ActiveProfiles(TEST_PROFILE)
 @DisplayName("BidragGrunnlag")
-@EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
+@EnableMockOAuth2Server
 class BidragGrunnlagApplicationTest {
 
   @Test
