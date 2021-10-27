@@ -70,7 +70,6 @@ class GrunnlagspakkeService(
         oppdaterGrunnlagspakkeRequest.periodeTom,
         oppdaterGrunnlagspakkeRequest.behandlingType
       )
-
       status = "Antall elementer funnet: $antallFunnetAinntekt"
 
       // Henter utvidet barnetrygd og småbarnstillegg
@@ -80,6 +79,11 @@ class GrunnlagspakkeService(
         oppdaterGrunnlagspakkeRequest.periodeFom
       )
       status = "Antall elementer funnet utvidet barnetrygd og småbarnstillegg: ${antallFunnetUbst}"
+
+      // Henter inntekter fra Skatt
+      //.....
+
+
     }
 
     return OppdaterGrunnlagspakkeResponse(status)
