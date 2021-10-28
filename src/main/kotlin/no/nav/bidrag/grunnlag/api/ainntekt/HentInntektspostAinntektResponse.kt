@@ -7,25 +7,25 @@ import java.time.LocalDate
 data class HentInntektspostAinntektResponse (
 
   @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
-  val utbetalingsperiode: String = "",
+  val utbetalingsperiode: String? = "",
 
   @Schema(description = "Fra-dato for opptjening")
-  val opptjeningsperiodeFra: LocalDate = LocalDate.now(),
+  val opptjeningsperiodeFra: LocalDate? = LocalDate.now(),
 
   @Schema(description = "Til-dato for opptjening")
-  val opptjeningsperiodeTil: LocalDate = LocalDate.now(),
+  val opptjeningsperiodeTil: LocalDate? = LocalDate.now(),
 
   @Schema(description = "Id til de som rapporterer inn inntekten")
-  val opplysningspliktigId: String = "",
+  val opplysningspliktigId: String? = "",
 
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
   val inntektType: String = "",
 
   @Schema(description = "Type fordel, Kontantytelse, Naturalytelse, Utgiftsgodtgjorelse")
-  val fordelType: String = "",
+  val fordelType: String? = "",
 
   @Schema(description = "Beskrivelse av inntekt")
-  val beskrivelse: String = "",
+  val beskrivelse: String? = "",
 
   @Schema(description = "Belop")
   val belop: BigDecimal = BigDecimal.ZERO
