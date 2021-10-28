@@ -126,8 +126,8 @@ class GrunnlagspakkeService(
         InntektAinntektDto(
         grunnlagspakkeId = grunnlagspakkeId,
         personId = personId,
-        periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "01"),
-        periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "01").plusMonths(1)
+        periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+        periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
       ))
       if (!inntektPeriode.arbeidsInntektInformasjon.inntektListe.isNullOrEmpty())
         inntektPeriode.arbeidsInntektInformasjon.inntektListe!!.forEach(){ inntektspost ->
@@ -135,8 +135,8 @@ class GrunnlagspakkeService(
           InntektspostAinntektDto(
             inntektId = opprettetInntektAinntekt.inntektId,
             utbetalingsperiode = inntektspost.utbetaltIMaaned,
-            opptjeningsperiodeFra = LocalDate.parse(inntektspost.opptjeningsperiodeFom + "01"),
-            opptjeningsperiodeTil = LocalDate.parse(inntektspost.opptjeningsperiodeTom + "01").plusMonths(1),
+            opptjeningsperiodeFra = LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01"),
+            opptjeningsperiodeTil = LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01").plusMonths(1),
             opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
             type = inntektspost.inntektType,
             fordelType = inntektspost.fordel,
