@@ -166,7 +166,7 @@ class GrunnlagspakkeService(
   }
 
   fun oppdaterInntektSkatt(grunnlagspakkeId: Int, personId: String, periodeTom: String): Int {
-    val inntektAar = LocalDate.parse(periodeTom).year.toString();
+    val inntektAar = LocalDate.parse(periodeTom + "-01").year.toString();
     val inntektSkattRequest = HentInntektSkattRequest(inntektAar, "SummertSkattegrunnlagBidrag", personId);
 
 
