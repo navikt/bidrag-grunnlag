@@ -7,10 +7,10 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentInntektSkattRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -70,7 +70,7 @@ class GrunnlagspakkeService(
         oppdaterGrunnlagspakkeRequest.periodeTom,
         oppdaterGrunnlagspakkeRequest.behandlingType
       )
-      status = "Antall elementer funnet: $antallFunnetAinntekt"
+      status += "Antall elementer funnet: $antallFunnetAinntekt."
 
       // Henter utvidet barnetrygd og småbarnstillegg
       val antallFunnetUbst = oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
@@ -78,11 +78,11 @@ class GrunnlagspakkeService(
         personId,
         oppdaterGrunnlagspakkeRequest.periodeFom
       )
-      status = "Antall elementer funnet utvidet barnetrygd og småbarnstillegg: ${antallFunnetUbst}"
+      status += " Antall elementer funnet utvidet barnetrygd og småbarnstillegg: ${antallFunnetUbst}."
 
       // Henter inntekter fra Skatt
-      //.....
-
+      val antallGrunnlag = oppdaterInntektSkatt(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, personId, oppdaterGrunnlagspakkeRequest.periodeTom);
+      status += " Antall skattegrunnlag funnet: ${antallGrunnlag}";
 
     }
 
@@ -163,6 +163,26 @@ class GrunnlagspakkeService(
         )
       }
     return antallFunnet
+  }
+
+  fun oppdaterInntektSkatt(grunnlagspakkeId: Int, personId: String, periodeTom: String): Int {
+    val inntektAar = LocalDate.parse(periodeTom + "-01").year.toString();
+    val inntektSkattRequest = HentInntektSkattRequest(inntektAar, "SummertSkattegrunnlagBidrag", personId);
+
+
+    LOGGER.info(
+        "Kaller bidrag-gcp-proxy (Sigrun) med ident = ********${
+          inntektSkattRequest.personId.substring(
+              IntRange(8, 10)
+          )
+        }, " +
+            "inntektsAar = ${inntektSkattRequest.inntektsAar} inntektsFilter = ${inntektSkattRequest.inntektsFilter}"
+    )
+    val inntektSkattResponse = bidragGcpProxyConsumer.hentInntektSkatt(inntektSkattRequest);
+
+    LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $inntektSkattResponse")
+
+    return inntektSkattResponse.grunnlag?.size ?: 0;
   }
 
 /*
