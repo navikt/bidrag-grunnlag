@@ -22,25 +22,25 @@ data class InntektspostAinntekt(
   val inntektId: Int = 0,
 
   @Column(nullable = false, name = "utbetalingsperiode")
-  val utbetalingsperiode: String = "",
+  val utbetalingsperiode: String? = "",
 
   @Column(nullable = true, name = "opptjeningsperiode_fra")
-  val opptjeningsperiodeFra: LocalDate = LocalDate.now(),
+  val opptjeningsperiodeFra: LocalDate? = LocalDate.now(),
 
   @Column(nullable = true, name = "opptjeningsperiode_til")
-  val opptjeningsperiodeTil: LocalDate = LocalDate.now(),
+  val opptjeningsperiodeTil: LocalDate? = LocalDate.now(),
 
   @Column(nullable = false, name = "opplysningspliktig_id")
-  val opplysningspliktigId: String = "",
+  val opplysningspliktigId: String? = "",
 
   @Column(nullable = false, name = "type")
   val type: String = "",
 
   @Column(nullable = false, name = "fordel_type")
-  val fordelType: String = "",
+  val fordelType: String? = "",
 
   @Column(nullable = false, name = "beskrivelse")
-  val beskrivelse: String = "",
+  val beskrivelse: String? = "",
 
   @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO

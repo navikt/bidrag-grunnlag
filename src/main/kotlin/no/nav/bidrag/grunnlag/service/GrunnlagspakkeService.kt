@@ -11,6 +11,8 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentInntektSkatt
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
+import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -65,6 +67,7 @@ class GrunnlagspakkeService(
 
       // Henter a-inntekt
       val antallFunnetAinntekt = oppdaterInntektAinntekt(
+        oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
         personId,
         oppdaterGrunnlagspakkeRequest.periodeFom,
         oppdaterGrunnlagspakkeRequest.periodeTom,
@@ -78,7 +81,7 @@ class GrunnlagspakkeService(
         personId,
         oppdaterGrunnlagspakkeRequest.periodeFom
       )
-      status += " Antall elementer funnet utvidet barnetrygd og småbarnstillegg: ${antallFunnetUbst}."
+      status = "Antall elementer funnet utvidet barnetrygd og småbarnstillegg: $antallFunnetUbst"
 
       // Henter inntekter fra Skatt
       val antallGrunnlag = oppdaterInntektSkatt(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, personId, oppdaterGrunnlagspakkeRequest.periodeTom);
@@ -89,12 +92,12 @@ class GrunnlagspakkeService(
     return OppdaterGrunnlagspakkeResponse(status)
   }
 
-  private fun oppdaterInntektAinntekt(ident: String, maanedFom: String, maanedTom: String, behandlingType: String): Int {
+  private fun oppdaterInntektAinntekt(grunnlagspakkeId: Int, personId: String, maanedFom: String, maanedTom: String, behandlingType: String): Int {
 
-    var antallFunnet: Int = 0
+    var antallPerioderFunnet: Int = 0
 
     val hentInntektRequest = HentInntektRequest(
-      ident = ident,
+      ident = personId,
       maanedFom = maanedFom,
       maanedTom = maanedTom,
       ainntektsfilter = if (behandlingType == BehandlingType.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER,
@@ -118,11 +121,37 @@ class GrunnlagspakkeService(
       return 0
     }
 
-    hentInntektResponse.arbeidsInntektMaaned.forEach() { aInntektDtoListe ->
-      //TODO
+    hentInntektResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
+      antallPerioderFunnet++
+      val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
+        InntektAinntektDto(
+        grunnlagspakkeId = grunnlagspakkeId,
+        personId = personId,
+        periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+        periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
+      ))
+      if (!inntektPeriode.arbeidsInntektInformasjon.inntektListe.isNullOrEmpty())
+        inntektPeriode.arbeidsInntektInformasjon.inntektListe!!.forEach(){ inntektspost ->
+        persistenceService.opprettInntektspostAinntekt(
+          InntektspostAinntektDto(
+            inntektId = opprettetInntektAinntekt.inntektId,
+            utbetalingsperiode = inntektspost.utbetaltIMaaned,
+            opptjeningsperiodeFra = LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01"),
+            opptjeningsperiodeTil = LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01").plusMonths(1),
+            opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
+            type = inntektspost.inntektType,
+            fordelType = inntektspost.fordel,
+            beskrivelse = inntektspost.beskrivelse,
+            belop = inntektspost.beloep.toBigDecimal()
+          )
+        )
+
+      }
+
+
 
     }
-    return antallFunnet
+    return antallPerioderFunnet
   }
 
   fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String): Int {
@@ -184,58 +213,6 @@ class GrunnlagspakkeService(
 
     return inntektSkattResponse.grunnlag?.size ?: 0;
   }
-
-/*
-private fun opprettInntektAinntekt(
-  opprettInntektAinntektRequest: OpprettInntektAinntektRequest,
-  grunnlagspakkeId: Int
-): InntektAinntektDto {
-  return persistenceService.opprettInntektAinntekt(
-    opprettInntektAinntektRequest.toInntektAinntektDto(
-      grunnlagspakkeId
-    )
-  )
-}
-private fun opprettInntektspostAinntekt(
-  opprettInntektspostAinntektRequest: OpprettInntektspostAinntektRequest,
-  inntektId: Int
-): InntektspostAinntektDto {
-  return persistenceService.opprettInntektspostAinntekt(
-    opprettInntektspostAinntektRequest.toInntektspostAinntektDto(
-      inntektId
-    )
-  )
-}
-private fun opprettInntektSkatt(
-  opprettInntektSkattRequest: OpprettInntektSkattRequest,
-  grunnlagspakkeId: Int
-): InntektSkattDto {
-  return persistenceService.opprettInntektSkatt(
-    opprettInntektSkattRequest.toInntektSkattDto(
-      grunnlagspakkeId
-    )
-  )
-}
-private fun opprettInntektspostSkatt(
-  opprettInntektspostSkattRequest: OpprettInntektspostSkattRequest,
-  inntektId: Int
-): InntektspostSkattDto {
-  return persistenceService.opprettInntektspostSkatt(
-    opprettInntektspostSkattRequest.toInntektspostSkattDto(
-      inntektId
-    )
-  )
-}
-private fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-  opprettUtvidetBarnetrygdOgSmaabarnstilleggRequest:
-  OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest, grunnlagspakkeId: Int
-): UtvidetBarnetrygdOgSmaabarnstilleggDto {
-  return persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-    opprettUtvidetBarnetrygdOgSmaabarnstilleggRequest.toUtvidetBarnetrygdOgSmaabarnstilleggDto(
-      grunnlagspakkeId
-    )
-  )
-}*/
 
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
     return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
