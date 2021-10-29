@@ -7,6 +7,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentInntektSkattRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
@@ -72,7 +73,7 @@ class GrunnlagspakkeService(
         oppdaterGrunnlagspakkeRequest.periodeTom,
         oppdaterGrunnlagspakkeRequest.behandlingType
       )
-      status = "Antall elementer funnet: $antallFunnetAinntekt"
+      status += "Antall elementer funnet: $antallFunnetAinntekt."
 
       // Henter utvidet barnetrygd og småbarnstillegg
       val antallFunnetUbst = oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
@@ -83,8 +84,8 @@ class GrunnlagspakkeService(
       status = "Antall elementer funnet utvidet barnetrygd og småbarnstillegg: $antallFunnetUbst"
 
       // Henter inntekter fra Skatt
-      //.....
-
+      val antallGrunnlag = oppdaterInntektSkatt(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, personId, oppdaterGrunnlagspakkeRequest.periodeTom);
+      status += " Antall skattegrunnlag funnet: ${antallGrunnlag}";
 
     }
 
@@ -193,57 +194,25 @@ class GrunnlagspakkeService(
     return antallFunnet
   }
 
-/*
-private fun opprettInntektAinntekt(
-  opprettInntektAinntektRequest: OpprettInntektAinntektRequest,
-  grunnlagspakkeId: Int
-): InntektAinntektDto {
-  return persistenceService.opprettInntektAinntekt(
-    opprettInntektAinntektRequest.toInntektAinntektDto(
-      grunnlagspakkeId
+  fun oppdaterInntektSkatt(grunnlagspakkeId: Int, personId: String, periodeTom: String): Int {
+    val inntektAar = LocalDate.parse(periodeTom + "-01").year.toString();
+    val inntektSkattRequest = HentInntektSkattRequest(inntektAar, "SummertSkattegrunnlagBidrag", personId);
+
+
+    LOGGER.info(
+        "Kaller bidrag-gcp-proxy (Sigrun) med ident = ********${
+          inntektSkattRequest.personId.substring(
+              IntRange(8, 10)
+          )
+        }, " +
+            "inntektsAar = ${inntektSkattRequest.inntektsAar} inntektsFilter = ${inntektSkattRequest.inntektsFilter}"
     )
-  )
-}
-private fun opprettInntektspostAinntekt(
-  opprettInntektspostAinntektRequest: OpprettInntektspostAinntektRequest,
-  inntektId: Int
-): InntektspostAinntektDto {
-  return persistenceService.opprettInntektspostAinntekt(
-    opprettInntektspostAinntektRequest.toInntektspostAinntektDto(
-      inntektId
-    )
-  )
-}
-private fun opprettInntektSkatt(
-  opprettInntektSkattRequest: OpprettInntektSkattRequest,
-  grunnlagspakkeId: Int
-): InntektSkattDto {
-  return persistenceService.opprettInntektSkatt(
-    opprettInntektSkattRequest.toInntektSkattDto(
-      grunnlagspakkeId
-    )
-  )
-}
-private fun opprettInntektspostSkatt(
-  opprettInntektspostSkattRequest: OpprettInntektspostSkattRequest,
-  inntektId: Int
-): InntektspostSkattDto {
-  return persistenceService.opprettInntektspostSkatt(
-    opprettInntektspostSkattRequest.toInntektspostSkattDto(
-      inntektId
-    )
-  )
-}
-private fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-  opprettUtvidetBarnetrygdOgSmaabarnstilleggRequest:
-  OpprettUtvidetBarnetrygdOgSmaabarnstilleggRequest, grunnlagspakkeId: Int
-): UtvidetBarnetrygdOgSmaabarnstilleggDto {
-  return persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-    opprettUtvidetBarnetrygdOgSmaabarnstilleggRequest.toUtvidetBarnetrygdOgSmaabarnstilleggDto(
-      grunnlagspakkeId
-    )
-  )
-}*/
+    val inntektSkattResponse = bidragGcpProxyConsumer.hentInntektSkatt(inntektSkattRequest);
+
+    LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $inntektSkattResponse")
+
+    return inntektSkattResponse.grunnlag?.size ?: 0;
+  }
 
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
     return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)

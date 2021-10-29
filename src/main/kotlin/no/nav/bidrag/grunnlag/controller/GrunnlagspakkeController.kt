@@ -61,7 +61,6 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
     return ResponseEntity(grunnlagspakkeOppdatert, HttpStatus.OK)
-
   }
 
 
