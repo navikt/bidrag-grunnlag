@@ -12,9 +12,9 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 
 import org.assertj.core.api.Assertions.assertThat
@@ -58,10 +58,10 @@ class GrunnlagspakkeServiceMockTest {
   private lateinit var inntektspostAinntektDtoCaptor: ArgumentCaptor<InntektspostAinntektDto>
 
   @Captor
-  private lateinit var inntektSkattDtoCaptor: ArgumentCaptor<InntektSkattDto>
+  private lateinit var inntektSkattDtoCaptor: ArgumentCaptor<SkattegrunnlagDto>
 
   @Captor
-  private lateinit var inntektspostSkattDtoCaptor: ArgumentCaptor<InntektspostSkattDto>
+  private lateinit var inntektspostSkattDtoCaptor: ArgumentCaptor<SkattegrunnlagspostDto>
 
   @Captor
   private lateinit var utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor: ArgumentCaptor<UtvidetBarnetrygdOgSmaabarnstilleggDto>
@@ -114,8 +114,8 @@ class GrunnlagspakkeServiceMockTest {
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektAinntekt(MockitoHelper.any(InntektAinntektDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektspostAinntekt(MockitoHelper.any(InntektspostAinntektDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektSkatt(MockitoHelper.any(InntektSkattDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektspostSkatt(MockitoHelper.any(InntektspostSkattDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektSkatt(MockitoHelper.any(SkattegrunnlagDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektspostSkatt(MockitoHelper.any(SkattegrunnlagspostDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.any(UtvidetBarnetrygdOgSmaabarnstilleggDto::class.java))
 
     assertAll(
@@ -129,10 +129,10 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(nyInntektspostAinntektOpprettet.inntektspostId).isNotNull() },
 
       Executable { assertThat(nyInntektSkattOpprettet).isNotNull() },
-      Executable { assertThat(nyInntektSkattOpprettet.inntektId).isNotNull() },
+      Executable { assertThat(nyInntektSkattOpprettet.skattegrunnlagId).isNotNull() },
 
       Executable { assertThat(nyInntektspostSkattOpprettet).isNotNull() },
-      Executable { assertThat(nyInntektspostSkattOpprettet.inntektspostId).isNotNull() },
+      Executable { assertThat(nyInntektspostSkattOpprettet.skattegrunnlagspostId).isNotNull() },
 
       Executable { assertThat(nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet).isNotNull() },
       Executable { assertThat(nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet.ubstId).isNotNull() },

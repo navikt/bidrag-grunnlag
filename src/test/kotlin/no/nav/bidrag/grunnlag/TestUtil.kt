@@ -8,9 +8,9 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -102,8 +102,8 @@ class TestUtil {
       belop = BigDecimal.valueOf(50000),
     )
 
-    fun byggInntektSkattDto() = InntektSkattDto(
-      inntektId = (1..100).random(),
+    fun byggInntektSkattDto() = SkattegrunnlagDto(
+      skattegrunnlagId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "7654321",
       periodeFra = LocalDate.parse("2021-01-01"),
@@ -114,9 +114,9 @@ class TestUtil {
       brukTil = null
     )
 
-    fun byggInntektspostSkattDto() = InntektspostSkattDto(
-      inntektspostId = (1..100).random(),
-      inntektId = (1..100).random(),
+    fun byggInntektspostSkattDto() = SkattegrunnlagspostDto(
+      skattegrunnlagspostId = (1..100).random(),
+      skattegrunnlagId = (1..100).random(),
       type = "Loenn",
       belop = BigDecimal.valueOf(171717),
     )
