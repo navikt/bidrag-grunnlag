@@ -7,7 +7,8 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentInntektSkattRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
@@ -84,7 +85,7 @@ class GrunnlagspakkeService(
       status = "Antall elementer funnet utvidet barnetrygd og småbarnstillegg: $antallFunnetUbst"
 
       // Henter inntekter fra Skatt
-      val antallGrunnlag = oppdaterInntektSkatt(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, personId, oppdaterGrunnlagspakkeRequest.periodeTom);
+      val antallGrunnlag = oppdaterSkattegrunnlag(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, personId, oppdaterGrunnlagspakkeRequest.periodeTom);
       status += " Antall skattegrunnlag funnet: ${antallGrunnlag}";
 
     }
@@ -194,9 +195,9 @@ class GrunnlagspakkeService(
     return antallFunnet
   }
 
-  fun oppdaterInntektSkatt(grunnlagspakkeId: Int, personId: String, periodeTom: String): Int {
+  fun oppdaterSkattegrunnlag(grunnlagspakkeId: Int, personId: String, periodeTom: String): Int {
     val inntektAar = LocalDate.parse(periodeTom + "-01").year.toString();
-    val inntektSkattRequest = HentInntektSkattRequest(inntektAar, "SummertSkattegrunnlagBidrag", personId);
+    val inntektSkattRequest = HentSkattegrunnlagRequest(inntektAar, "SummertSkattegrunnlagBidrag", personId);
 
 
     LOGGER.info(
@@ -207,11 +208,12 @@ class GrunnlagspakkeService(
         }, " +
             "inntektsAar = ${inntektSkattRequest.inntektsAar} inntektsFilter = ${inntektSkattRequest.inntektsFilter}"
     )
-    val inntektSkattResponse = bidragGcpProxyConsumer.hentInntektSkatt(inntektSkattRequest);
+    val skattegrunnlagResponse = bidragGcpProxyConsumer.hentSkattegrunnlag(inntektSkattRequest);
 
-    LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $inntektSkattResponse")
+    LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
 
-    return inntektSkattResponse.grunnlag?.size ?: 0;
+
+    return skattegrunnlagResponse.grunnlag?.size ?: 0;
   }
 
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
