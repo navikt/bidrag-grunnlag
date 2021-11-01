@@ -13,6 +13,9 @@ spec:
     inbound:
       rules:
         - application: {{ name }}
+        - application: {{ azure.bidraggcpproxy_app }}
+          cluster: {{ azure.bidraggcpproxy_cluster }}
+          namespace: bidrag
     outbound:
       external:
         - host: {{ azure.familiebasak_url }}
