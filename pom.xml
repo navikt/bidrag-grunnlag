@@ -32,6 +32,7 @@
     <springdoc-openapi-ui.version>1.5.12</springdoc-openapi-ui.version>
     <nimbus-jose-jwt.version>9.15.2</nimbus-jose-jwt.version>
     <springframework-cloud.version>3.0.4</springframework-cloud.version>
+    <com.squareup.okhttp3.version>4.9.2</com.squareup.okhttp3.version>
 
   </properties>
 
@@ -163,6 +164,7 @@
       <version>${bidrag-commons-test.version}</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.mockito.kotlin</groupId>
       <artifactId>mockito-kotlin</artifactId>
@@ -181,13 +183,13 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>mockwebserver</artifactId>
-      <version>4.9.2</version>
+      <version>${com.squareup.okhttp3.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>4.9.2</version>
+      <version>${com.squareup.okhttp3.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
