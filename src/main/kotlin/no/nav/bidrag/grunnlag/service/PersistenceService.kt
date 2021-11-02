@@ -33,6 +33,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.InntektspostSkattRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class PersistenceService(
@@ -103,6 +104,14 @@ class PersistenceService(
     return grunnlagspakke
   }
 
+  // Setter gyldig til-dato for en grunnlagspakke
+  fun settGyldigTildatoGrunnlagspakke(grunnlagspakkeId: Int, gyldigTil: String): Int {
+    grunnlagspakkeRepository.settGyldigTildatoGrunnlagspakke(grunnlagspakkeId, LocalDate.parse(gyldigTil))
+    return grunnlagspakkeId
+
+  }
+
+
   fun hentInntekterAinntekt(grunnlagspakkeId: Int): List<HentInntektAinntektResponse> {
     val hentInntektAinntektResponseListe = mutableListOf<HentInntektAinntektResponse>()
     inntektAinntektRepository.hentInntekter(grunnlagspakkeId)
@@ -153,7 +162,6 @@ class PersistenceService(
         hentInntektSkattResponseListe.add(
           HentInntektSkattResponse(
             inntekt.personId,
-//            inntekt.type,
             hentInntektspostSkattListe
           )
         )

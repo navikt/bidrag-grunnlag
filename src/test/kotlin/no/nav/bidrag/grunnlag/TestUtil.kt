@@ -27,11 +27,9 @@ class TestUtil {
 
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = grunnlagspakkeId,
-      behandlingType = "BIDRAG",
-      identListe = listOf("123456789", "234567890", "345678901"),
-      periodeFom = "2021-07",
-      periodeTom = "2021-08",
-      gyldigTom = "2021-08"
+      formaal = "BIDRAG",
+      gyldigTil = "2021-08",
+      grunnlagtypeRequestListe = listOf("123456789", "234567890", "345678901")
     )
 
 

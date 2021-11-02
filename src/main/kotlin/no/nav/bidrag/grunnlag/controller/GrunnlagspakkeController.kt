@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
@@ -84,10 +86,32 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
 
   }
 
+
+  @PostMapping(GRUNNLAGSPAKKE_LUKK)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Setter gyldigTil-dato = dato i input for angitt grunnlagspakke")
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Grunnlagspakke oppdatert"),
+      ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
+      ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
+      ApiResponse(responseCode = "404", description = "grunnlagspakke ikke funnet"),
+      ApiResponse(responseCode = "500", description = "Serverfeil"),
+      ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
+    ]
+  )
+
+  fun lukkGrunnlagspakke(@RequestBody request: LukkGrunnlagspakkeRequest): ResponseEntity<Int>? {
+    val grunnlagspakkeLukket = grunnlagspakkeService.settGyldigTildatoGrunnlagspakke(request)
+    LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeLukket")
+    return ResponseEntity(request.grunnlagspakkeId, HttpStatus.OK)
+
+  }
+
   companion object {
     const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke/ny"
     const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/oppdater"
     const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/hent"
+    const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/lukk"
     private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
   }
 }

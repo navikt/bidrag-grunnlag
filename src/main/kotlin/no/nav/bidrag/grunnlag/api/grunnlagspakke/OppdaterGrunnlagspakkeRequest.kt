@@ -9,19 +9,13 @@ data class OppdaterGrunnlagspakkeRequest(
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
-  @Schema(description = "Behandling-type")
-  val behandlingType: String = "",
+  @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
+  val formaal: String = "",
 
-  @Schema(description = "Liste over id'er det skal hentes ut grunnlag for (typisk BP, BM, BB)")
-  val identListe: List<String> = emptyList(),
+  @Schema(description = "Opplysningene som hentes er gyldige til (men ikke med) denne datoen (YYYY-MM-DD")
+  val gyldigTil: String = "",
 
-  @Schema(description = "Første periode det skal hentes ut grunnlag for (på formatet YYYYMM)")
-  val periodeFom: String = "",
-
-  @Schema(description = "Siste periode det skal hentes ut grunnlag for (på formatet YYYYMM)")
-  val periodeTom: String = "",
-
-  @Schema(description = "Opplysningene som hentes er gyldige til-og-med denne perioden (på formatet YYYYMM")
-  val gyldigTom: String = ""
+  @Schema(description = "Liste over hvilke typer grunnlag som skal hentes inn. På nivået under er personId og perioder angitt")
+  val grunnlagtypeRequestListe: List<GrunnlagstypeRequest> = emptyList()
 
 )
