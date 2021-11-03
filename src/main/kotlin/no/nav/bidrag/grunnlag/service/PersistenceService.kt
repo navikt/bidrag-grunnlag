@@ -9,39 +9,39 @@ import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggRe
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.dto.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.dto.toInntektAinntektEntity
-import no.nav.bidrag.grunnlag.dto.toInntektSkattEntity
+import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.dto.toInntektspostAinntektEntity
-import no.nav.bidrag.grunnlag.dto.toInntektspostSkattEntity
+import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.dto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.entity.toInntektAinntektDto
-import no.nav.bidrag.grunnlag.persistence.entity.toInntektSkattDto
+import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
 import no.nav.bidrag.grunnlag.persistence.entity.toInntektspostAinntektDto
-import no.nav.bidrag.grunnlag.persistence.entity.toInntektspostSkattDto
+import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.persistence.entity.toUtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.persistence.repository.InntektAinntektRepository
-import no.nav.bidrag.grunnlag.persistence.repository.InntektSkattRepository
+import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.InntektspostAinntektRepository
-import no.nav.bidrag.grunnlag.persistence.repository.InntektspostSkattRepository
+import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class PersistenceService(
-  val grunnlagspakkeRepository: GrunnlagspakkeRepository,
-  val inntektAinntektRepository: InntektAinntektRepository,
-  val inntektspostAinntektRepository: InntektspostAinntektRepository,
-  val inntektSkattRepository: InntektSkattRepository,
-  val inntektspostSkattRepository: InntektspostSkattRepository,
-  val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
+    val grunnlagspakkeRepository: GrunnlagspakkeRepository,
+    val inntektAinntektRepository: InntektAinntektRepository,
+    val inntektspostAinntektRepository: InntektspostAinntektRepository,
+    val skattegrunnlagRepository: SkattegrunnlagRepository,
+    val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
+    val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -72,16 +72,16 @@ class PersistenceService(
     return inntektspost.toInntektspostAinntektDto()
   }
 
-  fun opprettInntektSkatt(inntektSkattDto: InntektSkattDto): InntektSkattDto {
-    val nyInntekt = inntektSkattDto.toInntektSkattEntity()
-    val inntekt = inntektSkattRepository.save(nyInntekt)
-    return inntekt.toInntektSkattDto()
+  fun opprettSkattegrunnlag(skattegrunnlagDto: SkattegrunnlagDto): SkattegrunnlagDto {
+    val nyInntekt = skattegrunnlagDto.toSkattegrunnlagEntity()
+    val inntekt = skattegrunnlagRepository.save(nyInntekt)
+    return inntekt.toSkattegrunnlagDto()
   }
 
-  fun opprettInntektspostSkatt(inntektspostSkattDto: InntektspostSkattDto): InntektspostSkattDto {
-    val nyInntektspost = inntektspostSkattDto.toInntektspostSkattEntity()
-    val inntektspost = inntektspostSkattRepository.save(nyInntektspost)
-    return inntektspost.toInntektspostSkattDto()
+  fun opprettSkattegrunnlagspost(skattegrunnlagspostDto: SkattegrunnlagspostDto): SkattegrunnlagspostDto {
+    val nyInntektspost = skattegrunnlagspostDto.toSkattegrunnlagspostEntity()
+    val inntektspost = skattegrunnlagspostRepository.save(nyInntektspost)
+    return inntektspost.toSkattegrunnlagspostDto()
   }
 
 
@@ -138,10 +138,10 @@ class PersistenceService(
 
   fun hentInntekterSkatt(grunnlagspakkeId: Int): List<HentInntektSkattResponse> {
     val hentInntektSkattResponseListe = mutableListOf<HentInntektSkattResponse>()
-    inntektSkattRepository.hentInntekter(grunnlagspakkeId)
+    skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentInntektspostSkattListe = mutableListOf<HentInntektspostSkattResponse>()
-        inntektspostSkattRepository.hentInntektsposter(inntekt.inntektId)
+        skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
           .forEach { inntektspost ->
             hentInntektspostSkattListe.add(
               HentInntektspostSkattResponse(

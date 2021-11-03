@@ -3,9 +3,9 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
@@ -13,7 +13,6 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
@@ -182,7 +181,7 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Test på inntekt fra Skatt
-    val inntektSkattDto = InntektSkattDto(
+    val inntektSkattDto = SkattegrunnlagDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "345678",
       periodeFra = LocalDate.parse("2021-01-01"),
@@ -193,11 +192,11 @@ class GrunnlagspakkeServiceTest {
       brukTil = null
     )
 
-    val opprettetInntektSkatt = persistenceService.opprettInntektSkatt(inntektSkattDto)
+    val opprettetInntektSkatt = persistenceService.opprettSkattegrunnlag(inntektSkattDto)
 
-    persistenceService.opprettInntektspostSkatt(
-      InntektspostSkattDto(
-        inntektId = opprettetInntektSkatt.inntektId,
+    persistenceService.opprettSkattegrunnlagspost(
+      SkattegrunnlagspostDto(
+        skattegrunnlagId = opprettetInntektSkatt.skattegrunnlagId,
         type = "Loenn",
         belop = BigDecimal.valueOf(23456.01)
       )
