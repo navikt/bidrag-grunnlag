@@ -39,8 +39,8 @@ class PersistenceService(
     val grunnlagspakkeRepository: GrunnlagspakkeRepository,
     val inntektAinntektRepository: InntektAinntektRepository,
     val inntektspostAinntektRepository: InntektspostAinntektRepository,
-    val inntektSkattRepository: SkattegrunnlagRepository,
-    val inntektspostSkattRepository: SkattegrunnlagspostRepository,
+    val skattegrunnlagRepository: SkattegrunnlagRepository,
+    val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
     val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
 ) {
 
@@ -72,15 +72,15 @@ class PersistenceService(
     return inntektspost.toInntektspostAinntektDto()
   }
 
-  fun opprettInntektSkatt(inntektSkattDto: SkattegrunnlagDto): SkattegrunnlagDto {
-    val nyInntekt = inntektSkattDto.toSkattegrunnlagEntity()
-    val inntekt = inntektSkattRepository.save(nyInntekt)
+  fun opprettSkattegrunnlag(skattegrunnlagDto: SkattegrunnlagDto): SkattegrunnlagDto {
+    val nyInntekt = skattegrunnlagDto.toSkattegrunnlagEntity()
+    val inntekt = skattegrunnlagRepository.save(nyInntekt)
     return inntekt.toSkattegrunnlagDto()
   }
 
-  fun opprettInntektspostSkatt(inntektspostSkattDto: SkattegrunnlagspostDto): SkattegrunnlagspostDto {
-    val nyInntektspost = inntektspostSkattDto.toSkattegrunnlagspostEntity()
-    val inntektspost = inntektspostSkattRepository.save(nyInntektspost)
+  fun opprettSkattegrunnlagspost(skattegrunnlagspostDto: SkattegrunnlagspostDto): SkattegrunnlagspostDto {
+    val nyInntektspost = skattegrunnlagspostDto.toSkattegrunnlagspostEntity()
+    val inntektspost = skattegrunnlagspostRepository.save(nyInntektspost)
     return inntektspost.toSkattegrunnlagspostDto()
   }
 
@@ -138,10 +138,10 @@ class PersistenceService(
 
   fun hentInntekterSkatt(grunnlagspakkeId: Int): List<HentInntektSkattResponse> {
     val hentInntektSkattResponseListe = mutableListOf<HentInntektSkattResponse>()
-    inntektSkattRepository.hentSkattegrunnlag(grunnlagspakkeId)
+    skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentInntektspostSkattListe = mutableListOf<HentInntektspostSkattResponse>()
-        inntektspostSkattRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
+        skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
           .forEach { inntektspost ->
             hentInntektspostSkattListe.add(
               HentInntektspostSkattResponse(

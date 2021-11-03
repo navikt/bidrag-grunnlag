@@ -90,9 +90,9 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggInntektAinntektDto())
     Mockito.`when`(persistenceServiceMock.opprettInntektspostAinntekt(MockitoHelper.capture(inntektspostAinntektDtoCaptor)))
       .thenReturn(byggInntektspostAinntektDto())
-    Mockito.`when`(persistenceServiceMock.opprettInntektSkatt(MockitoHelper.capture(inntektSkattDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlag(MockitoHelper.capture(inntektSkattDtoCaptor)))
       .thenReturn(byggInntektSkattDto())
-    Mockito.`when`(persistenceServiceMock.opprettInntektspostSkatt(MockitoHelper.capture(inntektspostSkattDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlagspost(MockitoHelper.capture(inntektspostSkattDtoCaptor)))
       .thenReturn(byggInntektspostSkattDto())
     Mockito.`when`(persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor)))
       .thenReturn(byggUtvidetBarnetrygdOgSmaabarnstilleggDto())
@@ -100,8 +100,8 @@ class GrunnlagspakkeServiceMockTest {
     val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val nyInntektAinntektOpprettet = persistenceServiceMock.opprettInntektAinntekt(byggInntektAinntektDto())
     val nyInntektspostAinntektOpprettet = persistenceServiceMock.opprettInntektspostAinntekt(byggInntektspostAinntektDto())
-    val nyInntektSkattOpprettet = persistenceServiceMock.opprettInntektSkatt(byggInntektSkattDto())
-    val nyInntektspostSkattOpprettet = persistenceServiceMock.opprettInntektspostSkatt(byggInntektspostSkattDto())
+    val nyInntektSkattOpprettet = persistenceServiceMock.opprettSkattegrunnlag(byggInntektSkattDto())
+    val nyInntektspostSkattOpprettet = persistenceServiceMock.opprettSkattegrunnlagspost(byggInntektspostSkattDto())
     val nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet = persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(byggUtvidetBarnetrygdOgSmaabarnstilleggDto())
 
     val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
@@ -114,8 +114,8 @@ class GrunnlagspakkeServiceMockTest {
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektAinntekt(MockitoHelper.any(InntektAinntektDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektspostAinntekt(MockitoHelper.any(InntektspostAinntektDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektSkatt(MockitoHelper.any(SkattegrunnlagDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettInntektspostSkatt(MockitoHelper.any(SkattegrunnlagspostDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSkattegrunnlag(MockitoHelper.any(SkattegrunnlagDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSkattegrunnlagspost(MockitoHelper.any(SkattegrunnlagspostDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.any(UtvidetBarnetrygdOgSmaabarnstilleggDto::class.java))
 
     assertAll(

@@ -192,9 +192,9 @@ class GrunnlagspakkeServiceTest {
       brukTil = null
     )
 
-    val opprettetInntektSkatt = persistenceService.opprettInntektSkatt(inntektSkattDto)
+    val opprettetInntektSkatt = persistenceService.opprettSkattegrunnlag(inntektSkattDto)
 
-    persistenceService.opprettInntektspostSkatt(
+    persistenceService.opprettSkattegrunnlagspost(
       SkattegrunnlagspostDto(
         skattegrunnlagId = opprettetInntektSkatt.skattegrunnlagId,
         type = "Loenn",

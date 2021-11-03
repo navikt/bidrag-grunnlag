@@ -14,6 +14,8 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -197,23 +199,42 @@ class GrunnlagspakkeService(
 
   fun oppdaterSkattegrunnlag(grunnlagspakkeId: Int, personId: String, periodeTom: String): Int {
     val inntektAar = LocalDate.parse(periodeTom + "-01").year.toString();
-    val inntektSkattRequest = HentSkattegrunnlagRequest(inntektAar, "SummertSkattegrunnlagBidrag", personId);
+    val skattegrunnlagRequest = HentSkattegrunnlagRequest(inntektAar, "SummertSkattegrunnlagBidrag", personId);
 
 
     LOGGER.info(
         "Kaller bidrag-gcp-proxy (Sigrun) med ident = ********${
-          inntektSkattRequest.personId.substring(
+          skattegrunnlagRequest.personId.substring(
               IntRange(8, 10)
           )
         }, " +
-            "inntektsAar = ${inntektSkattRequest.inntektsAar} inntektsFilter = ${inntektSkattRequest.inntektsFilter}"
+            "inntektsAar = ${skattegrunnlagRequest.inntektsAar} inntektsFilter = ${skattegrunnlagRequest.inntektsFilter}"
     )
-    val skattegrunnlagResponse = bidragGcpProxyConsumer.hentSkattegrunnlag(inntektSkattRequest);
+    val skattegrunnlagResponse = bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest);
+
+    val skattegrunnlagsPoster = mutableListOf<Skattegrunnlag>()
+    skattegrunnlagsPoster.addAll(skattegrunnlagResponse.grunnlag!!.toMutableList())
+    skattegrunnlagsPoster.addAll(skattegrunnlagResponse.svalbardGrunnlag!!.toMutableList())
+    if (skattegrunnlagsPoster.size > 0) {
+      val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(SkattegrunnlagDto(
+          grunnlagspakkeId = grunnlagspakkeId,
+          personId = personId,
+          periodeFra = LocalDate.parse("$inntektAar-01-01"),
+          periodeTil = LocalDate.parse("$inntektAar-12-31"),
+      ))
+      skattegrunnlagsPoster.forEach { skattegrunnlagsPost ->
+        persistenceService.opprettSkattegrunnlagspost(SkattegrunnlagspostDto(
+            skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
+            type = skattegrunnlagsPost.tekniskNavn,
+            belop = BigDecimal(skattegrunnlagsPost.beloep),
+        ))
+      }
+    }
 
     LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
 
 
-    return skattegrunnlagResponse.grunnlag?.size ?: 0;
+    return skattegrunnlagsPoster.size;
   }
 
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
