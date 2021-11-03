@@ -1,8 +1,10 @@
 package no.nav.bidrag.grunnlag
 
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
@@ -12,6 +14,7 @@ import no.nav.bidrag.grunnlag.dto.InntektSkattDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektspostSkattDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,8 +32,10 @@ class TestUtil {
       grunnlagspakkeId = grunnlagspakkeId,
       formaal = "BIDRAG",
       gyldigTil = "2021-08",
-      grunnlagtypeRequestListe = listOf("123456789", "234567890", "345678901")
-    )
+      grunnlagtypeRequestListe = listOf(
+        GrunnlagstypeRequest(
+          Grunnlagstype.AINNTEKT.toString(),
+          listOf(PersonIdOgPeriodeRequest("123456789", "2021-01-01", "2022-01-01")))))
 
 
     fun byggHentGrunnlagspakkeRequest() = HentGrunnlagspakkeRequest(

@@ -79,7 +79,6 @@ class GrunnlagspakkeService(
               grunnlagstypeRequest.personIdOgPeriodeRequestListe
             )
           )
-
       }
     }
 
@@ -92,8 +91,7 @@ class GrunnlagspakkeService(
 
 
   private fun oppdaterInntektAinntekt(
-    grunnlagspakkeId: Int,
-    formaal: String,
+    grunnlagspakkeId: Int, formaal: String,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
   ): GrunnlagstypeResponse {
 
@@ -163,14 +161,18 @@ class GrunnlagspakkeService(
             )
           }
         }
-      restkallResponseListe.add(RestkallResponse(personIdOgPeriode.personId, "Antall inntekter funnet $antallPerioderFunnet"))
+      restkallResponseListe.add(
+        RestkallResponse(
+          personIdOgPeriode.personId,
+          "Antall inntekter funnet $antallPerioderFunnet"
+        )
+      )
     }
     return GrunnlagstypeResponse(Grunnlagstype.AINNTEKT.toString(), restkallResponseListe)
   }
 
   fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-    grunnlagspakkeId: Int,
-    personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
+    grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
   ): GrunnlagstypeResponse {
 
     val restkallResponseListe = mutableListOf<RestkallResponse>()
@@ -199,23 +201,31 @@ class GrunnlagspakkeService(
 
       familieBaSakResponse.perioder.forEach() { ubst ->
         antallPerioderFunnet++
-          persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-            UtvidetBarnetrygdOgSmaabarnstilleggDto(
-              grunnlagspakkeId = grunnlagspakkeId,
-              personId = personIdOgPeriode.personId,
-              type = ubst.stønadstype.toString(),
-              periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
-              // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-              periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
-                .plusMonths(1) else null,
-              belop = BigDecimal.valueOf(ubst.beløp),
-              manueltBeregnet = ubst.manueltBeregnet
-            )
+        persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+          UtvidetBarnetrygdOgSmaabarnstilleggDto(
+            grunnlagspakkeId = grunnlagspakkeId,
+            personId = personIdOgPeriode.personId,
+            type = ubst.stønadstype.toString(),
+            periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
+            // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+            periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
+              .plusMonths(1) else null,
+            belop = BigDecimal.valueOf(ubst.beløp),
+            manueltBeregnet = ubst.manueltBeregnet
           )
-        }
-      restkallResponseListe.add(RestkallResponse(personIdOgPeriode.personId, "Antall inntekter funnet $antallPerioderFunnet"))
+        )
+      }
+      restkallResponseListe.add(
+        RestkallResponse(
+          personIdOgPeriode.personId,
+          "Antall inntekter funnet $antallPerioderFunnet"
+        )
+      )
     }
-    return GrunnlagstypeResponse(Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(), restkallResponseListe)
+    return GrunnlagstypeResponse(
+      Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
+      restkallResponseListe
+    )
 
 
   }

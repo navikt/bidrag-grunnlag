@@ -1,7 +1,10 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.InntektSkattDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
@@ -65,17 +68,33 @@ class GrunnlagspakkeServiceTest {
     )
   }
 
-  @Test
+/*  @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på oppdatere grunnlagspakke`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
+    val oppdaterGrunnlagspakkeResponse = grunnlagspakkeService.oppdaterGrunnlagspakke(
+      OppdaterGrunnlagspakkeRequest(
+        grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+        formaal = Formaal.BIDRAG.toString(),
+        gyldigTil = null,
+        mutableListOf(
+          GrunnlagstypeRequest(
+            Grunnlagstype.AINNTEKT.toString(),
+            mutableListOf(
+              PersonIdOgPeriodeRequest(
+                personId = "1234567890",
+                periodeFra = "2021-01-01",
+                periodeTil = "2022-01-01"))))))
+
     assertAll(
-      Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull }
+      Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull },
+      Executable { assertThat(oppdaterGrunnlagspakkeResponse).isNotNull },
+      Executable { assertThat(oppdaterGrunnlagspakkeResponse.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)},
     )
-  }
+  }*/
 
   @Test
   @Suppress("NonAsciiCharacters")

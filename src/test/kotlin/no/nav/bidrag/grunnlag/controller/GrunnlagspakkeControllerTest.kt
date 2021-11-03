@@ -87,29 +87,28 @@ class GrunnlagspakkeControllerTest {
   }
 
 
-//  @Test
-//  fun `skal oppdatere en grunnlagspakke`() {
-//
-//    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(GrunnlagspakkeDto(
-//      opprettetAv = "X123456"
-//    ))
-//
-//    // Sender inn request for å oppdatere grunnlagspakke med grunnlagsdata
-//    val response = securedTestRestTemplate.exchange(
-//      fullUrlForOppdaterGrunnlagspakke(),
-//      HttpMethod.POST,
-//      byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId),
-//      OppdaterGrunnlagspakkeResponse::class.java
-//    )
-//
-//    assertAll(
-//      Executable { assertThat(response).isNotNull() },
-//      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
-//      Executable { assertThat(response?.body).isNotNull },
-//      Executable { assertThat(response?.body?.status).isEqualTo("Oppdatering OK") },
-//    )
-//    grunnlagspakkeRepository.deleteAll()
-//  }
+/*  @Test
+  fun `skal oppdatere en grunnlagspakke`() {
+
+    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(GrunnlagspakkeDto(
+      opprettetAv = "X123456"
+    ))
+
+    // Sender inn request for å oppdatere grunnlagspakke med grunnlagsdata
+    val response = securedTestRestTemplate.exchange(
+      fullUrlForOppdaterGrunnlagspakke(),
+      HttpMethod.POST,
+      byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId),
+      OppdaterGrunnlagspakkeResponse::class.java
+    )
+
+    assertAll(
+      Executable { assertThat(response).isNotNull() },
+      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
+      Executable { assertThat(response?.body).isNotNull }
+    )
+    grunnlagspakkeRepository.deleteAll()
+  }*/
 
 
   @Test
