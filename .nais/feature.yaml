@@ -5,4 +5,6 @@ azure:
   familiebasak_scope: dev-fss.teamfamilie.familie-ba-sak
   bidraggcpproxy_url: bidrag-gcp-proxy-feature.dev-fss-pub.nais.io/bidrag-gcp-proxy
   bidraggcpproxy_scope: dev-fss.bidrag.bidrag-gcp-proxy-feature
+  bidraggcpproxy_app: bidrag-gcp-proxy-feature
+  bidraggcpproxy_cluster: dev-fss
 dbname: bidrag-grunnlag-feature

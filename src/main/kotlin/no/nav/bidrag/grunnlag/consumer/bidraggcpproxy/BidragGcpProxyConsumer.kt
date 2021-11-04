@@ -3,8 +3,8 @@ package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentInntektSkattRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentInntektSkattResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -36,19 +36,19 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
     return response.body ?: HentInntektListeResponse(emptyList())
   }
 
-  fun hentInntektSkatt(request: HentInntektSkattRequest): HentInntektSkattResponse {
+  fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): HentSkattegrunnlagResponse {
     LOGGER.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
 
     val response = restTemplate.exchange(
         BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT,
         HttpMethod.POST,
         initHttpEntity(request),
-        HentInntektSkattResponse::class.java
+        HentSkattegrunnlagResponse::class.java
     )
 
     LOGGER.info("Response: ${response.statusCode}/${response.body}")
 
-    return response.body ?: HentInntektSkattResponse(emptyList(), emptyList(), null);
+    return response.body ?: HentSkattegrunnlagResponse(emptyList(), emptyList(), null);
   }
 
   private fun <T> initHttpEntity(body: T): HttpEntity<T> {
