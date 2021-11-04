@@ -79,8 +79,8 @@ fun <T> RestTemplate.tryExchange(url: String, method: HttpMethod, entity: HttpEn
     val response = exchange(url, method, entity, responseType)
     RestResponse.Success(response.body ?: fallbackBody)
   } catch (e: HttpClientErrorException) {
-    RestResponse.Failure(e.message, e.statusCode)
+    RestResponse.Failure("Message: ${e.message} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
   } catch (e: HttpServerErrorException) {
-    RestResponse.Failure(e.message, e.statusCode)
+    RestResponse.Failure("Message: ${e.message} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
   }
 }
