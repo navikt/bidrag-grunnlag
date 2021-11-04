@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.Period
 
 @Service
 @Transactional
@@ -184,65 +183,6 @@ class GrunnlagspakkeService(
   }
 
 
-  fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-    grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagstypeResponse {
-
-    val restkallResponseListe = mutableListOf<RestkallResponse>()
-
-    personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
-
-      var antallPerioderFunnet = 0
-
-      val familieBaSakRequest = FamilieBaSakRequest(
-        personIdent = personIdOgPeriode.personId,
-        fraDato = LocalDate.parse(personIdOgPeriode.periodeFra + "-01")
-      )
-
-      LOGGER.info(
-        "Kaller familie-ba-sak med personIdent ********${
-          familieBaSakRequest.personIdent.substring(
-            IntRange(8, 10)
-          )
-        } " +
-            "og fraDato " + "${familieBaSakRequest.fraDato}"
-      )
-
-      val familieBaSakResponse = familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)
-
-      LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
-
-      familieBaSakResponse.perioder.forEach() { ubst ->
-        antallPerioderFunnet++
-        persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-          UtvidetBarnetrygdOgSmaabarnstilleggDto(
-            grunnlagspakkeId = grunnlagspakkeId,
-            personId = personIdOgPeriode.personId,
-            type = ubst.stønadstype.toString(),
-            periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
-            // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-            periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
-              .plusMonths(1) else null,
-            belop = BigDecimal.valueOf(ubst.beløp),
-            manueltBeregnet = ubst.manueltBeregnet
-          )
-        )
-      }
-      restkallResponseListe.add(
-        RestkallResponse(
-          personIdOgPeriode.personId,
-          "Antall inntekter funnet $antallPerioderFunnet"
-        )
-      )
-    }
-    return GrunnlagstypeResponse(
-      Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
-      restkallResponseListe
-    )
-
-
-  }
-
   fun oppdaterSkattegrunnlag(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
@@ -316,17 +256,77 @@ class GrunnlagspakkeService(
   }
 
 
-    fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
-      return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
+  fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
+    grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
+  ): GrunnlagstypeResponse {
+
+    val restkallResponseListe = mutableListOf<RestkallResponse>()
+
+    personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
+
+      var antallPerioderFunnet = 0
+
+      val familieBaSakRequest = FamilieBaSakRequest(
+        personIdent = personIdOgPeriode.personId,
+        fraDato = LocalDate.parse(personIdOgPeriode.periodeFra + "-01")
+      )
+
+      LOGGER.info(
+        "Kaller familie-ba-sak med personIdent ********${
+          familieBaSakRequest.personIdent.substring(
+            IntRange(8, 10)
+          )
+        } " +
+            "og fraDato " + "${familieBaSakRequest.fraDato}"
+      )
+
+      val familieBaSakResponse = familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)
+
+      LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
+
+      familieBaSakResponse.perioder.forEach() { ubst ->
+        antallPerioderFunnet++
+        persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+          UtvidetBarnetrygdOgSmaabarnstilleggDto(
+            grunnlagspakkeId = grunnlagspakkeId,
+            personId = personIdOgPeriode.personId,
+            type = ubst.stønadstype.toString(),
+            periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
+            // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+            periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
+              .plusMonths(1) else null,
+            belop = BigDecimal.valueOf(ubst.beløp),
+            manueltBeregnet = ubst.manueltBeregnet
+          )
+        )
+      }
+      restkallResponseListe.add(
+        RestkallResponse(
+          personIdOgPeriode.personId,
+          "Antall inntekter funnet $antallPerioderFunnet"
+        )
+      )
+    }
+    return GrunnlagstypeResponse(
+      Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
+      restkallResponseListe
+    )
+  }
+
+
+    fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+      return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
     }
 
     fun settGyldigTildatoGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
       return persistenceService.settGyldigTildatoGrunnlagspakke(
         lukkGrunnlagspakkeRequest.grunnlagspakkeId,
-        lukkGrunnlagspakkeRequest.gyldigTil
+        LocalDate.parse(lukkGrunnlagspakkeRequest.gyldigTil)
       )
     }
   }
+
+
 
   enum class Formaal {
     FORSKUDD,

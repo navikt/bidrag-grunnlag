@@ -9,6 +9,12 @@ import java.time.LocalDate
 interface GrunnlagspakkeRepository : JpaRepository<Grunnlagspakke, Int?>{
 
   @Query(
+    "select gp from Grunnlagspakke gp where gp.grunnlagspakkeId = :grunnlagspakkeId"
+  )
+  fun hentGrunnlagspakke(grunnlagspakkeId: Int): Grunnlagspakke
+
+
+  @Query(
     "update Grunnlagspakke gp set gp.gyldigTil = :gyldigTil where gp.grunnlagspakkeId = :grunnlagspakkeId"
   )
   @Modifying

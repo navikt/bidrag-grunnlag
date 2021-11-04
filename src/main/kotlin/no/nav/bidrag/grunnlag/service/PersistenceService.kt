@@ -1,10 +1,12 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.skatt.HentInntektSkattResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektspostAinntektResponse
-import no.nav.bidrag.grunnlag.api.skatt.HentInntektspostSkattResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagspostResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
@@ -94,9 +96,9 @@ class PersistenceService(
 
 
   // Returnerer lagret, komplett grunnlagspakke
-  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
-    val grunnlagspakke = HentGrunnlagspakkeResponse(
-      grunnlagspakkeId, hentInntekterAinntekt(grunnlagspakkeId), hentInntekterSkatt(grunnlagspakkeId),
+  fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    val grunnlagspakke = HentKomplettGrunnlagspakkeResponse(
+      hentGrunnlagspakke(grunnlagspakkeId), hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
 
     )
@@ -104,9 +106,14 @@ class PersistenceService(
     return grunnlagspakke
   }
 
+  // Returnerer lagret, komplett grunnlagspakke
+  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
+  return HentGrunnlagspakkeResponse(grunnlagspakkeRepository.hentGrunnlagspakke(grunnlagspakkeId).grunnlagspakkeId)
+  }
+
   // Setter gyldig til-dato for en grunnlagspakke
-  fun settGyldigTildatoGrunnlagspakke(grunnlagspakkeId: Int, gyldigTil: String): Int {
-    grunnlagspakkeRepository.settGyldigTildatoGrunnlagspakke(grunnlagspakkeId, LocalDate.parse(gyldigTil))
+  fun settGyldigTildatoGrunnlagspakke(grunnlagspakkeId: Int, gyldigTil: LocalDate): Int {
+    grunnlagspakkeRepository.settGyldigTildatoGrunnlagspakke(grunnlagspakkeId, gyldigTil)
     return grunnlagspakkeId
 
   }
@@ -145,29 +152,29 @@ class PersistenceService(
 
   }
 
-  fun hentInntekterSkatt(grunnlagspakkeId: Int): List<HentInntektSkattResponse> {
-    val hentInntektSkattResponseListe = mutableListOf<HentInntektSkattResponse>()
+  fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<HentSkattegrunnlagResponse> {
+    val hentSkattegrunnlagResponseListe = mutableListOf<HentSkattegrunnlagResponse>()
     skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
       .forEach { inntekt ->
-        val hentInntektspostSkattListe = mutableListOf<HentInntektspostSkattResponse>()
+        val hentInntektspostSkattListe = mutableListOf<HentSkattegrunnlagspostResponse>()
         skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
           .forEach { inntektspost ->
             hentInntektspostSkattListe.add(
-              HentInntektspostSkattResponse(
+              HentSkattegrunnlagspostResponse(
                 inntektspost.type,
                 inntektspost.belop
               )
             )
           }
-        hentInntektSkattResponseListe.add(
-          HentInntektSkattResponse(
+        hentSkattegrunnlagResponseListe.add(
+          HentSkattegrunnlagResponse(
             inntekt.personId,
             hentInntektspostSkattListe
           )
         )
       }
 
-    return hentInntektSkattResponseListe
+    return hentSkattegrunnlagResponseListe
 
   }
 
