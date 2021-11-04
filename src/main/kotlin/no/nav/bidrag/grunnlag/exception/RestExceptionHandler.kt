@@ -1,6 +1,8 @@
 package no.nav.bidrag.grunnlag.exception
 
 import no.nav.bidrag.commons.ExceptionLogger
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -11,8 +13,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
+
 
 
 @RestControllerAdvice
@@ -41,13 +45,23 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 }
 
 fun <T> RestTemplate.tryExchange(url: String, method: HttpMethod, entity: HttpEntity<*>, responseType: Class<T>): ResponseEntity<T> {
-  return try {
-    exchange(url, method, entity, responseType)
+  val logger = LoggerFactory.getLogger("RestTemplateLogger")
+  try {
+    return exchange(url, method, entity, responseType)
   } catch (e: HttpClientErrorException) {
+    logger.error("Feil ved restkall. ${e.message} ${e.statusCode}", e)
     // Might need to add more status codes that should be allowed to pass through in the future
-    if (e.statusCode == HttpStatus.NOT_FOUND) {
-      ResponseEntity(null, e.statusCode)
-    }
+    return ResponseEntity(null, e.statusCode)
+//    if (e.statusCode == HttpStatus.NOT_FOUND) {
+//      return ResponseEntity(null, e.statusCode)
+//    }
+//    throw e
+  } catch (e: HttpServerErrorException) {
+    logger.error("Feil ved restkall. ${e.message} ${e.statusCode}", e)
+    return ResponseEntity(null, e.statusCode)
+  }
+  catch (e: RestClientException) {
+    logger.error("Feil ved restkall. ${e.message}", e)
     throw e
   }
 }
