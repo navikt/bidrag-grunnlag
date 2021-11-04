@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 
@@ -34,6 +35,16 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
   }
 
   @ResponseBody
+  @ExceptionHandler(HttpClientErrorException::class, HttpServerErrorException::class)
+  protected fun handleHttpClientErrorException(e: HttpStatusCodeException): ResponseEntity<*> {
+    when (e) {
+      is HttpClientErrorException -> exceptionLogger.logException(e, "HttpClientErrorException")
+      is HttpServerErrorException -> exceptionLogger.logException(e, "HttpServerErrorException")
+    }
+    return ResponseEntity(e.message, e.statusCode)
+  }
+
+  @ResponseBody
   @ExceptionHandler(IllegalArgumentException::class)
   protected fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<*> {
     exceptionLogger.logException(e, "RestExceptionHandler")
@@ -45,23 +56,15 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 }
 
 fun <T> RestTemplate.tryExchange(url: String, method: HttpMethod, entity: HttpEntity<*>, responseType: Class<T>): ResponseEntity<T> {
-  val logger = LoggerFactory.getLogger("RestTemplateLogger")
   try {
     return exchange(url, method, entity, responseType)
   } catch (e: HttpClientErrorException) {
-    logger.error("Feil ved restkall. ${e.message} ${e.statusCode}", e)
     // Might need to add more status codes that should be allowed to pass through in the future
-    return ResponseEntity(null, e.statusCode)
-//    if (e.statusCode == HttpStatus.NOT_FOUND) {
-//      return ResponseEntity(null, e.statusCode)
-//    }
-//    throw e
+    if (e.statusCode == HttpStatus.NOT_FOUND) {
+      return ResponseEntity(null, e.statusCode)
+    }
+    throw e
   } catch (e: HttpServerErrorException) {
-    logger.error("Feil ved restkall. ${e.message} ${e.statusCode}", e)
-    return ResponseEntity(null, e.statusCode)
-  }
-  catch (e: RestClientException) {
-    logger.error("Feil ved restkall. ${e.message}", e)
     throw e
   }
 }
