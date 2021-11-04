@@ -7,6 +7,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ReceivedResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.handleResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -26,7 +27,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
   fun hentInntekt(request: HentInntektRequest): ReceivedResponse<HentInntektListeResponse> {
     LOGGER.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
 
-    val response = restTemplate.exchange(
+    val response = restTemplate.tryExchange(
       BIDRAGGCPPROXY_INNTEKT_CONTEXT,
       HttpMethod.POST,
       initHttpEntity(request),
@@ -41,7 +42,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
   fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): ReceivedResponse<HentSkattegrunnlagResponse> {
     LOGGER.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
 
-    val response = restTemplate.exchange(
+    val response = restTemplate.tryExchange(
         BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT,
         HttpMethod.POST,
         initHttpEntity(request),

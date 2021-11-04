@@ -5,6 +5,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ReceivedResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.handleResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -23,7 +24,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
   fun hentFamilieBaSak(request: FamilieBaSakRequest): ReceivedResponse<FamilieBaSakResponse> {
     LOGGER.info("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
 
-    val response = restTemplate.exchange(
+    val response = restTemplate.tryExchange(
       FAMILIEBASAK_CONTEXT,
       HttpMethod.POST,
       initHttpEntity(request),
