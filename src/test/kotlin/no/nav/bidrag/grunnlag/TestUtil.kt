@@ -75,7 +75,7 @@ class TestUtil {
       belop = BigDecimal.valueOf(50000),
     )
 
-    fun byggInntektSkattDto() = SkattegrunnlagDto(
+    fun byggSkattegrunnlagSkattDto() = SkattegrunnlagDto(
       skattegrunnlagId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "7654321",
@@ -87,7 +87,7 @@ class TestUtil {
       brukTil = null
     )
 
-    fun byggInntektspostSkattDto() = SkattegrunnlagspostDto(
+    fun byggSkattegrunnlagspostDto() = SkattegrunnlagspostDto(
       skattegrunnlagspostId = (1..100).random(),
       skattegrunnlagId = (1..100).random(),
       type = "Loenn",

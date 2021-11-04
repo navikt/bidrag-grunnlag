@@ -217,7 +217,7 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Test på inntekt fra Skatt
-    val inntektSkattDto = SkattegrunnlagDto(
+    val skattegrunnlagDto = SkattegrunnlagDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "345678",
       periodeFra = LocalDate.parse("2021-01-01"),
@@ -228,11 +228,11 @@ class GrunnlagspakkeServiceTest {
       brukTil = null
     )
 
-    val opprettetInntektSkatt = persistenceService.opprettSkattegrunnlag(inntektSkattDto)
+    val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(skattegrunnlagDto)
 
     persistenceService.opprettSkattegrunnlagspost(
       SkattegrunnlagspostDto(
-        skattegrunnlagId = opprettetInntektSkatt.skattegrunnlagId,
+        skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
         type = "Loenn",
         belop = BigDecimal.valueOf(23456.01)
       )
