@@ -12,12 +12,14 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnl
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
@@ -36,9 +38,9 @@ class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyC
   @PostMapping(HENT_SKATTEGRUNNLAG)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter skattegrunnlag")
   fun hentSkattegrunnlag(@RequestBody hentSkattegrunnlagRequest: HentSkattegrunnlagRequest): ResponseEntity<HentSkattegrunnlagResponse> {
-    return when (val receivedResponseSkattegrunnlag = bidragGcpProxyConsumer.hentSkattegrunnlag(hentSkattegrunnlagRequest)) {
-      is ReceivedResponse.Success -> ResponseEntity(receivedResponseSkattegrunnlag.body, HttpStatus.OK)
-      is ReceivedResponse.Failure -> ResponseEntity(receivedResponseSkattegrunnlag.body, receivedResponseSkattegrunnlag.statusCode)
+    return when (val restResponseSkattegrunnlag = bidragGcpProxyConsumer.hentSkattegrunnlag(hentSkattegrunnlagRequest)) {
+      is RestResponse.Success -> ResponseEntity(restResponseSkattegrunnlag.body, HttpStatus.OK)
+      is RestResponse.Failure -> throw ResponseStatusException(restResponseSkattegrunnlag.statusCode, restResponseSkattegrunnlag.message)
     }
   }
 
