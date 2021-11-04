@@ -123,7 +123,7 @@ class GrunnlagspakkeService(
         LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
         var antallPerioderFunnet = 0
-        hentInntektListeResponse.arbeidsInntektMaaned!!.forEach() { inntektPeriode ->
+        hentInntektListeResponse.arbeidsInntektMaaned?.forEach() { inntektPeriode ->
           antallPerioderFunnet++
           val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
               InntektAinntektDto(
