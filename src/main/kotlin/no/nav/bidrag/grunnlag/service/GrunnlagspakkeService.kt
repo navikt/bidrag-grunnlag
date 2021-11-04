@@ -10,7 +10,6 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ReceivedResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -20,6 +19,7 @@ import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -213,9 +213,9 @@ class GrunnlagspakkeService(
         }, " +
             "inntektsAar = ${skattegrunnlagRequest.inntektsAar} inntektsFilter = ${skattegrunnlagRequest.inntektsFilter}"
     )
-    when (val receivedResponseSkattegrunnlag = bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest)) {
-      is ReceivedResponse.Success -> {
-        val skattegrunnlagResponse = receivedResponseSkattegrunnlag.body
+    when (val restResponseSkattegrunnlag = bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest)) {
+      is RestResponse.Success -> {
+        val skattegrunnlagResponse = restResponseSkattegrunnlag.body
         LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
         val skattegrunnlagsPoster = mutableListOf<Skattegrunnlag>()
         skattegrunnlagsPoster.addAll(skattegrunnlagResponse.grunnlag!!.toMutableList())
@@ -237,7 +237,7 @@ class GrunnlagspakkeService(
         }
         return skattegrunnlagsPoster.size
       }
-      is ReceivedResponse.Failure -> return 0
+      is RestResponse.Failure -> return 0
     }
   }
 
