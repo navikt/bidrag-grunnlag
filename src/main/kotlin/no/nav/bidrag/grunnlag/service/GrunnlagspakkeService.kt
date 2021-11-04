@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
@@ -7,7 +8,9 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ReceivedResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -97,8 +100,6 @@ class GrunnlagspakkeService(
 
   private fun oppdaterInntektAinntekt(grunnlagspakkeId: Int, personId: String, maanedFom: String, maanedTom: String, behandlingType: String): Int {
 
-    var antallPerioderFunnet: Int = 0
-
     val hentInntektRequest = HentInntektRequest(
       ident = personId,
       maanedFom = maanedFom,
@@ -116,50 +117,47 @@ class GrunnlagspakkeService(
           "ainntektsfilter = ${hentInntektRequest.ainntektsfilter}, formaal = ${hentInntektRequest.formaal}"
     )
 
-    val hentInntektResponse = bidragGcpProxyConsumer.hentInntekt(hentInntektRequest)
+    when(val hentInntektResponse = bidragGcpProxyConsumer.hentInntekt(hentInntektRequest)) {
+      is ReceivedResponse.Success<HentInntektListeResponse> -> {
+        val hentInntektListeResponse = hentInntektResponse.body
+        LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
-    LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektResponse")
+        var antallPerioderFunnet = 0
+        hentInntektListeResponse.arbeidsInntektMaaned!!.forEach() { inntektPeriode ->
+          antallPerioderFunnet++
+          val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
+              InntektAinntektDto(
+                  grunnlagspakkeId = grunnlagspakkeId,
+                  personId = personId,
+                  periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                  periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
+              ))
+          if (!inntektPeriode.arbeidsInntektInformasjon.inntektListe.isNullOrEmpty())
+            inntektPeriode.arbeidsInntektInformasjon.inntektListe!!.forEach(){ inntektspost ->
+              persistenceService.opprettInntektspostAinntekt(
+                  InntektspostAinntektDto(
+                      inntektId = opprettetInntektAinntekt.inntektId,
+                      utbetalingsperiode = inntektspost.utbetaltIMaaned,
+                      opptjeningsperiodeFra = LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01"),
+                      opptjeningsperiodeTil = LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01").plusMonths(1),
+                      opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
+                      type = inntektspost.inntektType,
+                      fordelType = inntektspost.fordel,
+                      beskrivelse = inntektspost.beskrivelse,
+                      belop = inntektspost.beloep.toBigDecimal()
+                  )
+              )
 
-    if (hentInntektResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
-      return 0
-    }
-
-    hentInntektResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
-      antallPerioderFunnet++
-      val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
-        InntektAinntektDto(
-        grunnlagspakkeId = grunnlagspakkeId,
-        personId = personId,
-        periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-        periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
-      ))
-      if (!inntektPeriode.arbeidsInntektInformasjon.inntektListe.isNullOrEmpty())
-        inntektPeriode.arbeidsInntektInformasjon.inntektListe!!.forEach(){ inntektspost ->
-        persistenceService.opprettInntektspostAinntekt(
-          InntektspostAinntektDto(
-            inntektId = opprettetInntektAinntekt.inntektId,
-            utbetalingsperiode = inntektspost.utbetaltIMaaned,
-            opptjeningsperiodeFra = LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01"),
-            opptjeningsperiodeTil = LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01").plusMonths(1),
-            opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
-            type = inntektspost.inntektType,
-            fordelType = inntektspost.fordel,
-            beskrivelse = inntektspost.beskrivelse,
-            belop = inntektspost.beloep.toBigDecimal()
-          )
-        )
-
+            }
+        }
+        return antallPerioderFunnet
       }
-
-
-
+      is ReceivedResponse.Failure -> return 0
     }
-    return antallPerioderFunnet
   }
 
   fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int, personId: String, periodeFom: String): Int {
 
-    var antallFunnet: Int = 0
     val familieBaSakRequest = FamilieBaSakRequest(
       personIdent = personId,
       fraDato = LocalDate.parse("$periodeFom-01")
@@ -174,27 +172,32 @@ class GrunnlagspakkeService(
           "og fraDato " + "${familieBaSakRequest.fraDato}"
     )
 
-    val familieBaSakResponse = familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)
+    when (val receivedResponseFamilieBaSak = familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)) {
+      is ReceivedResponse.Success -> {
+        val familieBaSakResponse = receivedResponseFamilieBaSak.body
+        LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
 
-    LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
-
-    if (familieBaSakResponse.perioder.isNotEmpty())
-      familieBaSakResponse.perioder.forEach() { ubst ->
-        antallFunnet++
-        persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-          UtvidetBarnetrygdOgSmaabarnstilleggDto(
-            grunnlagspakkeId = grunnlagspakkeId,
-            personId = personId,
-            type = ubst.stønadstype.toString(),
-            periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
-            // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-            periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01").plusMonths(1) else null,
-            belop = BigDecimal.valueOf(ubst.beløp),
-            manueltBeregnet = ubst.manueltBeregnet
-          )
-        )
+        var antallFunnet = 0
+        if (familieBaSakResponse.perioder.isNotEmpty())
+          familieBaSakResponse.perioder.forEach() { ubst ->
+            antallFunnet++
+            persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+                UtvidetBarnetrygdOgSmaabarnstilleggDto(
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    personId = personId,
+                    type = ubst.stønadstype.toString(),
+                    periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
+                    // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+                    periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01").plusMonths(1) else null,
+                    belop = BigDecimal.valueOf(ubst.beløp),
+                    manueltBeregnet = ubst.manueltBeregnet
+                )
+            )
+          }
+        return antallFunnet
       }
-    return antallFunnet
+      is ReceivedResponse.Failure -> return 0
+    }
   }
 
   fun oppdaterSkattegrunnlag(grunnlagspakkeId: Int, personId: String, periodeTom: String): Int {
@@ -210,31 +213,32 @@ class GrunnlagspakkeService(
         }, " +
             "inntektsAar = ${skattegrunnlagRequest.inntektsAar} inntektsFilter = ${skattegrunnlagRequest.inntektsFilter}"
     )
-    val skattegrunnlagResponse = bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest);
-
-    val skattegrunnlagsPoster = mutableListOf<Skattegrunnlag>()
-    skattegrunnlagsPoster.addAll(skattegrunnlagResponse.grunnlag!!.toMutableList())
-    skattegrunnlagsPoster.addAll(skattegrunnlagResponse.svalbardGrunnlag!!.toMutableList())
-    if (skattegrunnlagsPoster.size > 0) {
-      val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(SkattegrunnlagDto(
-          grunnlagspakkeId = grunnlagspakkeId,
-          personId = personId,
-          periodeFra = LocalDate.parse("$inntektAar-01-01"),
-          periodeTil = LocalDate.parse("$inntektAar-12-31"),
-      ))
-      skattegrunnlagsPoster.forEach { skattegrunnlagsPost ->
-        persistenceService.opprettSkattegrunnlagspost(SkattegrunnlagspostDto(
-            skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
-            type = skattegrunnlagsPost.tekniskNavn,
-            belop = BigDecimal(skattegrunnlagsPost.beloep),
-        ))
+    when (val receivedResponseSkattegrunnlag = bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest)) {
+      is ReceivedResponse.Success -> {
+        val skattegrunnlagResponse = receivedResponseSkattegrunnlag.body
+        LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
+        val skattegrunnlagsPoster = mutableListOf<Skattegrunnlag>()
+        skattegrunnlagsPoster.addAll(skattegrunnlagResponse.grunnlag!!.toMutableList())
+        skattegrunnlagsPoster.addAll(skattegrunnlagResponse.svalbardGrunnlag!!.toMutableList())
+        if (skattegrunnlagsPoster.size > 0) {
+          val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(SkattegrunnlagDto(
+              grunnlagspakkeId = grunnlagspakkeId,
+              personId = personId,
+              periodeFra = LocalDate.parse("$inntektAar-01-01"),
+              periodeTil = LocalDate.parse("$inntektAar-12-31"),
+          ))
+          skattegrunnlagsPoster.forEach { skattegrunnlagsPost ->
+            persistenceService.opprettSkattegrunnlagspost(SkattegrunnlagspostDto(
+                skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
+                type = skattegrunnlagsPost.tekniskNavn,
+                belop = BigDecimal(skattegrunnlagsPost.beloep),
+            ))
+          }
+        }
+        return skattegrunnlagsPoster.size
       }
+      is ReceivedResponse.Failure -> return 0
     }
-
-    LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
-
-
-    return skattegrunnlagsPoster.size;
   }
 
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {

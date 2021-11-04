@@ -3,6 +3,8 @@ package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ReceivedResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.handleResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import org.slf4j.LoggerFactory
@@ -21,7 +23,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
     private val LOGGER = LoggerFactory.getLogger(BidragGcpProxyConsumer::class.java)
   }
 
-  fun hentInntekt(request: HentInntektRequest): HentInntektListeResponse {
+  fun hentInntekt(request: HentInntektRequest): ReceivedResponse<HentInntektListeResponse> {
     LOGGER.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
 
     val response = restTemplate.exchange(
@@ -33,10 +35,10 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
 
     LOGGER.info("Response: ${response.statusCode}/${response.body}")
 
-    return response.body ?: HentInntektListeResponse(emptyList())
+    return handleResponse(response, HentInntektListeResponse(emptyList()))
   }
 
-  fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): HentSkattegrunnlagResponse {
+  fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): ReceivedResponse<HentSkattegrunnlagResponse> {
     LOGGER.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
 
     val response = restTemplate.exchange(
@@ -48,7 +50,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
 
     LOGGER.info("Response: ${response.statusCode}/${response.body}")
 
-    return response.body ?: HentSkattegrunnlagResponse(emptyList(), emptyList(), null);
+    return handleResponse(response, HentSkattegrunnlagResponse(emptyList(), emptyList(), null))
   }
 
   private fun <T> initHttpEntity(body: T): HttpEntity<T> {

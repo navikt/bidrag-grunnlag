@@ -1,6 +1,8 @@
 package no.nav.bidrag.grunnlag.consumer.familiebasak
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ReceivedResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.handleResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import org.slf4j.LoggerFactory
@@ -18,7 +20,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
     private val LOGGER = LoggerFactory.getLogger(FamilieBaSakConsumer::class.java)
   }
 
-  fun hentFamilieBaSak(request: FamilieBaSakRequest): FamilieBaSakResponse {
+  fun hentFamilieBaSak(request: FamilieBaSakRequest): ReceivedResponse<FamilieBaSakResponse> {
     LOGGER.info("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
 
     val response = restTemplate.exchange(
@@ -30,7 +32,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
 
     LOGGER.info("Response: ${response.statusCode}/${response.body}")
 
-    return response.body ?: FamilieBaSakResponse(emptyList())
+    return handleResponse(response, FamilieBaSakResponse(emptyList()))
   }
 
   private fun <T> initHttpEntity(body: T): HttpEntity<T> {
