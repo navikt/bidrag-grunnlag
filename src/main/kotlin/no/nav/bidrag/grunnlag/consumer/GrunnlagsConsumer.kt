@@ -4,6 +4,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.LoggerFactory.getLogger
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -13,7 +14,7 @@ open class GrunnlagsConsumer {
 
   companion object {
     @JvmStatic
-    val LOGGER: Logger = LoggerFactory.getLogger(FamilieBaSakConsumer::class.java)
+    val LOGGER: Logger = getLogger(FamilieBaSakConsumer::class.java)
   }
 
   fun <T> logResponse(restResponse: RestResponse<T>) {

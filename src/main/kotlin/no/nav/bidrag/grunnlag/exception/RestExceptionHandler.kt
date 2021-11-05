@@ -1,8 +1,6 @@
 package no.nav.bidrag.grunnlag.exception
 
 import no.nav.bidrag.commons.ExceptionLogger
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -60,9 +58,9 @@ sealed class RestResponse<T> {
   data class Failure<T>(val message: String?, val statusCode: HttpStatus) : RestResponse<T>()
 }
 
-fun <T> RestTemplate.tryExchange(url: String, method: HttpMethod, entity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {
+fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {
   return try {
-    val response = exchange(url, method, entity, responseType)
+    val response = exchange(url, httpMethod, httpEntity, responseType)
     RestResponse.Success(response.body ?: fallbackBody)
   } catch (e: HttpClientErrorException) {
     RestResponse.Failure("Message: ${e.message} ResponseHeader: ${e.responseHeaders?.get(HttpHeaders.WARNING)} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
