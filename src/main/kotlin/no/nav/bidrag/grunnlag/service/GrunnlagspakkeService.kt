@@ -133,9 +133,9 @@ class GrunnlagspakkeService(
             "ainntektsfilter = ${hentInntektRequest.ainntektsfilter}, formaal = ${hentInntektRequest.formaal}"
       )
 
-      when (val hentInntektResponse = bidragGcpProxyConsumer.hentInntekt(hentInntektRequest)) {
-        is RestResponse.Success<HentInntektListeResponse> -> {
-          val hentInntektListeResponse = hentInntektResponse.body
+      when (val restResponseInntekt = bidragGcpProxyConsumer.hentInntekt(hentInntektRequest)) {
+        is RestResponse.Success -> {
+          val hentInntektListeResponse = restResponseInntekt.body
           LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
@@ -179,7 +179,7 @@ class GrunnlagspakkeService(
           hentGrunnlagkallResponseListe.add(
             HentGrunnlagkallResponse(
               personIdOgPeriode.personId,
-              "Feil ved henting av inntekt for personId: ${personIdOgPeriode.personId} for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}. Status: ${hentInntektResponse.statusCode}"
+              "Feil ved henting av inntekt for personId: ${personIdOgPeriode.personId} for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}. Status: ${restResponseInntekt.statusCode}"
             )
           )
         }
