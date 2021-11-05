@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
@@ -17,9 +18,12 @@ data class GrunnlagspakkeDto (
   val opprettetTimestamp: LocalDateTime = LocalDateTime.now(),
 
   @Schema(description = "Endret timestamp")
-  val endretTimestamp: LocalDateTime? = null
+  val endretTimestamp: LocalDateTime? = null,
 
-)
+  @Schema(description = "Gyldig til-dato")
+  val gyldigTil: LocalDate? = null,
+
+  )
 
 fun GrunnlagspakkeDto.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
   val propertiesByName = GrunnlagspakkeDto::class.memberProperties.associateBy { it.name }

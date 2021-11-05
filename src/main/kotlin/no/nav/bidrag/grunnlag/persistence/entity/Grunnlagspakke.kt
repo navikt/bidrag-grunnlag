@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -23,7 +24,10 @@ data class Grunnlagspakke(
   val opprettetTimestamp: LocalDateTime = LocalDateTime.now(),
 
   @Column(nullable = true, name = "endret_timestamp")
-  val endretTimestamp: LocalDateTime? = null
+  val endretTimestamp: LocalDateTime? = null,
+
+  @Column(nullable = true, name = "gyldig_til")
+  val gyldigTil: LocalDate? = null,
 )
 
 fun Grunnlagspakke.toGrunnlagspakkeDto() = with(::GrunnlagspakkeDto) {
