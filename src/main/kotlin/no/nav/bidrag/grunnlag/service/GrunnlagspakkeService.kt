@@ -289,7 +289,8 @@ class GrunnlagspakkeService(
             periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
               .plusMonths(1) else null,
             belop = BigDecimal.valueOf(ubst.beløp),
-            manueltBeregnet = ubst.manueltBeregnet
+            manueltBeregnet = ubst.manueltBeregnet,
+            deltBosted = ubst.deltBosted
           )
         )
       }

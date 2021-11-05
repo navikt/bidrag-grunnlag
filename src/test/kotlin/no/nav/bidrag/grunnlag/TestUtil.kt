@@ -102,7 +102,8 @@ class TestUtil {
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
       belop = BigDecimal.valueOf(12468.01),
-      manueltBeregnet = false
+      manueltBeregnet = false,
+      deltBosted = false
 
     )
 
@@ -117,7 +118,8 @@ class TestUtil {
         fomMåned = YearMonth.now(),
         tomMåned = YearMonth.now(),
         beløp = 1000.00,
-        manueltBeregnet = false
+        manueltBeregnet = false,
+        deltBosted = false
       )
       return mutableListOf(utvidetBarnetrygdOgSmaabarnstilleggPeriode)
     }

@@ -180,6 +180,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(ubstListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
       Executable { assertThat(ubstListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) },
       Executable { assertThat(ubstListe[0].manueltBeregnet).isFalse },
+      Executable { assertThat(ubstListe[0].deltBosted).isFalse },
 
       )
 

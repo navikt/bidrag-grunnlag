@@ -4,7 +4,6 @@ import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektspostAinntektResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagspostResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
@@ -156,10 +155,10 @@ class PersistenceService(
     val hentSkattegrunnlagResponseListe = mutableListOf<HentSkattegrunnlagResponse>()
     skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
       .forEach { inntekt ->
-        val hentInntektspostSkattListe = mutableListOf<HentSkattegrunnlagspostResponse>()
+        val hentSkattegrunnlagspostListe = mutableListOf<HentSkattegrunnlagspostResponse>()
         skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
           .forEach { inntektspost ->
-            hentInntektspostSkattListe.add(
+            hentSkattegrunnlagspostListe.add(
               HentSkattegrunnlagspostResponse(
                 inntektspost.type,
                 inntektspost.belop
@@ -169,7 +168,7 @@ class PersistenceService(
         hentSkattegrunnlagResponseListe.add(
           HentSkattegrunnlagResponse(
             inntekt.personId,
-            hentInntektspostSkattListe
+            hentSkattegrunnlagspostListe
           )
         )
       }

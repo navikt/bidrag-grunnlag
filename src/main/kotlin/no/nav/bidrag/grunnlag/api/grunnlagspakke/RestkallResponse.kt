@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 data class RestkallResponse(
 
-  @Schema(description = "Angir personId som grunnlag skal hentes for")
+  @Schema(description = "Angir personId som grunnlag er hentet for")
   val personId: String = "",
 
   @Schema(description = "Status på utført restkall")
