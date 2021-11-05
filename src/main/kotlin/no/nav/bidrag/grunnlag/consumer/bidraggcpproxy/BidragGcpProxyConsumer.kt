@@ -21,7 +21,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
     private val LOGGER = LoggerFactory.getLogger(BidragGcpProxyConsumer::class.java)
   }
 
-  fun hentInntekt(request: HentInntektRequest): HentInntektListeResponse {
+  fun hentAinntekt(request: HentInntektRequest): HentInntektListeResponse {
     LOGGER.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
 
     val response = restTemplate.exchange(

@@ -129,7 +129,7 @@ class GrunnlagspakkeService(
             "ainntektsfilter = ${hentInntektRequest.ainntektsfilter}, formaal = ${hentInntektRequest.formaal}"
       )
 
-      val hentInntektResponse = bidragGcpProxyConsumer.hentInntekt(hentInntektRequest)
+      val hentInntektResponse = bidragGcpProxyConsumer.hentAinntekt(hentInntektRequest)
 
       LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektResponse")
 
@@ -137,41 +137,48 @@ class GrunnlagspakkeService(
         OppdaterGrunnlagspakkeResponse()
       )
 
-      hentInntektResponse.arbeidsInntektMaaned?.forEach() { inntektPeriode ->
-        antallPerioderFunnet++
+      if (hentInntektResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
+        hentGrunnlagkallResponseListe.add(HentGrunnlagkallResponse(personIdOgPeriode.personId,"Ingen inntekter funnet"))
+      } else {
         val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
           InntektAinntektDto(
             grunnlagspakkeId = grunnlagspakkeId,
             personId = personIdOgPeriode.personId,
-            periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-            periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
+            periodeFra = LocalDate.parse(personIdOgPeriode.periodeFra + "-01"),
+            periodeTil = LocalDate.parse(personIdOgPeriode.periodeTil + "-01")
           )
         )
-        inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
-          persistenceService.opprettInntektspostAinntekt(
-            InntektspostAinntektDto(
-              inntektId = opprettetInntektAinntekt.inntektId,
-              utbetalingsperiode = inntektspost.utbetaltIMaaned,
-              opptjeningsperiodeFra =
-              if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01") else null,
-              opptjeningsperiodeTil =
-              if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
+
+        hentInntektResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
+          antallPerioderFunnet++
+
+          inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
+            persistenceService.opprettInntektspostAinntekt(
+              InntektspostAinntektDto(
+                inntektId = opprettetInntektAinntekt.inntektId,
+                utbetalingsperiode = inntektspost.utbetaltIMaaned,
+                opptjeningsperiodeFra =
+                if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01") else null,
+                opptjeningsperiodeTil =
+                if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
                   .plusMonths(1) else null,
-              opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
-              type = inntektspost.inntektType,
-              fordelType = inntektspost.fordel,
-              beskrivelse = inntektspost.beskrivelse,
-              belop = inntektspost.beloep.toBigDecimal()
+                opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
+                type = inntektspost.inntektType,
+                fordelType = inntektspost.fordel,
+                beskrivelse = inntektspost.beskrivelse,
+                belop = inntektspost.beloep.toBigDecimal()
+              )
             )
-          )
+          }
         }
-      }
-      hentGrunnlagkallResponseListe.add(
-        HentGrunnlagkallResponse(
-          personIdOgPeriode.personId,
-          "Antall inntekter funnet $antallPerioderFunnet"
+        hentGrunnlagkallResponseListe.add(
+          HentGrunnlagkallResponse(
+            personIdOgPeriode.personId,
+            "Antall inntekter funnet $antallPerioderFunnet"
+          )
         )
-      )
+      }
+
     }
     return GrunnlagstypeResponse(Grunnlagstype.AINNTEKT.toString(), hentGrunnlagkallResponseListe)
   }
