@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query
 interface SkattegrunnlagspostRepository : JpaRepository<Skattegrunnlagspost, Int?> {
 
   @Query(
-      "select inps from Skattegrunnlagspost inps where inps.skattegrunnlagId = :inntektId"
+      "select sgp from Skattegrunnlagspost sgp where sgp.skattegrunnlagId = :inntektId"
   )
   fun hentSkattegrunnlagsposter(inntektId: Int): List<Skattegrunnlagspost>
 

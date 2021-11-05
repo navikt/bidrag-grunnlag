@@ -39,6 +39,9 @@ data class UtvidetBarnetrygdOgSmaabarnstillegg(
   @Column(nullable = false, name = "manuelt_beregnet")
   val manueltBeregnet: Boolean = false,
 
+  @Column(nullable = false, name = "delt_bosted")
+  val deltBosted: Boolean = false,
+
   @Column(nullable = false, name = "hentet_tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )

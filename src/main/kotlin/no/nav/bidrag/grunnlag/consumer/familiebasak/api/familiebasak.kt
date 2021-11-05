@@ -14,6 +14,7 @@ data class UtvidetBarnetrygdPeriode(
   val tomMåned: YearMonth?,
   val beløp: Double,
   val manueltBeregnet: Boolean,
+  val deltBosted: Boolean,
 )
 enum class BisysStønadstype {
   UTVIDET,

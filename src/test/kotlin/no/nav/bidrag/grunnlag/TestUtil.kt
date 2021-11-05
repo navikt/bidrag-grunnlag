@@ -1,8 +1,10 @@
 package no.nav.bidrag.grunnlag
 
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
@@ -12,6 +14,7 @@ import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -27,47 +30,17 @@ class TestUtil {
 
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = grunnlagspakkeId,
-      behandlingType = "BIDRAG",
-      identListe = listOf("123456789", "234567890", "345678901"),
-      periodeFom = "2021-07",
-      periodeTom = "2021-08",
-      gyldigTom = "2021-08"
-    )
+      formaal = "BIDRAG",
+      gyldigTil = "2021-08",
+      grunnlagtypeRequestListe = listOf(
+        GrunnlagstypeRequest(
+          Grunnlagstype.AINNTEKT.toString(),
+          listOf(PersonIdOgPeriodeRequest("123456789", "2021-01-01", "2022-01-01")))))
 
 
     fun byggHentGrunnlagspakkeRequest() = HentGrunnlagspakkeRequest(
       grunnlagspakkeId = 1
     )
-
-
-/*      personId = 1234567,
-      type = "Loennsinntekt",
-      gyldigFra = LocalDate.parse("2021-07-01"),
-      gyldigTil = LocalDate.parse("2021-08-01"),
-      aktiv = true,
-      inntektspostListe = listOf(
-        OpprettInntektspostRequest(
-          utbetalingsperiode = "202108",
-          opptjeningsperiodeFra = LocalDate.parse("2021-07-01"),
-          opptjeningsperiodeTil = LocalDate.parse("2021-08-01"),
-          opplysningspliktigId = "123",
-          inntektType = "Loenn",
-          fordelType = "Kontantytelse",
-          beskrivelse = "Loenn/fastloenn",
-          belop = BigDecimal.valueOf(17000),
-        ),
-        OpprettInntektspostRequest(
-          utbetalingsperiode = "202108",
-          opptjeningsperiodeFra = LocalDate.parse("2021-07-01"),
-          opptjeningsperiodeTil = LocalDate.parse("2021-08-01"),
-          opplysningspliktigId = "123",
-          inntektType = "Loenn",
-          fordelType = "Kontantytelse",
-          beskrivelse = "Loenn/ferieLoenn",
-          belop = BigDecimal.valueOf(50000),
-        )
-      )
-    )*/
 
     fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
       grunnlagspakkeId = (1..100).random(),
@@ -102,7 +75,7 @@ class TestUtil {
       belop = BigDecimal.valueOf(50000),
     )
 
-    fun byggInntektSkattDto() = SkattegrunnlagDto(
+    fun byggSkattegrunnlagSkattDto() = SkattegrunnlagDto(
       skattegrunnlagId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "7654321",
@@ -114,7 +87,7 @@ class TestUtil {
       brukTil = null
     )
 
-    fun byggInntektspostSkattDto() = SkattegrunnlagspostDto(
+    fun byggSkattegrunnlagspostDto() = SkattegrunnlagspostDto(
       skattegrunnlagspostId = (1..100).random(),
       skattegrunnlagId = (1..100).random(),
       type = "Loenn",
@@ -129,7 +102,8 @@ class TestUtil {
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
       belop = BigDecimal.valueOf(12468.01),
-      manueltBeregnet = false
+      manueltBeregnet = false,
+      deltBosted = false
 
     )
 
@@ -144,7 +118,8 @@ class TestUtil {
         fomMåned = YearMonth.now(),
         tomMåned = YearMonth.now(),
         beløp = 1000.00,
-        manueltBeregnet = false
+        manueltBeregnet = false,
+        deltBosted = false
       )
       return mutableListOf(utvidetBarnetrygdOgSmaabarnstilleggPeriode)
     }

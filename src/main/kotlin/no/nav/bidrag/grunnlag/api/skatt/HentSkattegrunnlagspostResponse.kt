@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class HentInntektspostSkattResponse(
+data class HentSkattegrunnlagspostResponse(
 
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
   val inntektType: String = "",

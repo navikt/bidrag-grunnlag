@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -77,10 +78,31 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun hentGrunnlagspakke(@PathVariable grunnlagspakkeId: Int): ResponseEntity<HentGrunnlagspakkeResponse>? {
-    val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeId)
+  fun hentGrunnlagspakke(@PathVariable grunnlagspakkeId: Int): ResponseEntity<HentKomplettGrunnlagspakkeResponse>? {
+    val grunnlagspakkeFunnet = grunnlagspakkeService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
     LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
     return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
+
+  }
+
+
+  @PostMapping(GRUNNLAGSPAKKE_SETTGYLDIGTILDATO)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Setter gyldigTil-dato = dato i input for angitt grunnlagspakke")
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Grunnlagspakke oppdatert"),
+      ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
+      ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
+      ApiResponse(responseCode = "404", description = "grunnlagspakke ikke funnet"),
+      ApiResponse(responseCode = "500", description = "Serverfeil"),
+      ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
+    ]
+  )
+
+  fun settGyldigTilDatoForGrunnlagspakke(@RequestBody request: SettGyldigTilDatoForGrunnlagspakkeRequest): ResponseEntity<Int>? {
+    val oppdatertgrunnlagspakke = grunnlagspakkeService.settGyldigTildatoGrunnlagspakke(request)
+    LOGGER.info("Følgende grunnlagspakke ble oppdatert med gyldigTil-dato: $oppdatertgrunnlagspakke")
+    return ResponseEntity(request.grunnlagspakkeId, HttpStatus.OK)
 
   }
 
@@ -88,6 +110,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke/ny"
     const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/oppdater"
     const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/hent"
+    const val GRUNNLAGSPAKKE_SETTGYLDIGTILDATO = "/grunnlagspakke/settgyldigtildato"
     private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
   }
 }

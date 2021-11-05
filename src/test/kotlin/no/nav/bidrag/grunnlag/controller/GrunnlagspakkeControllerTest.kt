@@ -4,9 +4,8 @@ import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
@@ -16,7 +15,6 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
@@ -87,29 +85,28 @@ class GrunnlagspakkeControllerTest {
   }
 
 
-//  @Test
-//  fun `skal oppdatere en grunnlagspakke`() {
-//
-//    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(GrunnlagspakkeDto(
-//      opprettetAv = "X123456"
-//    ))
-//
-//    // Sender inn request for å oppdatere grunnlagspakke med grunnlagsdata
-//    val response = securedTestRestTemplate.exchange(
-//      fullUrlForOppdaterGrunnlagspakke(),
-//      HttpMethod.POST,
-//      byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId),
-//      OppdaterGrunnlagspakkeResponse::class.java
-//    )
-//
-//    assertAll(
-//      Executable { assertThat(response).isNotNull() },
-//      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
-//      Executable { assertThat(response?.body).isNotNull },
-//      Executable { assertThat(response?.body?.status).isEqualTo("Oppdatering OK") },
-//    )
-//    grunnlagspakkeRepository.deleteAll()
-//  }
+/*  @Test
+  fun `skal oppdatere en grunnlagspakke`() {
+
+    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(GrunnlagspakkeDto(
+      opprettetAv = "X123456"
+    ))
+
+    // Sender inn request for å oppdatere grunnlagspakke med grunnlagsdata
+    val response = securedTestRestTemplate.exchange(
+      fullUrlForOppdaterGrunnlagspakke(),
+      HttpMethod.POST,
+      byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId),
+      OppdaterGrunnlagspakkeResponse::class.java
+    )
+
+    assertAll(
+      Executable { assertThat(response).isNotNull() },
+      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
+      Executable { assertThat(response?.body).isNotNull }
+    )
+    grunnlagspakkeRepository.deleteAll()
+  }*/
 
 
   @Test
@@ -123,7 +120,7 @@ class GrunnlagspakkeControllerTest {
       "${fullUrlForHentGrunnlagspakke()}/${nyGrunnlagspakkeOpprettet.grunnlagspakkeId}",
       HttpMethod.GET,
       null,
-      HentGrunnlagspakkeResponse::class.java
+      HentKomplettGrunnlagspakkeResponse::class.java
     )
 
     assertAll(
