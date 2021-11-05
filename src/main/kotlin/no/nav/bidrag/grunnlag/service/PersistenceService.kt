@@ -135,9 +135,14 @@ class PersistenceService(
           }
         hentInntektAinntektResponseListe.add(
           HentInntektAinntektResponse(
-            inntekt.personId,
-//            inntekt.type,
-            hentInntektspostListe
+            personId = inntekt.personId,
+            periodeFra = inntekt.periodeFra,
+            periodeTil = inntekt.periodeTil,
+            aktiv = inntekt.aktiv,
+            brukFra = inntekt.brukFra,
+            brukTil = inntekt.brukTil,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
+            inntektspostAinntektListe = hentInntektspostListe
           )
         )
       }

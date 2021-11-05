@@ -114,7 +114,7 @@ class GrunnlagspakkeServiceTest {
 
   @Test
   @Suppress("NonAsciiCharacters")
-  fun `Test på hente grunnlagspakke med aktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
+  fun `Test på hente grunnlagspakke med aktive og innaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
@@ -159,7 +159,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // tester at inntekt som er merket med aktiv = false ikke hentes
+/*    // tester at inntekt som er merket med aktiv = false ikke hentes
     val innaktivInntektDto = InntektAinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "1234567",
@@ -185,7 +185,7 @@ class GrunnlagspakkeServiceTest {
         beskrivelse = "Loenn/fastloenn",
         belop = BigDecimal.valueOf(50000.01)
       )
-    )
+    )*/
 
 
     // Legger inn inntekt for person nr 2
