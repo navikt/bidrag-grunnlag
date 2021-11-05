@@ -202,7 +202,7 @@ class GrunnlagspakkeService(
       var inntektAar = LocalDate.parse(personIdOgPeriode.periodeFra + "-01").year
       val sluttAar = LocalDate.parse(personIdOgPeriode.periodeTil + "-01").year
 
-      while (inntektAar <= sluttAar) {
+      while (inntektAar < sluttAar) {
         val skattegrunnlagRequest = HentSkattegrunnlagRequest(
           inntektAar.toString(),
           "SummertSkattegrunnlagBidrag",
@@ -249,14 +249,14 @@ class GrunnlagspakkeService(
             hentGrunnlagkallResponseListe.add(
               HentGrunnlagkallResponse(
                 personIdOgPeriode.personId,
-                "Antall skattegrunnlagsposter funnet $antallSkattegrunnlagsposter"
+                "Antall skattegrunnlagsposter funnet for innteksåret ${inntektAar}: $antallSkattegrunnlagsposter"
               )
             )
           }
           is RestResponse.Failure -> hentGrunnlagkallResponseListe.add(
             HentGrunnlagkallResponse(
               personIdOgPeriode.personId,
-              "Feil ved henting av skattegrunnlag for inntektsåret: ${inntektAar}. Status: ${restResponseSkattegrunnlag.statusCode}"
+              "Feil ved henting av skattegrunnlag for inntektsåret ${inntektAar}. Status: ${restResponseSkattegrunnlag.statusCode}"
             )
           )
         }
