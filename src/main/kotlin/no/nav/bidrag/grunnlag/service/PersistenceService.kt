@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentInntektSkattResponse

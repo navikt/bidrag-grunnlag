@@ -60,20 +60,6 @@ sealed class RestResponse<T> {
   data class Failure<T>(val message: String?, val statusCode: HttpStatus) : RestResponse<T>()
 }
 
-fun <T> RestTemplate.tryExchange(url: String, method: HttpMethod, entity: HttpEntity<*>, responseType: Class<T>): ResponseEntity<T> {
-  try {
-    return exchange(url, method, entity, responseType)
-  } catch (e: HttpClientErrorException) {
-    // Might need to add more status codes that should be allowed to pass through in the future
-    if (e.statusCode == HttpStatus.NOT_FOUND) {
-      return ResponseEntity(null, e.statusCode)
-    }
-    throw e
-  } catch (e: HttpServerErrorException) {
-    throw e
-  }
-}
-
 fun <T> RestTemplate.tryExchange(url: String, method: HttpMethod, entity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {
   return try {
     val response = exchange(url, method, entity, responseType)

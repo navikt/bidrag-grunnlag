@@ -6,7 +6,6 @@ import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntekt
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ReceivedResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -29,29 +28,28 @@ class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyC
   @PostMapping(HENT_INNTEKT)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter inntekt")
   fun hentInntekt(@RequestBody hentInntektRequest: HentInntektRequest): ResponseEntity<HentInntektListeResponse> {
-    return when (val receivedResponseInntektListe = bidragGcpProxyConsumer.hentInntekt(hentInntektRequest)) {
-      is ReceivedResponse.Success -> ResponseEntity(receivedResponseInntektListe.body, HttpStatus.OK)
-      is ReceivedResponse.Failure -> ResponseEntity(receivedResponseInntektListe.body, receivedResponseInntektListe.statusCode)
-    }
+    return handleRestResponse(bidragGcpProxyConsumer.hentInntekt(hentInntektRequest))
   }
 
   @PostMapping(HENT_SKATTEGRUNNLAG)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter skattegrunnlag")
   fun hentSkattegrunnlag(@RequestBody hentSkattegrunnlagRequest: HentSkattegrunnlagRequest): ResponseEntity<HentSkattegrunnlagResponse> {
-    return when (val restResponseSkattegrunnlag = bidragGcpProxyConsumer.hentSkattegrunnlag(hentSkattegrunnlagRequest)) {
-      is RestResponse.Success -> ResponseEntity(restResponseSkattegrunnlag.body, HttpStatus.OK)
-      is RestResponse.Failure -> throw ResponseStatusException(restResponseSkattegrunnlag.statusCode, restResponseSkattegrunnlag.message)
-    }
+    return handleRestResponse(bidragGcpProxyConsumer.hentSkattegrunnlag(hentSkattegrunnlagRequest))
   }
 
   @PostMapping(HENT_FAMILIEBASAK)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter familie ba sak")
   fun hentFamilieBaSak(@RequestBody familieBaSakRequest: FamilieBaSakRequest): ResponseEntity<FamilieBaSakResponse> {
-    return when(val receivedResponseFamilieBaSak = familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)) {
-      is ReceivedResponse.Success -> ResponseEntity(receivedResponseFamilieBaSak.body, HttpStatus.OK)
-      is ReceivedResponse.Failure -> ResponseEntity(receivedResponseFamilieBaSak.body, receivedResponseFamilieBaSak.statusCode)
+    return handleRestResponse(familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest))
+  }
+
+  private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {
+    return when (restResponse) {
+      is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
+      is RestResponse.Failure -> throw ResponseStatusException(restResponse.statusCode, restResponse.message)
     }
   }
+
   companion object {
     const val HENT_INNTEKT = "/integrasjoner/inntekt"
     const val HENT_SKATTEGRUNNLAG = "/integrasjoner/skattegrunnlag"
