@@ -199,8 +199,8 @@ class GrunnlagspakkeService(
 
       var antallSkattegrunnlagsposter = 0
 
-      var inntektAar = LocalDate.parse(personIdOgPeriode.periodeFra + "01").year
-      val sluttAar = LocalDate.parse(personIdOgPeriode.periodeTil + "01").year
+      var inntektAar = LocalDate.parse(personIdOgPeriode.periodeFra + "-01").year
+      val sluttAar = LocalDate.parse(personIdOgPeriode.periodeTil + "-01").year
 
       while (inntektAar <= sluttAar) {
         val skattegrunnlagRequest = HentSkattegrunnlagRequest(
