@@ -2,13 +2,13 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.RestkallResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -106,7 +106,7 @@ class GrunnlagspakkeService(
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
   ): GrunnlagstypeResponse {
 
-    val restkallResponseListe = mutableListOf<RestkallResponse>()
+    val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
@@ -166,14 +166,14 @@ class GrunnlagspakkeService(
           )
         }
       }
-      restkallResponseListe.add(
-        RestkallResponse(
+      hentGrunnlagkallResponseListe.add(
+        HentGrunnlagkallResponse(
           personIdOgPeriode.personId,
           "Antall inntekter funnet $antallPerioderFunnet"
         )
       )
     }
-    return GrunnlagstypeResponse(Grunnlagstype.AINNTEKT.toString(), restkallResponseListe)
+    return GrunnlagstypeResponse(Grunnlagstype.AINNTEKT.toString(), hentGrunnlagkallResponseListe)
   }
 
 
@@ -182,7 +182,7 @@ class GrunnlagspakkeService(
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
   ): GrunnlagstypeResponse {
 
-    val restkallResponseListe = mutableListOf<RestkallResponse>()
+    val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
@@ -237,8 +237,8 @@ class GrunnlagspakkeService(
         inntektAar++
       }
 
-      restkallResponseListe.add(
-        RestkallResponse(
+      hentGrunnlagkallResponseListe.add(
+        HentGrunnlagkallResponse(
           personIdOgPeriode.personId,
           "Antall inntekter funnet $antallPerioderFunnet"
         )
@@ -246,7 +246,7 @@ class GrunnlagspakkeService(
     }
     return GrunnlagstypeResponse(
       Grunnlagstype.SKATTEGRUNNLAG.toString(),
-      restkallResponseListe
+      hentGrunnlagkallResponseListe
     )
   }
 
@@ -255,7 +255,7 @@ class GrunnlagspakkeService(
     grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
   ): GrunnlagstypeResponse {
 
-    val restkallResponseListe = mutableListOf<RestkallResponse>()
+    val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
@@ -296,8 +296,8 @@ class GrunnlagspakkeService(
           )
         )
       }
-      restkallResponseListe.add(
-        RestkallResponse(
+      hentGrunnlagkallResponseListe.add(
+        HentGrunnlagkallResponse(
           personIdOgPeriode.personId,
           "Antall inntekter funnet $antallPerioderFunnet"
         )
@@ -305,7 +305,7 @@ class GrunnlagspakkeService(
     }
     return GrunnlagstypeResponse(
       Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
-      restkallResponseListe
+      hentGrunnlagkallResponseListe
     )
   }
 
@@ -314,10 +314,10 @@ class GrunnlagspakkeService(
     return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
-  fun settGyldigTildatoGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
+  fun settGyldigTildatoGrunnlagspakke(settGyldigTilDatoForGrunnlagspakkeRequest: SettGyldigTilDatoForGrunnlagspakkeRequest): Int {
     return persistenceService.settGyldigTildatoGrunnlagspakke(
-      lukkGrunnlagspakkeRequest.grunnlagspakkeId,
-      LocalDate.parse(lukkGrunnlagspakkeRequest.gyldigTil)
+      settGyldigTilDatoForGrunnlagspakkeRequest.grunnlagspakkeId,
+      LocalDate.parse(settGyldigTilDatoForGrunnlagspakkeRequest.gyldigTil)
     )
   }
 }

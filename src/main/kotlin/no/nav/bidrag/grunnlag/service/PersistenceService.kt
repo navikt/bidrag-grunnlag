@@ -4,7 +4,6 @@ import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektspostAinntektResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagspostResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
@@ -97,7 +96,7 @@ class PersistenceService(
   // Returnerer lagret, komplett grunnlagspakke
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
     val grunnlagspakke = HentKomplettGrunnlagspakkeResponse(
-      hentGrunnlagspakke(grunnlagspakkeId), hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
+      grunnlagspakkeId, hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
 
     )
@@ -105,10 +104,6 @@ class PersistenceService(
     return grunnlagspakke
   }
 
-  // Returnerer lagret, komplett grunnlagspakke
-  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeResponse {
-  return HentGrunnlagspakkeResponse(grunnlagspakkeRepository.hentGrunnlagspakke(grunnlagspakkeId).grunnlagspakkeId)
-  }
 
   // Setter gyldig til-dato for en grunnlagspakke
   fun settGyldigTildatoGrunnlagspakke(grunnlagspakkeId: Int, gyldigTil: LocalDate): Int {

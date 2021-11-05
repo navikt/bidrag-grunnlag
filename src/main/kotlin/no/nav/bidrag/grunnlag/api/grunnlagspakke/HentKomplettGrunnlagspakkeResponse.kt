@@ -8,7 +8,7 @@ import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggRe
 data class HentKomplettGrunnlagspakkeResponse(
 
   @Schema(description = "grunnlagspakke-id")
-  val grunnlagspakke: HentGrunnlagspakkeResponse,
+  val grunnlagspakkeId: Int,
 
   @Schema(description = "Liste over innhentede inntekter fra a-inntekt og underliggende poster")
   val inntektAinntektListe: List<HentInntektAinntektResponse> = emptyList(),

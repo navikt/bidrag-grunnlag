@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class LukkGrunnlagspakkeRequest(
+data class SettGyldigTilDatoForGrunnlagspakkeRequest(
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,

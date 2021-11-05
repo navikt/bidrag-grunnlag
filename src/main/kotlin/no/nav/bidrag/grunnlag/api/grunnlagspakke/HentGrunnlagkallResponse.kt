@@ -4,12 +4,12 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class RestkallResponse(
+data class HentGrunnlagkallResponse(
 
   @Schema(description = "Angir personId som grunnlag er hentet for")
   val personId: String = "",
 
-  @Schema(description = "Status på utført restkall")
+  @Schema(description = "Status på utført kall")
   val status: String = ""
 
 )

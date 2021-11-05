@@ -127,7 +127,7 @@ class GrunnlagspakkeControllerTest {
       Executable { assertThat(response).isNotNull() },
       Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
       Executable { assertThat(response?.body).isNotNull },
-      Executable { assertThat(response?.body?.grunnlagspakke?.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId) },
+      Executable { assertThat(response?.body?.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId) },
     )
     grunnlagspakkeRepository.deleteAll()
 

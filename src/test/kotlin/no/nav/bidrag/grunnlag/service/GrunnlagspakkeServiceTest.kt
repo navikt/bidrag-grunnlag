@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
@@ -95,7 +95,7 @@ class GrunnlagspakkeServiceTest {
 
   @Test
   @Suppress("NonAsciiCharacters")
-  fun `Test på å lukke en grunnlagspakke`() {
+  fun `Test på å sette gyldigTil-dato for en grunnlagspakke`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(
       "X123456"
     )
@@ -103,7 +103,7 @@ class GrunnlagspakkeServiceTest {
     val opprettGrunnlagspakkeResponse =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
-    val endretGrunnlagspakke = grunnlagspakkeService.settGyldigTildatoGrunnlagspakke(LukkGrunnlagspakkeRequest(
+    val endretGrunnlagspakke = grunnlagspakkeService.settGyldigTildatoGrunnlagspakke(SettGyldigTilDatoForGrunnlagspakkeRequest(
       opprettGrunnlagspakkeResponse.grunnlagspakkeId, "2021-11-10") )
 
     assertAll(
@@ -255,7 +255,7 @@ class GrunnlagspakkeServiceTest {
 
     assertAll(
       Executable { assertThat(komplettGrunnlagspakkeFunnet).isNotNull },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.grunnlagspakke.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.inntektAinntektListe.size).isEqualTo(2) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.inntektAinntektListe[0].personId).isEqualTo("1234567")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.inntektAinntektListe[1].personId).isEqualTo("999999")},
