@@ -115,7 +115,7 @@ class GrunnlagspakkeService(
       val hentInntektRequest = HentInntektRequest(
         ident = personIdOgPeriode.personId,
         maanedFom = personIdOgPeriode.periodeFra,
-        maanedTom = personIdOgPeriode.periodeFra,
+        maanedTom = personIdOgPeriode.periodeTil,
         ainntektsfilter = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER,
         formaal = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
       )
@@ -137,41 +137,33 @@ class GrunnlagspakkeService(
         OppdaterGrunnlagspakkeResponse()
       )
 
-      if (hentInntektResponse.arbeidsInntektMaaned.isNullOrEmpty())
-        restkallResponseListe.add(
-          RestkallResponse(
-            personIdOgPeriode.personId,
-            "Ingen inntekter funnet"
+      hentInntektResponse.arbeidsInntektMaaned?.forEach() { inntektPeriode ->
+        antallPerioderFunnet++
+        val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
+          InntektAinntektDto(
+            grunnlagspakkeId = grunnlagspakkeId,
+            personId = personIdOgPeriode.personId,
+            periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+            periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
           )
         )
-      else
-        hentInntektResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
-          antallPerioderFunnet++
-          val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
-            InntektAinntektDto(
-              grunnlagspakkeId = grunnlagspakkeId,
-              personId = personIdOgPeriode.personId,
-              periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-              periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
+        inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
+          persistenceService.opprettInntektspostAinntekt(
+            InntektspostAinntektDto(
+              inntektId = opprettetInntektAinntekt.inntektId,
+              utbetalingsperiode = inntektspost.utbetaltIMaaned,
+              opptjeningsperiodeFra = LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01"),
+              opptjeningsperiodeTil = LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
+                .plusMonths(1),
+              opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
+              type = inntektspost.inntektType,
+              fordelType = inntektspost.fordel,
+              beskrivelse = inntektspost.beskrivelse,
+              belop = inntektspost.beloep.toBigDecimal()
             )
           )
-          inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
-            persistenceService.opprettInntektspostAinntekt(
-              InntektspostAinntektDto(
-                inntektId = opprettetInntektAinntekt.inntektId,
-                utbetalingsperiode = inntektspost.utbetaltIMaaned,
-                opptjeningsperiodeFra = LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01"),
-                opptjeningsperiodeTil = LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
-                  .plusMonths(1),
-                opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
-                type = inntektspost.inntektType,
-                fordelType = inntektspost.fordel,
-                beskrivelse = inntektspost.beskrivelse,
-                belop = inntektspost.beloep.toBigDecimal()
-              )
-            )
-          }
         }
+      }
       restkallResponseListe.add(
         RestkallResponse(
           personIdOgPeriode.personId,
@@ -252,7 +244,8 @@ class GrunnlagspakkeService(
     }
     return GrunnlagstypeResponse(
       Grunnlagstype.SKATTEGRUNNLAG.toString(),
-      restkallResponseListe)
+      restkallResponseListe
+    )
   }
 
 
@@ -314,28 +307,27 @@ class GrunnlagspakkeService(
   }
 
 
-    fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
-      return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
-    }
-
-    fun settGyldigTildatoGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
-      return persistenceService.settGyldigTildatoGrunnlagspakke(
-        lukkGrunnlagspakkeRequest.grunnlagspakkeId,
-        LocalDate.parse(lukkGrunnlagspakkeRequest.gyldigTil)
-      )
-    }
+  fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
-
-
-  enum class Formaal {
-    FORSKUDD,
-    BIDRAG,
-    SAERTILSKUDD
+  fun settGyldigTildatoGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
+    return persistenceService.settGyldigTildatoGrunnlagspakke(
+      lukkGrunnlagspakkeRequest.grunnlagspakkeId,
+      LocalDate.parse(lukkGrunnlagspakkeRequest.gyldigTil)
+    )
   }
+}
 
-  enum class Grunnlagstype {
-    AINNTEKT,
-    SKATTEGRUNNLAG,
-    UTVIDETBARNETRYGDOGSMAABARNSTILLEGG
-  }
+
+enum class Formaal {
+  FORSKUDD,
+  BIDRAG,
+  SAERTILSKUDD
+}
+
+enum class Grunnlagstype {
+  AINNTEKT,
+  SKATTEGRUNNLAG,
+  UTVIDETBARNETRYGDOGSMAABARNSTILLEGG
+}
