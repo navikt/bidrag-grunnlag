@@ -34,6 +34,9 @@ data class UtvidetBarnetrygdOgSmaabarnstilleggDto(
   @Schema(description = "Angir om stønaden er manuelt beregnet")
   val manueltBeregnet: Boolean = false,
 
+  @Schema(description = "Angir om barnet har delt bosted")
+  val deltBosted: Boolean = false,
+
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 

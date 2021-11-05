@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.Query
 interface SkattegrunnlagRepository : JpaRepository<Skattegrunnlag, Int?> {
 
   @Query(
-      "select ints from Skattegrunnlag ints where ints.grunnlagspakkeId = :grunnlagspakkeId and ints.aktiv = true"
+      "select sg from Skattegrunnlag sg where sg.grunnlagspakkeId = :grunnlagspakkeId and sg.aktiv = true"
   )
   fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<Skattegrunnlag>
 
   @Query(
-      "update Skattegrunnlag ints set ints.aktiv = false, ints.brukTil = CURRENT_TIMESTAMP where ints.skattegrunnlagId = :inntektId"
+      "update Skattegrunnlag sg set sg.aktiv = false, sg.brukTil = CURRENT_TIMESTAMP where sg.skattegrunnlagId = :inntektId"
   )
   @Modifying
   fun settSkattegrunnlagSomInaktiv(inntektId: Int)

@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS grunnlagspakke
     opprettet_av varchar(255) NOT NULL,
     opprettet_timestamp timestamp DEFAULT now() NOT NULL,
     endret_timestamp timestamp,
+    gyldig_til date,
     CONSTRAINT grunnlagspakke_pkey PRIMARY KEY (grunnlagspakke_id)
 )
 

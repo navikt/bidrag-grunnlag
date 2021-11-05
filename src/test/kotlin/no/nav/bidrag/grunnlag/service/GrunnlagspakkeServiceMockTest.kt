@@ -2,9 +2,9 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektAinntektDto
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektSkattDto
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSkattegrunnlagSkattDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektspostAinntektDto
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggInntektspostSkattDto
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggUtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
@@ -58,10 +58,10 @@ class GrunnlagspakkeServiceMockTest {
   private lateinit var inntektspostAinntektDtoCaptor: ArgumentCaptor<InntektspostAinntektDto>
 
   @Captor
-  private lateinit var inntektSkattDtoCaptor: ArgumentCaptor<SkattegrunnlagDto>
+  private lateinit var skattegrunnlagDtoCaptor: ArgumentCaptor<SkattegrunnlagDto>
 
   @Captor
-  private lateinit var inntektspostSkattDtoCaptor: ArgumentCaptor<SkattegrunnlagspostDto>
+  private lateinit var skattegrunnlagspostDtoCaptor: ArgumentCaptor<SkattegrunnlagspostDto>
 
   @Captor
   private lateinit var utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor: ArgumentCaptor<UtvidetBarnetrygdOgSmaabarnstilleggDto>
@@ -90,25 +90,25 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggInntektAinntektDto())
     Mockito.`when`(persistenceServiceMock.opprettInntektspostAinntekt(MockitoHelper.capture(inntektspostAinntektDtoCaptor)))
       .thenReturn(byggInntektspostAinntektDto())
-    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlag(MockitoHelper.capture(inntektSkattDtoCaptor)))
-      .thenReturn(byggInntektSkattDto())
-    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlagspost(MockitoHelper.capture(inntektspostSkattDtoCaptor)))
-      .thenReturn(byggInntektspostSkattDto())
+    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlag(MockitoHelper.capture(skattegrunnlagDtoCaptor)))
+      .thenReturn(byggSkattegrunnlagSkattDto())
+    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlagspost(MockitoHelper.capture(skattegrunnlagspostDtoCaptor)))
+      .thenReturn(byggSkattegrunnlagspostDto())
     Mockito.`when`(persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor)))
       .thenReturn(byggUtvidetBarnetrygdOgSmaabarnstilleggDto())
 
     val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val nyInntektAinntektOpprettet = persistenceServiceMock.opprettInntektAinntekt(byggInntektAinntektDto())
     val nyInntektspostAinntektOpprettet = persistenceServiceMock.opprettInntektspostAinntekt(byggInntektspostAinntektDto())
-    val nyInntektSkattOpprettet = persistenceServiceMock.opprettSkattegrunnlag(byggInntektSkattDto())
-    val nyInntektspostSkattOpprettet = persistenceServiceMock.opprettSkattegrunnlagspost(byggInntektspostSkattDto())
+    val nyttSkattegrunnlagOpprettet = persistenceServiceMock.opprettSkattegrunnlag(byggSkattegrunnlagSkattDto())
+    val nySkattegrunnlagspostOpprettet = persistenceServiceMock.opprettSkattegrunnlagspost(byggSkattegrunnlagspostDto())
     val nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet = persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(byggUtvidetBarnetrygdOgSmaabarnstilleggDto())
 
     val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
     val inntektAinntektDtoListe = inntektAinntektDtoCaptor.allValues
     val inntektspostAinntektDtoListe = inntektspostAinntektDtoCaptor.allValues
-    val inntektSkattDtoListe = inntektSkattDtoCaptor.allValues
-    val inntektspostSkattDtoListe = inntektspostSkattDtoCaptor.allValues
+    val skattegrunnlagDtoListe = skattegrunnlagDtoCaptor.allValues
+    val skattegrunnlagspostDtoListe = skattegrunnlagspostDtoCaptor.allValues
     val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor.allValues
 
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
@@ -128,11 +128,11 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(nyInntektspostAinntektOpprettet).isNotNull() },
       Executable { assertThat(nyInntektspostAinntektOpprettet.inntektspostId).isNotNull() },
 
-      Executable { assertThat(nyInntektSkattOpprettet).isNotNull() },
-      Executable { assertThat(nyInntektSkattOpprettet.skattegrunnlagId).isNotNull() },
+      Executable { assertThat(nyttSkattegrunnlagOpprettet).isNotNull() },
+      Executable { assertThat(nyttSkattegrunnlagOpprettet.skattegrunnlagId).isNotNull() },
 
-      Executable { assertThat(nyInntektspostSkattOpprettet).isNotNull() },
-      Executable { assertThat(nyInntektspostSkattOpprettet.skattegrunnlagspostId).isNotNull() },
+      Executable { assertThat(nySkattegrunnlagspostOpprettet).isNotNull() },
+      Executable { assertThat(nySkattegrunnlagspostOpprettet.skattegrunnlagspostId).isNotNull() },
 
       Executable { assertThat(nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet).isNotNull() },
       Executable { assertThat(nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet.ubstId).isNotNull() },
@@ -161,17 +161,17 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(inntektspostAinntektDtoListe[0].belop).isEqualTo(BigDecimal.valueOf(50000)) },
 
 
-      // sjekk InntektSkattDto
-      Executable { assertThat(inntektSkattDtoListe[0].personId).isEqualTo("7654321") },
-      Executable { assertThat(inntektSkattDtoListe[0].aktiv).isTrue },
-      Executable { assertThat(inntektSkattDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-      Executable { assertThat(inntektSkattDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-12-01")) },
+      // sjekk SkattegrunnlagDto
+      Executable { assertThat(skattegrunnlagDtoListe[0].personId).isEqualTo("7654321") },
+      Executable { assertThat(skattegrunnlagDtoListe[0].aktiv).isTrue },
+      Executable { assertThat(skattegrunnlagDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+      Executable { assertThat(skattegrunnlagDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-12-01")) },
 
-      // sjekk InntektspostSkattDto
-      Executable { assertThat(inntektspostSkattDtoListe.size).isEqualTo(1) },
+      // sjekk SkattegrunnlagspostDto
+      Executable { assertThat(skattegrunnlagspostDtoListe.size).isEqualTo(1) },
 
-      Executable { assertThat(inntektspostSkattDtoListe[0].type).isEqualTo(("Loenn")) },
-      Executable { assertThat(inntektspostSkattDtoListe[0].belop).isEqualTo(BigDecimal.valueOf(171717)) },
+      Executable { assertThat(skattegrunnlagspostDtoListe[0].type).isEqualTo(("Loenn")) },
+      Executable { assertThat(skattegrunnlagspostDtoListe[0].belop).isEqualTo(BigDecimal.valueOf(171717)) },
 
       // sjekk UtvidetBarnetrygdOgSmaabarnstilleggdDto
       Executable { assertThat(ubstListe[0].personId).isEqualTo("1234567") },
@@ -180,6 +180,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(ubstListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
       Executable { assertThat(ubstListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) },
       Executable { assertThat(ubstListe[0].manueltBeregnet).isFalse },
+      Executable { assertThat(ubstListe[0].deltBosted).isFalse },
 
       )
 
