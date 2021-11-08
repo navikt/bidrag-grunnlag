@@ -165,7 +165,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(skattegrunnlagDtoListe[0].personId).isEqualTo("7654321") },
       Executable { assertThat(skattegrunnlagDtoListe[0].aktiv).isTrue },
       Executable { assertThat(skattegrunnlagDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-      Executable { assertThat(skattegrunnlagDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-12-01")) },
+      Executable { assertThat(skattegrunnlagDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-01-01")) },
 
       // sjekk SkattegrunnlagspostDto
       Executable { assertThat(skattegrunnlagspostDtoListe.size).isEqualTo(1) },

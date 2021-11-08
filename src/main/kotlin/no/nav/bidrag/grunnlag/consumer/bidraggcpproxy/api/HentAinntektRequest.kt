@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api
 
-data class HentInntektRequest(
+data class HentAinntektRequest(
   val ident: String,
   val maanedFom: String,
   val maanedTom: String,

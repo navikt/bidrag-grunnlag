@@ -12,18 +12,21 @@ import kotlin.reflect.full.memberProperties
 @Entity
 data class Skattegrunnlagspost(
 
-    @Id
+  @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "skattegrunnlagspost_id")
   val skattegrunnlagspostId: Int = 0,
 
-    @Column(nullable = false, name = "skattegrunnlag_id")
+  @Column(nullable = false, name = "skattegrunnlag_id")
   val skattegrunnlagId: Int = 0,
 
-    @Column(nullable = false, name = "type")
+  @Column(nullable = false, name = "skattegrunnlag_type")
+  val skattegrunnlagType: String = "",
+
+  @Column(nullable = false, name = "type")
   val type: String = "",
 
-    @Column(nullable = false, name = "belop")
+  @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO
 )
 

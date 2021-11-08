@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
@@ -160,14 +161,17 @@ class PersistenceService(
           .forEach { inntektspost ->
             hentSkattegrunnlagspostListe.add(
               HentSkattegrunnlagspostResponse(
-                inntektspost.type,
-                inntektspost.belop
+                skattegrunnlagType = inntektspost.skattegrunnlagType,
+                inntektType = inntektspost.type,
+                belop = inntektspost.belop
               )
             )
           }
         hentSkattegrunnlagResponseListe.add(
           HentSkattegrunnlagResponse(
-            inntekt.personId,
+            personId = inntekt.personId,
+            periodeFra = inntekt.periodeFra,
+            periodeTil = inntekt.periodeTil,
             hentSkattegrunnlagspostListe
           )
         )
