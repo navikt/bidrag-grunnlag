@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query
 interface InntektspostAinntektRepository : JpaRepository<InntektspostAinntekt, Int?> {
 
   @Query(
-    "select inpa from InntektspostAinntekt inpa where inpa.inntektId = :inntektId order by inpa.utbetalingsperiode"
+    "select inpa from InntektspostAinntekt inpa where inpa.inntektId = :inntektId order by inpa.utbetalingsperiode, inpa.type"
   )
   fun hentInntektsposter(inntektId: Int): List<InntektspostAinntekt>
 

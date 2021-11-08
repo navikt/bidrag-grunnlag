@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntektListeResponse
+import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentAinntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -15,15 +15,15 @@ private const val BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT = "/skattegrunnlag/hent"
 
 open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
-  fun hentInntekt(request: HentInntektRequest): RestResponse<HentInntektListeResponse> {
+  fun hentAinntekt(request: HentAinntektRequest): RestResponse<HentAinntektListeResponse> {
     LOGGER.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGGCPPROXY_INNTEKT_CONTEXT,
       HttpMethod.POST,
       initHttpEntity(request),
-      HentInntektListeResponse::class.java,
-      HentInntektListeResponse(emptyList())
+      HentAinntektListeResponse::class.java,
+      HentAinntektListeResponse(emptyList())
     )
 
     logResponse(restResponse)

@@ -2,10 +2,10 @@ package no.nav.bidrag.grunnlag.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntektListeResponse
+import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentAinntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -25,10 +25,10 @@ import org.springframework.web.server.ResponseStatusException
 class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyConsumer, private val familieBaSakConsumer: FamilieBaSakConsumer) {
 
 
-  @PostMapping(HENT_INNTEKT)
-  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter inntekt")
-  fun hentInntekt(@RequestBody hentInntektRequest: HentInntektRequest): ResponseEntity<HentInntektListeResponse> {
-    return handleRestResponse(bidragGcpProxyConsumer.hentInntekt(hentInntektRequest))
+  @PostMapping(HENT_AINNTEKT)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter Ainntekt")
+  fun hentAinntekt(@RequestBody hentAinntektRequest: HentAinntektRequest): ResponseEntity<HentAinntektListeResponse> {
+    return handleRestResponse(bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest))
   }
 
   @PostMapping(HENT_SKATTEGRUNNLAG)
@@ -51,7 +51,7 @@ class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyC
   }
 
   companion object {
-    const val HENT_INNTEKT = "/integrasjoner/inntekt"
+    const val HENT_AINNTEKT = "/integrasjoner/ainntekt"
     const val HENT_SKATTEGRUNNLAG = "/integrasjoner/skattegrunnlag"
     const val HENT_FAMILIEBASAK = "/integrasjoner/familiebasak"
   }

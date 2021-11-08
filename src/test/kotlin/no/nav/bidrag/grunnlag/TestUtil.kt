@@ -15,6 +15,7 @@ import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
+import no.nav.bidrag.grunnlag.service.SkattegrunnlagType
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -80,7 +81,7 @@ class TestUtil {
       grunnlagspakkeId = (1..100).random(),
       personId = "7654321",
       periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-12-01"),
+      periodeTil = LocalDate.parse("2022-01-01"),
       aktiv = true,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
@@ -90,6 +91,7 @@ class TestUtil {
     fun byggSkattegrunnlagspostDto() = SkattegrunnlagspostDto(
       skattegrunnlagspostId = (1..100).random(),
       skattegrunnlagId = (1..100).random(),
+      skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
       type = "Loenn",
       belop = BigDecimal.valueOf(171717),
     )
