@@ -2,58 +2,47 @@ package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntektListeResponse
+import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
-import org.slf4j.LoggerFactory
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
+import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
 
 private const val BIDRAGGCPPROXY_INNTEKT_CONTEXT = "/inntekt/hent"
 private const val BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT = "/skattegrunnlag/hent"
 
-open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate) {
+open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
-  companion object {
-    @JvmStatic
-    private val LOGGER = LoggerFactory.getLogger(BidragGcpProxyConsumer::class.java)
-  }
-
-  fun hentInntekt(request: HentInntektRequest): HentInntektListeResponse {
+  fun hentInntekt(request: HentInntektRequest): RestResponse<HentInntektListeResponse> {
     LOGGER.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
 
-    val response = restTemplate.exchange(
+    val restResponse = restTemplate.tryExchange(
       BIDRAGGCPPROXY_INNTEKT_CONTEXT,
       HttpMethod.POST,
       initHttpEntity(request),
-      HentInntektListeResponse::class.java
+      HentInntektListeResponse::class.java,
+      HentInntektListeResponse(emptyList())
     )
 
-    LOGGER.info("Response: ${response.statusCode}/${response.body}")
+    logResponse(restResponse)
 
-    return response.body ?: HentInntektListeResponse(emptyList())
+    return restResponse
   }
 
-  fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): HentSkattegrunnlagResponse {
+  fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): RestResponse<HentSkattegrunnlagResponse> {
     LOGGER.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
 
-    val response = restTemplate.exchange(
+    val restResponse = restTemplate.tryExchange(
         BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT,
         HttpMethod.POST,
         initHttpEntity(request),
-        HentSkattegrunnlagResponse::class.java
+        HentSkattegrunnlagResponse::class.java,
+        HentSkattegrunnlagResponse(emptyList(), emptyList(), null)
     )
+    logResponse(restResponse)
 
-    LOGGER.info("Response: ${response.statusCode}/${response.body}")
-
-    return response.body ?: HentSkattegrunnlagResponse(emptyList(), emptyList(), null);
-  }
-
-  private fun <T> initHttpEntity(body: T): HttpEntity<T> {
-    val httpHeaders = HttpHeaders()
-    httpHeaders.contentType = MediaType.APPLICATION_JSON
-    return HttpEntity(body, httpHeaders)
+    return restResponse;
   }
 }
