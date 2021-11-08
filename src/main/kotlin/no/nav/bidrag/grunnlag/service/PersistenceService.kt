@@ -19,6 +19,7 @@ import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.dto.toInntektspostAinntektEntity
 import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.dto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
+import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.entity.toInntektAinntektDto
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
@@ -31,9 +32,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.InntektspostAinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
-import org.hibernate.JDBCException
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -107,7 +106,7 @@ class PersistenceService(
   // Valider at grunnlagspakke eksisterer
   fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
     if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId)) {
-      throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke", HttpStatus.NOT_FOUND)
+      throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke")
     }
   }
 

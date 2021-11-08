@@ -33,31 +33,4 @@ class BidragGcpProxyConsumerTest() {
 //  public TestHentInntekt() {
 //    Mockito.`when`(restTemplate.exchange(String(), HttpMethod.POST, HttpEntity.EMPTY, HentInntektListeResponse::class.java)).thenThrow(HttpClientErrorException(HttpStatus.NOT_FOUND)).
 //  }
-
-  @Test
-  fun TestDbActionPerformer() {
-    var result: DbResult<List<String>> = performDbAction {
-      throw ConstraintViolationException("Feil", SQLException(), "")
-    }
-    assertTrue(result is DbResult.Failure)
-
-    result = performDbAction {
-      emptyList()
-    }
-    assertTrue(result is DbResult.Success)
-  }
-
-  sealed class DbResult<T> {
-    data class Success<T>(val result: T) : DbResult<T>()
-    data class Failure<T>(val exception: JDBCException) : DbResult<T>()
-  }
-
-  fun <T> performDbAction(dbAction: () -> T): DbResult<T> {
-    return try {
-      val result = dbAction()
-      DbResult.Success(result)
-    } catch (exception: JDBCException) {
-      DbResult.Failure(exception)
-    }
-  }
 }
