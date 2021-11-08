@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
@@ -62,6 +61,9 @@ class GrunnlagspakkeService(
   fun oppdaterGrunnlagspakke(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): OppdaterGrunnlagspakkeResponse {
 
     val grunnlagstypeResponseListe = mutableListOf<GrunnlagstypeResponse>()
+
+    // Validerer at grunnlagspakke eksisterer
+    persistenceService.validerGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId)
 
     oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe.forEach() { grunnlagstypeRequest ->
       when (grunnlagstypeRequest.grunnlagstype) {
@@ -340,10 +342,12 @@ class GrunnlagspakkeService(
 
 
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
     return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
   fun settGyldigTildatoGrunnlagspakke(settGyldigTilDatoForGrunnlagspakkeRequest: SettGyldigTilDatoForGrunnlagspakkeRequest): Int {
+    persistenceService.validerGrunnlagspakke(settGyldigTilDatoForGrunnlagspakkeRequest.grunnlagspakkeId)
     return persistenceService.settGyldigTildatoGrunnlagspakke(
       settGyldigTilDatoForGrunnlagspakkeRequest.grunnlagspakkeId,
       LocalDate.parse(settGyldigTilDatoForGrunnlagspakkeRequest.gyldigTil)

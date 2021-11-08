@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
@@ -32,7 +31,9 @@ import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.InntektspostAinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
+import org.hibernate.JDBCException
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -99,10 +100,15 @@ class PersistenceService(
     val grunnlagspakke = HentKomplettGrunnlagspakkeResponse(
       grunnlagspakkeId, hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
-
     )
-
     return grunnlagspakke
+  }
+
+  // Valider at grunnlagspakke eksisterer
+  fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
+    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId)) {
+      throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke", HttpStatus.NOT_FOUND)
+    }
   }
 
 
@@ -174,25 +180,20 @@ class PersistenceService(
   }
 
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> {
-    val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
-    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentStonader(grunnlagspakkeId)
-      .forEach { ubst ->
-        hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
-          HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
-            ubst.personId,
-            ubst.type,
-            ubst.periodeFra,
-            ubst.periodeTil,
-            ubst.belop,
-            ubst.manueltBeregnet
+      val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
+      utvidetBarnetrygdOgSmaabarnstilleggRepository.hentStonader(grunnlagspakkeId)
+        .forEach { ubst ->
+          hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
+            HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
+              ubst.personId,
+              ubst.type,
+              ubst.periodeFra,
+              ubst.periodeTil,
+              ubst.belop,
+              ubst.manueltBeregnet
+            )
           )
-        )
-      }
-
-    return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
-
+        }
+      return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.toList()
   }
-
-
-
 }
