@@ -208,8 +208,6 @@ class GrunnlagspakkeService(
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
-      var antallSkattegrunnlagsposter = 0
-
       var inntektAar = LocalDate.parse(personIdOgPeriode.periodeFra + "-01").year
       val sluttAar = LocalDate.parse(personIdOgPeriode.periodeTil + "-01").year
 
@@ -231,6 +229,7 @@ class GrunnlagspakkeService(
         when (val restResponseSkattegrunnlag =
           bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest)) {
           is RestResponse.Success -> {
+            var antallSkattegrunnlagsposter = 0
             val skattegrunnlagResponse = restResponseSkattegrunnlag.body
             LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
 

@@ -25,9 +25,9 @@ import org.springframework.web.server.ResponseStatusException
 class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyConsumer, private val familieBaSakConsumer: FamilieBaSakConsumer) {
 
 
-  @PostMapping(HENT_INNTEKT)
-  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter inntekt")
-  fun hentInntekt(@RequestBody hentAinntektRequest: HentAinntektRequest): ResponseEntity<HentAinntektListeResponse> {
+  @PostMapping(HENT_AINNTEKT)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter Ainntekt")
+  fun hentAinntekt(@RequestBody hentAinntektRequest: HentAinntektRequest): ResponseEntity<HentAinntektListeResponse> {
     return handleRestResponse(bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest))
   }
 
@@ -51,7 +51,7 @@ class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyC
   }
 
   companion object {
-    const val HENT_INNTEKT = "/integrasjoner/inntekt"
+    const val HENT_AINNTEKT = "/integrasjoner/ainntekt"
     const val HENT_SKATTEGRUNNLAG = "/integrasjoner/skattegrunnlag"
     const val HENT_FAMILIEBASAK = "/integrasjoner/familiebasak"
   }
