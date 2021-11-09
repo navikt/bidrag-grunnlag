@@ -59,12 +59,15 @@ sealed class RestResponse<T> {
 }
 
 fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {
-  return try {
+  try {
     val response = exchange(url, httpMethod, httpEntity, responseType)
-    RestResponse.Success(response.body ?: fallbackBody)
+    return RestResponse.Success(response.body ?: fallbackBody)
   } catch (e: HttpClientErrorException) {
-    RestResponse.Failure("Message: ${e.message} ResponseHeader: ${e.responseHeaders?.get(HttpHeaders.WARNING)} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
+    if (e.statusCode == HttpStatus.NOT_FOUND) {
+      return RestResponse.Failure("Message: ${e.message} ResponseHeader: ${e.responseHeaders?.get(HttpHeaders.WARNING)} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
+    }
+    throw e
   } catch (e: HttpServerErrorException) {
-    RestResponse.Failure("Message: ${e.message} ResponseHeader: ${e.responseHeaders?.get(HttpHeaders.WARNING)} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
+    throw e
   }
 }

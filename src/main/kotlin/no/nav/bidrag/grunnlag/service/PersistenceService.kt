@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
@@ -20,6 +19,7 @@ import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.dto.toInntektspostAinntektEntity
 import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.dto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
+import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.entity.toInntektAinntektDto
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
@@ -38,12 +38,12 @@ import java.time.LocalDate
 
 @Service
 class PersistenceService(
-    val grunnlagspakkeRepository: GrunnlagspakkeRepository,
-    val inntektAinntektRepository: InntektAinntektRepository,
-    val inntektspostAinntektRepository: InntektspostAinntektRepository,
-    val skattegrunnlagRepository: SkattegrunnlagRepository,
-    val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
-    val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
+  val grunnlagspakkeRepository: GrunnlagspakkeRepository,
+  val inntektAinntektRepository: InntektAinntektRepository,
+  val inntektspostAinntektRepository: InntektspostAinntektRepository,
+  val skattegrunnlagRepository: SkattegrunnlagRepository,
+  val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
+  val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -99,10 +99,15 @@ class PersistenceService(
     val grunnlagspakke = HentKomplettGrunnlagspakkeResponse(
       grunnlagspakkeId, hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
-
     )
-
     return grunnlagspakke
+  }
+
+  // Valider at grunnlagspakke eksisterer
+  fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
+    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId)) {
+      throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke")
+    }
   }
 
 
@@ -196,11 +201,6 @@ class PersistenceService(
           )
         )
       }
-
     return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
-
   }
-
-
-
 }

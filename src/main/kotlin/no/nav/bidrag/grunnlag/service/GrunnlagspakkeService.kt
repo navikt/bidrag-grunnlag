@@ -62,6 +62,9 @@ class GrunnlagspakkeService(
 
     val grunnlagstypeResponseListe = mutableListOf<GrunnlagstypeResponse>()
 
+    // Validerer at grunnlagspakke eksisterer
+    persistenceService.validerGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId)
+
     oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe.forEach() { grunnlagstypeRequest ->
       when (grunnlagstypeRequest.grunnlagstype) {
 
@@ -365,10 +368,12 @@ class GrunnlagspakkeService(
 
 
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
     return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
   fun settGyldigTildatoGrunnlagspakke(settGyldigTilDatoForGrunnlagspakkeRequest: SettGyldigTilDatoForGrunnlagspakkeRequest): Int {
+    persistenceService.validerGrunnlagspakke(settGyldigTilDatoForGrunnlagspakkeRequest.grunnlagspakkeId)
     return persistenceService.settGyldigTildatoGrunnlagspakke(
       settGyldigTilDatoForGrunnlagspakkeRequest.grunnlagspakkeId,
       LocalDate.parse(settGyldigTilDatoForGrunnlagspakkeRequest.gyldigTil)
