@@ -201,6 +201,6 @@ class PersistenceService(
             )
           )
         }
-      return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.toList()
+      return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
   }
 }
