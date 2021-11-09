@@ -7,16 +7,19 @@ import kotlin.reflect.full.memberProperties
 
 data class SkattegrunnlagspostDto(
 
-    @Schema(description = "Skattegrunnlagspost-id")
+  @Schema(description = "Skattegrunnlagspost-id")
   val skattegrunnlagspostId: Int = 0,
 
-    @Schema(description = "Skattegrunnlag-id")
+  @Schema(description = "Skattegrunnlag-id")
   val skattegrunnlagId: Int = 0,
 
-    @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
+  @Schema(description = "Ordinær eller Svalbard")
+  val skattegrunnlagType: String = "",
+
+  @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
   val type: String = "",
 
-    @Schema(description = "Belop")
+  @Schema(description = "Belop")
   val belop: BigDecimal = BigDecimal.ZERO
 )
 

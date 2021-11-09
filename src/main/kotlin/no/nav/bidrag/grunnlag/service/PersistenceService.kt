@@ -141,9 +141,14 @@ class PersistenceService(
           }
         hentInntektAinntektResponseListe.add(
           HentInntektAinntektResponse(
-            inntekt.personId,
-//            inntekt.type,
-            hentInntektspostListe
+            personId = inntekt.personId,
+            periodeFra = inntekt.periodeFra,
+            periodeTil = inntekt.periodeTil,
+            aktiv = inntekt.aktiv,
+            brukFra = inntekt.brukFra,
+            brukTil = inntekt.brukTil,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
+            inntektspostAinntektListe = hentInntektspostListe
           )
         )
       }
@@ -161,14 +166,17 @@ class PersistenceService(
           .forEach { inntektspost ->
             hentSkattegrunnlagspostListe.add(
               HentSkattegrunnlagspostResponse(
-                inntektspost.type,
-                inntektspost.belop
+                skattegrunnlagType = inntektspost.skattegrunnlagType,
+                inntektType = inntektspost.type,
+                belop = inntektspost.belop
               )
             )
           }
         hentSkattegrunnlagResponseListe.add(
           HentSkattegrunnlagResponse(
-            inntekt.personId,
+            personId = inntekt.personId,
+            periodeFra = inntekt.periodeFra,
+            periodeTil = inntekt.periodeTil,
             hentSkattegrunnlagspostListe
           )
         )

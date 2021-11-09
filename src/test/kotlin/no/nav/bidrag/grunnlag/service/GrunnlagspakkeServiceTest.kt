@@ -114,7 +114,7 @@ class GrunnlagspakkeServiceTest {
 
   @Test
   @Suppress("NonAsciiCharacters")
-  fun `Test på hente grunnlagspakke med aktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
+  fun `Test på hente grunnlagspakke med aktive og innaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
@@ -159,7 +159,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // tester at inntekt som er merket med aktiv = false ikke hentes
+/*    // tester at inntekt som er merket med aktiv = false ikke hentes
     val innaktivInntektDto = InntektAinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "1234567",
@@ -185,7 +185,7 @@ class GrunnlagspakkeServiceTest {
         beskrivelse = "Loenn/fastloenn",
         belop = BigDecimal.valueOf(50000.01)
       )
-    )
+    )*/
 
 
     // Legger inn inntekt for person nr 2
@@ -221,7 +221,7 @@ class GrunnlagspakkeServiceTest {
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "345678",
       periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-12-01"),
+      periodeTil = LocalDate.parse("2022-01-01"),
       aktiv = true,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
@@ -233,6 +233,7 @@ class GrunnlagspakkeServiceTest {
     persistenceService.opprettSkattegrunnlagspost(
       SkattegrunnlagspostDto(
         skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
+        skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
         type = "Loenn",
         belop = BigDecimal.valueOf(23456.01)
       )
@@ -289,10 +290,11 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(komplettGrunnlagspakkeFunnet.inntektAinntektListe[1].inntektspostAinntektListe[0].beskrivelse).isEqualTo("Loenn/fastloenn")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.inntektAinntektListe[1].inntektspostAinntektListe[0].belop).isEqualTo(BigDecimal.valueOf(666000.01))},
 
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].inntektspostSkattListe.size).isEqualTo(1)},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe.size).isEqualTo(1)},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].personId).isEqualTo("345678")},
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].inntektspostSkattListe[0].inntektType).isEqualTo("Loenn")},
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].inntektspostSkattListe[0].belop).isEqualTo(BigDecimal.valueOf(23456.01))},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].skattegrunnlagType).isEqualTo(SkattegrunnlagType.ORDINAER.toString())},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].inntektType).isEqualTo("Loenn")},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].belop).isEqualTo(BigDecimal.valueOf(23456.01))},
 
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe.size).isEqualTo(1) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].personId).isEqualTo("22334455") },
