@@ -38,12 +38,12 @@ import java.time.LocalDate
 
 @Service
 class PersistenceService(
-    val grunnlagspakkeRepository: GrunnlagspakkeRepository,
-    val inntektAinntektRepository: InntektAinntektRepository,
-    val inntektspostAinntektRepository: InntektspostAinntektRepository,
-    val skattegrunnlagRepository: SkattegrunnlagRepository,
-    val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
-    val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
+  val grunnlagspakkeRepository: GrunnlagspakkeRepository,
+  val inntektAinntektRepository: InntektAinntektRepository,
+  val inntektspostAinntektRepository: InntektspostAinntektRepository,
+  val skattegrunnlagRepository: SkattegrunnlagRepository,
+  val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
+  val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -187,20 +187,20 @@ class PersistenceService(
   }
 
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> {
-      val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
-      utvidetBarnetrygdOgSmaabarnstilleggRepository.hentStonader(grunnlagspakkeId)
-        .forEach { ubst ->
-          hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
-            HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
-              ubst.personId,
-              ubst.type,
-              ubst.periodeFra,
-              ubst.periodeTil,
-              ubst.belop,
-              ubst.manueltBeregnet
-            )
+    val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
+    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentStonader(grunnlagspakkeId)
+      .forEach { ubst ->
+        hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
+          HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
+            ubst.personId,
+            ubst.type,
+            ubst.periodeFra,
+            ubst.periodeTil,
+            ubst.belop,
+            ubst.manueltBeregnet
           )
-        }
-      return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
+        )
+      }
+    return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
   }
 }
