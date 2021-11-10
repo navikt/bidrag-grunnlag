@@ -1,10 +1,8 @@
 package no.nav.bidrag.grunnlag.consumer
 
-import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.slf4j.LoggerFactory.getLogger
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -12,15 +10,10 @@ import org.springframework.http.MediaType
 
 open class GrunnlagsConsumer {
 
-  companion object {
-    @JvmStatic
-    val LOGGER: Logger = getLogger(FamilieBaSakConsumer::class.java)
-  }
-
-  fun <T> logResponse(restResponse: RestResponse<T>) {
+  fun <T> logResponse(logger: Logger, exceptionLogger: ExceptionLogger, restResponse: RestResponse<T>) {
     when (restResponse) {
-      is RestResponse.Success -> LOGGER.info("Response: ${HttpStatus.OK}/${restResponse.body}")
-      is RestResponse.Failure -> LOGGER.info("Response: ${restResponse.statusCode}/${restResponse.message}")
+      is RestResponse.Success -> logger.info("Response: ${HttpStatus.OK}/${restResponse.body}")
+      is RestResponse.Failure -> exceptionLogger.logException(restResponse.restClientException, "RestClientException")
     }
   }
 
