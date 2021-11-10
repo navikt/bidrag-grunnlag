@@ -1,6 +1,8 @@
 package no.nav.bidrag.grunnlag.controller
 
+import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
+import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
@@ -8,16 +10,25 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeRespo
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
+import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,6 +42,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
+import org.springframework.http.ResponseEntity
+import org.springframework.web.client.HttpClientErrorException
 
 @DisplayName("GrunnlagspakkeControllerTest")
 @ActiveProfiles(TEST_PROFILE)
@@ -53,6 +66,7 @@ class GrunnlagspakkeControllerTest {
 
   @Value("\${server.servlet.context-path}")
   private val contextPath: String? = null
+
   @BeforeEach
   fun `init`() {
     // Sletter alle forekomster
@@ -85,35 +99,119 @@ class GrunnlagspakkeControllerTest {
   }
 
 
-/*  @Test
+  @Test
   fun `skal oppdatere en grunnlagspakke`() {
 
-    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(GrunnlagspakkeDto(
-      opprettetAv = "X123456"
-    ))
+    val restTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
+    val bidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
+    val familieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
+    val grunnlagspakkeService = GrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer)
+    val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
 
-    // Sender inn request for å oppdatere grunnlagspakke med grunnlagsdata
-    val response = securedTestRestTemplate.exchange(
-      fullUrlForOppdaterGrunnlagspakke(),
-      HttpMethod.POST,
-      byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId),
-      OppdaterGrunnlagspakkeResponse::class.java
+
+    val nyGrunnlagspakkeOpprettetResponse = grunnlagspakkeController.opprettNyGrunnlagspakke(
+      OpprettGrunnlagspakkeRequest(
+        opprettetAv = "X123456"
+      )
     )
 
     assertAll(
-      Executable { assertThat(response).isNotNull() },
-      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
-      Executable { assertThat(response?.body).isNotNull }
+      Executable { assertThat(nyGrunnlagspakkeOpprettetResponse).isNotNull },
+      Executable { assertThat(nyGrunnlagspakkeOpprettetResponse?.body).isNotNull }
     )
+
+    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentAinntektListeResponse>>())).thenReturn(
+      ResponseEntity(HentAinntektListeResponse(emptyList()), HttpStatus.OK)
+    )
+
+    Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>()))
+      .thenReturn(
+        ResponseEntity(HentSkattegrunnlagResponse(emptyList(), emptyList(), ""), HttpStatus.OK)
+      )
+
+    Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utvidet-barnetrygd"), eq(HttpMethod.POST), any(), any<Class<FamilieBaSakResponse>>()))
+      .thenReturn(
+        ResponseEntity(FamilieBaSakResponse(emptyList()), HttpStatus.OK)
+      )
+
+    val response =
+      grunnlagspakkeController.oppdaterGrunnlagspakke(TestUtil.byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse!!.body!!.grunnlagspakkeId))
+
+    assertAll(
+      Executable { assertThat(response).isNotNull },
+      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
+      Executable { assertThat(response?.body).isNotNull },
+      Executable { assertThat(response?.body?.grunnlagtypeResponsListe?.size).isEqualTo(3) }
+    )
+
+    response?.body?.grunnlagtypeResponsListe?.forEach() { grunnlagstypeResponse ->
+      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach() { hentGrunnlagkallResponse ->
+        assertEquals(hentGrunnlagkallResponse.statuskode, HttpStatus.OK.value())
+      }
+    }
+
     grunnlagspakkeRepository.deleteAll()
-  }*/
+  }
+
+  @Test
+  fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
+    val restTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
+    val bidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
+    val familieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
+    val grunnlagspakkeService = GrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer)
+    val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
+
+
+    val nyGrunnlagspakkeOpprettetResponse = grunnlagspakkeController.opprettNyGrunnlagspakke(
+      OpprettGrunnlagspakkeRequest(
+        opprettetAv = "X123456"
+      )
+    )
+
+    assertAll(
+      Executable { assertThat(nyGrunnlagspakkeOpprettetResponse).isNotNull },
+      Executable { assertThat(nyGrunnlagspakkeOpprettetResponse?.body).isNotNull }
+    )
+
+    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentAinntektListeResponse>>())).thenThrow(
+      HttpClientErrorException(HttpStatus.NOT_FOUND)
+    )
+
+    Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>())).thenThrow(
+      HttpClientErrorException(HttpStatus.NOT_FOUND)
+    )
+
+    Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utvidet-barnetrygd"), eq(HttpMethod.POST), any(), any<Class<FamilieBaSakResponse>>()))
+      .thenThrow(
+        HttpClientErrorException(HttpStatus.NOT_FOUND)
+      )
+
+    val response =
+      grunnlagspakkeController.oppdaterGrunnlagspakke(TestUtil.byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse!!.body!!.grunnlagspakkeId))
+
+    assertAll(
+      Executable { assertThat(response).isNotNull },
+      Executable { assertThat(response?.statusCode).isEqualTo(HttpStatus.OK) },
+      Executable { assertThat(response?.body).isNotNull },
+      Executable { assertThat(response?.body?.grunnlagtypeResponsListe?.size).isEqualTo(3) }
+    )
+
+    response?.body?.grunnlagtypeResponsListe?.forEach() { grunnlagstypeResponse ->
+      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach() { hentGrunnlagkallResponse ->
+        assertEquals(hentGrunnlagkallResponse.statuskode, HttpStatus.NOT_FOUND.value())
+      }
+    }
+
+  }
 
 
   @Test
   fun `skal finne data for en grunnlagspakke`() {
-    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(GrunnlagspakkeDto(
-      opprettetAv = "X123456"
-    ))
+    val nyGrunnlagspakkeOpprettet = persistenceService.opprettNyGrunnlagspakke(
+      GrunnlagspakkeDto(
+        opprettetAv = "X123456"
+      )
+    )
 
     // Henter forekomst
     val response = securedTestRestTemplate.exchange(

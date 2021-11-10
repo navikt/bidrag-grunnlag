@@ -36,7 +36,18 @@ class TestUtil {
       grunnlagtypeRequestListe = listOf(
         GrunnlagstypeRequest(
           Grunnlagstype.AINNTEKT.toString(),
-          listOf(PersonIdOgPeriodeRequest("123456789", "2021-01-01", "2022-01-01")))))
+          listOf(PersonIdOgPeriodeRequest("12345678910", "2021-01", "2022-01"))
+        ),
+        GrunnlagstypeRequest(
+          Grunnlagstype.SKATTEGRUNNLAG.toString(),
+          listOf(PersonIdOgPeriodeRequest("12345678910", "2021-01", "2022-01"))
+        ),
+        GrunnlagstypeRequest(
+          Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
+          listOf(PersonIdOgPeriodeRequest("12345678910", "2021-01", "2022-01"))
+        )
+      )
+    )
 
 
     fun byggHentGrunnlagspakkeRequest() = HentGrunnlagspakkeRequest(
@@ -113,7 +124,7 @@ class TestUtil {
       byggUtvidetBarnetrygdPeriode()
     )
 
-    fun byggUtvidetBarnetrygdPeriode() : List<UtvidetBarnetrygdPeriode> {
+    fun byggUtvidetBarnetrygdPeriode(): List<UtvidetBarnetrygdPeriode> {
       val utvidetBarnetrygdOgSmaabarnstilleggPeriode = UtvidetBarnetrygdPeriode(
 //        stonadstype = BisysStonadstype.UTVIDET,
         stønadstype = BisysStønadstype.UTVIDET,
