@@ -62,7 +62,10 @@ class BidragGrunnlagConfig {
 
   @Bean
   fun familieBaSakConsumer(
-    @Value("\${FAMILIEBASAK_URL}") url: String, restTemplate: HttpHeaderRestTemplate, securityTokenService: SecurityTokenService
+    @Value("\${FAMILIEBASAK_URL}") url: String,
+    restTemplate: HttpHeaderRestTemplate,
+    securityTokenService: SecurityTokenService,
+    exceptionLogger: ExceptionLogger
   ): FamilieBaSakConsumer {
     LOGGER.info("Url satt i config: $url")
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -72,7 +75,10 @@ class BidragGrunnlagConfig {
 
   @Bean
   fun bidragGcpProxyConsumer(
-    @Value("\${BIDRAGGCPPROXY_URL}") url: String, restTemplate: HttpHeaderRestTemplate, securityTokenService: SecurityTokenService
+    @Value("\${BIDRAGGCPPROXY_URL}") url: String,
+    restTemplate: HttpHeaderRestTemplate,
+    securityTokenService: SecurityTokenService,
+    exceptionLogger: ExceptionLogger
   ): BidragGcpProxyConsumer {
     LOGGER.info("Url satt i config: $url")
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)

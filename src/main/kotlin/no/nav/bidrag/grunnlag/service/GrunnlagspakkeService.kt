@@ -64,6 +64,9 @@ class GrunnlagspakkeService(
 
     val grunnlagstypeResponseListe = mutableListOf<GrunnlagstypeResponse>()
 
+    // Validerer at grunnlagspakke eksisterer
+    persistenceService.validerGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId)
+
     oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe.forEach() { grunnlagstypeRequest ->
       when (grunnlagstypeRequest.grunnlagstype) {
 
@@ -190,7 +193,8 @@ class GrunnlagspakkeService(
           hentGrunnlagkallResponseListe.add(
             HentGrunnlagkallResponse(
               personIdOgPeriode.personId,
-              "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}. Status: ${restResponseInntekt.statusCode}"
+              "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+              restResponseInntekt.statusCode.value()
             )
           )
         }
@@ -284,7 +288,8 @@ class GrunnlagspakkeService(
           is RestResponse.Failure -> hentGrunnlagkallResponseListe.add(
             HentGrunnlagkallResponse(
               personIdOgPeriode.personId,
-              "Feil ved henting av skattegrunnlag for inntektsåret ${inntektAar}. Status: ${restResponseSkattegrunnlag.statusCode}"
+              "Feil ved henting av skattegrunnlag for inntektsåret ${inntektAar}.",
+              restResponseSkattegrunnlag.statusCode.value()
             )
           )
         }
@@ -356,7 +361,8 @@ class GrunnlagspakkeService(
         is RestResponse.Failure -> hentGrunnlagkallResponseListe.add(
           HentGrunnlagkallResponse(
             personIdOgPeriode.personId,
-            "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}. Status: ${restResponseFamilieBaSak.statusCode}"
+            "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+            restResponseFamilieBaSak.statusCode.value()
           )
         )
       }
@@ -369,6 +375,7 @@ class GrunnlagspakkeService(
 
 
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
     return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 

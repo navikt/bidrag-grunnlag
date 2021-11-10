@@ -19,6 +19,7 @@ import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.dto.toInntektspostAinntektEntity
 import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.dto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
+import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.entity.toInntektAinntektDto
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
@@ -36,12 +37,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class PersistenceService(
-    val grunnlagspakkeRepository: GrunnlagspakkeRepository,
-    val inntektAinntektRepository: InntektAinntektRepository,
-    val inntektspostAinntektRepository: InntektspostAinntektRepository,
-    val skattegrunnlagRepository: SkattegrunnlagRepository,
-    val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
-    val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
+  val grunnlagspakkeRepository: GrunnlagspakkeRepository,
+  val inntektAinntektRepository: InntektAinntektRepository,
+  val inntektspostAinntektRepository: InntektspostAinntektRepository,
+  val skattegrunnlagRepository: SkattegrunnlagRepository,
+  val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
+  val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -97,15 +98,22 @@ class PersistenceService(
     val grunnlagspakke = HentKomplettGrunnlagspakkeResponse(
       grunnlagspakkeId, hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
-
     )
-
     return grunnlagspakke
   }
 
   // Returnerer formaal som er angitt for grunnlagspakken
   fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String {
     return grunnlagspakkeRepository.hentFormaalGrunnlagspakke(grunnlagspakkeId)
+  }
+
+
+  // Valider at grunnlagspakke eksisterer
+  fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
+    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId)) {
+      throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke")
+    }
+
   }
 
 
@@ -199,11 +207,6 @@ class PersistenceService(
           )
         )
       }
-
     return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
-
   }
-
-
-
 }

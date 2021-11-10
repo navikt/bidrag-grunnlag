@@ -55,7 +55,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
 sealed class RestResponse<T> {
   data class Success<T>(val body: T) : RestResponse<T>()
-  data class Failure<T>(val message: String?, val statusCode: HttpStatus) : RestResponse<T>()
+  data class Failure<T>(val message: String?, val statusCode: HttpStatus, val restClientException: RestClientException) : RestResponse<T>()
 }
 
 fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {
@@ -63,8 +63,8 @@ fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity
     val response = exchange(url, httpMethod, httpEntity, responseType)
     RestResponse.Success(response.body ?: fallbackBody)
   } catch (e: HttpClientErrorException) {
-    RestResponse.Failure("Message: ${e.message} ResponseHeader: ${e.responseHeaders?.get(HttpHeaders.WARNING)} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
+    RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
   } catch (e: HttpServerErrorException) {
-    RestResponse.Failure("Message: ${e.message} ResponseHeader: ${e.responseHeaders?.get(HttpHeaders.WARNING)} ResponseBody: ${e.responseBodyAsString}", e.statusCode)
+    RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
   }
 }
