@@ -141,6 +141,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(grunnlagspakkeDto).isNotNull() },
       Executable { assertThat(grunnlagspakkeDto.grunnlagspakkeId).isNotNull() },
       Executable { assertThat(grunnlagspakkeDto.opprettetAv).isEqualTo("RTV9999") },
+      Executable { assertThat(grunnlagspakkeDto.formaal).isEqualTo("BIDRAG") },
 
       // sjekk InntektAinntektDto
       Executable { assertThat(inntektAinntektDtoListe[0].personId).isEqualTo("1234567") },

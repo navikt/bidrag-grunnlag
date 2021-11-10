@@ -26,12 +26,12 @@ class TestUtil {
   companion object {
 
     fun byggNyGrunnlagspakkeRequest() = OpprettGrunnlagspakkeRequest(
-      opprettetAv = "RTV9999"
-    )
+      opprettetAv = "RTV9999",
+      formaal = "BIDRAG",
+      )
 
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = grunnlagspakkeId,
-      formaal = "BIDRAG",
       gyldigTil = "2021-08",
       grunnlagtypeRequestListe = listOf(
         GrunnlagstypeRequest(

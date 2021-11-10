@@ -9,9 +9,6 @@ data class OppdaterGrunnlagspakkeRequest(
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
-  @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
-  val formaal: String = "",
-
   @Schema(description = "Opplysningene som hentes er gyldige til (men ikke med) denne datoen (YYYY-MM-DD")
   val gyldigTil: String? = "",
 

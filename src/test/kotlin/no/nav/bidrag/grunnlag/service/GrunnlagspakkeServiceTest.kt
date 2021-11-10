@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
@@ -54,7 +54,8 @@ class GrunnlagspakkeServiceTest {
   @Suppress("NonAsciiCharacters")
   fun `Test på opprette ny grunnlagspakke`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(
-      "X123456"
+      opprettetAv = "X123456",
+      formaal = "FORSKUDD"
     )
 
     val nyGrunnlagspakkeOpprettet =
@@ -95,26 +96,27 @@ class GrunnlagspakkeServiceTest {
 
   @Test
   @Suppress("NonAsciiCharacters")
-  fun `Test på å sette gyldigTil-dato for en grunnlagspakke`() {
+  fun `Test på å lukke en grunnlagspakke`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(
-      "X123456"
+      opprettetAv = "X123456",
+      formaal = "FORSKUDD"
     )
 
     val opprettGrunnlagspakkeResponse =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
-    val endretGrunnlagspakke = grunnlagspakkeService.settGyldigTildatoGrunnlagspakke(SettGyldigTilDatoForGrunnlagspakkeRequest(
-      opprettGrunnlagspakkeResponse.grunnlagspakkeId, "2021-11-10") )
+    val lukketGrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(LukkGrunnlagspakkeRequest(
+      opprettGrunnlagspakkeResponse.grunnlagspakkeId) )
 
     assertAll(
       Executable { assertThat(opprettGrunnlagspakkeResponse).isNotNull },
-      Executable { assertThat(endretGrunnlagspakke).isEqualTo(opprettGrunnlagspakkeResponse.grunnlagspakkeId) }
+      Executable { assertThat(lukketGrunnlagspakke).isEqualTo(opprettGrunnlagspakkeResponse.grunnlagspakkeId) }
     )
   }
 
   @Test
   @Suppress("NonAsciiCharacters")
-  fun `Test på hente grunnlagspakke med aktive og innaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
+  fun `Test på hente grunnlagspakke med aktive og inaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
@@ -159,8 +161,8 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-/*    // tester at inntekt som er merket med aktiv = false ikke hentes
-    val innaktivInntektDto = InntektAinntektDto(
+    // tester at inntekt som er merket med aktiv = false ikke hentes
+    val inaktivInntektDto = InntektAinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "1234567",
       periodeFra = LocalDate.parse("2020-05-01"),
@@ -171,11 +173,11 @@ class GrunnlagspakkeServiceTest {
       brukTil = null
     )
 
-    val innaktivInntekt = persistenceService.opprettInntektAinntekt(innaktivInntektDto)
+    val inaktivInntekt = persistenceService.opprettInntektAinntekt(inaktivInntektDto)
 
     persistenceService.opprettInntektspostAinntekt(
       InntektspostAinntektDto(
-        inntektId = innaktivInntekt.inntektId,
+        inntektId = inaktivInntekt.inntektId,
         utbetalingsperiode = "202006",
         opptjeningsperiodeFra = LocalDate.parse("2020-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2020-06-01"),
@@ -185,7 +187,7 @@ class GrunnlagspakkeServiceTest {
         beskrivelse = "Loenn/fastloenn",
         belop = BigDecimal.valueOf(50000.01)
       )
-    )*/
+    )
 
 
     // Legger inn inntekt for person nr 2

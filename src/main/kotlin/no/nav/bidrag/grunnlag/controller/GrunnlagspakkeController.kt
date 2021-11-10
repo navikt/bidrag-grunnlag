@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -99,8 +99,8 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun settGyldigTilDatoForGrunnlagspakke(@RequestBody request: SettGyldigTilDatoForGrunnlagspakkeRequest): ResponseEntity<Int>? {
-    val oppdatertgrunnlagspakke = grunnlagspakkeService.settGyldigTildatoGrunnlagspakke(request)
+  fun lukkGrunnlagspakke(@RequestBody request: LukkGrunnlagspakkeRequest): ResponseEntity<Int>? {
+    val oppdatertgrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert med gyldigTil-dato: $oppdatertgrunnlagspakke")
     return ResponseEntity(request.grunnlagspakkeId, HttpStatus.OK)
 

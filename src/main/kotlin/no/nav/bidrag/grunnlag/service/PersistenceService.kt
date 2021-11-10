@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
@@ -34,7 +33,6 @@ import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostReposito
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 
 @Service
 class PersistenceService(
@@ -105,10 +103,15 @@ class PersistenceService(
     return grunnlagspakke
   }
 
+  // Returnerer formaal som er angitt for grunnlagspakken
+  fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String {
+    return grunnlagspakkeRepository.hentFormaalGrunnlagspakke(grunnlagspakkeId)
+  }
 
-  // Setter gyldig til-dato for en grunnlagspakke
-  fun settGyldigTildatoGrunnlagspakke(grunnlagspakkeId: Int, gyldigTil: LocalDate): Int {
-    grunnlagspakkeRepository.settGyldigTildatoGrunnlagspakke(grunnlagspakkeId, gyldigTil)
+
+  // Setter gyldig til-dato = dagens dato for angitt grunnlagspakke
+  fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
+    grunnlagspakkeRepository.lukkGrunnlagspakke(grunnlagspakkeId)
     return grunnlagspakkeId
 
   }
@@ -116,7 +119,7 @@ class PersistenceService(
 
   fun hentInntekterAinntekt(grunnlagspakkeId: Int): List<HentInntektAinntektResponse> {
     val hentInntektAinntektResponseListe = mutableListOf<HentInntektAinntektResponse>()
-    inntektAinntektRepository.hentInntekter(grunnlagspakkeId)
+    inntektAinntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentInntektspostListe = mutableListOf<HentInntektspostAinntektResponse>()
         inntektspostAinntektRepository.hentInntektsposter(inntekt.inntektId)

@@ -8,15 +8,15 @@ import org.springframework.data.jpa.repository.Query
 interface InntektAinntektRepository : JpaRepository<InntektAinntekt, Int?> {
 
   @Query(
-    "select inta from InntektAinntekt inta where inta.grunnlagspakkeId = :grunnlagspakkeId"
-//    "select inta from InntektAinntekt inta where inta.grunnlagspakkeId = :grunnlagspakkeId and inta.aktiv = true"
+    "select inta from InntektAinntekt inta where inta.grunnlagspakkeId = :grunnlagspakkeId and inta.aktiv = true"
   )
-  fun hentInntekter(grunnlagspakkeId: Int): List<InntektAinntekt>
+  fun hentAinntekter(grunnlagspakkeId: Int): List<InntektAinntekt>
+
 
   @Query(
     "update InntektAinntekt inta set inta.aktiv = false, inta.brukTil = CURRENT_TIMESTAMP where inta.inntektId = :inntektId"
   )
   @Modifying
-  fun settInntektSomInnaktiv(inntektId: Int)
+  fun settInntektSomInaktiv(inntektId: Int)
 
 }

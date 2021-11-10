@@ -7,6 +7,9 @@ import kotlin.reflect.full.memberProperties
 @Schema(description ="Request for å opprette ny grunnlagspakke, uten annet innhold")
 data class OpprettGrunnlagspakkeRequest (
 
+  @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
+  val formaal: String = "",
+
   @Schema(description = "opprettet av")
   val opprettetAv: String = ""
 
