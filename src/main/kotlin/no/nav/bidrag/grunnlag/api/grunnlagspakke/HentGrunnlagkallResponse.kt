@@ -14,5 +14,5 @@ data class HentGrunnlagkallResponse(
   val status: String = "",
 
   @Schema(description = "HttpStatus på utført kall")
-  val statuskode: HttpStatus = HttpStatus.OK
+  val statuskode: Int = HttpStatus.OK.value()
 )

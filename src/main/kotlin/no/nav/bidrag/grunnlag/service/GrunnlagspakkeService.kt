@@ -193,7 +193,7 @@ class GrunnlagspakkeService(
             HentGrunnlagkallResponse(
               personIdOgPeriode.personId,
               "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}. Status: ${restResponseInntekt.statusCode}",
-              restResponseInntekt.statusCode
+              restResponseInntekt.statusCode.value()
             )
           )
         }
@@ -285,7 +285,7 @@ class GrunnlagspakkeService(
             HentGrunnlagkallResponse(
               personIdOgPeriode.personId,
               "Feil ved henting av skattegrunnlag for inntektsåret ${inntektAar}. Status: ${restResponseSkattegrunnlag.statusCode}",
-              restResponseSkattegrunnlag.statusCode
+              restResponseSkattegrunnlag.statusCode.value()
             )
           )
         }
@@ -358,7 +358,7 @@ class GrunnlagspakkeService(
           HentGrunnlagkallResponse(
             personIdOgPeriode.personId,
             "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}. Status: ${restResponseFamilieBaSak.statusCode}",
-            restResponseFamilieBaSak.statusCode
+            restResponseFamilieBaSak.statusCode.value()
           )
         )
       }

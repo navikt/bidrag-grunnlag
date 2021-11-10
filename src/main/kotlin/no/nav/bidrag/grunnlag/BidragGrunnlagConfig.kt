@@ -70,7 +70,7 @@ class BidragGrunnlagConfig {
     LOGGER.info("Url satt i config: $url")
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
     restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiebasak"))
-    return FamilieBaSakConsumer(restTemplate, exceptionLogger)
+    return FamilieBaSakConsumer(restTemplate)
   }
 
   @Bean
@@ -83,6 +83,6 @@ class BidragGrunnlagConfig {
     LOGGER.info("Url satt i config: $url")
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
     restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidraggcpproxy"))
-    return BidragGcpProxyConsumer(restTemplate, exceptionLogger)
+    return BidragGcpProxyConsumer(restTemplate)
   }
 }

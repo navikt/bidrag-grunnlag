@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy
 
-import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
@@ -16,7 +15,7 @@ import org.springframework.http.HttpMethod
 private const val BIDRAGGCPPROXY_INNTEKT_CONTEXT = "/inntekt/hent"
 private const val BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT = "/skattegrunnlag/hent"
 
-open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate, private val exceptionLogger: ExceptionLogger) :
+open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate) :
   GrunnlagsConsumer() {
 
   companion object {
@@ -35,7 +34,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
       HentAinntektListeResponse(emptyList())
     )
 
-    logResponse(logger, exceptionLogger, restResponse)
+    logResponse(logger, restResponse)
 
     return restResponse
   }
@@ -50,7 +49,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
       HentSkattegrunnlagResponse::class.java,
       HentSkattegrunnlagResponse(emptyList(), emptyList(), null)
     )
-    logResponse(logger, exceptionLogger, restResponse)
+    logResponse(logger, restResponse)
 
     return restResponse;
   }
