@@ -8,15 +8,23 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnl
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
 private const val BIDRAGGCPPROXY_INNTEKT_CONTEXT = "/inntekt/hent"
 private const val BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT = "/skattegrunnlag/hent"
 
-open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
+open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate) :
+  GrunnlagsConsumer() {
+
+  companion object {
+    @JvmStatic
+    val logger: Logger = LoggerFactory.getLogger(BidragGcpProxyConsumer::class.java)
+  }
 
   fun hentAinntekt(request: HentAinntektRequest): RestResponse<HentAinntektListeResponse> {
-    LOGGER.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
+    logger.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGGCPPROXY_INNTEKT_CONTEXT,
@@ -26,22 +34,22 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
       HentAinntektListeResponse(emptyList())
     )
 
-    logResponse(restResponse)
+    logResponse(logger, restResponse)
 
     return restResponse
   }
 
   fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): RestResponse<HentSkattegrunnlagResponse> {
-    LOGGER.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
+    logger.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
 
     val restResponse = restTemplate.tryExchange(
-        BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT,
-        HttpMethod.POST,
-        initHttpEntity(request),
-        HentSkattegrunnlagResponse::class.java,
-        HentSkattegrunnlagResponse(emptyList(), emptyList(), null)
+      BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT,
+      HttpMethod.POST,
+      initHttpEntity(request),
+      HentSkattegrunnlagResponse::class.java,
+      HentSkattegrunnlagResponse(emptyList(), emptyList(), null)
     )
-    logResponse(restResponse)
+    logResponse(logger, restResponse)
 
     return restResponse;
   }
