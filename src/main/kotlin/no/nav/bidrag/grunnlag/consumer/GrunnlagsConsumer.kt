@@ -12,7 +12,7 @@ open class GrunnlagsConsumer {
   fun <T> logResponse(logger: Logger, restResponse: RestResponse<T>) {
     when (restResponse) {
       is RestResponse.Success -> logger.info("Response: ${HttpStatus.OK}")
-      is RestResponse.Failure -> logger.error("Response: ${HttpStatus.OK}/${restResponse.message}")
+      is RestResponse.Failure -> logger.error("Response: ${restResponse.statusCode}/${restResponse.message}")
     }
   }
 
