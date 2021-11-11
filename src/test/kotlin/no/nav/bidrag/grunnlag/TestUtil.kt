@@ -1,10 +1,12 @@
 package no.nav.bidrag.grunnlag
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
@@ -16,6 +18,15 @@ import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import no.nav.bidrag.grunnlag.service.SkattegrunnlagType
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockHttpServletRequestDsl
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.result.ContentResultMatchersDsl
+import org.springframework.test.web.servlet.result.StatusResultMatchersDsl
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -49,9 +60,11 @@ class TestUtil {
       )
     )
 
+    fun byggSettGyldigTilDatoForGrunnlagspakkeRequest(grunnlagspakkeId: Int) = SettGyldigTilDatoForGrunnlagspakkeRequest(grunnlagspakkeId, "2021-08")
 
-    fun byggHentGrunnlagspakkeRequest() = HentGrunnlagspakkeRequest(
-      grunnlagspakkeId = 1
+
+    fun byggHentGrunnlagspakkeRequest(grunnlagspakkeId: Int = 1) = HentGrunnlagspakkeRequest(
+      grunnlagspakkeId = grunnlagspakkeId
     )
 
     fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
@@ -137,5 +150,36 @@ class TestUtil {
       return mutableListOf(utvidetBarnetrygdOgSmaabarnstilleggPeriode)
     }
 
+    fun <Request, Response> performRequest(
+      mockMvc: MockMvc,
+      method: HttpMethod,
+      url: String,
+      input: Request?,
+      responseType: Class<Response>,
+      expectedStatus: StatusResultMatchersDsl.() -> Unit,
+    ): Response {
+
+      val mockHttpServletRequestDsl: MockHttpServletRequestDsl.() -> Unit = {
+        contentType = MediaType.APPLICATION_JSON
+        if (input != null) {
+          content = ObjectMapper().writeValueAsString(input)
+        }
+        accept = MediaType.APPLICATION_JSON
+      }
+
+      val mvcResult = when (method) {
+        HttpMethod.POST -> mockMvc.post(url) { mockHttpServletRequestDsl() }
+        HttpMethod.GET -> mockMvc.get(url) { mockHttpServletRequestDsl() }
+        else -> throw NotImplementedError()
+      }.andExpect {
+        status { expectedStatus() }
+        content { contentType(MediaType.APPLICATION_JSON) }
+      }.andReturn()
+
+      return when(responseType) {
+        String::class.java -> mvcResult.response.contentAsString as Response
+        else -> ObjectMapper().readValue(mvcResult.response.contentAsString, responseType)
+      }
+    }
   }
 }
