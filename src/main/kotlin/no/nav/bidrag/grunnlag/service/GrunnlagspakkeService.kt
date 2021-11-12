@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.YearMonth
 
 @Service
 @Transactional
@@ -66,6 +65,11 @@ class GrunnlagspakkeService(
 
     // Validerer at grunnlagspakke eksisterer
     persistenceService.validerGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId)
+
+/*    if(oppdaterGrunnlagspakkeRequest.gyldigTil != null) {
+      persistenceService.oppdaterGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
+      oppdaterGrunnlagspakkeRequest.gyldigTil)
+    }*/
 
     oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe.forEach() { grunnlagstypeRequest ->
       when (grunnlagstypeRequest.grunnlagstype) {
@@ -119,8 +123,8 @@ class GrunnlagspakkeService(
 
       val hentAinntektRequest = HentAinntektRequest(
         ident = personIdOgPeriode.personId,
-        maanedFom = personIdOgPeriode.periodeFra,
-        maanedTom = personIdOgPeriode.periodeTil,
+        maanedFom = (personIdOgPeriode.periodeFra.year.toString() + personIdOgPeriode.periodeFra.month.toString()),
+        maanedTom = (personIdOgPeriode.periodeTil.year.toString() + personIdOgPeriode.periodeTil.month.toString()),
         ainntektsfilter = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER,
         formaal = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
       )
@@ -171,7 +175,7 @@ class GrunnlagspakkeService(
                     if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
                       .plusMonths(1) else null,
                     opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
-                    type = inntektspost.inntektType,
+                    inntektType = inntektspost.inntektType,
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
                     belop = inntektspost.beloep.toBigDecimal()
@@ -211,11 +215,8 @@ class GrunnlagspakkeService(
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
-      var inntektAar = LocalDate.parse(personIdOgPeriode.periodeFra + "-01").year
-      val sluttAar = LocalDate.parse(personIdOgPeriode.periodeTil + "-01").year
-
-      val sssluttAar = YearMonth.parse(personIdOgPeriode.periodeTil)
-
+      var inntektAar = personIdOgPeriode.periodeFra.year
+      val sluttAar = personIdOgPeriode.periodeTil.year
 
       while (inntektAar < sluttAar) {
         val skattegrunnlagRequest = HentSkattegrunnlagRequest(
@@ -259,7 +260,7 @@ class GrunnlagspakkeService(
                   SkattegrunnlagspostDto(
                     skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
-                    type = skattegrunnlagsPost.tekniskNavn,
+                    inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
                   )
                 )
@@ -270,7 +271,7 @@ class GrunnlagspakkeService(
                   SkattegrunnlagspostDto(
                     skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
-                    type = skattegrunnlagsPost.tekniskNavn,
+                    inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
                   )
                 )
@@ -313,8 +314,7 @@ class GrunnlagspakkeService(
 
       val familieBaSakRequest = FamilieBaSakRequest(
         personIdent = personIdOgPeriode.personId,
-        fraDato = LocalDate.parse(personIdOgPeriode.periodeFra + "-01")
-      )
+        fraDato = personIdOgPeriode.periodeFra)
 
       LOGGER.info(
         "Kaller familie-ba-sak med personIdent ********${

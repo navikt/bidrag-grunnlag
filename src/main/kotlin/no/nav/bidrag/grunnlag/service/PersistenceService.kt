@@ -113,7 +113,6 @@ class PersistenceService(
       throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke")
   }
 
-
   // Setter gyldig til-dato = dagens dato for angitt grunnlagspakke
   fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
     grunnlagspakkeRepository.lukkGrunnlagspakke(grunnlagspakkeId)
@@ -135,7 +134,7 @@ class PersistenceService(
                 inntektspost.opptjeningsperiodeFra,
                 inntektspost.opptjeningsperiodeTil,
                 inntektspost.opplysningspliktigId,
-                inntektspost.type,
+                inntektspost.inntektType,
                 inntektspost.fordelType,
                 inntektspost.beskrivelse,
                 inntektspost.belop
@@ -170,7 +169,7 @@ class PersistenceService(
             hentSkattegrunnlagspostListe.add(
               HentSkattegrunnlagspostResponse(
                 skattegrunnlagType = inntektspost.skattegrunnlagType,
-                inntektType = inntektspost.type,
+                inntektType = inntektspost.inntektType,
                 belop = inntektspost.belop
               )
             )
@@ -180,6 +179,10 @@ class PersistenceService(
             personId = inntekt.personId,
             periodeFra = inntekt.periodeFra,
             periodeTil = inntekt.periodeTil,
+            aktiv = inntekt.aktiv,
+            brukFra = inntekt.brukFra,
+            brukTil = inntekt.brukTil,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
             hentSkattegrunnlagspostListe
           )
         )
@@ -195,12 +198,12 @@ class PersistenceService(
       .forEach { ubst ->
         hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
           HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
-            ubst.personId,
-            ubst.type,
-            ubst.periodeFra,
-            ubst.periodeTil,
-            ubst.belop,
-            ubst.manueltBeregnet
+            personId = ubst.personId,
+            type = ubst.type,
+            periodeFra = ubst.periodeFra,
+            periodeTil = ubst.periodeTil,
+            belop = ubst.belop,
+            manueltBeregnet = ubst.manueltBeregnet
           )
         )
       }

@@ -23,8 +23,8 @@ data class Skattegrunnlagspost(
   @Column(nullable = false, name = "skattegrunnlag_type")
   val skattegrunnlagType: String = "",
 
-  @Column(nullable = false, name = "type")
-  val type: String = "",
+  @Column(nullable = false, name = "inntekt_type")
+  val inntektType: String = "",
 
   @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO

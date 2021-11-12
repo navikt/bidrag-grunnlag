@@ -86,7 +86,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
   }
 
 
-  @PostMapping(GRUNNLAGSPAKKE_SETTGYLDIGTILDATO)
+  @PostMapping(GRUNNLAGSPAKKE_LUKK)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Setter gyldigTil-dato = dato i input for angitt grunnlagspakke")
   @ApiResponses(
     value = [
@@ -110,7 +110,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke/ny"
     const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/oppdater"
     const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/hent"
-    const val GRUNNLAGSPAKKE_SETTGYLDIGTILDATO = "/grunnlagspakke/settgyldigtildato"
+    const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/lukk"
     private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
   }
 }

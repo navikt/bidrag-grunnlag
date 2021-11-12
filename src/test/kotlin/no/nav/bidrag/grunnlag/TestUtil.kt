@@ -3,17 +3,17 @@ package no.nav.bidrag.grunnlag
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
@@ -22,10 +22,8 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.result.ContentResultMatchersDsl
 import org.springframework.test.web.servlet.result.StatusResultMatchersDsl
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -43,24 +41,28 @@ class TestUtil {
 
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = grunnlagspakkeId,
-      gyldigTil = "2021-08",
+      gyldigTil = LocalDate.parse("2021-08-01"),
       grunnlagtypeRequestListe = listOf(
         GrunnlagstypeRequest(
           Grunnlagstype.AINNTEKT.toString(),
-          listOf(PersonIdOgPeriodeRequest("12345678910", "2021-01", "2022-01"))
-        ),
+          listOf(PersonIdOgPeriodeRequest("12345678910",
+            LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
+        )),
         GrunnlagstypeRequest(
           Grunnlagstype.SKATTEGRUNNLAG.toString(),
-          listOf(PersonIdOgPeriodeRequest("12345678910", "2021-01", "2022-01"))
-        ),
+          listOf(PersonIdOgPeriodeRequest("12345678910",
+            LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
+        )),
         GrunnlagstypeRequest(
           Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
-          listOf(PersonIdOgPeriodeRequest("12345678910", "2021-01", "2022-01"))
+          listOf(PersonIdOgPeriodeRequest("12345678910",
+            LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
         )
+      )
       )
     )
 
-    fun byggSettGyldigTilDatoForGrunnlagspakkeRequest(grunnlagspakkeId: Int) = SettGyldigTilDatoForGrunnlagspakkeRequest(grunnlagspakkeId, "2021-08")
+    fun byggLukkGrunnlagspakkeRequest(grunnlagspakkeId: Int) = LukkGrunnlagspakkeRequest(grunnlagspakkeId)
 
 
     fun byggHentGrunnlagspakkeRequest(grunnlagspakkeId: Int = 1) = HentGrunnlagspakkeRequest(
@@ -78,7 +80,6 @@ class TestUtil {
       inntektId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
-//      type = "Loennsinntekt",
       periodeFra = LocalDate.parse("2021-07-01"),
       periodeTil = LocalDate.parse("2021-08-01"),
       aktiv = true,
@@ -94,7 +95,7 @@ class TestUtil {
       opptjeningsperiodeFra = LocalDate.parse("2021-07-01"),
       opptjeningsperiodeTil = LocalDate.parse("2021-08-01"),
       opplysningspliktigId = "123",
-      type = "Loenn",
+      inntektType = "Loenn",
       fordelType = "Kontantytelse",
       beskrivelse = "Loenn/ferieLoenn",
       belop = BigDecimal.valueOf(50000),
@@ -107,16 +108,16 @@ class TestUtil {
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2022-01-01"),
       aktiv = true,
-      hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
-      brukTil = null
+      brukTil = null,
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggSkattegrunnlagspostDto() = SkattegrunnlagspostDto(
       skattegrunnlagspostId = (1..100).random(),
       skattegrunnlagId = (1..100).random(),
       skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
-      type = "Loenn",
+      inntektType = "Loenn",
       belop = BigDecimal.valueOf(171717),
     )
 
@@ -127,6 +128,9 @@ class TestUtil {
       type = "Utvidet barnetrygd",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
       belop = BigDecimal.valueOf(12468.01),
       manueltBeregnet = false,
       deltBosted = false
@@ -139,7 +143,6 @@ class TestUtil {
 
     fun byggUtvidetBarnetrygdPeriode(): List<UtvidetBarnetrygdPeriode> {
       val utvidetBarnetrygdOgSmaabarnstilleggPeriode = UtvidetBarnetrygdPeriode(
-//        stonadstype = BisysStonadstype.UTVIDET,
         stønadstype = BisysStønadstype.UTVIDET,
         fomMåned = YearMonth.now(),
         tomMåned = YearMonth.now(),
