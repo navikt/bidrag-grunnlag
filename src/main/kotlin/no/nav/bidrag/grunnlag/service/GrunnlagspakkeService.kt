@@ -115,9 +115,7 @@ class GrunnlagspakkeService(
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
-      oppdaterGrunnlagspakkeResponseListe.add(
-        OppdaterGrunnlagspakkeResponse()
-      )
+      oppdaterGrunnlagspakkeResponseListe.add(OppdaterGrunnlagspakkeResponse())
 
       val hentAinntektRequest = HentAinntektRequest(
         ident = personIdOgPeriode.personId,

@@ -10,7 +10,13 @@ interface InntektAinntektRepository : JpaRepository<InntektAinntekt, Int?> {
   @Query(
     "select inta from InntektAinntekt inta where inta.grunnlagspakkeId = :grunnlagspakkeId and inta.aktiv = true"
   )
-  fun hentAinntekter(grunnlagspakkeId: Int): List<InntektAinntekt>
+  fun hentAktiveAinntekter(grunnlagspakkeId: Int): List<InntektAinntekt>
+
+
+  @Query(
+    "select inta from InntektAinntekt inta where inta.grunnlagspakkeId = :grunnlagspakkeId and inta.personId = :personId"
+  )
+  fun hentAinntekterForPersonId(grunnlagspakkeId: Int, personId: String): List<InntektAinntekt>
 
 
   @Query(

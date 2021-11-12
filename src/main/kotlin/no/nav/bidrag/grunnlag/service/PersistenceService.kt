@@ -95,11 +95,10 @@ class PersistenceService(
 
   // Returnerer lagret, komplett grunnlagspakke
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
-    val grunnlagspakke = HentKomplettGrunnlagspakkeResponse(
+    return HentKomplettGrunnlagspakkeResponse(
       grunnlagspakkeId, hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
     )
-    return grunnlagspakke
   }
 
   // Returnerer formaal som er angitt for grunnlagspakken
@@ -110,10 +109,8 @@ class PersistenceService(
 
   // Valider at grunnlagspakke eksisterer
   fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
-    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId)) {
+    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId))
       throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke")
-    }
-
   }
 
 
@@ -127,7 +124,7 @@ class PersistenceService(
 
   fun hentInntekterAinntekt(grunnlagspakkeId: Int): List<HentInntektAinntektResponse> {
     val hentInntektAinntektResponseListe = mutableListOf<HentInntektAinntektResponse>()
-    inntektAinntektRepository.hentAinntekter(grunnlagspakkeId)
+    inntektAinntektRepository.hentAktiveAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentInntektspostListe = mutableListOf<HentInntektspostAinntektResponse>()
         inntektspostAinntektRepository.hentInntektsposter(inntekt.inntektId)
@@ -165,7 +162,7 @@ class PersistenceService(
 
   fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<HentSkattegrunnlagResponse> {
     val hentSkattegrunnlagResponseListe = mutableListOf<HentSkattegrunnlagResponse>()
-    skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
+    skattegrunnlagRepository.hentAktivtSkattegrunnlag(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentSkattegrunnlagspostListe = mutableListOf<HentSkattegrunnlagspostResponse>()
         skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
@@ -194,7 +191,7 @@ class PersistenceService(
 
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> {
     val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
-    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentStonader(grunnlagspakkeId)
+    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentAktiveUbst(grunnlagspakkeId)
       .forEach { ubst ->
         hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
           HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
