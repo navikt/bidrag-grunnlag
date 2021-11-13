@@ -78,7 +78,7 @@ class GrunnlagspakkeControllerTest(
 
 
   @Test
-  @Disabled
+  //@Disabled
   fun `skal oppdatere en grunnlagspakke`() {
 
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(opprettetAv = "X123456"))
@@ -112,7 +112,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
+  //@Disabled
   fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
 
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(opprettetAv = "X123456"))
@@ -164,7 +164,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
+  //@Disabled
   fun `skal fange opp og håndtere Hibernate feil`() {
     val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
@@ -186,7 +186,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
+  //@Disabled
   fun `skal fange opp og håndtere forespørsler på grunnlagspakker som ikke eksisterer`() {
 
     val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(TestUtil.byggOppdaterGrunnlagspakkeRequest(1), String::class.java) { isNotFound() }
