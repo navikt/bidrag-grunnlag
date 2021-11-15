@@ -10,7 +10,7 @@ interface SkattegrunnlagRepository : JpaRepository<Skattegrunnlag, Int?> {
   @Query(
       "select sg from Skattegrunnlag sg where sg.grunnlagspakkeId = :grunnlagspakkeId and sg.aktiv = true"
   )
-  fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<Skattegrunnlag>
+  fun hentAktivtSkattegrunnlag(grunnlagspakkeId: Int): List<Skattegrunnlag>
 
   @Query(
       "update Skattegrunnlag sg set sg.aktiv = false, sg.brukTil = CURRENT_TIMESTAMP where sg.skattegrunnlagId = :inntektId"

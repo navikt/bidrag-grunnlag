@@ -28,6 +28,10 @@ data class Grunnlagspakke(
 
   @Column(nullable = true, name = "gyldig_til")
   val gyldigTil: LocalDate? = null,
+
+  @Column(nullable = true, name = "formaal")
+  val formaal: String = "",
+
 )
 
 fun Grunnlagspakke.toGrunnlagspakkeDto() = with(::GrunnlagspakkeDto) {

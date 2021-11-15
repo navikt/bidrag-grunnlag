@@ -2,7 +2,7 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -51,7 +51,8 @@ class GrunnlagspakkeService(
 
   fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequest: OpprettGrunnlagspakkeRequest): OpprettGrunnlagspakkeResponse {
     val grunnlagspakkeDto = GrunnlagspakkeDto(
-      opprettetAv = opprettGrunnlagspakkeRequest.opprettetAv
+      opprettetAv = opprettGrunnlagspakkeRequest.opprettetAv,
+      formaal = opprettGrunnlagspakkeRequest.formaal
     )
     val opprettetGrunnlagspakke = persistenceService.opprettNyGrunnlagspakke(grunnlagspakkeDto)
     return OpprettGrunnlagspakkeResponse(opprettetGrunnlagspakke.grunnlagspakkeId)
@@ -65,6 +66,11 @@ class GrunnlagspakkeService(
     // Validerer at grunnlagspakke eksisterer
     persistenceService.validerGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId)
 
+/*    if(oppdaterGrunnlagspakkeRequest.gyldigTil != null) {
+      persistenceService.oppdaterGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
+      oppdaterGrunnlagspakkeRequest.gyldigTil)
+    }*/
+
     oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe.forEach() { grunnlagstypeRequest ->
       when (grunnlagstypeRequest.grunnlagstype) {
 
@@ -72,7 +78,7 @@ class GrunnlagspakkeService(
         Grunnlagstype.AINNTEKT.toString() ->
           grunnlagstypeResponseListe.add(
             oppdaterInntektAinntekt(
-              oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, oppdaterGrunnlagspakkeRequest.formaal,
+              oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
               grunnlagstypeRequest.personIdOgPeriodeRequestListe
             )
           )
@@ -106,24 +112,21 @@ class GrunnlagspakkeService(
 
 
   private fun oppdaterInntektAinntekt(
-    grunnlagspakkeId: Int, formaal: String,
-    personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagstypeResponse {
+    grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>): GrunnlagstypeResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
+    val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
-      oppdaterGrunnlagspakkeResponseListe.add(
-        OppdaterGrunnlagspakkeResponse()
-      )
+      oppdaterGrunnlagspakkeResponseListe.add(OppdaterGrunnlagspakkeResponse())
 
       val hentAinntektRequest = HentAinntektRequest(
         ident = personIdOgPeriode.personId,
-        maanedFom = personIdOgPeriode.periodeFra,
-        maanedTom = personIdOgPeriode.periodeTil,
-        ainntektsfilter = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER,
-        formaal = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
+        maanedFom = (personIdOgPeriode.periodeFra.year.toString() + personIdOgPeriode.periodeFra.month.toString()),
+        maanedTom = (personIdOgPeriode.periodeTil.year.toString() + personIdOgPeriode.periodeTil.month.toString()),
+        ainntektsfilter = finnFilter(formaal),
+        formaal = finnFormaal(formaal)
       )
       LOGGER.info(
         "Kaller bidrag-gcp-proxy (Inntektskomponenten) med ident = ********${
@@ -151,16 +154,16 @@ class GrunnlagspakkeService(
               )
             )
           } else {
-            val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
-              InntektAinntektDto(
-                grunnlagspakkeId = grunnlagspakkeId,
-                personId = personIdOgPeriode.personId,
-                periodeFra = LocalDate.parse(personIdOgPeriode.periodeFra + "-01"),
-                periodeTil = LocalDate.parse(personIdOgPeriode.periodeTil + "-01")
-              )
-            )
             hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
               antallPerioderFunnet++
+              val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
+                InntektAinntektDto(
+                  grunnlagspakkeId = grunnlagspakkeId,
+                  personId = personIdOgPeriode.personId,
+                  periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                  periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
+                )
+              )
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
                 persistenceService.opprettInntektspostAinntekt(
                   InntektspostAinntektDto(
@@ -172,7 +175,7 @@ class GrunnlagspakkeService(
                     if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
                       .plusMonths(1) else null,
                     opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
-                    type = inntektspost.inntektType,
+                    inntektType = inntektspost.inntektType,
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
                     belop = inntektspost.beloep.toBigDecimal()
@@ -212,8 +215,8 @@ class GrunnlagspakkeService(
 
     personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
 
-      var inntektAar = LocalDate.parse(personIdOgPeriode.periodeFra + "-01").year
-      val sluttAar = LocalDate.parse(personIdOgPeriode.periodeTil + "-01").year
+      var inntektAar = personIdOgPeriode.periodeFra.year
+      val sluttAar = personIdOgPeriode.periodeTil.year
 
       while (inntektAar < sluttAar) {
         val skattegrunnlagRequest = HentSkattegrunnlagRequest(
@@ -257,7 +260,7 @@ class GrunnlagspakkeService(
                   SkattegrunnlagspostDto(
                     skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
-                    type = skattegrunnlagsPost.tekniskNavn,
+                    inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
                   )
                 )
@@ -268,7 +271,7 @@ class GrunnlagspakkeService(
                   SkattegrunnlagspostDto(
                     skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
-                    type = skattegrunnlagsPost.tekniskNavn,
+                    inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
                   )
                 )
@@ -311,8 +314,7 @@ class GrunnlagspakkeService(
 
       val familieBaSakRequest = FamilieBaSakRequest(
         personIdent = personIdOgPeriode.personId,
-        fraDato = LocalDate.parse(personIdOgPeriode.periodeFra + "-01")
-      )
+        fraDato = personIdOgPeriode.periodeFra)
 
       LOGGER.info(
         "Kaller familie-ba-sak med personIdent ********${
@@ -375,12 +377,20 @@ class GrunnlagspakkeService(
     return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
-  fun settGyldigTildatoGrunnlagspakke(settGyldigTilDatoForGrunnlagspakkeRequest: SettGyldigTilDatoForGrunnlagspakkeRequest): Int {
-    persistenceService.validerGrunnlagspakke(settGyldigTilDatoForGrunnlagspakkeRequest.grunnlagspakkeId)
-    return persistenceService.settGyldigTildatoGrunnlagspakke(
-      settGyldigTilDatoForGrunnlagspakkeRequest.grunnlagspakkeId,
-      LocalDate.parse(settGyldigTilDatoForGrunnlagspakkeRequest.gyldigTil)
-    )
+  fun lukkGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
+    // Validerer at grunnlagspakke eksisterer
+    persistenceService.validerGrunnlagspakke(lukkGrunnlagspakkeRequest.grunnlagspakkeId)
+    
+    return persistenceService.lukkGrunnlagspakke(
+      lukkGrunnlagspakkeRequest.grunnlagspakkeId)
+  }
+
+  fun finnFilter(formaal: String): String {
+    return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
+  }
+
+  fun finnFormaal(formaal: String): String {
+    return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
   }
 }
 

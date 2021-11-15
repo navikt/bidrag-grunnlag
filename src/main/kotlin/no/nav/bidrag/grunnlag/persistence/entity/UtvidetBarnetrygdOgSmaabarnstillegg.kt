@@ -33,6 +33,15 @@ data class UtvidetBarnetrygdOgSmaabarnstillegg(
   @Column(nullable = false, name = "periode_til")
   val periodeTil: LocalDate? = LocalDate.now(),
 
+  @Column(nullable = false, name = "aktiv")
+  val aktiv: Boolean = true,
+
+  @Column(nullable = false, name = "bruk_fra")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Column(nullable = true, name = "bruk_til")
+  val brukTil: LocalDateTime? = null,
+
   @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO,
 

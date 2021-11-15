@@ -28,6 +28,15 @@ data class UtvidetBarnetrygdOgSmaabarnstilleggDto(
   @Schema(description = "Periode til- og med måned")
   val periodeTil: LocalDate? = LocalDate.now(),
 
+  @Schema(description = "Angir om en inntektsopplysning er aktiv")
+  val aktiv: Boolean = true,
+
+  @Schema(description = "Tidspunkt inntekten taes i bruk")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
+  val brukTil: LocalDateTime? = null,
+
   @Schema(description = "Belop")
   val belop: BigDecimal = BigDecimal.ZERO,
 
