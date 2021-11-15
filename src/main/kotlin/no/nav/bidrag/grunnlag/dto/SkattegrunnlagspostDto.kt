@@ -17,7 +17,7 @@ data class SkattegrunnlagspostDto(
   val skattegrunnlagType: String = "",
 
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
-  val type: String = "",
+  val inntektType: String = "",
 
   @Schema(description = "Belop")
   val belop: BigDecimal = BigDecimal.ZERO

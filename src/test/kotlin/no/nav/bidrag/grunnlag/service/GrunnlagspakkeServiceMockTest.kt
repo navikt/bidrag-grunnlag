@@ -141,6 +141,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(grunnlagspakkeDto).isNotNull() },
       Executable { assertThat(grunnlagspakkeDto.grunnlagspakkeId).isNotNull() },
       Executable { assertThat(grunnlagspakkeDto.opprettetAv).isEqualTo("RTV9999") },
+      Executable { assertThat(grunnlagspakkeDto.formaal).isEqualTo("BIDRAG") },
 
       // sjekk InntektAinntektDto
       Executable { assertThat(inntektAinntektDtoListe[0].personId).isEqualTo("1234567") },
@@ -155,7 +156,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(inntektspostAinntektDtoListe[0].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-07-01")) },
       Executable { assertThat(inntektspostAinntektDtoListe[0].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
       Executable { assertThat(inntektspostAinntektDtoListe[0].opplysningspliktigId).isEqualTo(("123")) },
-      Executable { assertThat(inntektspostAinntektDtoListe[0].type).isEqualTo(("Loenn")) },
+      Executable { assertThat(inntektspostAinntektDtoListe[0].inntektType).isEqualTo(("Loenn")) },
       Executable { assertThat(inntektspostAinntektDtoListe[0].fordelType).isEqualTo(("Kontantytelse")) },
       Executable { assertThat(inntektspostAinntektDtoListe[0].beskrivelse).isEqualTo(("Loenn/ferieLoenn")) },
       Executable { assertThat(inntektspostAinntektDtoListe[0].belop).isEqualTo(BigDecimal.valueOf(50000)) },
@@ -170,7 +171,7 @@ class GrunnlagspakkeServiceMockTest {
       // sjekk SkattegrunnlagspostDto
       Executable { assertThat(skattegrunnlagspostDtoListe.size).isEqualTo(1) },
 
-      Executable { assertThat(skattegrunnlagspostDtoListe[0].type).isEqualTo(("Loenn")) },
+      Executable { assertThat(skattegrunnlagspostDtoListe[0].inntektType).isEqualTo(("Loenn")) },
       Executable { assertThat(skattegrunnlagspostDtoListe[0].belop).isEqualTo(BigDecimal.valueOf(171717)) },
 
       // sjekk UtvidetBarnetrygdOgSmaabarnstilleggdDto

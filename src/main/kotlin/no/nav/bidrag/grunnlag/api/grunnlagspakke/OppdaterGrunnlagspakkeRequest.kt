@@ -14,10 +14,6 @@ data class OppdaterGrunnlagspakkeRequest(
   @field:NotNull(message = "Kan ikke være null.")
   val grunnlagspakkeId: Int,
 
-  @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
-  @field:NotBlank(message = "Kan ikke være null eller blank.")
-  val formaal: String,
-
   @Schema(description = "Opplysningene som hentes er gyldige til (men ikke med) denne datoen (YYYY-MM-DD")
   @field:NotNull(message = "Kan ikke være null.")
   @field:DateTimeFormat(pattern = "yyyy-MM-dd")
