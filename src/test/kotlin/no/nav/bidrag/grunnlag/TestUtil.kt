@@ -43,7 +43,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = grunnlagspakkeId,
       formaal = "BIDRAG",
-      gyldigTil = "2021-08",
+      gyldigTil = LocalDate.of(2021, 8,1),
       grunnlagtypeRequestListe = listOf(
         GrunnlagstypeRequest(
           Grunnlagstype.AINNTEKT.toString(),

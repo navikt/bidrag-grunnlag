@@ -1,5 +1,7 @@
 package no.nav.bidrag.grunnlag.controller
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
@@ -208,6 +210,24 @@ class GrunnlagspakkeControllerTest(
     ) { isNotFound() }
 
     assertNotNull(settGyldigTilDatoForGrunnlagspakkeResponse)
+  }
+
+  @Test
+  fun `skal håndtere feil eller manglende felter i input ved oppdater grunnlagspakke kall`() {
+    TestUtil.performRequest(
+      mockMvc,
+      HttpMethod.POST,
+      GrunnlagspakkeController.GRUNNLAGSPAKKE_NY,
+      OpprettGrunnlagspakkeRequest(""),
+      MutableMap::class.java
+    ) { isBadRequest() }
+    TestUtil.performRequest(
+      mockMvc,
+      HttpMethod.POST,
+      GrunnlagspakkeController.GRUNNLAGSPAKKE_NY,
+      OpprettGrunnlagspakkeRequest("   "),
+      MutableMap::class.java
+    ) { isBadRequest() }
   }
 
   private fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequest: OpprettGrunnlagspakkeRequest): OpprettGrunnlagspakkeResponse {
