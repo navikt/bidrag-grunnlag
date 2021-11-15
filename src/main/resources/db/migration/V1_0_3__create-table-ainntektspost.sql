@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS ainntektspost
     opptjeningsperiode_fra date,
     opptjeningsperiode_til date,
     opplysningspliktig_id varchar(255),
-    type varchar(255) NOT NULL,
+    inntekt_type varchar(255) NOT NULL,
     fordel_type varchar(255),
     beskrivelse varchar(255),
     belop float NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS ainntektspost
         REFERENCES ainntekt (inntekt_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    UNIQUE (inntekt_id, utbetalingsperiode, opplysningspliktig_id, type, fordel_type, beskrivelse)
+    UNIQUE (inntekt_id, utbetalingsperiode, opplysningspliktig_id, inntekt_type, fordel_type, beskrivelse)
 )
 
     TABLESPACE pg_default;

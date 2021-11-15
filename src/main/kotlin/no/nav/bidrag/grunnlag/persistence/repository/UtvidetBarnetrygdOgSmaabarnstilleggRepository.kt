@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.Query
 interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetBarnetrygdOgSmaabarnstillegg, Int?> {
 
   @Query(
-    "select ubst from UtvidetBarnetrygdOgSmaabarnstillegg ubst where ubst.grunnlagspakkeId = :grunnlagspakkeId"
+    "select ubst from UtvidetBarnetrygdOgSmaabarnstillegg ubst where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.aktiv = true"
   )
-  fun hentStonader(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
+  fun hentUbst(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
 
 
 

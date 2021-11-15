@@ -15,7 +15,7 @@ data class AinntektspostDto (
   @Schema(description = "Inntekt-id")
   val inntektId: Int = 0,
 
-  @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
+  @Schema(description = "Perioden inntektsposten er utbetalt YYYYMM")
   val utbetalingsperiode: String? = "",
 
   @Schema(description = "Fra-dato for opptjening")
@@ -28,7 +28,7 @@ data class AinntektspostDto (
   val opplysningspliktigId: String? = "",
 
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
-  val type: String = "",
+  val inntektType: String = "",
 
   @Schema(description = "Type fordel, Kontantytelse, Naturalytelse, Utgiftsgodtgjorelse")
   val fordelType: String? = "",

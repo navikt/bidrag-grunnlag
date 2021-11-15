@@ -33,8 +33,8 @@ data class Ainntektspost(
   @Column(nullable = false, name = "opplysningspliktig_id")
   val opplysningspliktigId: String? = "",
 
-  @Column(nullable = false, name = "type")
-  val type: String = "",
+  @Column(nullable = false, name = "inntekt_type")
+  val inntektType: String = "",
 
   @Column(nullable = false, name = "fordel_type")
   val fordelType: String? = "",

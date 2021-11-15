@@ -34,7 +34,6 @@ import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostReposito
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 
 @Service
 class PersistenceService(
@@ -96,24 +95,27 @@ class PersistenceService(
 
   // Returnerer lagret, komplett grunnlagspakke
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
-    val grunnlagspakke = HentKomplettGrunnlagspakkeResponse(
+    return HentKomplettGrunnlagspakkeResponse(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
     )
-    return grunnlagspakke
   }
+
+  // Returnerer formaal som er angitt for grunnlagspakken
+  fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String {
+    return grunnlagspakkeRepository.hentFormaalGrunnlagspakke(grunnlagspakkeId)
+  }
+
 
   // Valider at grunnlagspakke eksisterer
   fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
-    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId)) {
+    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId))
       throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke")
-    }
   }
 
-
-  // Setter gyldig til-dato for en grunnlagspakke
-  fun settGyldigTildatoGrunnlagspakke(grunnlagspakkeId: Int, gyldigTil: LocalDate): Int {
-    grunnlagspakkeRepository.settGyldigTildatoGrunnlagspakke(grunnlagspakkeId, gyldigTil)
+  // Setter gyldig til-dato = dagens dato for angitt grunnlagspakke
+  fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
+    grunnlagspakkeRepository.lukkGrunnlagspakke(grunnlagspakkeId)
     return grunnlagspakkeId
 
   }
@@ -121,7 +123,7 @@ class PersistenceService(
 
   fun hentAinntekt(grunnlagspakkeId: Int): List<HentAinntektResponse> {
     val hentAinntektResponseListe = mutableListOf<HentAinntektResponse>()
-    ainntektRepository.hentInntekter(grunnlagspakkeId)
+    ainntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentAinntektspostListe = mutableListOf<HentAinntektspostResponse>()
         ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
@@ -132,7 +134,7 @@ class PersistenceService(
                 inntektspost.opptjeningsperiodeFra,
                 inntektspost.opptjeningsperiodeTil,
                 inntektspost.opplysningspliktigId,
-                inntektspost.type,
+                inntektspost.inntektType,
                 inntektspost.fordelType,
                 inntektspost.beskrivelse,
                 inntektspost.belop
@@ -148,7 +150,7 @@ class PersistenceService(
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
             hentetTidspunkt = inntekt.hentetTidspunkt,
-            inntektspostAinntektListe = hentAinntektspostListe
+            ainntektspostListe = hentAinntektspostListe
           )
         )
       }
@@ -167,7 +169,7 @@ class PersistenceService(
             hentSkattegrunnlagspostListe.add(
               HentSkattegrunnlagspostResponse(
                 skattegrunnlagType = inntektspost.skattegrunnlagType,
-                inntektType = inntektspost.type,
+                inntektType = inntektspost.inntektType,
                 belop = inntektspost.belop
               )
             )
@@ -177,6 +179,10 @@ class PersistenceService(
             personId = inntekt.personId,
             periodeFra = inntekt.periodeFra,
             periodeTil = inntekt.periodeTil,
+            aktiv = inntekt.aktiv,
+            brukFra = inntekt.brukFra,
+            brukTil = inntekt.brukTil,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
             hentSkattegrunnlagspostListe
           )
         )
@@ -188,16 +194,16 @@ class PersistenceService(
 
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> {
     val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
-    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentStonader(grunnlagspakkeId)
+    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentUbst(grunnlagspakkeId)
       .forEach { ubst ->
         hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
           HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
-            ubst.personId,
-            ubst.type,
-            ubst.periodeFra,
-            ubst.periodeTil,
-            ubst.belop,
-            ubst.manueltBeregnet
+            personId = ubst.personId,
+            type = ubst.type,
+            periodeFra = ubst.periodeFra,
+            periodeTil = ubst.periodeTil,
+            belop = ubst.belop,
+            manueltBeregnet = ubst.manueltBeregnet
           )
         )
       }

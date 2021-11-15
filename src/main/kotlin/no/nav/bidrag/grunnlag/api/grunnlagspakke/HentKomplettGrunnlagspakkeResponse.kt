@@ -11,7 +11,7 @@ data class HentKomplettGrunnlagspakkeResponse(
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Liste over innhentede inntekter fra a-inntekt og underliggende poster")
-  val inntektAinntektListe: List<HentAinntektResponse> = emptyList(),
+  val ainntektListe: List<HentAinntektResponse> = emptyList(),
 
   @Schema(description = "Liste over innhentede fra skatt og underliggende poster")
   val skattegrunnlagListe: List<HentSkattegrunnlagResponse> = emptyList(),

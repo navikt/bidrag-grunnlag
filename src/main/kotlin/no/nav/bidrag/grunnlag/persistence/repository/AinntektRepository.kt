@@ -11,7 +11,7 @@ interface AinntektRepository : JpaRepository<Ainntekt, Int?> {
 //    "select inta from Ainntekt inta where inta.grunnlagspakkeId = :grunnlagspakkeId"
     "select ain from Ainntekt ain where ain.grunnlagspakkeId = :grunnlagspakkeId and ain.aktiv = true"
   )
-  fun hentInntekter(grunnlagspakkeId: Int): List<Ainntekt>
+  fun hentAinntekter(grunnlagspakkeId: Int): List<Ainntekt>
 
   @Query(
     "update Ainntekt ain set ain.aktiv = false, ain.brukTil = CURRENT_TIMESTAMP where ain.inntektId = :inntektId"
