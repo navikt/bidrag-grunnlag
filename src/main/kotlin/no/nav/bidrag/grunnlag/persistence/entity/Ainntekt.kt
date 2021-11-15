@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektDto
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -11,7 +11,7 @@ import javax.persistence.Id
 import kotlin.reflect.full.memberProperties
 
 @Entity
-data class InntektAinntekt(
+data class Ainntekt(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "inntekt_id")
@@ -42,11 +42,11 @@ data class InntektAinntekt(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
 
-fun InntektAinntekt.toInntektAinntektDto() = with(::InntektAinntektDto) {
-  val propertiesByName = InntektAinntekt::class.memberProperties.associateBy { it.name }
+fun Ainntekt.toAinntektDto() = with(::AinntektDto) {
+  val propertiesByName = Ainntekt::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toInntektAinntektDto)
+      else -> propertiesByName[parameter.name]?.get(this@toAinntektDto)
     }
   })
 }

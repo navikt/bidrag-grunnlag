@@ -3,9 +3,9 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.SettGyldigTilDatoForGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 
@@ -119,7 +119,7 @@ class GrunnlagspakkeServiceTest {
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
-    val inntektAinntektDto = InntektAinntektDto(
+    val ainntektDto = AinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "1234567",
       periodeFra = LocalDate.parse("2021-05-01"),
@@ -130,10 +130,10 @@ class GrunnlagspakkeServiceTest {
       brukTil = null
     )
 
-    val opprettetInntekt = persistenceService.opprettInntektAinntekt(inntektAinntektDto)
+    val opprettetInntekt = persistenceService.opprettAinntekt(ainntektDto)
 
-    persistenceService.opprettInntektspostAinntekt(
-      InntektspostAinntektDto(
+    persistenceService.opprettAinntektspost(
+      AinntektspostDto(
         inntektId = opprettetInntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2021-05-01"),
@@ -145,8 +145,8 @@ class GrunnlagspakkeServiceTest {
         belop = BigDecimal.valueOf(17000.01)
       )
     )
-    persistenceService.opprettInntektspostAinntekt(
-      InntektspostAinntektDto(
+    persistenceService.opprettAinntektspost(
+      AinntektspostDto(
         inntektId = opprettetInntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2021-05-01"),
@@ -189,7 +189,7 @@ class GrunnlagspakkeServiceTest {
 
 
     // Legger inn inntekt for person nr 2
-    val inntektDto2 = InntektAinntektDto(
+    val inntektDto2 = AinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "999999",
       periodeFra = LocalDate.parse("2021-06-01"),
@@ -200,10 +200,10 @@ class GrunnlagspakkeServiceTest {
       brukTil = null
     )
 
-    val opprettetInntekt2 = persistenceService.opprettInntektAinntekt(inntektDto2)
+    val opprettetInntekt2 = persistenceService.opprettAinntekt(inntektDto2)
 
-    persistenceService.opprettInntektspostAinntekt(
-      InntektspostAinntektDto(
+    persistenceService.opprettAinntektspost(
+      AinntektspostDto(
         inntektId = opprettetInntekt2.inntektId,
         utbetalingsperiode = "202107",
         opptjeningsperiodeFra = LocalDate.parse("2021-06-01"),

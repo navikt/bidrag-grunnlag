@@ -11,9 +11,9 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
@@ -22,10 +22,8 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.result.ContentResultMatchersDsl
 import org.springframework.test.web.servlet.result.StatusResultMatchersDsl
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -74,7 +72,7 @@ class TestUtil {
       endretTimestamp = LocalDateTime.now()
     )
 
-    fun byggInntektAinntektDto() = InntektAinntektDto(
+    fun byggAinntektDto() = AinntektDto(
       inntektId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
@@ -87,7 +85,7 @@ class TestUtil {
       brukTil = null
     )
 
-    fun byggInntektspostAinntektDto() = InntektspostAinntektDto(
+    fun byggAinntektspostDto() = AinntektspostDto(
       inntektspostId = (1..100).random(),
       inntektId = (1..100).random(),
       utbetalingsperiode = "202108",

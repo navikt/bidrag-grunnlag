@@ -1,13 +1,13 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.InntektspostAinntekt
+import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 
 import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.reflect.full.memberProperties
 
-data class InntektspostAinntektDto (
+data class AinntektspostDto (
 
   @Schema(description = "Inntektspost-id")
   val inntektspostId: Int = 0,
@@ -40,11 +40,11 @@ data class InntektspostAinntektDto (
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun InntektspostAinntektDto.toInntektspostAinntektEntity() = with(::InntektspostAinntekt) {
-  val propertiesByName = InntektspostAinntektDto::class.memberProperties.associateBy { it.name }
+fun AinntektspostDto.toAinntektspostEntity() = with(::Ainntektspost) {
+  val propertiesByName = AinntektspostDto::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektEntity)
+      else -> propertiesByName[parameter.name]?.get(this@toAinntektspostEntity)
     }
   })
 

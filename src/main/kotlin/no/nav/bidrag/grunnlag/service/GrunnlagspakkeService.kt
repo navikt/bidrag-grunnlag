@@ -16,8 +16,8 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
-import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
@@ -151,8 +151,8 @@ class GrunnlagspakkeService(
               )
             )
           } else {
-            val opprettetInntektAinntekt = persistenceService.opprettInntektAinntekt(
-              InntektAinntektDto(
+            val opprettetInntektAinntekt = persistenceService.opprettAinntekt(
+              AinntektDto(
                 grunnlagspakkeId = grunnlagspakkeId,
                 personId = personIdOgPeriode.personId,
                 periodeFra = LocalDate.parse(personIdOgPeriode.periodeFra + "-01"),
@@ -162,8 +162,8 @@ class GrunnlagspakkeService(
             hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
               antallPerioderFunnet++
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
-                persistenceService.opprettInntektspostAinntekt(
-                  InntektspostAinntektDto(
+                persistenceService.opprettAinntektspost(
+                  AinntektspostDto(
                     inntektId = opprettetInntektAinntekt.inntektId,
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
                     opptjeningsperiodeFra =
