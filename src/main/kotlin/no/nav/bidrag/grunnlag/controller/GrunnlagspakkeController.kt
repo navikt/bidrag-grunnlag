@@ -30,8 +30,8 @@ import java.time.LocalDate
 @ProtectedWithClaims(issuer = ISSUER)
 class GrunnlagspakkeController(private val grunnlagspakkeService: GrunnlagspakkeService) {
 
-/*  @Autowired
-  protected var objectMapper: ObjectMapper? = null*/
+  @Autowired
+  protected var objectMapper: ObjectMapper? = null
 
   @PostMapping(GRUNNLAGSPAKKE_NY)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")
@@ -66,10 +66,10 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
   fun oppdaterGrunnlagspakke(@RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
-//    val gyldigTil = objectMapper?.readValue(request.gyldigTil.toString(), LocalDate::class.java)
+    val gyldigTil = objectMapper?.readValue(request.gyldigTil.toString(), LocalDate::class.java)
     val nyRequest = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = request.grunnlagspakkeId,
-      gyldigTil = request.gyldigTil,
+      gyldigTil = gyldigTil,
       grunnlagtypeRequestListe = request.grunnlagtypeRequestListe)
     val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(nyRequest)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
