@@ -380,7 +380,7 @@ class GrunnlagspakkeService(
   fun lukkGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
     // Validerer at grunnlagspakke eksisterer
     persistenceService.validerGrunnlagspakke(lukkGrunnlagspakkeRequest.grunnlagspakkeId)
-    
+
     return persistenceService.lukkGrunnlagspakke(
       lukkGrunnlagspakkeRequest.grunnlagspakkeId)
   }

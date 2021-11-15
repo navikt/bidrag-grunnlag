@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -14,6 +15,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,10 +23,15 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
+
 
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
 class GrunnlagspakkeController(private val grunnlagspakkeService: GrunnlagspakkeService) {
+
+  @Autowired
+  protected var objectMapper: ObjectMapper? = null
 
   @PostMapping(GRUNNLAGSPAKKE_NY)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")
@@ -59,7 +66,12 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
   fun oppdaterGrunnlagspakke(@RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
-    val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
+    val gyldigTil = objectMapper?.readValue(request.gyldigTil.toString(), LocalDate::class.java)
+    val nyRequest = OppdaterGrunnlagspakkeRequest(
+      grunnlagspakkeId = request.grunnlagspakkeId,
+      gyldigTil = gyldigTil,
+      grunnlagtypeRequestListe = request.grunnlagtypeRequestListe)
+    val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(nyRequest)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
     return ResponseEntity(grunnlagspakkeOppdatert, HttpStatus.OK)
   }
