@@ -125,8 +125,8 @@ class GrunnlagspakkeService(
         ident = personIdOgPeriode.personId,
         maanedFom = (personIdOgPeriode.periodeFra.year.toString() + personIdOgPeriode.periodeFra.month.toString()),
         maanedTom = (personIdOgPeriode.periodeTil.year.toString() + personIdOgPeriode.periodeTil.month.toString()),
-        ainntektsfilter = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER,
-        formaal = if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
+        ainntektsfilter = finnFilter(formaal),
+        formaal = finnFormaal(formaal)
       )
       LOGGER.info(
         "Kaller bidrag-gcp-proxy (Inntektskomponenten) med ident = ********${
@@ -378,8 +378,19 @@ class GrunnlagspakkeService(
   }
 
   fun lukkGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
+    // Validerer at grunnlagspakke eksisterer
+    persistenceService.validerGrunnlagspakke(lukkGrunnlagspakkeRequest.grunnlagspakkeId)
+    
     return persistenceService.lukkGrunnlagspakke(
       lukkGrunnlagspakkeRequest.grunnlagspakkeId)
+  }
+
+  fun finnFilter(formaal: String): String {
+    return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
+  }
+
+  fun finnFormaal(formaal: String): String {
+    return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
   }
 }
 
