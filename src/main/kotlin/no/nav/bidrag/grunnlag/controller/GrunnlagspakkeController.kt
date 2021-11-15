@@ -30,8 +30,8 @@ import java.time.LocalDate
 @ProtectedWithClaims(issuer = ISSUER)
 class GrunnlagspakkeController(private val grunnlagspakkeService: GrunnlagspakkeService) {
 
-  @Autowired
-  protected var objectMapper: ObjectMapper? = null
+/*  @Autowired
+  protected var objectMapper: ObjectMapper? = null*/
 
   @PostMapping(GRUNNLAGSPAKKE_NY)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")

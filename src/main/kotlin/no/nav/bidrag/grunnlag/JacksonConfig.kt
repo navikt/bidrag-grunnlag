@@ -1,3 +1,4 @@
+/*
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -14,4 +15,4 @@ class JacksonConfig {
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     return ObjectMapper().findAndRegisterModules()
   }
-}
+}*/
