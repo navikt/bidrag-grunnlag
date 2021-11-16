@@ -30,9 +30,6 @@ import java.time.LocalDate
 @ProtectedWithClaims(issuer = ISSUER)
 class GrunnlagspakkeController(private val grunnlagspakkeService: GrunnlagspakkeService) {
 
-  @Autowired
-  protected var objectMapper: ObjectMapper? = null
-
   @PostMapping(GRUNNLAGSPAKKE_NY)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")
   @ApiResponses(
@@ -66,12 +63,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
   fun oppdaterGrunnlagspakke(@RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
-    val gyldigTil = objectMapper?.readValue(request.gyldigTil.toString(), LocalDate::class.java)
-    val nyRequest = OppdaterGrunnlagspakkeRequest(
-      grunnlagspakkeId = request.grunnlagspakkeId,
-      gyldigTil = gyldigTil,
-      grunnlagtypeRequestListe = request.grunnlagtypeRequestListe)
-    val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(nyRequest)
+    val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
     return ResponseEntity(grunnlagspakkeOppdatert, HttpStatus.OK)
   }
