@@ -33,7 +33,7 @@
     <nimbus-jose-jwt.version>9.15.2</nimbus-jose-jwt.version>
     <springframework-cloud.version>3.0.4</springframework-cloud.version>
     <com.squareup.okhttp3.version>4.9.2</com.squareup.okhttp3.version>
-    <com.fasterxml.jackson.datatype.version>2.13.0</com.fasterxml.jackson.datatype.version>
+<!--    <com.fasterxml.jackson.datatype.version>2.13.0</com.fasterxml.jackson.datatype.version>-->
 
   </properties>
 
@@ -205,11 +205,11 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
       <version>${com.fasterxml.jackson.datatype.version}</version>
-    </dependency>
+    </dependency>-->
 
   </dependencies>
 
