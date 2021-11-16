@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.Column
@@ -11,7 +11,7 @@ import javax.persistence.Id
 import kotlin.reflect.full.memberProperties
 
 @Entity
-data class InntektspostAinntekt(
+data class Ainntektspost(
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,11 +46,11 @@ data class InntektspostAinntekt(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun InntektspostAinntekt.toInntektspostAinntektDto() = with(::InntektspostAinntektDto) {
-  val propertiesByName = InntektspostAinntekt::class.memberProperties.associateBy { it.name }
+fun Ainntektspost.toAinntektspostDto() = with(::AinntektspostDto) {
+  val propertiesByName = Ainntektspost::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toInntektspostAinntektDto)
+      else -> propertiesByName[parameter.name]?.get(this@toAinntektspostDto)
     }
   })
 }

@@ -1,13 +1,13 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.InntektAinntekt
+import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class InntektAinntektDto(
+data class AinntektDto(
 
   @Schema(description = "Inntekt-id")
   val inntektId: Int = 0,
@@ -38,11 +38,11 @@ data class InntektAinntektDto(
 
   )
 
-fun InntektAinntektDto.toInntektAinntektEntity() = with(::InntektAinntekt) {
-  val propertiesByName = InntektAinntektDto::class.memberProperties.associateBy { it.name }
+fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
+  val propertiesByName = AinntektDto::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toInntektAinntektEntity)
+      else -> propertiesByName[parameter.name]?.get(this@toAinntektEntity)
     }
   })
 

@@ -9,7 +9,7 @@ interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetB
   @Query(
     "select ubst from UtvidetBarnetrygdOgSmaabarnstillegg ubst where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.aktiv = true"
   )
-  fun hentAktiveUbst(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
+  fun hentUbst(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
 
 
 
