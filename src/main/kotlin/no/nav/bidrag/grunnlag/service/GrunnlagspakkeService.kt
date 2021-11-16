@@ -123,8 +123,8 @@ class GrunnlagspakkeService(
 
       val hentAinntektRequest = HentAinntektRequest(
         ident = personIdOgPeriode.personId,
-        maanedFom = (personIdOgPeriode.periodeFra.year.toString() + personIdOgPeriode.periodeFra.month.toString()),
-        maanedTom = (personIdOgPeriode.periodeTil.year.toString() + personIdOgPeriode.periodeTil.month.toString()),
+        maanedFom = (personIdOgPeriode.periodeFra.year.toString() + personIdOgPeriode.periodeFra.month),
+        maanedTom = (personIdOgPeriode.periodeTil.year.toString() + personIdOgPeriode.periodeTil.month),
         ainntektsfilter = finnFilter(formaal),
         formaal = finnFormaal(formaal)
       )
