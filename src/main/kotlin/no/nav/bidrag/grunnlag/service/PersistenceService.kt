@@ -1,35 +1,35 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektAinntektResponse
+import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
-import no.nav.bidrag.grunnlag.api.ainntekt.HentInntektspostAinntektResponse
+import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektspostResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagspostResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.InntektAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.InntektspostAinntektDto
+import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.dto.toGrunnlagspakkeEntity
-import no.nav.bidrag.grunnlag.dto.toInntektAinntektEntity
+import no.nav.bidrag.grunnlag.dto.toAinntektEntity
 import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagEntity
-import no.nav.bidrag.grunnlag.dto.toInntektspostAinntektEntity
+import no.nav.bidrag.grunnlag.dto.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.dto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.persistence.entity.toInntektAinntektDto
+import no.nav.bidrag.grunnlag.persistence.entity.toAinntektDto
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
-import no.nav.bidrag.grunnlag.persistence.entity.toInntektspostAinntektDto
+import no.nav.bidrag.grunnlag.persistence.entity.toAinntektspostDto
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.persistence.entity.toUtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.grunnlag.persistence.repository.InntektAinntektRepository
+import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
-import no.nav.bidrag.grunnlag.persistence.repository.InntektspostAinntektRepository
+import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
@@ -38,8 +38,8 @@ import org.springframework.stereotype.Service
 @Service
 class PersistenceService(
   val grunnlagspakkeRepository: GrunnlagspakkeRepository,
-  val inntektAinntektRepository: InntektAinntektRepository,
-  val inntektspostAinntektRepository: InntektspostAinntektRepository,
+  val ainntektRepository: AinntektRepository,
+  val ainntektspostRepository: AinntektspostRepository,
   val skattegrunnlagRepository: SkattegrunnlagRepository,
   val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
   val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
@@ -61,16 +61,16 @@ class PersistenceService(
 
   }
 
-  fun opprettInntektAinntekt(inntektAinntektDto: InntektAinntektDto): InntektAinntektDto {
-    val nyInntekt = inntektAinntektDto.toInntektAinntektEntity()
-    val inntekt = inntektAinntektRepository.save(nyInntekt)
-    return inntekt.toInntektAinntektDto()
+  fun opprettAinntekt(ainntektDto: AinntektDto): AinntektDto {
+    val nyInntekt = ainntektDto.toAinntektEntity()
+    val inntekt = ainntektRepository.save(nyInntekt)
+    return inntekt.toAinntektDto()
   }
 
-  fun opprettInntektspostAinntekt(inntektspostAinntektDto: InntektspostAinntektDto): InntektspostAinntektDto {
-    val nyInntektspost = inntektspostAinntektDto.toInntektspostAinntektEntity()
-    val inntektspost = inntektspostAinntektRepository.save(nyInntektspost)
-    return inntektspost.toInntektspostAinntektDto()
+  fun opprettAinntektspost(ainntektspostDto: AinntektspostDto): AinntektspostDto {
+    val nyInntektspost = ainntektspostDto.toAinntektspostEntity()
+    val inntektspost = ainntektspostRepository.save(nyInntektspost)
+    return inntektspost.toAinntektspostDto()
   }
 
   fun opprettSkattegrunnlag(skattegrunnlagDto: SkattegrunnlagDto): SkattegrunnlagDto {
@@ -96,7 +96,7 @@ class PersistenceService(
   // Returnerer lagret, komplett grunnlagspakke
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
     return HentKomplettGrunnlagspakkeResponse(
-      grunnlagspakkeId, hentInntekterAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
+      grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
     )
   }
@@ -121,15 +121,15 @@ class PersistenceService(
   }
 
 
-  fun hentInntekterAinntekt(grunnlagspakkeId: Int): List<HentInntektAinntektResponse> {
-    val hentInntektAinntektResponseListe = mutableListOf<HentInntektAinntektResponse>()
-    inntektAinntektRepository.hentAktiveAinntekter(grunnlagspakkeId)
+  fun hentAinntekt(grunnlagspakkeId: Int): List<HentAinntektResponse> {
+    val hentAinntektResponseListe = mutableListOf<HentAinntektResponse>()
+    ainntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
-        val hentInntektspostListe = mutableListOf<HentInntektspostAinntektResponse>()
-        inntektspostAinntektRepository.hentInntektsposter(inntekt.inntektId)
+        val hentAinntektspostListe = mutableListOf<HentAinntektspostResponse>()
+        ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
           .forEach { inntektspost ->
-            hentInntektspostListe.add(
-              HentInntektspostAinntektResponse(
+            hentAinntektspostListe.add(
+              HentAinntektspostResponse(
                 inntektspost.utbetalingsperiode,
                 inntektspost.opptjeningsperiodeFra,
                 inntektspost.opptjeningsperiodeTil,
@@ -141,8 +141,8 @@ class PersistenceService(
               )
             )
           }
-        hentInntektAinntektResponseListe.add(
-          HentInntektAinntektResponse(
+        hentAinntektResponseListe.add(
+          HentAinntektResponse(
             personId = inntekt.personId,
             periodeFra = inntekt.periodeFra,
             periodeTil = inntekt.periodeTil,
@@ -150,18 +150,18 @@ class PersistenceService(
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
             hentetTidspunkt = inntekt.hentetTidspunkt,
-            inntektspostAinntektListe = hentInntektspostListe
+            ainntektspostListe = hentAinntektspostListe
           )
         )
       }
 
-    return hentInntektAinntektResponseListe
+    return hentAinntektResponseListe
 
   }
 
   fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<HentSkattegrunnlagResponse> {
     val hentSkattegrunnlagResponseListe = mutableListOf<HentSkattegrunnlagResponse>()
-    skattegrunnlagRepository.hentAktivtSkattegrunnlag(grunnlagspakkeId)
+    skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
       .forEach { inntekt ->
         val hentSkattegrunnlagspostListe = mutableListOf<HentSkattegrunnlagspostResponse>()
         skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
@@ -194,7 +194,7 @@ class PersistenceService(
 
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> {
     val hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe = mutableListOf<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse>()
-    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentAktiveUbst(grunnlagspakkeId)
+    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentUbst(grunnlagspakkeId)
       .forEach { ubst ->
         hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe.add(
           HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
