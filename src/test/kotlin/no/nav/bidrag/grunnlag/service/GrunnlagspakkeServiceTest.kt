@@ -58,8 +58,7 @@ class GrunnlagspakkeServiceTest {
   @Suppress("NonAsciiCharacters")
   fun `Test på opprette ny grunnlagspakke`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(
-      opprettetAv = "X123456",
-      formaal = "FORSKUDD"
+      Formaal.FORSKUDD,  "X123456"
     )
 
     val nyGrunnlagspakkeOpprettet =
@@ -102,8 +101,7 @@ class GrunnlagspakkeServiceTest {
   @Suppress("NonAsciiCharacters")
   fun `Test på å lukke en grunnlagspakke`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(
-      opprettetAv = "X123456",
-      formaal = "FORSKUDD"
+      Formaal.FORSKUDD,  "X123456"
     )
 
     val opprettGrunnlagspakkeResponse =
@@ -125,7 +123,7 @@ class GrunnlagspakkeServiceTest {
   @Disabled
   @Suppress("NonAsciiCharacters")
   fun `Test på hente grunnlagspakke med aktive og inaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
-    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
+    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
@@ -328,7 +326,7 @@ class GrunnlagspakkeServiceTest {
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på sette eksisterende, overlappende grunnlag som inaktivt ved ny hent av grunnlag`() {
-    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest("X123456")
+    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
 
@@ -444,9 +442,9 @@ class GrunnlagspakkeServiceTest {
 
     val oppdaterRequest = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
-      gyldigTil = null, mutableListOf(
+      gyldigTil = LocalDate.now(), mutableListOf(
         GrunnlagstypeRequest(
-          Grunnlagstype.AINNTEKT.toString(),
+          Grunnlagstype.AINNTEKT,
           mutableListOf(
             PersonIdOgPeriodeRequest(
               personId = "1234567890",
@@ -456,7 +454,7 @@ class GrunnlagspakkeServiceTest {
           )
         ),
         GrunnlagstypeRequest(
-          Grunnlagstype.SKATTEGRUNNLAG.toString(),
+          Grunnlagstype.SKATTEGRUNNLAG,
           mutableListOf(
             PersonIdOgPeriodeRequest(
               personId = "1234567890",
@@ -466,7 +464,7 @@ class GrunnlagspakkeServiceTest {
           )
         ),
         GrunnlagstypeRequest(
-          Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
+          Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
           mutableListOf(
             PersonIdOgPeriodeRequest(
               personId = "1234567890",

@@ -1,26 +1,24 @@
 package no.nav.bidrag.grunnlag.api.grunnlagspakke
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.validation.DateValid
-import org.springframework.format.annotation.DateTimeFormat
+import no.nav.bidrag.grunnlag.api.deserialization.IntDeserializer
 import java.time.LocalDate
-import javax.validation.constraints.NotBlank
+import javax.validation.Valid
 import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 data class OppdaterGrunnlagspakkeRequest(
 
   @Schema(description = "Grunnlagspakke-id")
-  @field:NotNull(message = "Kan ikke være null.")
+  @JsonDeserialize(using = IntDeserializer::class)
   val grunnlagspakkeId: Int,
 
   @Schema(description = "Opplysningene som hentes er gyldige til (men ikke med) denne datoen (YYYY-MM-DD")
-  @field:NotNull(message = "Kan ikke være null.")
-  @field:DateTimeFormat(pattern = "yyyy-MM-dd")
-  val gyldigTil: LocalDate,
+  val gyldigTil: LocalDate? = null,
 
   @Schema(description = "Liste over hvilke typer grunnlag som skal hentes inn. På nivået under er personId og perioder angitt")
-  @field:NotEmpty(message = "Listen over forespurte grunnlag kan ikke være tom.")
+  @field:Valid
+  @field:NotEmpty(message = "Listen kan ikke være null eller tom.")
   val grunnlagtypeRequestListe: List<GrunnlagstypeRequest>
 
 )
