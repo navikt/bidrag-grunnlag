@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
+import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
@@ -30,9 +30,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @DisplayName("GrunnlagspakkeServiceTest")
-@ActiveProfiles(BidragGrunnlagLocal.TEST_PROFILE)
+@ActiveProfiles(BidragGrunnlagTest.TEST_PROFILE)
 @SpringBootTest(
-  classes = [BidragGrunnlagLocal::class],
+  classes = [BidragGrunnlagTest::class],
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @EnableMockOAuth2Server

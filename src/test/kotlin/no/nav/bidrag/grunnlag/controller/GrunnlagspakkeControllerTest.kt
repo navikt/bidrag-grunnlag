@@ -3,8 +3,8 @@ package no.nav.bidrag.grunnlag.controller
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
-import no.nav.bidrag.grunnlag.BidragGrunnlagLocal
-import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.TEST_PROFILE
+import no.nav.bidrag.grunnlag.BidragGrunnlagTest
+import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
@@ -54,7 +54,7 @@ import java.time.LocalDate
 
 @DisplayName("GrunnlagspakkeControllerTest")
 @ActiveProfiles(TEST_PROFILE)
-@SpringBootTest(classes = [BidragGrunnlagLocal::class], webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [BidragGrunnlagTest::class], webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
 class GrunnlagspakkeControllerTest(
