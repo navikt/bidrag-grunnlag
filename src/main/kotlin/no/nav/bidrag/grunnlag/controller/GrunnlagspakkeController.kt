@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.Valid
+import javax.validation.constraints.NotNull
 
 
 @RestController
@@ -39,7 +41,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun opprettNyGrunnlagspakke(@RequestBody request: OpprettGrunnlagspakkeRequest): ResponseEntity<OpprettGrunnlagspakkeResponse>? {
+  fun opprettNyGrunnlagspakke(@Valid @RequestBody request: OpprettGrunnlagspakkeRequest): ResponseEntity<OpprettGrunnlagspakkeResponse>? {
     val grunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke er opprettet: $grunnlagspakkeOpprettet")
     return ResponseEntity(grunnlagspakkeOpprettet, HttpStatus.OK)
@@ -59,7 +61,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
       ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
     ]
   )
-  fun oppdaterGrunnlagspakke(@RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
+  fun oppdaterGrunnlagspakke(@Valid @RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
     val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
     return ResponseEntity(grunnlagspakkeOppdatert, HttpStatus.OK)
@@ -79,7 +81,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun hentGrunnlagspakke(@PathVariable grunnlagspakkeId: Int): ResponseEntity<HentKomplettGrunnlagspakkeResponse>? {
+  fun hentGrunnlagspakke(@PathVariable @NotNull grunnlagspakkeId: Int): ResponseEntity<HentKomplettGrunnlagspakkeResponse>? {
     val grunnlagspakkeFunnet = grunnlagspakkeService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
     LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
     return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
@@ -100,7 +102,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun lukkGrunnlagspakke(@RequestBody request: LukkGrunnlagspakkeRequest): ResponseEntity<Int>? {
+  fun lukkGrunnlagspakke(@Valid @RequestBody request: LukkGrunnlagspakkeRequest): ResponseEntity<Int>? {
     val oppdatertgrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert med gyldigTil-dato: $oppdatertgrunnlagspakke")
     return ResponseEntity(request.grunnlagspakkeId, HttpStatus.OK)

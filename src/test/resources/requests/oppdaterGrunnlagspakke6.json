@@ -1,0 +1,10 @@
+{
+  "grunnlagspakkeId": 1,
+  "gyldigTil": "2022-01-01",
+  "grunnlagtypeRequestListe": [
+    {
+      "grunnlagstype": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG",
+      "personIdOgPeriodeRequestListe": []
+    }
+  ]
+}

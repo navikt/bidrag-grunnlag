@@ -2,7 +2,6 @@ package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -16,6 +15,7 @@ import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.service.Formaal
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import no.nav.bidrag.grunnlag.service.SkattegrunnlagType
 import org.springframework.http.HttpMethod
@@ -36,7 +36,7 @@ class TestUtil {
 
     fun byggNyGrunnlagspakkeRequest() = OpprettGrunnlagspakkeRequest(
       opprettetAv = "RTV9999",
-      formaal = "BIDRAG",
+      formaal = Formaal.BIDRAG,
       )
 
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
@@ -44,17 +44,17 @@ class TestUtil {
       gyldigTil = LocalDate.parse("2021-08-01"),
       grunnlagtypeRequestListe = listOf(
         GrunnlagstypeRequest(
-          Grunnlagstype.AINNTEKT.toString(),
+          Grunnlagstype.AINNTEKT,
           listOf(PersonIdOgPeriodeRequest("12345678910",
             LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
         )),
         GrunnlagstypeRequest(
-          Grunnlagstype.SKATTEGRUNNLAG.toString(),
+          Grunnlagstype.SKATTEGRUNNLAG,
           listOf(PersonIdOgPeriodeRequest("12345678910",
             LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
         )),
         GrunnlagstypeRequest(
-          Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
+          Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
           listOf(PersonIdOgPeriodeRequest("12345678910",
             LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
         )
@@ -63,11 +63,6 @@ class TestUtil {
     )
 
     fun byggLukkGrunnlagspakkeRequest(grunnlagspakkeId: Int) = LukkGrunnlagspakkeRequest(grunnlagspakkeId)
-
-
-    fun byggHentGrunnlagspakkeRequest(grunnlagspakkeId: Int = 1) = HentGrunnlagspakkeRequest(
-      grunnlagspakkeId = grunnlagspakkeId
-    )
 
     fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
       grunnlagspakkeId = (1..100).random(),
@@ -165,7 +160,10 @@ class TestUtil {
       val mockHttpServletRequestDsl: MockHttpServletRequestDsl.() -> Unit = {
         contentType = MediaType.APPLICATION_JSON
         if (input != null) {
-          content = ObjectMapper().writeValueAsString(input)
+          content = when(input) {
+            is String -> input
+            else -> ObjectMapper().findAndRegisterModules().writeValueAsString(input)
+          }
         }
         accept = MediaType.APPLICATION_JSON
       }
