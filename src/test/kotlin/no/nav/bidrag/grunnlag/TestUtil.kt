@@ -164,7 +164,6 @@ class TestUtil {
             is String -> input
             else -> ObjectMapper().findAndRegisterModules().writeValueAsString(input)
           }
-//          content = ObjectMapper().findAndRegisterModules().writeValueAsString(input)
         }
         accept = MediaType.APPLICATION_JSON
       }

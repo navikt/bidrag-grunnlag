@@ -102,7 +102,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun lukkGrunnlagspakke(@RequestBody request: LukkGrunnlagspakkeRequest): ResponseEntity<Int>? {
+  fun lukkGrunnlagspakke(@Valid @RequestBody request: LukkGrunnlagspakkeRequest): ResponseEntity<Int>? {
     val oppdatertgrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert med gyldigTil-dato: $oppdatertgrunnlagspakke")
     return ResponseEntity(request.grunnlagspakkeId, HttpStatus.OK)
