@@ -13,6 +13,5 @@ data class PersonIdOgPeriodeRequest(
   val periodeFra: LocalDate = LocalDate.now(),
 
   @Schema(description = "Grunnlag skal hentes TIL denne perioden, på formatet YYYY-MM-DD")
-  val periodeTil: LocalDate = LocalDate.now(),
-
+  val periodeTil: LocalDate = LocalDate.now()
   )

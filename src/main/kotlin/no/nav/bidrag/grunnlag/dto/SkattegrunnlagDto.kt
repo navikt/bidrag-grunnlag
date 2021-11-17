@@ -33,8 +33,7 @@ data class SkattegrunnlagDto(
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
-
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
   )
 
 fun SkattegrunnlagDto.toSkattegrunnlagEntity() = with(::Skattegrunnlag) {

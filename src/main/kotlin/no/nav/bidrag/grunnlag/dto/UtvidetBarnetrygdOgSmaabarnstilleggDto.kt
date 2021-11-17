@@ -47,8 +47,7 @@ data class UtvidetBarnetrygdOgSmaabarnstilleggDto(
   val deltBosted: Boolean = false,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
-
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
   )
 
 fun UtvidetBarnetrygdOgSmaabarnstilleggDto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity() = with(::UtvidetBarnetrygdOgSmaabarnstillegg) {

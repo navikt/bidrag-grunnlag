@@ -12,7 +12,6 @@ data class OpprettGrunnlagspakkeRequest (
 
   @Schema(description = "opprettet av")
   val opprettetAv: String = ""
-
 )
 
 fun OpprettGrunnlagspakkeRequest.toGrunnlagspakkeDto(opprettetAv: String) = with(::GrunnlagspakkeDto) {

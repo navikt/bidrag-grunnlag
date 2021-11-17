@@ -11,5 +11,4 @@ data class GrunnlagstypeRequest(
 
   @Schema(description = "Liste over hvilke personId'er og periode grunnlag skal hentes for")
   val personIdOgPeriodeRequestListe: List<PersonIdOgPeriodeRequest> = emptyList()
-
 )

@@ -14,5 +14,4 @@ data class OppdaterGrunnlagspakkeRequest(
 
   @Schema(description = "Liste over hvilke typer grunnlag som skal hentes inn. På nivået under er personId og perioder angitt")
   val grunnlagtypeRequestListe: List<GrunnlagstypeRequest> = emptyList()
-
 )

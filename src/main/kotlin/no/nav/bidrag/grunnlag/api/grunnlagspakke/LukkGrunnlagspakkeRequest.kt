@@ -8,5 +8,4 @@ data class LukkGrunnlagspakkeRequest(
 
   @Schema(description = "Grunnlagspakke-id. GyldigTil-dato settes lik dagens dato for angitt gunnlagspakke")
   val grunnlagspakkeId: Int = 0
-
 )

@@ -18,5 +18,4 @@ data class HentKomplettGrunnlagspakkeResponse(
 
   @Schema(description = "Liste over innhentet utvidet barnetrygd og småbarnstillegg")
   val ubstListe: List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> = emptyList()
-
 )

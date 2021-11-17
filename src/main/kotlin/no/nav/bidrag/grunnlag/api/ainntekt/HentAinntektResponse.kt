@@ -28,6 +28,5 @@ data class HentAinntektResponse(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 
   @Schema(description = "Liste over poster for innhentede inntektsposter")
-  val ainntektspostListe: List<HentAinntektspostResponse> = emptyList(),
-
+  val ainntektspostListe: List<HentAinntektspostResponse> = emptyList()
   )

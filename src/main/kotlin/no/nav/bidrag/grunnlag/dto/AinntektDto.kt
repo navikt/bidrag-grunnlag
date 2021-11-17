@@ -34,8 +34,7 @@ data class AinntektDto(
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
-
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
   )
 
 fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {

@@ -10,5 +10,4 @@ data class OppdaterGrunnlagspakkeResponse(
 
   @Schema(description = "Liste over hvilke typer grunnlag som skal hentes inn. På nivået under er personId og status angitt")
   val grunnlagtypeResponsListe: List<GrunnlagstypeResponse> = emptyList()
-
 )

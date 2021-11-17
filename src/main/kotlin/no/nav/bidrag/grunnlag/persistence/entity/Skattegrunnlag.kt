@@ -12,34 +12,34 @@ import kotlin.reflect.full.memberProperties
 
 @Entity
 data class Skattegrunnlag(
-    @Id
+  @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "skattegrunnlag_id")
   val skattegrunnlagId: Int = 0,
 
-    @Column(nullable = false, name = "grunnlagspakke_id")
+  @Column(nullable = false, name = "grunnlagspakke_id")
   val grunnlagspakkeId: Int = 0,
 
-    @Column(nullable = false, name = "person_id")
+  @Column(nullable = false, name = "person_id")
   val personId: String = "",
 
-    @Column(nullable = false, name = "periode_fra")
+  @Column(nullable = false, name = "periode_fra")
   val periodeFra: LocalDate = LocalDate.now(),
 
-    @Column(nullable = false, name = "periode_til")
+  @Column(nullable = false, name = "periode_til")
   val periodeTil: LocalDate = LocalDate.now(),
 
-    @Column(nullable = false, name = "aktiv")
+  @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,
 
-    @Column(nullable = false, name = "bruk_fra")
+  @Column(nullable = false, name = "bruk_fra")
   val brukFra: LocalDateTime = LocalDateTime.now(),
 
-    @Column(nullable = true, name = "bruk_til")
+  @Column(nullable = true, name = "bruk_til")
   val brukTil: LocalDateTime? = null,
 
-    @Column(nullable = false, name = "hentet_tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
+  @Column(nullable = false, name = "hentet_tidspunkt")
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun Skattegrunnlag.toSkattegrunnlagDto() = with(::SkattegrunnlagDto) {

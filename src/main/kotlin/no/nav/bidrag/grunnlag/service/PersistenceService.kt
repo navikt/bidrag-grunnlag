@@ -202,8 +202,12 @@ class PersistenceService(
             type = ubst.type,
             periodeFra = ubst.periodeFra,
             periodeTil = ubst.periodeTil,
+            aktiv = ubst.aktiv,
+            brukFra = ubst.brukFra,
+            brukTil = ubst.brukTil,
             belop = ubst.belop,
-            manueltBeregnet = ubst.manueltBeregnet
+            manueltBeregnet = ubst.manueltBeregnet,
+            hentetTidspunkt = ubst.hentetTidspunkt
           )
         )
       }
