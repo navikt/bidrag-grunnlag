@@ -52,7 +52,7 @@ class GrunnlagspakkeService(
   fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequest: OpprettGrunnlagspakkeRequest): OpprettGrunnlagspakkeResponse {
     val grunnlagspakkeDto = GrunnlagspakkeDto(
       opprettetAv = opprettGrunnlagspakkeRequest.opprettetAv,
-      formaal = opprettGrunnlagspakkeRequest.formaal
+      formaal = opprettGrunnlagspakkeRequest.formaal.name
     )
     val opprettetGrunnlagspakke = persistenceService.opprettNyGrunnlagspakke(grunnlagspakkeDto)
     return OpprettGrunnlagspakkeResponse(opprettetGrunnlagspakke.grunnlagspakkeId)
@@ -71,11 +71,11 @@ class GrunnlagspakkeService(
       oppdaterGrunnlagspakkeRequest.gyldigTil)
     }*/
 
-    oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe.forEach() { grunnlagstypeRequest ->
+    oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe!!.forEach() { grunnlagstypeRequest ->
       when (grunnlagstypeRequest.grunnlagstype) {
 
         // Henter Ainntekter
-        Grunnlagstype.AINNTEKT.toString() ->
+        Grunnlagstype.AINNTEKT ->
           grunnlagstypeResponseListe.add(
             oppdaterInntektAinntekt(
               oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
@@ -84,7 +84,7 @@ class GrunnlagspakkeService(
           )
 
         // Henter skattegrunnlag
-        Grunnlagstype.SKATTEGRUNNLAG.toString() ->
+        Grunnlagstype.SKATTEGRUNNLAG ->
           grunnlagstypeResponseListe.add(
             oppdaterSkattegrunnlag(
               oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
@@ -93,7 +93,7 @@ class GrunnlagspakkeService(
           )
 
         // Henter utvidet barnetrygd og småbarnstillegg
-        Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString() ->
+        Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG ->
           grunnlagstypeResponseListe.add(
             oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
               oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
