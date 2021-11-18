@@ -299,7 +299,8 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
-    Mockito.`when`(grunnlagspakkeService.oppdaterGrunnlagspakke(OppdaterGrunnlagspakkeRequest(1, LocalDate.parse("2022-01-01"), listOf(
+    Mockito.`when`(grunnlagspakkeService.oppdaterGrunnlagspakke(OppdaterGrunnlagspakkeRequest(1, LocalDate.parse("2022-01-01"),
+      null, listOf(
       GrunnlagstypeRequest(Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG, listOf(PersonIdOgPeriodeRequest("12345678901", LocalDate.parse("2021-11-01"), LocalDate.parse("2021-11-15"))))
     ))))
       .thenReturn(OppdaterGrunnlagspakkeResponse())

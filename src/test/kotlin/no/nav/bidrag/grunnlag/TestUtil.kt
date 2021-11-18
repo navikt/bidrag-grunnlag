@@ -42,6 +42,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = grunnlagspakkeId,
       gyldigTil = LocalDate.parse("2021-08-01"),
+      innsynHistoriskeInntekterDato = null,
       grunnlagtypeRequestListe = listOf(
         GrunnlagstypeRequest(
           Grunnlagstype.AINNTEKT,

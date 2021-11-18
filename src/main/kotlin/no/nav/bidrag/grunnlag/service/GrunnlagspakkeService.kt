@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 @Transactional
@@ -79,6 +81,7 @@ class GrunnlagspakkeService(
           grunnlagstypeResponseListe.add(
             oppdaterInntektAinntekt(
               oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
+              oppdaterGrunnlagspakkeRequest.innsynHistoriskeInntekterDato,
               grunnlagstypeRequest.personIdOgPeriodeRequestListe
             )
           )
@@ -111,8 +114,8 @@ class GrunnlagspakkeService(
   }
 
 
-  private fun oppdaterInntektAinntekt(
-    grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>): GrunnlagstypeResponse {
+  private fun oppdaterInntektAinntekt(grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
+                                      personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>): GrunnlagstypeResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
     val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
@@ -121,8 +124,11 @@ class GrunnlagspakkeService(
 
       oppdaterGrunnlagspakkeResponseListe.add(OppdaterGrunnlagspakkeResponse())
 
+      val hentHistoriskeInntekter = hentHistoriskeInntekterDato != null
+
       val hentAinntektRequest = HentAinntektRequest(
         ident = personIdOgPeriode.personId,
+        innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato.toString(),
         maanedFom = personIdOgPeriode.periodeFra.toString().substring(0, 6),
         maanedTom = personIdOgPeriode.periodeTil.toString().substring(0, 6),
         ainntektsfilter = finnFilter(formaal),
@@ -134,6 +140,7 @@ class GrunnlagspakkeService(
             IntRange(8, 10)
           )
         }, " +
+            "innsynHistoriskeInntekterDato = ${hentAinntektRequest.innsynHistoriskeInntekterDato}, " +
             "maanedFom = ${hentAinntektRequest.maanedFom}, maanedTom = ${hentAinntektRequest.maanedTom}, " +
             "ainntektsfilter = ${hentAinntektRequest.ainntektsfilter}, formaal = ${hentAinntektRequest.formaal}"
       )
@@ -156,18 +163,30 @@ class GrunnlagspakkeService(
           } else {
             hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
               antallPerioderFunnet++
-              val opprettetInntektAinntekt = persistenceService.opprettAinntekt(
-                AinntektDto(
-                  grunnlagspakkeId = grunnlagspakkeId,
-                  personId = personIdOgPeriode.personId,
-                  periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                  periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)
-                )
-              )
+              val opprettetAinntekt: AinntektDto
+              if (hentHistoriskeInntekter) {
+                opprettetAinntekt = persistenceService.opprettAinntekt(
+                  AinntektDto(
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    personId = personIdOgPeriode.personId,
+                    periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                    brukFra = hentHistoriskeInntekterDato!!.atStartOfDay(),
+                    brukTil = hentHistoriskeInntekterDato.atTime(LocalTime.MAX)))
+              }
+              else {
+                opprettetAinntekt = persistenceService.opprettAinntekt(
+                  AinntektDto(
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    personId = personIdOgPeriode.personId,
+                    periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)))
+              }
+
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
                 persistenceService.opprettAinntektspost(
                   AinntektspostDto(
-                    inntektId = opprettetInntektAinntekt.inntektId,
+                    inntektId = opprettetAinntekt.inntektId,
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
                     opptjeningsperiodeFra =
                     if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01") else null,

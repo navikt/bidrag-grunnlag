@@ -120,7 +120,6 @@ class GrunnlagspakkeServiceTest {
   }
 
   @Test
-  @Disabled
   @Suppress("NonAsciiCharacters")
   fun `Test på hente grunnlagspakke med aktive og inaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
@@ -324,6 +323,7 @@ class GrunnlagspakkeServiceTest {
 
 
   @Test
+  @Disabled
   @Suppress("NonAsciiCharacters")
   fun `Test på sette eksisterende, overlappende grunnlag som inaktivt ved ny hent av grunnlag`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
@@ -442,7 +442,9 @@ class GrunnlagspakkeServiceTest {
 
     val oppdaterRequest = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
-      gyldigTil = LocalDate.now(), mutableListOf(
+      gyldigTil = LocalDate.now(),
+      innsynHistoriskeInntekterDato = null,
+      grunnlagtypeRequestListe = mutableListOf(
         GrunnlagstypeRequest(
           Grunnlagstype.AINNTEKT,
           mutableListOf(
