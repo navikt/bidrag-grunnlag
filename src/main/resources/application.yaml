@@ -3,6 +3,9 @@
 # Profiles: All
 #
 ####################################################################
+springdoc:
+  swagger-ui:
+    path: /
 
 server:
   servlet:
