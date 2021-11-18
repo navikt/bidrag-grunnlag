@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Service
 @Transactional
@@ -50,6 +49,7 @@ class GrunnlagspakkeService(
   }
 
   val oppdaterGrunnlagspakkeResponseListe = mutableListOf<OppdaterGrunnlagspakkeResponse>()
+  val timestampOppdatering: LocalDateTime = LocalDateTime.now()
 
   fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequest: OpprettGrunnlagspakkeRequest): OpprettGrunnlagspakkeResponse {
     val grunnlagspakkeDto = GrunnlagspakkeDto(
@@ -79,7 +79,7 @@ class GrunnlagspakkeService(
         // Henter Ainntekter
         Grunnlagstype.AINNTEKT ->
           grunnlagstypeResponseListe.add(
-            oppdaterInntektAinntekt(
+            oppdaterAinntekt(
               oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
               oppdaterGrunnlagspakkeRequest.innsynHistoriskeInntekterDato,
               grunnlagstypeRequest.personIdOgPeriodeRequestListe
@@ -106,6 +106,10 @@ class GrunnlagspakkeService(
       }
     }
 
+/*    if (grunnlagstypeResponseListe.size.compareTo(0) > 0) {
+      persistenceService.oppdaterEndretTimestamp(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, timestampOppdatering)
+    }*/
+
     return OppdaterGrunnlagspakkeResponse(
       oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
       grunnlagstypeResponseListe
@@ -114,8 +118,8 @@ class GrunnlagspakkeService(
   }
 
 
-  private fun oppdaterInntektAinntekt(grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
-                                      personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>): GrunnlagstypeResponse {
+  private fun oppdaterAinntekt(grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
+                               personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>): GrunnlagstypeResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
     val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
@@ -172,7 +176,7 @@ class GrunnlagspakkeService(
                     periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                     periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
                     brukFra = hentHistoriskeInntekterDato!!.atStartOfDay(),
-                    brukTil = hentHistoriskeInntekterDato.atTime(LocalTime.MAX)))
+                    hentetTidspunkt = timestampOppdatering))
               }
               else {
                 opprettetAinntekt = persistenceService.opprettAinntekt(
@@ -180,7 +184,9 @@ class GrunnlagspakkeService(
                     grunnlagspakkeId = grunnlagspakkeId,
                     personId = personIdOgPeriode.personId,
                     periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1)))
+                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                    brukFra = timestampOppdatering,
+                    hentetTidspunkt = timestampOppdatering))
               }
 
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
@@ -271,6 +277,8 @@ class GrunnlagspakkeService(
                   personId = personIdOgPeriode.personId,
                   periodeFra = LocalDate.parse("$inntektAar-01-01"),
                   periodeTil = LocalDate.parse("$inntektAar-01-01").plusYears(1),
+                  brukFra = timestampOppdatering,
+                  hentetTidspunkt = timestampOppdatering
                 )
               )
               skattegrunnlagsPosterOrdinaer.forEach { skattegrunnlagsPost ->
@@ -362,9 +370,11 @@ class GrunnlagspakkeService(
                   // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
                   periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
                     .plusMonths(1) else null,
+                  brukFra = timestampOppdatering,
                   belop = BigDecimal.valueOf(ubst.beløp),
                   manueltBeregnet = ubst.manueltBeregnet,
-                  deltBosted = ubst.deltBosted
+                  deltBosted = ubst.deltBosted,
+                  hentetTidspunkt = timestampOppdatering
                 )
               )
             }

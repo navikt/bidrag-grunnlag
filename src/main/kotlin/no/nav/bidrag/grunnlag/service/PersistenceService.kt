@@ -34,6 +34,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostReposito
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class PersistenceService(
@@ -117,8 +118,14 @@ class PersistenceService(
   fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
     grunnlagspakkeRepository.lukkGrunnlagspakke(grunnlagspakkeId)
     return grunnlagspakkeId
-
   }
+
+  // Oppdaterer endret timestamp på grunnlagspakke, kalles ved oppdatering av grunnlag
+  fun oppdaterEndretTimestamp(grunnlagspakkeId: Int, timestampOppdatering: LocalDateTime): Int {
+    grunnlagspakkeRepository.oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
+    return grunnlagspakkeId
+  }
+
 
 
   fun hentAinntekt(grunnlagspakkeId: Int): List<HentAinntektResponse> {
@@ -134,6 +141,7 @@ class PersistenceService(
                 inntektspost.opptjeningsperiodeFra,
                 inntektspost.opptjeningsperiodeTil,
                 inntektspost.opplysningspliktigId,
+                inntektspost.virksomhetId,
                 inntektspost.inntektType,
                 inntektspost.fordelType,
                 inntektspost.beskrivelse,

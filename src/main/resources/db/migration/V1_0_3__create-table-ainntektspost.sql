@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS ainntektspost
     opptjeningsperiode_fra date,
     opptjeningsperiode_til date,
     opplysningspliktig_id varchar(255),
+    virksomhet_id varchar(255),
     inntekt_type varchar(255) NOT NULL,
     fordel_type varchar(255),
     beskrivelse varchar(255),

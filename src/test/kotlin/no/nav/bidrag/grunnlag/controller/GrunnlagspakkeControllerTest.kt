@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -117,6 +118,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
+  @Disabled
   fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
 
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))

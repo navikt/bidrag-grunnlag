@@ -27,6 +27,9 @@ data class AinntektspostDto (
   @Schema(description = "Id til de som rapporterer inn inntekten")
   val opplysningspliktigId: String? = "",
 
+  @Schema(description = "Id til virksomheten som rapporterer inn inntekten")
+  val virksomhetId: String? = "",
+
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
   val inntektType: String = "",
 

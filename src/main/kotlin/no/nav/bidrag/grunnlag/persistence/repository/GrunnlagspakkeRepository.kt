@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface GrunnlagspakkeRepository : JpaRepository<Grunnlagspakke, Int?> {
 
@@ -26,5 +27,11 @@ interface GrunnlagspakkeRepository : JpaRepository<Grunnlagspakke, Int?> {
   )
   fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String
 
+
+  @Query(
+    "update Grunnlagspakke gp set gp.endretTimestamp = :timestampOppdatering where gp.grunnlagspakkeId = :grunnlagspakkeId"
+  )
+  @Modifying
+  fun oppdaterEndretTimestamp(grunnlagspakkeId: Int, timestampOppdatering: LocalDateTime)
 }
 
