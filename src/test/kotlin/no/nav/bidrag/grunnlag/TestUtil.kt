@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -64,6 +65,8 @@ class TestUtil {
     )
 
     fun byggLukkGrunnlagspakkeRequest(grunnlagspakkeId: Int) = LukkGrunnlagspakkeRequest(grunnlagspakkeId)
+
+    fun byggHentGrunnlagspakkeRequest(grunnlagspakkeId: Int) = HentGrunnlagspakkeRequest(grunnlagspakkeId)
 
     fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
       grunnlagspakkeId = (1..100).random(),

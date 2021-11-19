@@ -9,6 +9,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentAinntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -200,6 +201,7 @@ class GrunnlagspakkeService(
                     if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
                       .plusMonths(1) else null,
                     opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
+                    virksomhetId = inntektspost.virksomhet?.identifikator,
                     inntektType = inntektspost.inntektType,
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
@@ -401,9 +403,9 @@ class GrunnlagspakkeService(
   }
 
 
-  fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
-    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
-    return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
+  fun hentKomplettGrunnlagspakke(hentGrunnlagspakkeRequest: HentGrunnlagspakkeRequest): HentKomplettGrunnlagspakkeResponse {
+    persistenceService.validerGrunnlagspakke(hentGrunnlagspakkeRequest.grunnlagspakkeId)
+    return persistenceService.hentKomplettGrunnlagspakke(hentGrunnlagspakkeRequest.grunnlagspakkeId)
   }
 
   fun lukkGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {

@@ -1,9 +1,12 @@
 package no.nav.bidrag.grunnlag.api.grunnlagspakke
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.swagger.v3.oas.annotations.media.Schema
+import no.nav.bidrag.grunnlag.api.deserialization.IntDeserializer
 
 data class HentGrunnlagspakkeRequest(
 
   @Schema(description = "grunnlagspakke-id")
-  val grunnlagspakkeId: Int = 0
+  @JsonDeserialize(using = IntDeserializer::class)
+  val grunnlagspakkeId: Int
 )
