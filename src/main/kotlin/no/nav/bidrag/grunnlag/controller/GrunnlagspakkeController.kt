@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
@@ -69,7 +68,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
   }
 
 
-  @GetMapping(GRUNNLAGSPAKKE_HENT)
+  @GetMapping("$GRUNNLAGSPAKKE_HENT/{grunnlagspakkeId}")
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Finn alle data for en grunnlagspakke")
   @ApiResponses(
     value = [
@@ -82,8 +81,8 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun hentGrunnlagspakke(@Valid @RequestBody request: HentGrunnlagspakkeRequest): ResponseEntity<HentKomplettGrunnlagspakkeResponse>? {
-    val grunnlagspakkeFunnet = grunnlagspakkeService.hentKomplettGrunnlagspakke(request)
+  fun hentGrunnlagspakke(@PathVariable @NotNull grunnlagspakkeId: Int): ResponseEntity<HentKomplettGrunnlagspakkeResponse>? {
+    val grunnlagspakkeFunnet = grunnlagspakkeService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
     LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
     return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
 

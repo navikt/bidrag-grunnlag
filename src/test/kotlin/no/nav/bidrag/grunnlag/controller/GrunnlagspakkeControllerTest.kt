@@ -7,7 +7,6 @@ import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
@@ -160,8 +159,8 @@ class GrunnlagspakkeControllerTest(
     val hentGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
-      HentGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId),
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/${nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId}",
+      null,
       HentKomplettGrunnlagspakkeResponse::class.java
     ) { isOk() }
 
@@ -200,8 +199,8 @@ class GrunnlagspakkeControllerTest(
     val hentGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
-      TestUtil.byggHentGrunnlagspakkeRequest(1),
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/1",
+      null,
       String::class.java
     ) { isNotFound() }
 
@@ -352,12 +351,11 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
   fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke kall`() {
     val errorResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/null",
       null,
       MutableMap::class.java
     ) {isBadRequest()}
@@ -369,14 +367,14 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
-    Mockito.`when`(grunnlagspakkeService.hentKomplettGrunnlagspakke(HentGrunnlagspakkeRequest(1)))
+    Mockito.`when`(grunnlagspakkeService.hentKomplettGrunnlagspakke(1))
       .thenReturn(HentKomplettGrunnlagspakkeResponse())
 
     val okResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
-      TestUtil.byggHentGrunnlagspakkeRequest(1),
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/1",
+      null,
       HentKomplettGrunnlagspakkeResponse::class.java
     ) {isOk()}
 

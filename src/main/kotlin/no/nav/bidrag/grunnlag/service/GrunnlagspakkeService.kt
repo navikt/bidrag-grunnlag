@@ -9,7 +9,6 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentAinntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -402,10 +401,9 @@ class GrunnlagspakkeService(
     )
   }
 
-
-  fun hentKomplettGrunnlagspakke(hentGrunnlagspakkeRequest: HentGrunnlagspakkeRequest): HentKomplettGrunnlagspakkeResponse {
-    persistenceService.validerGrunnlagspakke(hentGrunnlagspakkeRequest.grunnlagspakkeId)
-    return persistenceService.hentKomplettGrunnlagspakke(hentGrunnlagspakkeRequest.grunnlagspakkeId)
+  fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
+    return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
   fun lukkGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
