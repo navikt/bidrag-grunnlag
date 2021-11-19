@@ -90,7 +90,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
 
 
   @PostMapping(GRUNNLAGSPAKKE_LUKK)
-  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Setter gyldigTil-dato = dato i input for angitt grunnlagspakke")
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Setter gyldigTil-dato = dagens dato for angitt grunnlagspakke")
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Grunnlagspakke oppdatert"),
