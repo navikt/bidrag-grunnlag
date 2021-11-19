@@ -118,7 +118,6 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
   fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
 
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
