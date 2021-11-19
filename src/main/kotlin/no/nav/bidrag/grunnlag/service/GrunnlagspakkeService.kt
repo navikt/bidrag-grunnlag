@@ -132,7 +132,7 @@ class GrunnlagspakkeService(
 
       val hentAinntektRequest = HentAinntektRequest(
         ident = personIdOgPeriode.personId,
-        innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato.toString(),
+        innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato?.toString() ?: LocalDate.now().toString(),
         maanedFom = personIdOgPeriode.periodeFra.toString().substring(0, 7),
         maanedTom = personIdOgPeriode.periodeTil.toString().substring(0, 7),
         ainntektsfilter = finnFilter(formaal),
@@ -167,27 +167,14 @@ class GrunnlagspakkeService(
           } else {
             hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
               antallPerioderFunnet++
-              val opprettetAinntekt: AinntektDto
-              if (hentHistoriskeInntekter) {
-                opprettetAinntekt = persistenceService.opprettAinntekt(
-                  AinntektDto(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    personId = personIdOgPeriode.personId,
-                    periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                    brukFra = hentHistoriskeInntekterDato!!.atStartOfDay(),
-                    hentetTidspunkt = timestampOppdatering))
-              }
-              else {
-                opprettetAinntekt = persistenceService.opprettAinntekt(
-                  AinntektDto(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    personId = personIdOgPeriode.personId,
-                    periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                    brukFra = timestampOppdatering,
-                    hentetTidspunkt = timestampOppdatering))
-              }
+              val opprettetAinntekt = persistenceService.opprettAinntekt(
+                AinntektDto(
+                  grunnlagspakkeId = grunnlagspakkeId,
+                  personId = personIdOgPeriode.personId,
+                  periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                  periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                  brukFra = if (hentHistoriskeInntekter) hentHistoriskeInntekterDato!!.atStartOfDay() else timestampOppdatering,
+                  hentetTidspunkt = timestampOppdatering))
 
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
                 persistenceService.opprettAinntektspost(
