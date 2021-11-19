@@ -16,9 +16,11 @@ data class OppdaterGrunnlagspakkeRequest(
   @Schema(description = "Opplysningene som hentes er gyldige til (men ikke med) denne datoen (YYYY-MM-DD")
   val gyldigTil: LocalDate? = null,
 
+  @Schema(description = "Hent historiske inntekter fra Inntektskomponenten på angitt dato, skal kun brukes til engangsinnhenting av historikk")
+  val innsynHistoriskeInntekterDato: LocalDate? = null,
+
   @Schema(description = "Liste over hvilke typer grunnlag som skal hentes inn. På nivået under er personId og perioder angitt")
   @field:Valid
   @field:NotEmpty(message = "Listen kan ikke være null eller tom.")
   val grunnlagtypeRequestListe: List<GrunnlagstypeRequest>
-
 )

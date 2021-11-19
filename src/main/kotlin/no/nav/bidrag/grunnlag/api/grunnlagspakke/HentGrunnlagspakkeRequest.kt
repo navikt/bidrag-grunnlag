@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.api.deserialization.IntDeserializer
 
-data class LukkGrunnlagspakkeRequest(
+data class HentGrunnlagspakkeRequest(
 
-  @Schema(description = "Grunnlagspakke-id. GyldigTil-dato settes lik dagens dato for angitt gunnlagspakke")
+  @Schema(description = "grunnlagspakke-id")
   @JsonDeserialize(using = IntDeserializer::class)
   val grunnlagspakkeId: Int
 )

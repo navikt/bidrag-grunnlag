@@ -14,6 +14,5 @@ data class PersonIdOgPeriodeRequest(
   val periodeFra: LocalDate,
 
   @Schema(description = "Grunnlag skal hentes TIL denne perioden, på formatet YYYY-MM-DD")
-  val periodeTil: LocalDate,
-
+  val periodeTil: LocalDate
   )

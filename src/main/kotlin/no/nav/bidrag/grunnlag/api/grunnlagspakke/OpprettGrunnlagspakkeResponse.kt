@@ -7,5 +7,4 @@ data class OpprettGrunnlagspakkeResponse(
 
   @Schema(description = "Id til opprettet grunnlagspakke")
   val grunnlagspakkeId: Int = 0
-
 )

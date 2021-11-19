@@ -14,5 +14,4 @@ data class GrunnlagstypeRequest(
   @field:Valid
   @field:NotEmpty(message = "Listen kan ikke være null eller tom.")
   val personIdOgPeriodeRequestListe: List<PersonIdOgPeriodeRequest>
-
 )

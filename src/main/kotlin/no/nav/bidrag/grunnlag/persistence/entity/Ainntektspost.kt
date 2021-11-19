@@ -33,6 +33,9 @@ data class Ainntektspost(
   @Column(nullable = false, name = "opplysningspliktig_id")
   val opplysningspliktigId: String? = "",
 
+  @Column(nullable = false, name = "virksomhet_id")
+  val virksomhetId: String? = "",
+
   @Column(nullable = false, name = "inntekt_type")
   val inntektType: String = "",
 

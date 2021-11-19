@@ -28,6 +28,5 @@ data class HentSkattegrunnlagResponse(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 
   @Schema(description = "Liste over poster med skattegrunnlag")
-  val skattegrunnlagListe: List<HentSkattegrunnlagspostResponse> = emptyList(),
-
+  val skattegrunnlagListe: List<HentSkattegrunnlagspostResponse> = emptyList()
   )

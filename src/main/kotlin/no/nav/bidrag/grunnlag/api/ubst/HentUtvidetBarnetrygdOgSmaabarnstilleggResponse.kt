@@ -35,6 +35,5 @@ data class HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
   val manueltBeregnet: Boolean = false,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
-
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )

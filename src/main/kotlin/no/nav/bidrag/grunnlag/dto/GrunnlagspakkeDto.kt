@@ -24,8 +24,7 @@ data class GrunnlagspakkeDto (
   val gyldigTil: LocalDate? = null,
 
   @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
-  val formaal: String = "",
-
+  val formaal: String = ""
   )
 
 fun GrunnlagspakkeDto.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {

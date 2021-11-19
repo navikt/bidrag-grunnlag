@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -120,7 +121,6 @@ class GrunnlagspakkeServiceTest {
   }
 
   @Test
-  @Disabled
   @Suppress("NonAsciiCharacters")
   fun `Test på hente grunnlagspakke med aktive og inaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
@@ -130,8 +130,8 @@ class GrunnlagspakkeServiceTest {
     val ainntektDto = AinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "1234567",
-      periodeFra = LocalDate.parse("2021-05-01"),
-      periodeTil = LocalDate.parse("2021-06-01"),
+      periodeFra = LocalDate.parse("2021-06-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -147,6 +147,7 @@ class GrunnlagspakkeServiceTest {
         opptjeningsperiodeFra = LocalDate.parse("2021-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-06-01"),
         opplysningspliktigId = "1234567890",
+        virksomhetId = "222444666",
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
@@ -160,6 +161,7 @@ class GrunnlagspakkeServiceTest {
         opptjeningsperiodeFra = LocalDate.parse("2020-01-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-01-01"),
         opplysningspliktigId = "1234567890",
+        virksomhetId = "222444666",
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/ferieLoenn",
@@ -171,8 +173,8 @@ class GrunnlagspakkeServiceTest {
     val inaktivInntektDto = AinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "1234567",
-      periodeFra = LocalDate.parse("2020-05-01"),
-      periodeTil = LocalDate.parse("2020-06-01"),
+      periodeFra = LocalDate.parse("2020-06-01"),
+      periodeTil = LocalDate.parse("2020-07-01"),
       aktiv = false,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
@@ -188,6 +190,7 @@ class GrunnlagspakkeServiceTest {
         opptjeningsperiodeFra = LocalDate.parse("2020-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2020-06-01"),
         opplysningspliktigId = "1234567890",
+        virksomhetId = "222444666",
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
@@ -200,8 +203,8 @@ class GrunnlagspakkeServiceTest {
     val inntektDto2 = AinntektDto(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
       personId = "999999",
-      periodeFra = LocalDate.parse("2021-06-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
+      periodeFra = LocalDate.parse("2021-07-01"),
+      periodeTil = LocalDate.parse("2021-08-01"),
       aktiv = true,
       hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
@@ -217,6 +220,7 @@ class GrunnlagspakkeServiceTest {
         opptjeningsperiodeFra = LocalDate.parse("2021-06-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-07-01"),
         opplysningspliktigId = "9876543210",
+        virksomhetId = "666444222",
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
@@ -260,16 +264,20 @@ class GrunnlagspakkeServiceTest {
     )
 
     val komplettGrunnlagspakkeFunnet =
-      grunnlagspakkeService.hentKomplettGrunnlagspakke(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)
+      grunnlagspakkeService.hentKomplettGrunnlagspakke(HentGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId))
 
     assertAll(
       Executable { assertThat(komplettGrunnlagspakkeFunnet).isNotNull },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe.size).isEqualTo(2) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].personId).isEqualTo("1234567")},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-06-01"))},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01"))},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].aktiv).isEqualTo(true)},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].brukTil).isNull()},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].personId).isEqualTo("999999")},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-07-01"))},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].periodeTil).isEqualTo(LocalDate.parse("2021-08-01"))},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].aktiv).isEqualTo(true)},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].brukTil).isNull()},
 
@@ -278,15 +286,17 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-05-01"))},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-06-01"))},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opplysningspliktigId).isEqualTo("1234567890")},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].virksomhetId).isEqualTo("222444666")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].inntektType).isEqualTo("Loenn")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].fordelType).isEqualTo("Kontantytelse")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].beskrivelse).isEqualTo("Loenn/fastloenn")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].belop).isEqualTo(BigDecimal.valueOf(17000.01))},
 
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].utbetalingsperiode).isEqualTo("202106")},
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-05-01"))},
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-06-01"))},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2020-01-01"))},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-01-01"))},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opplysningspliktigId).isEqualTo("1234567890")},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].virksomhetId).isEqualTo("222444666")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].inntektType).isEqualTo("Loenn")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].fordelType).isEqualTo("Kontantytelse")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].beskrivelse).isEqualTo("Loenn/ferieLoenn")},
@@ -297,6 +307,7 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-06-01"))},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-07-01"))},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opplysningspliktigId).isEqualTo("9876543210")},
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].virksomhetId).isEqualTo("666444222")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].inntektType).isEqualTo("Loenn")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].fordelType).isEqualTo("Kontantytelse")},
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].beskrivelse).isEqualTo("Loenn/fastloenn")},
@@ -324,6 +335,7 @@ class GrunnlagspakkeServiceTest {
 
 
   @Test
+  @Disabled
   @Suppress("NonAsciiCharacters")
   fun `Test på sette eksisterende, overlappende grunnlag som inaktivt ved ny hent av grunnlag`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
@@ -442,7 +454,9 @@ class GrunnlagspakkeServiceTest {
 
     val oppdaterRequest = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
-      gyldigTil = LocalDate.now(), mutableListOf(
+      gyldigTil = LocalDate.now(),
+      innsynHistoriskeInntekterDato = null,
+      grunnlagtypeRequestListe = mutableListOf(
         GrunnlagstypeRequest(
           Grunnlagstype.AINNTEKT,
           mutableListOf(
@@ -478,7 +492,7 @@ class GrunnlagspakkeServiceTest {
 
 
     val komplettGrunnlagspakkeFunnet =
-      grunnlagspakkeService.hentKomplettGrunnlagspakke(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)
+      grunnlagspakkeService.hentKomplettGrunnlagspakke(HentGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId))
 
   }
 }

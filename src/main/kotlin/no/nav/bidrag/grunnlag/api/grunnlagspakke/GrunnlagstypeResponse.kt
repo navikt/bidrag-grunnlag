@@ -9,5 +9,4 @@ data class GrunnlagstypeResponse(
 
   @Schema(description = "Liste over resultatet av alle kall for å hente grunnlag. Inneholder personId og status på hver innhenting.")
   val hentGrunnlagkallResponseListe: List<HentGrunnlagkallResponse> = emptyList()
-
 )
