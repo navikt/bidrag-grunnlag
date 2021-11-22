@@ -2,10 +2,10 @@ package no.nav.bidrag.grunnlag.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentAinntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -27,7 +27,7 @@ class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyC
 
   @PostMapping(HENT_AINNTEKT)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter Ainntekt")
-  fun hentAinntekt(@RequestBody hentAinntektRequest: HentAinntektRequest): ResponseEntity<HentAinntektListeResponse> {
+  fun hentAinntekt(@RequestBody hentAinntektRequest: HentInntektRequest): ResponseEntity<HentInntektListeResponse> {
     return handleRestResponse(bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest))
   }
 

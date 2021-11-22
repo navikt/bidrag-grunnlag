@@ -1,4 +1,4 @@
-package no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response
+package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt
 
 data class ArbeidsInntektInformasjon(
   val inntektListe: List<InntektListe>?
