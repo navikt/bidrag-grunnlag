@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentAinntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -157,6 +158,7 @@ class GrunnlagspakkeService(
           LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
+          val nyeAinntekter = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
 
           if (hentInntektListeResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
             hentGrunnlagkallResponseListe.add(
@@ -168,32 +170,28 @@ class GrunnlagspakkeService(
           } else {
             hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
               antallPerioderFunnet++
-              val opprettetAinntekt: AinntektDto
+              val inntekt: AinntektDto
               if (hentHistoriskeInntekter) {
-                opprettetAinntekt = persistenceService.opprettAinntekt(
-                  AinntektDto(
+                  inntekt = AinntektDto(
                     grunnlagspakkeId = grunnlagspakkeId,
                     personId = personIdOgPeriode.personId,
                     periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                     periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
                     brukFra = hentHistoriskeInntekterDato!!.atStartOfDay(),
-                    hentetTidspunkt = timestampOppdatering))
+                    hentetTidspunkt = timestampOppdatering)
               }
               else {
-                opprettetAinntekt = persistenceService.opprettAinntekt(
-                  AinntektDto(
+                  inntekt = AinntektDto(
                     grunnlagspakkeId = grunnlagspakkeId,
                     personId = personIdOgPeriode.personId,
                     periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                     periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
                     brukFra = timestampOppdatering,
-                    hentetTidspunkt = timestampOppdatering))
+                    hentetTidspunkt = timestampOppdatering)
               }
-
+              val inntektsposter = mutableListOf<AinntektspostDto>()
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
-                persistenceService.opprettAinntektspost(
-                  AinntektspostDto(
-                    inntektId = opprettetAinntekt.inntektId,
+                  inntektsposter.add(AinntektspostDto(
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
                     opptjeningsperiodeFra =
                     if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01") else null,
@@ -206,10 +204,12 @@ class GrunnlagspakkeService(
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
                     belop = inntektspost.beloep.toBigDecimal()
-                  )
-                )
+                  ))
+//                )
               }
+              nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
             }
+            persistenceService.oppdaterAinntektForGrunnlagspakke(grunnlagspakkeId, nyeAinntekter, personIdOgPeriode.periodeFra, personIdOgPeriode.periodeTil, personIdOgPeriode.personId)
             hentGrunnlagkallResponseListe.add(
               HentGrunnlagkallResponse(
                 personIdOgPeriode.personId,

@@ -7,6 +7,9 @@ import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektspostResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagspostResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
+import no.nav.bidrag.grunnlag.comparator.PeriodComparable
+import no.nav.bidrag.grunnlag.comparator.Period
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
@@ -34,6 +37,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostReposito
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -126,6 +130,38 @@ class PersistenceService(
     return grunnlagspakkeId
   }
 
+  fun oppdaterAinntektForGrunnlagspakke(grunnlagspakkeId: Int, newAinntektForPersonId: List<PeriodComparable<AinntektDto, AinntektspostDto>>, periodeFra: LocalDate, periodeTil: LocalDate, personId: String) {
+    val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
+    val ainntektPeriodComparator = AinntektPeriodComparator()
+
+    // Finner ut hvilke inntekter som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
+    val comparatorResult = ainntektPeriodComparator.comparePeriodEntities(Period(periodeFra, periodeTil), newAinntektForPersonId, existingAinntektForPersonId)
+
+    val hentetTidspunkt = LocalDateTime.now()
+
+    // Setter utløpte Ainntekter til utløpt.
+    LOGGER.info("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
+    comparatorResult.expiredEntities.forEach(){expiredEntity ->
+      val expiredAinntekt = expiredEntity.parent.copy(aktiv = false, brukTil = hentetTidspunkt).toAinntektEntity()
+      ainntektRepository.save(expiredAinntekt)
+    }
+    // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
+    LOGGER.info("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
+    comparatorResult.equalEntities.forEach(){equalEntity ->
+      val unchangedAinntekt = equalEntity.parent.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
+      ainntektRepository.save(unchangedAinntekt)
+    }
+    // Lagrer nye Ainntekter og Ainntektsposter.
+    LOGGER.info("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
+    comparatorResult.updatedEntities.forEach(){updatedEntity ->
+      val ainntekt = ainntektRepository.save(updatedEntity.parent.toAinntektEntity())
+      updatedEntity.children.forEach(){ainntektspostDto ->
+        val updatedAinntekt = ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
+        ainntektspostRepository.save(updatedAinntekt)
+      }
+    }
+  }
+
 
 
   fun hentAinntekt(grunnlagspakkeId: Int): List<HentAinntektResponse> {
@@ -161,6 +197,23 @@ class PersistenceService(
             ainntektspostListe = hentAinntektspostListe
           )
         )
+      }
+
+    return hentAinntektResponseListe
+
+  }
+
+  fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personId: String): List<PeriodComparable<AinntektDto, AinntektspostDto>> {
+    val hentAinntektResponseListe = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
+    ainntektRepository.hentAinntekter(grunnlagspakkeId)
+      .forEach { inntekt ->
+        if (inntekt.personId.equals(personId)) {
+          val hentAinntektspostListe = mutableListOf<AinntektspostDto>()
+          ainntektspostRepository.hentInntektsposter(inntekt.inntektId).forEach(){ainntektspost -> hentAinntektspostListe.add(ainntektspost.toAinntektspostDto())}
+          hentAinntektResponseListe.add(
+            PeriodComparable(inntekt.toAinntektDto(), hentAinntektspostListe)
+          )
+        }
       }
 
     return hentAinntektResponseListe
