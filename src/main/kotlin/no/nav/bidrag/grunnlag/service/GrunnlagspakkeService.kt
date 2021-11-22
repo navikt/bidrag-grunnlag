@@ -348,23 +348,24 @@ class GrunnlagspakkeService(
 
           if (familieBaSakResponse.perioder.isNotEmpty())
             familieBaSakResponse.perioder.forEach() { ubst ->
-              antallPerioderFunnet++
-              persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-                UtvidetBarnetrygdOgSmaabarnstilleggDto(
-                  grunnlagspakkeId = grunnlagspakkeId,
-                  personId = personIdOgPeriode.personId,
-                  type = ubst.stønadstype.toString(),
-                  periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
-                  // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-                  periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
-                    .plusMonths(1) else null,
-                  brukFra = timestampOppdatering,
-                  belop = BigDecimal.valueOf(ubst.beløp),
-                  manueltBeregnet = ubst.manueltBeregnet,
-                  deltBosted = ubst.deltBosted,
-                  hentetTidspunkt = timestampOppdatering
+              if (LocalDate.parse(ubst.fomMåned.toString() + "01").isAfter(personIdOgPeriode.periodeTil.minusMonths(1)))
+                antallPerioderFunnet++
+                persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+                  UtvidetBarnetrygdOgSmaabarnstilleggDto(
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    personId = personIdOgPeriode.personId,
+                    type = ubst.stønadstype.toString(),
+                    periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
+                    // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+                    periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
+                      .plusMonths(1) else null,
+                    brukFra = timestampOppdatering,
+                    belop = BigDecimal.valueOf(ubst.beløp),
+                    manueltBeregnet = ubst.manueltBeregnet,
+                    deltBosted = ubst.deltBosted,
+                    hentetTidspunkt = timestampOppdatering
+                  )
                 )
-              )
             }
           hentGrunnlagkallResponseListe.add(
             HentGrunnlagkallResponse(
