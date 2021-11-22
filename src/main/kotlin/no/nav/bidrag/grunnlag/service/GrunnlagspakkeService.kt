@@ -348,7 +348,7 @@ class GrunnlagspakkeService(
 
           if (familieBaSakResponse.perioder.isNotEmpty())
             familieBaSakResponse.perioder.forEach() { ubst ->
-              if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil.minusMonths(1)))
+              if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil))
                 antallPerioderFunnet++
                 persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
                   UtvidetBarnetrygdOgSmaabarnstilleggDto(
