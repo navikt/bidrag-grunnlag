@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
@@ -8,18 +9,16 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.HentAinntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
@@ -120,8 +119,10 @@ class GrunnlagspakkeService(
   }
 
 
-  private fun oppdaterAinntekt(grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
-                               personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>): GrunnlagstypeResponse {
+  private fun oppdaterAinntekt(
+    grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
+    personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
+  ): GrunnlagstypeResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
     val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
@@ -132,9 +133,9 @@ class GrunnlagspakkeService(
 
       val hentHistoriskeInntekter = hentHistoriskeInntekterDato != null
 
-      val hentAinntektRequest = HentAinntektRequest(
+      val hentAinntektRequest = HentInntektRequest(
         ident = personIdOgPeriode.personId,
-        innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato.toString(),
+        innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato,
         maanedFom = personIdOgPeriode.periodeFra.toString().substring(0, 7),
         maanedTom = personIdOgPeriode.periodeTil.toString().substring(0, 7),
         ainntektsfilter = finnFilter(formaal),
@@ -170,28 +171,19 @@ class GrunnlagspakkeService(
           } else {
             hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
               antallPerioderFunnet++
-              val inntekt: AinntektDto
-              if (hentHistoriskeInntekter) {
-                  inntekt = AinntektDto(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    personId = personIdOgPeriode.personId,
-                    periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                    brukFra = hentHistoriskeInntekterDato!!.atStartOfDay(),
-                    hentetTidspunkt = timestampOppdatering)
-              }
-              else {
-                  inntekt = AinntektDto(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    personId = personIdOgPeriode.personId,
-                    periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                    brukFra = timestampOppdatering,
-                    hentetTidspunkt = timestampOppdatering)
-              }
+              val inntekt = AinntektDto(
+                grunnlagspakkeId = grunnlagspakkeId,
+                personId = personIdOgPeriode.personId,
+                periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                brukFra = if (hentHistoriskeInntekter) hentHistoriskeInntekterDato!!.atStartOfDay() else timestampOppdatering,
+                hentetTidspunkt = timestampOppdatering
+              )
+
               val inntektsposter = mutableListOf<AinntektspostDto>()
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
-                  inntektsposter.add(AinntektspostDto(
+                inntektsposter.add(
+                  AinntektspostDto(
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
                     opptjeningsperiodeFra =
                     if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01") else null,
@@ -204,12 +196,19 @@ class GrunnlagspakkeService(
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
                     belop = inntektspost.beloep.toBigDecimal()
-                  ))
+                  )
+                )
 //                )
               }
               nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
             }
-            persistenceService.oppdaterAinntektForGrunnlagspakke(grunnlagspakkeId, nyeAinntekter, personIdOgPeriode.periodeFra, personIdOgPeriode.periodeTil, personIdOgPeriode.personId)
+            persistenceService.oppdaterAinntektForGrunnlagspakke(
+              grunnlagspakkeId,
+              nyeAinntekter,
+              personIdOgPeriode.periodeFra,
+              personIdOgPeriode.periodeTil,
+              personIdOgPeriode.personId
+            )
             hentGrunnlagkallResponseListe.add(
               HentGrunnlagkallResponse(
                 personIdOgPeriode.personId,
@@ -343,7 +342,8 @@ class GrunnlagspakkeService(
 
       val familieBaSakRequest = FamilieBaSakRequest(
         personIdent = personIdOgPeriode.personId,
-        fraDato = personIdOgPeriode.periodeFra)
+        fraDato = personIdOgPeriode.periodeFra
+      )
 
       LOGGER.info(
         "Kaller familie-ba-sak med personIdent ********${
@@ -362,7 +362,8 @@ class GrunnlagspakkeService(
 
           if (familieBaSakResponse.perioder.isNotEmpty())
             familieBaSakResponse.perioder.forEach() { ubst ->
-              antallPerioderFunnet++
+              if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil))
+                antallPerioderFunnet++
               persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
                 UtvidetBarnetrygdOgSmaabarnstilleggDto(
                   grunnlagspakkeId = grunnlagspakkeId,
@@ -402,10 +403,9 @@ class GrunnlagspakkeService(
     )
   }
 
-
-  fun hentKomplettGrunnlagspakke(hentGrunnlagspakkeRequest: HentGrunnlagspakkeRequest): HentKomplettGrunnlagspakkeResponse {
-    persistenceService.validerGrunnlagspakke(hentGrunnlagspakkeRequest.grunnlagspakkeId)
-    return persistenceService.hentKomplettGrunnlagspakke(hentGrunnlagspakkeRequest.grunnlagspakkeId)
+  fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
+    return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
   fun lukkGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
@@ -413,7 +413,8 @@ class GrunnlagspakkeService(
     persistenceService.validerGrunnlagspakke(lukkGrunnlagspakkeRequest.grunnlagspakkeId)
 
     return persistenceService.lukkGrunnlagspakke(
-      lukkGrunnlagspakkeRequest.grunnlagspakkeId)
+      lukkGrunnlagspakkeRequest.grunnlagspakkeId
+    )
   }
 
   fun finnFilter(formaal: String): String {

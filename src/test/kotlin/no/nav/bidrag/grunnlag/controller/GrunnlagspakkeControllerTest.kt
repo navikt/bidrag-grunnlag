@@ -2,12 +2,10 @@ package no.nav.bidrag.grunnlag.controller
 
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.gcp.proxy.consumer.inntektskomponenten.response.HentAinntektListeResponse
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
@@ -16,6 +14,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -90,8 +88,8 @@ class GrunnlagspakkeControllerTest(
 
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
 
-    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentAinntektListeResponse>>())).thenReturn(
-      ResponseEntity(HentAinntektListeResponse(emptyList()), HttpStatus.OK)
+    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenReturn(
+      ResponseEntity(HentInntektListeResponse(emptyList()), HttpStatus.OK)
     )
 
     Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>()))
@@ -111,8 +109,8 @@ class GrunnlagspakkeControllerTest(
 
     assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(3)
 
-    oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach() { grunnlagstypeResponse ->
-      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach() { hentGrunnlagkallResponse ->
+    oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach { hentGrunnlagkallResponse ->
         assertEquals(hentGrunnlagkallResponse.statuskode, HttpStatus.OK.value())
       }
     }
@@ -123,7 +121,7 @@ class GrunnlagspakkeControllerTest(
 
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
 
-    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentAinntektListeResponse>>())).thenThrow(
+    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenThrow(
       HttpClientErrorException(HttpStatus.NOT_FOUND)
     )
 
@@ -144,8 +142,8 @@ class GrunnlagspakkeControllerTest(
     assertThat(oppdaterGrunnlagspakkeResponse).isNotNull
     assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(3)
 
-    oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe?.forEach() { grunnlagstypeResponse ->
-      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach() { hentGrunnlagkallResponse ->
+    oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach { hentGrunnlagkallResponse ->
         assertEquals(hentGrunnlagkallResponse.statuskode, HttpStatus.NOT_FOUND.value())
       }
     }
@@ -160,8 +158,8 @@ class GrunnlagspakkeControllerTest(
     val hentGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
-      HentGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId),
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/${nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId}",
+      null,
       HentKomplettGrunnlagspakkeResponse::class.java
     ) { isOk() }
 
@@ -200,8 +198,8 @@ class GrunnlagspakkeControllerTest(
     val hentGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
-      TestUtil.byggHentGrunnlagspakkeRequest(1),
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/1",
+      null,
       String::class.java
     ) { isNotFound() }
 
@@ -352,12 +350,11 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
   fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke kall`() {
     val errorResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/null",
       null,
       MutableMap::class.java
     ) {isBadRequest()}
@@ -369,14 +366,14 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
-    Mockito.`when`(grunnlagspakkeService.hentKomplettGrunnlagspakke(HentGrunnlagspakkeRequest(1)))
+    Mockito.`when`(grunnlagspakkeService.hentKomplettGrunnlagspakke(1))
       .thenReturn(HentKomplettGrunnlagspakkeResponse())
 
     val okResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT,
-      TestUtil.byggHentGrunnlagspakkeRequest(1),
+      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/1",
+      null,
       HentKomplettGrunnlagspakkeResponse::class.java
     ) {isOk()}
 
@@ -403,7 +400,7 @@ class GrunnlagspakkeControllerTest(
     if (url != null) {
       json = url.readText()
     } else {
-      fail("Klarte ikke å lese fil fra: ${filpath}")
+      fail("Klarte ikke å lese fil fra: $filpath")
     }
     return json
   }

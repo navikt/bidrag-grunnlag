@@ -2,7 +2,6 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -264,7 +263,7 @@ class GrunnlagspakkeServiceTest {
     )
 
     val komplettGrunnlagspakkeFunnet =
-      grunnlagspakkeService.hentKomplettGrunnlagspakke(HentGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId))
+      grunnlagspakkeService.hentKomplettGrunnlagspakke(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)
 
     assertAll(
       Executable { assertThat(komplettGrunnlagspakkeFunnet).isNotNull },
@@ -490,9 +489,8 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-
     val komplettGrunnlagspakkeFunnet =
-      grunnlagspakkeService.hentKomplettGrunnlagspakke(HentGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettet.grunnlagspakkeId))
+      grunnlagspakkeService.hentKomplettGrunnlagspakke(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)
 
   }
 }
