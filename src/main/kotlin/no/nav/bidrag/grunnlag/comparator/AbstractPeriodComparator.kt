@@ -1,8 +1,15 @@
 package no.nav.bidrag.grunnlag.comparator
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
 abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
+
+  companion object {
+    @JvmStatic
+    private val LOGGER = LoggerFactory.getLogger(AbstractPeriodComparator::class.java)
+  }
 
   private fun isInsidePeriod(requestedPeriod: IPeriod, existingPeriod: IPeriod): Boolean {
     return existingPeriod.periodeFra.isAfterOrEqual(requestedPeriod.periodeFra) && existingPeriod.periodeTil.isBeforeOrEqual(requestedPeriod.periodeTil)
@@ -18,6 +25,8 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
     val equalEntities = mutableListOf<PeriodComparable<Parent, Child>>()
 
     val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, requestedPeriod, expiredEntities)
+    LOGGER.info("${existingEntitiesWithinRequestedPeriod.size} existing entities within requested period (${requestedPeriod.periodeFra} - ${requestedPeriod.periodeTil})")
+    LOGGER.info("$expiredEntities expired entities before equality check")
 
     newEntities.forEach() { newEntity ->
       val existingEntityWithEqualPeriod = findCompareEntityWithEqualPeriod(newEntity, existingEntitiesWithinRequestedPeriod)
@@ -25,10 +34,12 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
         if (isEntitiesEqual(newEntity, existingEntityWithEqualPeriod)) {
           equalEntities.add(existingEntityWithEqualPeriod)
         } else {
+          LOGGER.info("Entities not equal. NewEntity: ${ObjectMapper().findAndRegisterModules().writeValueAsString(newEntity)}, ExistingEntity: ${ObjectMapper().findAndRegisterModules().writeValueAsString(existingEntityWithEqualPeriod)}")
           expiredEntities.add(existingEntityWithEqualPeriod)
           updatedEntities.add(newEntity)
         }
       } else {
+        LOGGER.info("Could not find existing entity within the period (${newEntity.parent.periodeFra} - ${newEntity.parent.periodeTil})")
         updatedEntities.add(newEntity)
       }
     }
