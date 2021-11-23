@@ -17,16 +17,15 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
     val updatedEntities = mutableListOf<PeriodComparable<Parent, Child>>()
     val equalEntities = mutableListOf<PeriodComparable<Parent, Child>>()
 
-    val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, requestedPeriod)
-    expiredEntities.addAll(existingEntities.minus(existingEntitiesWithinRequestedPeriod))
+    val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, requestedPeriod, expiredEntities)
 
     newEntities.forEach() { newEntity ->
-      val existingEntity = findCompareEntity(newEntity, existingEntitiesWithinRequestedPeriod)
-      if (existingEntity != null) {
-        if (isEntitiesEqual(newEntity, existingEntity)) {
-          equalEntities.add(existingEntity)
+      val existingEntityWithEqualPeriod = findCompareEntityWithEqualPeriod(newEntity, existingEntitiesWithinRequestedPeriod)
+      if (existingEntityWithEqualPeriod != null) {
+        if (isEntitiesEqual(newEntity, existingEntityWithEqualPeriod)) {
+          equalEntities.add(existingEntityWithEqualPeriod)
         } else {
-          expiredEntities.add(existingEntity)
+          expiredEntities.add(existingEntityWithEqualPeriod)
           updatedEntities.add(newEntity)
         }
       } else {
@@ -36,18 +35,20 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
     return ComparatorResult(expiredEntities, updatedEntities, equalEntities)
   }
 
-  private fun findCompareEntity(
+  private fun findCompareEntityWithEqualPeriod(
     newEntity: PeriodComparable<Parent, Child>,
     existingEntities: List<PeriodComparable<Parent, Child>>
   ): PeriodComparable<Parent, Child>? {
     return existingEntities.find { t -> t.parent.periodeFra.isEqual(newEntity.parent.periodeFra) && t.parent.periodeTil.isEqual(newEntity.parent.periodeTil) }
   }
 
-  private fun filterEntitiesByPeriod(existingEntities: List<PeriodComparable<Parent, Child>>, requestedPeriod: IPeriod): List<PeriodComparable<Parent, Child>> {
+  private fun filterEntitiesByPeriod(existingEntities: List<PeriodComparable<Parent, Child>>, requestedPeriod: IPeriod, expiredEntities: MutableList<PeriodComparable<Parent, Child>>): List<PeriodComparable<Parent, Child>> {
     val filteredEntities = mutableListOf<PeriodComparable<Parent, Child>>()
     existingEntities.forEach() { existingEntity ->
       if (isInsidePeriod(requestedPeriod, existingEntity.parent)) {
         filteredEntities.add(existingEntity)
+      } else {
+        expiredEntities.add(existingEntity)
       }
     }
     return filteredEntities
