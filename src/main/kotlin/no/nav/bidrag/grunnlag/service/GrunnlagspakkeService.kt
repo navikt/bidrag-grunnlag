@@ -137,7 +137,7 @@ class GrunnlagspakkeService(
         ident = personIdOgPeriode.personId,
         innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato,
         maanedFom = personIdOgPeriode.periodeFra.toString().substring(0, 7),
-        maanedTom = personIdOgPeriode.periodeTil.toString().substring(0, 7),
+        maanedTom = personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7),
         ainntektsfilter = finnFilter(formaal),
         formaal = finnFormaal(formaal)
       )
