@@ -22,7 +22,7 @@ class AinntektPeriodComparator : AbstractPeriodComparator<AinntektDto, Ainntekts
       if (newAinntektsposter[i].beskrivelse != existingAinntektsposter[i].beskrivelse) {
         differentFields["beskrivelse"] = "${newAinntektsposter[i].beskrivelse} != ${existingAinntektsposter[i].beskrivelse}"
       }
-      if (newAinntektsposter[i].belop.compareTo(existingAinntektsposter[i].belop) == 0) {
+      if (newAinntektsposter[i].belop.compareTo(existingAinntektsposter[i].belop) != 0) {
         differentFields["belop"] = "${newAinntektsposter[i].belop} != ${existingAinntektsposter[i].belop}"
       }
       if (newAinntektsposter[i].fordelType != existingAinntektsposter[i].fordelType) {
