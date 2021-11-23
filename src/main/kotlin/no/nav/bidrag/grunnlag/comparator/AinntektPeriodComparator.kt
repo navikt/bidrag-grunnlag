@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 
-class AinntektPeriodComparator : AbstractPeriodComparator<AinntektDto, PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>() {
+class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>() {
   override fun isEntitiesEqual(
     newEntity: PeriodComparableWithChildren<AinntektDto, AinntektspostDto>,
     existingEntity: PeriodComparableWithChildren<AinntektDto, AinntektspostDto>

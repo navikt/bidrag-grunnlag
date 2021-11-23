@@ -5,7 +5,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
-abstract class AbstractPeriodComparator<PeriodEntity : IPeriod, T : PeriodComparable<PeriodEntity>> {
+abstract class AbstractPeriodComparator<T : PeriodComparable<*>> {
 
   companion object {
     @JvmStatic
@@ -84,9 +84,9 @@ interface IPeriod {
 
 class Period(override val periodeFra: LocalDate, override val periodeTil: LocalDate) : IPeriod
 
-open class PeriodComparable<PeriodEntity>(val periodEntity: PeriodEntity) {}
+open class PeriodComparable<PeriodEntity: IPeriod>(val periodEntity: PeriodEntity) {}
 
-class PeriodComparableWithChildren<PeriodEntity, Child>(periodEntity: PeriodEntity, val children: List<Child>) :
+class PeriodComparableWithChildren<PeriodEntity: IPeriod, Child>(periodEntity: PeriodEntity, val children: List<Child>) :
   PeriodComparable<PeriodEntity>(periodEntity) {}
 
 
