@@ -8,7 +8,7 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
 
   companion object {
     @JvmStatic
-    private val LOGGER = LoggerFactory.getLogger(AbstractPeriodComparator::class.java)
+    val LOGGER = LoggerFactory.getLogger(AbstractPeriodComparator::class.java)
   }
 
   private fun isInsidePeriod(requestedPeriod: IPeriod, existingPeriod: IPeriod): Boolean {

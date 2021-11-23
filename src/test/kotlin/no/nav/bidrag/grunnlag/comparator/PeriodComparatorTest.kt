@@ -63,7 +63,7 @@ class PeriodComparatorTest {
         createAinntektpost()
       )
     )
-    val existingEntities = createPeriodEntities(
+    var existingEntities = createPeriodEntities(
       Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(
         createAinntektpost()
       )
@@ -72,6 +72,15 @@ class PeriodComparatorTest {
     assertTrue(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
     newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(belop = BigDecimal(500))))
+    existingEntities = createPeriodEntities(
+      Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(
+        createAinntektpost(belop = BigDecimal(500.0))
+      )
+    )
+
+    assertTrue(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
+
+    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(belop = BigDecimal(450))))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
