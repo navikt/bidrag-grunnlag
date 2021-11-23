@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 
-class AinntektPeriodComparator : AbstractPeriodComparator<AinntektDto, AinntektspostDto>() {
+class AinntektPeriodComparator : AbstractPeriodComparator<AinntektDto, PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>() {
   override fun isEntitiesEqual(
-    newEntity: PeriodComparable<AinntektDto, AinntektspostDto>,
-    existingEntity: PeriodComparable<AinntektDto, AinntektspostDto>
+    newEntity: PeriodComparableWithChildren<AinntektDto, AinntektspostDto>,
+    existingEntity: PeriodComparableWithChildren<AinntektDto, AinntektspostDto>
   ): Boolean {
     val newAinntektsposter = sortAinntektsposter(newEntity.children)
     val existingAinntektsposter = sortAinntektsposter(existingEntity.children)

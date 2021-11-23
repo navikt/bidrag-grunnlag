@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.comparator.Period
+import no.nav.bidrag.grunnlag.comparator.PeriodComparableWithChildren
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
@@ -130,7 +131,7 @@ class PersistenceService(
     return grunnlagspakkeId
   }
 
-  fun oppdaterAinntektForGrunnlagspakke(grunnlagspakkeId: Int, newAinntektForPersonId: List<PeriodComparable<AinntektDto, AinntektspostDto>>, periodeFra: LocalDate, periodeTil: LocalDate, personId: String) {
+  fun oppdaterAinntektForGrunnlagspakke(grunnlagspakkeId: Int, newAinntektForPersonId: List<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>, periodeFra: LocalDate, periodeTil: LocalDate, personId: String) {
     val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
     val ainntektPeriodComparator = AinntektPeriodComparator()
 
@@ -142,19 +143,19 @@ class PersistenceService(
     // Setter utløpte Ainntekter til utløpt.
     LOGGER.info("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
     comparatorResult.expiredEntities.forEach(){expiredEntity ->
-      val expiredAinntekt = expiredEntity.parent.copy(aktiv = false, brukTil = hentetTidspunkt).toAinntektEntity()
+      val expiredAinntekt = expiredEntity.periodEntity.copy(aktiv = false, brukTil = hentetTidspunkt).toAinntektEntity()
       ainntektRepository.save(expiredAinntekt)
     }
     // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
     LOGGER.info("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach(){equalEntity ->
-      val unchangedAinntekt = equalEntity.parent.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
+      val unchangedAinntekt = equalEntity.periodEntity.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
       ainntektRepository.save(unchangedAinntekt)
     }
     // Lagrer nye Ainntekter og Ainntektsposter.
     LOGGER.info("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
     comparatorResult.updatedEntities.forEach(){updatedEntity ->
-      val ainntekt = ainntektRepository.save(updatedEntity.parent.toAinntektEntity())
+      val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
       updatedEntity.children.forEach(){ainntektspostDto ->
         val updatedAinntekt = ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
         ainntektspostRepository.save(updatedAinntekt)
@@ -203,15 +204,15 @@ class PersistenceService(
 
   }
 
-  fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personId: String): List<PeriodComparable<AinntektDto, AinntektspostDto>> {
-    val hentAinntektResponseListe = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
+  fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personId: String): List<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>> {
+    val hentAinntektResponseListe = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
     ainntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
         if (inntekt.personId.equals(personId)) {
           val hentAinntektspostListe = mutableListOf<AinntektspostDto>()
           ainntektspostRepository.hentInntektsposter(inntekt.inntektId).forEach(){ainntektspost -> hentAinntektspostListe.add(ainntektspost.toAinntektspostDto())}
           hentAinntektResponseListe.add(
-            PeriodComparable(inntekt.toAinntektDto(), hentAinntektspostListe)
+            PeriodComparableWithChildren(inntekt.toAinntektDto(), hentAinntektspostListe)
           )
         }
       }

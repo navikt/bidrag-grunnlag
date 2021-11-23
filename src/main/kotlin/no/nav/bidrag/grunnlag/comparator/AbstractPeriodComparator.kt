@@ -1,14 +1,15 @@
 package no.nav.bidrag.grunnlag.comparator
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
-abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
+abstract class AbstractPeriodComparator<PeriodEntity : IPeriod, T : PeriodComparable<PeriodEntity>> {
 
   companion object {
     @JvmStatic
-    val LOGGER = LoggerFactory.getLogger(AbstractPeriodComparator::class.java)
+    val LOGGER: Logger = LoggerFactory.getLogger(AbstractPeriodComparator::class.java)
   }
 
   private fun isInsidePeriod(requestedPeriod: IPeriod, existingPeriod: IPeriod): Boolean {
@@ -17,16 +18,16 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
 
   fun comparePeriodEntities(
     requestedPeriod: IPeriod,
-    newEntities: List<PeriodComparable<Parent, Child>>,
-    existingEntities: List<PeriodComparable<Parent, Child>>
-  ): ComparatorResult<Parent, Child> {
-    val expiredEntities = mutableListOf<PeriodComparable<Parent, Child>>()
-    val updatedEntities = mutableListOf<PeriodComparable<Parent, Child>>()
-    val equalEntities = mutableListOf<PeriodComparable<Parent, Child>>()
+    newEntities: List<T>,
+    existingEntities: List<T>
+  ): ComparatorResult<T> {
+    val expiredEntities = mutableListOf<T>()
+    val updatedEntities = mutableListOf<T>()
+    val equalEntities = mutableListOf<T>()
 
     val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, requestedPeriod, expiredEntities)
     LOGGER.info("${existingEntitiesWithinRequestedPeriod.size} existing entities within requested period (${requestedPeriod.periodeFra} - ${requestedPeriod.periodeTil})")
-    LOGGER.info("$expiredEntities expired entities before equality check")
+    LOGGER.info("${expiredEntities.size} expired entities before equality check")
 
     newEntities.forEach() { newEntity ->
       val existingEntityWithEqualPeriod = findCompareEntityWithEqualPeriod(newEntity, existingEntitiesWithinRequestedPeriod)
@@ -34,12 +35,16 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
         if (isEntitiesEqual(newEntity, existingEntityWithEqualPeriod)) {
           equalEntities.add(existingEntityWithEqualPeriod)
         } else {
-          LOGGER.info("Entities not equal. NewEntity: ${ObjectMapper().findAndRegisterModules().writeValueAsString(newEntity)}, ExistingEntity: ${ObjectMapper().findAndRegisterModules().writeValueAsString(existingEntityWithEqualPeriod)}")
+          LOGGER.info(
+            "Entities not equal. NewEntity: ${
+              ObjectMapper().findAndRegisterModules().writeValueAsString(newEntity)
+            }, ExistingEntity: ${ObjectMapper().findAndRegisterModules().writeValueAsString(existingEntityWithEqualPeriod)}"
+          )
           expiredEntities.add(existingEntityWithEqualPeriod)
           updatedEntities.add(newEntity)
         }
       } else {
-        LOGGER.info("Could not find existing entity within the period (${newEntity.parent.periodeFra} - ${newEntity.parent.periodeTil})")
+        LOGGER.info("Could not find existing entity within the period (${newEntity.periodEntity.periodeFra} - ${newEntity.periodEntity.periodeTil})")
         updatedEntities.add(newEntity)
       }
     }
@@ -47,16 +52,20 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
   }
 
   private fun findCompareEntityWithEqualPeriod(
-    newEntity: PeriodComparable<Parent, Child>,
-    existingEntities: List<PeriodComparable<Parent, Child>>
-  ): PeriodComparable<Parent, Child>? {
-    return existingEntities.find { t -> t.parent.periodeFra.isEqual(newEntity.parent.periodeFra) && t.parent.periodeTil.isEqual(newEntity.parent.periodeTil) }
+    newEntity: T,
+    existingEntities: List<T>
+  ): T? {
+    return existingEntities.find { t ->
+      t.periodEntity.periodeFra.isEqual(newEntity.periodEntity.periodeFra) && t.periodEntity.periodeTil.isEqual(
+        newEntity.periodEntity.periodeTil
+      )
+    }
   }
 
-  private fun filterEntitiesByPeriod(existingEntities: List<PeriodComparable<Parent, Child>>, requestedPeriod: IPeriod, expiredEntities: MutableList<PeriodComparable<Parent, Child>>): List<PeriodComparable<Parent, Child>> {
-    val filteredEntities = mutableListOf<PeriodComparable<Parent, Child>>()
+  private fun filterEntitiesByPeriod(existingEntities: List<T>, requestedPeriod: IPeriod, expiredEntities: MutableList<T>): List<T> {
+    val filteredEntities = mutableListOf<T>()
     existingEntities.forEach() { existingEntity ->
-      if (isInsidePeriod(requestedPeriod, existingEntity.parent)) {
+      if (isInsidePeriod(requestedPeriod, existingEntity.periodEntity)) {
         filteredEntities.add(existingEntity)
       } else {
         expiredEntities.add(existingEntity)
@@ -65,7 +74,7 @@ abstract class AbstractPeriodComparator<Parent : IPeriod, Child> {
     return filteredEntities
   }
 
-  abstract fun isEntitiesEqual(newEntity: PeriodComparable<Parent, Child>, existingEntity: PeriodComparable<Parent, Child>): Boolean
+  abstract fun isEntitiesEqual(newEntity: T, existingEntity: T): Boolean
 }
 
 interface IPeriod {
@@ -75,13 +84,16 @@ interface IPeriod {
 
 class Period(override val periodeFra: LocalDate, override val periodeTil: LocalDate) : IPeriod
 
-class PeriodComparable<Parent, Child>(val parent: Parent, val children: List<Child>) {}
+open class PeriodComparable<PeriodEntity>(val periodEntity: PeriodEntity) {}
+
+class PeriodComparableWithChildren<PeriodEntity, Child>(periodEntity: PeriodEntity, val children: List<Child>) :
+  PeriodComparable<PeriodEntity>(periodEntity) {}
 
 
-class ComparatorResult<Parent, Child>(
-  val expiredEntities: List<PeriodComparable<Parent, Child>>,
-  val updatedEntities: List<PeriodComparable<Parent, Child>>,
-  val equalEntities: List<PeriodComparable<Parent, Child>>
+class ComparatorResult<T>(
+  val expiredEntities: List<T>,
+  val updatedEntities: List<T>,
+  val equalEntities: List<T>
 )
 
 fun LocalDate.isAfterOrEqual(startDate: LocalDate): Boolean {

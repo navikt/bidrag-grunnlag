@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
+import no.nav.bidrag.grunnlag.comparator.PeriodComparableWithChildren
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -159,7 +160,7 @@ class GrunnlagspakkeService(
           LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
-          val nyeAinntekter = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
+          val nyeAinntekter = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
 
           if (hentInntektListeResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
             hentGrunnlagkallResponseListe.add(
@@ -200,7 +201,7 @@ class GrunnlagspakkeService(
                 )
 //                )
               }
-              nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
+              nyeAinntekter.add(PeriodComparableWithChildren(inntekt, inntektsposter))
             }
             persistenceService.oppdaterAinntektForGrunnlagspakke(
               grunnlagspakkeId,

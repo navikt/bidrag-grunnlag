@@ -143,12 +143,12 @@ class PeriodComparatorTest {
   private fun createPeriodEntities(
     period: IPeriod,
     inntektsposter: List<AinntektspostDto> = emptyList()
-  ): List<PeriodComparable<AinntektDto, AinntektspostDto>> {
-    val existingEntities = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
+  ): List<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>> {
+    val existingEntities = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
     var currentStartDate = period.periodeFra
     while (currentStartDate.isBefore(period.periodeTil)) {
       existingEntities.add(
-        PeriodComparable(
+        PeriodComparableWithChildren(
           AinntektDto(periodeFra = currentStartDate, periodeTil = currentStartDate.plusMonths(1)),
           inntektsposter
         )
