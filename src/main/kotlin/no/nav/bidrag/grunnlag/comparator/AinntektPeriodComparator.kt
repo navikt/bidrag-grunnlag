@@ -15,15 +15,15 @@ class AinntektPeriodComparator : AbstractPeriodComparator<AinntektDto, Ainntekts
       return false
     }
     val differentFields = mutableMapOf<String, String>()
-    for (i in 0 until newAinntektsposter.size) {
+    for (i in newAinntektsposter.indices) {
       if (newAinntektsposter[i].inntektType != existingAinntektsposter[i].inntektType) {
         differentFields["inntektType"] = "${newAinntektsposter[i].inntektType} != ${existingAinntektsposter[i].inntektType}"
       }
       if (newAinntektsposter[i].beskrivelse != existingAinntektsposter[i].beskrivelse) {
         differentFields["beskrivelse"] = "${newAinntektsposter[i].beskrivelse} != ${existingAinntektsposter[i].beskrivelse}"
       }
-      if (newAinntektsposter[i].belop.setScale(2) != existingAinntektsposter[i].belop.setScale(2)) {
-        differentFields["belop"] = "${newAinntektsposter[i].belop.setScale(2)} != ${existingAinntektsposter[i].belop.setScale(2)}"
+      if (newAinntektsposter[i].belop.compareTo(existingAinntektsposter[i].belop) == 0) {
+        differentFields["belop"] = "${newAinntektsposter[i].belop} != ${existingAinntektsposter[i].belop}"
       }
       if (newAinntektsposter[i].fordelType != existingAinntektsposter[i].fordelType) {
         differentFields["fordelType"] = "${newAinntektsposter[i].fordelType} != ${existingAinntektsposter[i].fordelType}"
