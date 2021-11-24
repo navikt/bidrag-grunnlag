@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.comparator
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.util.toJsonString
 
 class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>() {
   override fun isEntitiesEqual(
@@ -45,12 +45,12 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparableWithCh
       }
     }
     if (differentFields.isNotEmpty()) {
-      LOGGER.info(ObjectMapper().findAndRegisterModules().writeValueAsString(differentFields))
+      LOGGER.debug(toJsonString(differentFields))
     }
     return differentFields.isEmpty()
   }
 
   private fun sortAinntektsposter(ainntektsposter: List<AinntektspostDto>): List<AinntektspostDto> {
-    return ainntektsposter.sortedWith(compareBy({ it.beskrivelse }, { it.inntektType }, { it.fordelType }))
+    return ainntektsposter.sortedWith(compareBy({it.utbetalingsperiode}, {it.virksomhetId}, {it.opplysningspliktigId}, { it.inntektType }, { it.fordelType }, {it.beskrivelse}))
   }
 }
