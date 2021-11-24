@@ -71,7 +71,8 @@ class PeriodComparatorTest {
 
     assertTrue(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(belop = BigDecimal(500))))
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(belop = BigDecimal(500))))
     existingEntities = createPeriodEntities(
       Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(
         createAinntektpost(belop = BigDecimal(500.0))
@@ -80,31 +81,42 @@ class PeriodComparatorTest {
 
     assertTrue(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(belop = BigDecimal(450))))
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(belop = BigDecimal(450))))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(beskrivelse = "Beskrivelse2")))
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(beskrivelse = "Beskrivelse2")))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(fordelType = "Fordeltype2")))
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(fordelType = "Fordeltype2")))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(inntektType = "Inntekttype2")))
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(inntektType = "Inntekttype2")))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(opplysningspliktigId = "Opp2")))
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(opplysningspliktigId = "Opp2")))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(opptjeningsperiodeFra = LocalDate.of(2021, 8, 2))))
+    newEntities = createPeriodEntities(
+      Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+      listOf(createAinntektpost(opptjeningsperiodeFra = LocalDate.of(2021, 8, 2)))
+    )
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(opptjeningsperiodeTil = LocalDate.of(2021, 9, 2))))
+    newEntities = createPeriodEntities(
+      Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+      listOf(createAinntektpost(opptjeningsperiodeTil = LocalDate.of(2021, 9, 2)))
+    )
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
@@ -112,7 +124,8 @@ class PeriodComparatorTest {
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-    newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(utbetalingsperiode = "Utb2")))
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(utbetalingsperiode = "Utb2")))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
   }
@@ -140,10 +153,40 @@ class PeriodComparatorTest {
     assertTrue(comparatorResult.updatedEntities.size == 3)
   }
 
+  @Test
+  fun `skal filtrere bort inntekter som ligger innenfor rett periode men som ikke lenger eksisterer i nye inntekter for perioden`() {
+    val ainntektPeriodComparator = AinntektPeriodComparator()
+    // Ingen inntekter er like og det finnes en eksisterende inntekt som ligger utenfor ny periode
+    var newEntities = createPeriodEntities(
+      Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(
+        createAinntektpost()
+      )
+    )
+
+    newEntities.addAll(
+      createPeriodEntities(
+        Period(LocalDate.of(2021, 10, 1), LocalDate.of(2021, 11, 1)), listOf(
+          createAinntektpost()
+        )
+      )
+    )
+    val existingEntities = createPeriodEntities(
+      Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1)), listOf(
+        createAinntektpost()
+      )
+    )
+    var ainntektPeriod = Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1))
+    val comparatorResult = ainntektPeriodComparator.comparePeriodEntities(ainntektPeriod, newEntities, existingEntities)
+
+    assertTrue(comparatorResult.expiredEntities.size == 1)
+    assertTrue(comparatorResult.equalEntities.size == 2)
+    assertTrue(comparatorResult.updatedEntities.size == 0)
+  }
+
   private fun createPeriodEntities(
     period: IPeriod,
     inntektsposter: List<AinntektspostDto> = emptyList()
-  ): List<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>> {
+  ): MutableList<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>> {
     val existingEntities = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
     var currentStartDate = period.periodeFra
     while (currentStartDate.isBefore(period.periodeTil)) {
