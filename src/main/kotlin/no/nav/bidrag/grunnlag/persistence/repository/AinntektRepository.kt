@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 
-interface AinntektRepository : JpaRepository<Ainntekt, Int?> {
+interface AinntektRepository : JpaRepository<Ainntekt, Int?>, HentRepository<Ainntekt> {
 
   @Query(
 //    "select inta from Ainntekt inta where inta.grunnlagspakkeId = :grunnlagspakkeId"

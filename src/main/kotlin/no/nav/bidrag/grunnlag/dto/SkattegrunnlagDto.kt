@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
+import no.nav.bidrag.grunnlag.comparator.IPeriod
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -18,10 +19,10 @@ data class SkattegrunnlagDto(
   val personId: String = "",
 
   @Schema(description = "Periode fra-dato")
-  val periodeFra: LocalDate = LocalDate.now(),
+  override val periodeFra: LocalDate = LocalDate.now(),
 
   @Schema(description = "Periode til-dato")
-  val periodeTil: LocalDate = LocalDate.now(),
+  override val periodeTil: LocalDate = LocalDate.now(),
 
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
   val aktiv: Boolean = true,
@@ -34,7 +35,7 @@ data class SkattegrunnlagDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  )
+  ) : IPeriod
 
 fun SkattegrunnlagDto.toSkattegrunnlagEntity() = with(::Skattegrunnlag) {
   val propertiesByName = SkattegrunnlagDto::class.memberProperties.associateBy { it.name }

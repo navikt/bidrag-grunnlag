@@ -3,7 +3,10 @@ package no.nav.bidrag.grunnlag.comparator
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.math.BigDecimal
 import java.time.LocalDate
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.staticProperties
 
 abstract class AbstractPeriodComparator<T : PeriodComparable<*>> {
 
