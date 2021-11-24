@@ -156,7 +156,8 @@ class PeriodComparatorTest {
   @Test
   fun `skal filtrere bort inntekter som ligger innenfor rett periode men som ikke lenger eksisterer i nye inntekter for perioden`() {
     val ainntektPeriodComparator = AinntektPeriodComparator()
-    // Ingen inntekter er like og det finnes en eksisterende inntekt som ligger utenfor ny periode
+
+    // Nye inntekter mangler inntekt for September, men den ligger i eksisterende inntekter.
     var newEntities = createPeriodEntities(
       Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(
         createAinntektpost()
