@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.comparator
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.bidrag.grunnlag.util.toJsonString
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
@@ -28,53 +28,62 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*>> {
     val updatedEntities = mutableListOf<T>()
     val equalEntities = mutableListOf<T>()
 
-    val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, requestedPeriod, expiredEntities)
-    LOGGER.info("${existingEntitiesWithinRequestedPeriod.size} existing entities within requested period (${requestedPeriod.periodeFra} - ${requestedPeriod.periodeTil})")
-    LOGGER.info("${expiredEntities.size} expired entities before equality check")
+    val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, newEntities, requestedPeriod, expiredEntities)
+    LOGGER.debug("${existingEntitiesWithinRequestedPeriod.size} eksisterende entiteter innenfor forespurt periode (${requestedPeriod.periodeFra} - ${requestedPeriod.periodeTil}).")
+    LOGGER.debug("${expiredEntities.size} utløpte entiteter før sammenligning.")
 
     newEntities.forEach() { newEntity ->
-      val existingEntityWithEqualPeriod = findCompareEntityWithEqualPeriod(newEntity, existingEntitiesWithinRequestedPeriod)
+      val existingEntityWithEqualPeriod = findEntityWithEqualPeriod(newEntity, existingEntitiesWithinRequestedPeriod)
       if (existingEntityWithEqualPeriod != null) {
         if (isEntitiesEqual(newEntity, existingEntityWithEqualPeriod)) {
           equalEntities.add(existingEntityWithEqualPeriod)
         } else {
-          LOGGER.info(
-            "Entities not equal. NewEntity: ${
-              ObjectMapper().findAndRegisterModules().writeValueAsString(newEntity)
-            }, ExistingEntity: ${ObjectMapper().findAndRegisterModules().writeValueAsString(existingEntityWithEqualPeriod)}"
+          LOGGER.debug(
+            "Ny og eksisterende entitet er ulike. Ny: ${
+              toJsonString(newEntity)
+            }, Eksisterende: ${toJsonString(existingEntityWithEqualPeriod)}."
           )
           expiredEntities.add(existingEntityWithEqualPeriod)
           updatedEntities.add(newEntity)
         }
       } else {
-        LOGGER.info("Could not find existing entity within the period (${newEntity.periodEntity.periodeFra} - ${newEntity.periodEntity.periodeTil})")
+        LOGGER.debug("Kunne ikke finne eksisterede entitet for perioden (${newEntity.periodEntity.periodeFra} - ${newEntity.periodEntity.periodeTil}).")
         updatedEntities.add(newEntity)
       }
     }
     return ComparatorResult(expiredEntities, updatedEntities, equalEntities)
   }
 
-  private fun findCompareEntityWithEqualPeriod(
-    newEntity: T,
-    existingEntities: List<T>
+  private fun findEntityWithEqualPeriod(
+    periodEntity: T,
+    periodEntities: List<T>
   ): T? {
-    return existingEntities.find { t ->
-      t.periodEntity.periodeFra.isEqual(newEntity.periodEntity.periodeFra) && t.periodEntity.periodeTil.isEqual(
-        newEntity.periodEntity.periodeTil
+    return periodEntities.find { t ->
+      t.periodEntity.periodeFra.isEqual(periodEntity.periodEntity.periodeFra) && t.periodEntity.periodeTil.isEqual(
+        periodEntity.periodEntity.periodeTil
       )
     }
   }
 
-  private fun filterEntitiesByPeriod(existingEntities: List<T>, requestedPeriod: IPeriod, expiredEntities: MutableList<T>): List<T> {
+  private fun filterEntitiesByPeriod(
+    existingEntities: List<T>,
+    newEntities: List<T>,
+    requestedPeriod: IPeriod,
+    expiredEntities: MutableList<T>
+  ): List<T> {
     val filteredEntities = mutableListOf<T>()
     existingEntities.forEach() { existingEntity ->
-      if (isInsidePeriod(requestedPeriod, existingEntity.periodEntity)) {
+      if (isInsidePeriod(requestedPeriod, existingEntity.periodEntity) && periodEntityStillExists(existingEntity, newEntities)) {
         filteredEntities.add(existingEntity)
       } else {
         expiredEntities.add(existingEntity)
       }
     }
     return filteredEntities
+  }
+
+  private fun periodEntityStillExists(existingEntity: T, newEntities: List<T>): Boolean {
+    return findEntityWithEqualPeriod(existingEntity, newEntities) != null
   }
 
   abstract fun isEntitiesEqual(newEntity: T, existingEntity: T): Boolean
@@ -87,9 +96,9 @@ interface IPeriod {
 
 class Period(override val periodeFra: LocalDate, override val periodeTil: LocalDate) : IPeriod
 
-open class PeriodComparable<PeriodEntity: IPeriod>(val periodEntity: PeriodEntity) {}
+open class PeriodComparable<PeriodEntity : IPeriod>(val periodEntity: PeriodEntity) {}
 
-class PeriodComparableWithChildren<PeriodEntity: IPeriod, Child>(periodEntity: PeriodEntity, val children: List<Child>) :
+class PeriodComparableWithChildren<PeriodEntity : IPeriod, Child>(periodEntity: PeriodEntity, val children: List<Child>) :
   PeriodComparable<PeriodEntity>(periodEntity) {}
 
 
