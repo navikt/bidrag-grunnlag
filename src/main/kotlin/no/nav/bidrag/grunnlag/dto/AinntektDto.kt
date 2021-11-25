@@ -36,7 +36,19 @@ data class AinntektDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  ): IPeriod
+  ): IPeriod, IComparable<Ainntekt, Nothing> {
+  override fun expire(brukTil: LocalDateTime): Ainntekt {
+    return this.copy(brukTil = brukTil, aktiv = false).toAinntektEntity()
+  }
+
+  override fun update(hentetTidspunkt: LocalDateTime): Ainntekt {
+    return this.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
+  }
+
+  override fun create(parent: Nothing): Ainntekt {
+    return this.toAinntektEntity()
+  }
+}
 
 fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
   val propertiesByName = AinntektDto::class.memberProperties.associateBy { it.name }
@@ -46,4 +58,9 @@ fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
     }
   })
 
+}
+
+interface IComparable<T, Parent> : IComparableChild<T, Parent> {
+  fun expire(brukTil: LocalDateTime): T
+  fun update(hentetTidspunkt: LocalDateTime): T
 }

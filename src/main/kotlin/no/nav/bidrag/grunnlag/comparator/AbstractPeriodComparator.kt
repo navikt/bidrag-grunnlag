@@ -3,12 +3,9 @@ package no.nav.bidrag.grunnlag.comparator
 import no.nav.bidrag.grunnlag.util.toJsonString
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.math.BigDecimal
 import java.time.LocalDate
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.full.staticProperties
 
-abstract class AbstractPeriodComparator<T : PeriodComparable<*>> {
+abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
 
   companion object {
     @JvmStatic
@@ -96,13 +93,13 @@ interface IPeriod {
 
 class Period(override val periodeFra: LocalDate, override val periodeTil: LocalDate) : IPeriod
 
-open class PeriodComparable<PeriodEntity : IPeriod>(val periodEntity: PeriodEntity) {}
+open class PeriodComparable<PeriodEntity : IPeriod, Child>(val periodEntity: PeriodEntity, val children: List<Child>?) {}
 
-class PeriodComparableWithChildren<PeriodEntity : IPeriod, Child>(periodEntity: PeriodEntity, val children: List<Child>) :
-  PeriodComparable<PeriodEntity>(periodEntity) {}
+class PeriodComparableWithChildren<PeriodEntity : IPeriod, Child>(periodEntity: PeriodEntity, children: List<Child>) :
+  PeriodComparable<PeriodEntity, Child>(periodEntity, children) {}
 
 
-class ComparatorResult<T>(
+class ComparatorResult<T: PeriodComparable<*, *>>(
   val expiredEntities: List<T>,
   val updatedEntities: List<T>,
   val equalEntities: List<T>

@@ -40,11 +40,7 @@ data class Ainntekt(
 
   @Column(nullable = false, name = "hentet_tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-): IEntity<AinntektDto> {
-  override fun toDto(): AinntektDto {
-    TODO("Not yet implemented")
-  }
-}
+)
 
 fun Ainntekt.toAinntektDto() = with(::AinntektDto) {
   val propertiesByName = Ainntekt::class.memberProperties.associateBy { it.name }
@@ -54,9 +50,4 @@ fun Ainntekt.toAinntektDto() = with(::AinntektDto) {
     }
   })
 }
-
-interface IEntity<DTO> {
-  fun toDto(): DTO
-}
-
 

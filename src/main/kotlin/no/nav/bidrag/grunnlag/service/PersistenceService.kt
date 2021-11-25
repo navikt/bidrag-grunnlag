@@ -7,15 +7,19 @@ import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektspostResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagspostResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.comparator.AbstractPeriodComparator
 import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
-import no.nav.bidrag.grunnlag.comparator.IPeriod
+import no.nav.bidrag.grunnlag.comparator.ComparatorResult
 import no.nav.bidrag.grunnlag.comparator.Period
+import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.comparator.PeriodComparableWithChildren
 import no.nav.bidrag.grunnlag.comparator.SkattegrunnlagPeriodComparator
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.dto.IComparable
+import no.nav.bidrag.grunnlag.dto.IComparableChild
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.dto.toGrunnlagspakkeEntity
@@ -25,6 +29,8 @@ import no.nav.bidrag.grunnlag.dto.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.dto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
+import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
+import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektDto
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
@@ -35,7 +41,6 @@ import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
-import no.nav.bidrag.grunnlag.persistence.repository.HentRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
@@ -133,71 +138,77 @@ class PersistenceService(
     return grunnlagspakkeId
   }
 
-  fun oppdaterAinntektForGrunnlagspakke(grunnlagspakkeId: Int, newAinntektForPersonId: List<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>, periodeFra: LocalDate, periodeTil: LocalDate, personId: String) {
+  fun oppdaterAinntektForGrunnlagspakke(
+    grunnlagspakkeId: Int,
+    newAinntektForPersonId: List<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>,
+    periodeFra: LocalDate,
+    periodeTil: LocalDate,
+    personId: String
+  ) {
     val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
     val ainntektPeriodComparator = AinntektPeriodComparator()
 
     // Finner ut hvilke inntekter som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
-    val comparatorResult = ainntektPeriodComparator.comparePeriodEntities(Period(periodeFra, periodeTil), newAinntektForPersonId, existingAinntektForPersonId)
+    val comparatorResult =
+      ainntektPeriodComparator.comparePeriodEntities(Period(periodeFra, periodeTil), newAinntektForPersonId, existingAinntektForPersonId)
 
-    val hentetTidspunkt = LocalDateTime.now()
-
-    // Setter utløpte Ainntekter til utløpt.
-    LOGGER.info("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
-    comparatorResult.expiredEntities.forEach(){expiredEntity ->
-      val expiredAinntekt = expiredEntity.periodEntity.copy(aktiv = false, brukTil = hentetTidspunkt).toAinntektEntity()
-      ainntektRepository.save(expiredAinntekt)
-    }
-    // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
-    LOGGER.info("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
-    comparatorResult.equalEntities.forEach(){equalEntity ->
-      val unchangedAinntekt = equalEntity.periodEntity.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
-      ainntektRepository.save(unchangedAinntekt)
-    }
-    // Lagrer nye Ainntekter og Ainntektsposter.
-    LOGGER.info("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
-    comparatorResult.updatedEntities.forEach(){updatedEntity ->
-      val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
-      updatedEntity.children.forEach(){ainntektspostDto ->
-        val updatedAinntekt = ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
-        ainntektspostRepository.save(updatedAinntekt)
-      }
+    val processedComparatorResult = processComparatorResult(comparatorResult)
+    ainntektRepository.saveAll(processedComparatorResult.entities)
+    if (processedComparatorResult.childEntities.isNotEmpty()) {
+      ainntektspostRepository.saveAll(processedComparatorResult.childEntities)
     }
   }
 
-  fun oppdaterSkattegrunnlagForGrunnlagspakke(grunnlagspakkeId: Int, newSkattegrunnlagForPersonId: List<PeriodComparableWithChildren<SkattegrunnlagDto, SkattegrunnlagspostDto>>, periodeFra: LocalDate, periodeTil: LocalDate, personId: String) {
+  fun oppdaterSkattegrunnlagForGrunnlagspakke(
+    grunnlagspakkeId: Int,
+    newSkattegrunnlagForPersonId: List<PeriodComparableWithChildren<SkattegrunnlagDto, SkattegrunnlagspostDto>>,
+    periodeFra: LocalDate,
+    periodeTil: LocalDate,
+    personId: String
+  ) {
     val existingSkattegrunnlagForPersonId = hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
     val skattegrunnlagPeriodComparator = SkattegrunnlagPeriodComparator()
 
     // Finner ut hvilke inntekter som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
-    val comparatorResult = skattegrunnlagPeriodComparator.comparePeriodEntities(Period(periodeFra, periodeTil), newSkattegrunnlagForPersonId, existingSkattegrunnlagForPersonId)
-
-    val hentetTidspunkt = LocalDateTime.now()
-
-    // Setter utløpte Ainntekter til utløpt.
-    LOGGER.info("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
-    comparatorResult.expiredEntities.forEach(){expiredEntity ->
-      val expiredSkattegrunnlag = expiredEntity.periodEntity.copy(aktiv = false, brukTil = hentetTidspunkt).toSkattegrunnlagEntity()
-      skattegrunnlagRepository.save(expiredSkattegrunnlag)
-    }
-    // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
-    LOGGER.info("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
-    comparatorResult.equalEntities.forEach(){equalEntity ->
-      val unchangedSkattegrunnlag = equalEntity.periodEntity.copy(hentetTidspunkt = hentetTidspunkt).toSkattegrunnlagEntity()
-      skattegrunnlagRepository.save(unchangedSkattegrunnlag)
-    }
-    // Lagrer nye Ainntekter og Ainntektsposter.
-    LOGGER.info("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
-    comparatorResult.updatedEntities.forEach(){updatedEntity ->
-      val skattegrunnlag = skattegrunnlagRepository.save(updatedEntity.periodEntity.toSkattegrunnlagEntity())
-      updatedEntity.children.forEach(){skattegrunnlagspostDto ->
-        val updatedSkattegrunnlag = skattegrunnlagspostDto.copy(skattegrunnlagId = skattegrunnlag.skattegrunnlagId).toSkattegrunnlagspostEntity()
-        skattegrunnlagspostRepository.save(updatedSkattegrunnlag)
-      }
-    }
+    val comparatorResult = skattegrunnlagPeriodComparator.comparePeriodEntities(
+      Period(periodeFra, periodeTil),
+      newSkattegrunnlagForPersonId,
+      existingSkattegrunnlagForPersonId
+    )
+    val processedComparatorResult = processComparatorResult(comparatorResult)
+    skattegrunnlagRepository.saveAll(processedComparatorResult.entities)
+    if (processedComparatorResult.childEntities.isNotEmpty())
+      skattegrunnlagspostRepository.saveAll(processedComparatorResult.childEntities)
   }
 
+  fun <Entity, ChildEntity, Dto : IComparable<Entity, Nothing>, ChildDto : IComparableChild<ChildEntity, Entity>, Comparable : PeriodComparable<Dto, ChildDto>> processComparatorResult(
+    comparatorResult: ComparatorResult<Comparable>
+  ): ProcessedComparatorResult<Entity, ChildEntity> {
+    val now = LocalDateTime.now()
+    val entities = mutableListOf<Entity>()
+    val childEntities = mutableListOf<ChildEntity>()
 
+    AbstractPeriodComparator.LOGGER.info("Setter ${comparatorResult.expiredEntities.size} entiteter til utløpt.")
+    comparatorResult.expiredEntities.forEach() { expiredEntity ->
+      entities.add(expiredEntity.periodEntity.expire(now))
+    }
+    AbstractPeriodComparator.LOGGER.info("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende entiteter med nytt hentet tidspunkt.")
+    comparatorResult.equalEntities.forEach() { equalEntity ->
+      entities.add(equalEntity.periodEntity.update(now))
+    }
+    AbstractPeriodComparator.LOGGER.info("Oppretter ${comparatorResult.updatedEntities.size} nye entiteter.")
+    comparatorResult.updatedEntities.forEach() { updatedEntity ->
+      val entity = updatedEntity.periodEntity.create(null)
+      entities.add(entity)
+      if (updatedEntity.children != null) {
+        AbstractPeriodComparator.LOGGER.info("Oppretter ${updatedEntity.children.size} nye barne-entiteter.")
+      }
+      updatedEntity.children?.forEach() { skattegrunnlagspostDto ->
+        childEntities.add(skattegrunnlagspostDto.create(entity))
+      }
+    }
+    return ProcessedComparatorResult(entities, childEntities)
+  }
 
   fun hentAinntekt(grunnlagspakkeId: Int): List<HentAinntektResponse> {
     val hentAinntektResponseListe = mutableListOf<HentAinntektResponse>()
@@ -239,35 +250,39 @@ class PersistenceService(
   }
 
   fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personId: String): List<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>> {
-    val hentAinntektResponseListe = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
+    val ainntektForPersonIdListe = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
     ainntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
-        if (inntekt.personId.equals(personId)) {
-          val hentAinntektspostListe = mutableListOf<AinntektspostDto>()
-          ainntektspostRepository.hentInntektsposter(inntekt.inntektId).forEach(){ainntektspost -> hentAinntektspostListe.add(ainntektspost.toAinntektspostDto())}
-          hentAinntektResponseListe.add(
-            PeriodComparableWithChildren(inntekt.toAinntektDto(), hentAinntektspostListe)
+        if (inntekt.personId == personId) {
+          val ainntektspostListe = mutableListOf<AinntektspostDto>()
+          ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
+            .forEach() { ainntektspost -> ainntektspostListe.add(ainntektspost.toAinntektspostDto()) }
+          ainntektForPersonIdListe.add(
+            PeriodComparableWithChildren(inntekt.toAinntektDto(), ainntektspostListe)
           )
         }
       }
 
-    return hentAinntektResponseListe
+    return ainntektForPersonIdListe
   }
 
-  fun<T: IPeriod, V, Entity> hentPeriodComparableWithChildrenForPersonId(grunnlagspakkeId: Int, repository: HentRepository<Entity>, children: Boolean = false): List<PeriodComparableWithChildren<T, V>> {
-    val hentAinntektResponseListe = mutableListOf<PeriodComparableWithChildren<T, V>>()
-    repository.hent(grunnlagspakkeId)
-      .forEach { inntekt ->
-        if (inntekt.personId.equals(personId)) {
-          val hentAinntektspostListe = mutableListOf<AinntektspostDto>()
-          ainntektspostRepository.hentInntektsposter(inntekt.inntektId).forEach(){ainntektspost -> hentAinntektspostListe.add(ainntektspost.toAinntektspostDto())}
-          hentAinntektResponseListe.add(
-            PeriodComparableWithChildren(inntekt.toAinntektDto(), hentAinntektspostListe)
+  fun hentSkattegrunnlagForPersonIdToCompare(
+    grunnlagspakkeId: Int,
+    personId: String
+  ): List<PeriodComparableWithChildren<SkattegrunnlagDto, SkattegrunnlagspostDto>> {
+    val skattegrunnlagForPersonIdListe = mutableListOf<PeriodComparableWithChildren<SkattegrunnlagDto, SkattegrunnlagspostDto>>()
+    skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
+      .forEach { skattegrunnlag ->
+        if (skattegrunnlag.personId == personId) {
+          val skattegrunnlagpostListe = mutableListOf<SkattegrunnlagspostDto>()
+          skattegrunnlagspostRepository.hentSkattegrunnlagsposter(skattegrunnlag.skattegrunnlagId)
+            .forEach() { skattegrunnlagspost -> skattegrunnlagpostListe.add(skattegrunnlagspost.toSkattegrunnlagspostDto()) }
+          skattegrunnlagForPersonIdListe.add(
+            PeriodComparableWithChildren(skattegrunnlag.toSkattegrunnlagDto(), skattegrunnlagpostListe)
           )
         }
       }
-
-    return hentAinntektResponseListe
+    return skattegrunnlagForPersonIdListe
   }
 
   fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<HentSkattegrunnlagResponse> {
@@ -325,3 +340,5 @@ class PersistenceService(
     return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
   }
 }
+
+data class ProcessedComparatorResult<Entity, ChildEntity>(val entities: List<Entity>, val childEntities: List<ChildEntity>)

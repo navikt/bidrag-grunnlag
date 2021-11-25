@@ -9,7 +9,6 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
-import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.comparator.PeriodComparableWithChildren
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest

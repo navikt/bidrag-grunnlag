@@ -35,7 +35,19 @@ data class SkattegrunnlagDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  ) : IPeriod
+  ) : IPeriod, IComparable<Skattegrunnlag, Nothing> {
+  override fun expire(brukTil: LocalDateTime): Skattegrunnlag {
+    return this.copy(brukTil = brukTil, aktiv = false).toSkattegrunnlagEntity()
+  }
+
+  override fun update(hentetTidspunkt: LocalDateTime): Skattegrunnlag {
+    return this.copy(hentetTidspunkt = hentetTidspunkt).toSkattegrunnlagEntity()
+  }
+
+  override fun create(parent: Nothing?): Skattegrunnlag {
+    return this.toSkattegrunnlagEntity()
+  }
+}
 
 fun SkattegrunnlagDto.toSkattegrunnlagEntity() = with(::Skattegrunnlag) {
   val propertiesByName = SkattegrunnlagDto::class.memberProperties.associateBy { it.name }
