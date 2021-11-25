@@ -141,19 +141,19 @@ class PersistenceService(
     val hentetTidspunkt = LocalDateTime.now()
 
     // Setter utløpte Ainntekter til utløpt.
-    LOGGER.info("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
+    LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
     comparatorResult.expiredEntities.forEach(){expiredEntity ->
       val expiredAinntekt = expiredEntity.periodEntity.copy(aktiv = false, brukTil = hentetTidspunkt).toAinntektEntity()
       ainntektRepository.save(expiredAinntekt)
     }
     // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
-    LOGGER.info("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
+    LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach(){equalEntity ->
       val unchangedAinntekt = equalEntity.periodEntity.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
       ainntektRepository.save(unchangedAinntekt)
     }
     // Lagrer nye Ainntekter og Ainntektsposter.
-    LOGGER.info("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
+    LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
     comparatorResult.updatedEntities.forEach(){updatedEntity ->
       val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
       updatedEntity.children.forEach(){ainntektspostDto ->
