@@ -9,6 +9,8 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.comparator.PeriodComparable
+import no.nav.bidrag.grunnlag.comparator.PeriodComparableWithChildren
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -118,8 +120,10 @@ class GrunnlagspakkeService(
   }
 
 
-  private fun oppdaterAinntekt(grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
-                               personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>): GrunnlagstypeResponse {
+  private fun oppdaterAinntekt(
+    grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
+    personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
+  ): GrunnlagstypeResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
     val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
@@ -134,7 +138,7 @@ class GrunnlagspakkeService(
         ident = personIdOgPeriode.personId,
         innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato,
         maanedFom = personIdOgPeriode.periodeFra.toString().substring(0, 7),
-        maanedTom = personIdOgPeriode.periodeTil.toString().substring(0, 7),
+        maanedTom = personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7),
         ainntektsfilter = finnFilter(formaal),
         formaal = finnFormaal(formaal)
       )
@@ -156,6 +160,7 @@ class GrunnlagspakkeService(
           LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
+          val nyeAinntekter = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
 
           if (hentInntektListeResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
             hentGrunnlagkallResponseListe.add(
@@ -167,19 +172,19 @@ class GrunnlagspakkeService(
           } else {
             hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
               antallPerioderFunnet++
-              val opprettetAinntekt = persistenceService.opprettAinntekt(
-                AinntektDto(
-                  grunnlagspakkeId = grunnlagspakkeId,
-                  personId = personIdOgPeriode.personId,
-                  periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                  periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                  brukFra = if (hentHistoriskeInntekter) hentHistoriskeInntekterDato!!.atStartOfDay() else timestampOppdatering,
-                  hentetTidspunkt = timestampOppdatering))
+              val inntekt = AinntektDto(
+                grunnlagspakkeId = grunnlagspakkeId,
+                personId = personIdOgPeriode.personId,
+                periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                brukFra = if (hentHistoriskeInntekter) hentHistoriskeInntekterDato!!.atStartOfDay() else timestampOppdatering,
+                hentetTidspunkt = timestampOppdatering
+              )
 
+              val inntektsposter = mutableListOf<AinntektspostDto>()
               inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
-                persistenceService.opprettAinntektspost(
+                inntektsposter.add(
                   AinntektspostDto(
-                    inntektId = opprettetAinntekt.inntektId,
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
                     opptjeningsperiodeFra =
                     if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01") else null,
@@ -194,8 +199,17 @@ class GrunnlagspakkeService(
                     belop = inntektspost.beloep.toBigDecimal()
                   )
                 )
+//                )
               }
+              nyeAinntekter.add(PeriodComparableWithChildren(inntekt, inntektsposter))
             }
+            persistenceService.oppdaterAinntektForGrunnlagspakke(
+              grunnlagspakkeId,
+              nyeAinntekter,
+              personIdOgPeriode.periodeFra,
+              personIdOgPeriode.periodeTil,
+              personIdOgPeriode.personId
+            )
             hentGrunnlagkallResponseListe.add(
               HentGrunnlagkallResponse(
                 personIdOgPeriode.personId,
@@ -329,7 +343,8 @@ class GrunnlagspakkeService(
 
       val familieBaSakRequest = FamilieBaSakRequest(
         personIdent = personIdOgPeriode.personId,
-        fraDato = personIdOgPeriode.periodeFra)
+        fraDato = personIdOgPeriode.periodeFra
+      )
 
       LOGGER.info(
         "Kaller familie-ba-sak med personIdent ********${
@@ -350,22 +365,22 @@ class GrunnlagspakkeService(
             familieBaSakResponse.perioder.forEach() { ubst ->
               if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil))
                 antallPerioderFunnet++
-                persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-                  UtvidetBarnetrygdOgSmaabarnstilleggDto(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    personId = personIdOgPeriode.personId,
-                    type = ubst.stønadstype.toString(),
-                    periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
-                    // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-                    periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
-                      .plusMonths(1) else null,
-                    brukFra = timestampOppdatering,
-                    belop = BigDecimal.valueOf(ubst.beløp),
-                    manueltBeregnet = ubst.manueltBeregnet,
-                    deltBosted = ubst.deltBosted,
-                    hentetTidspunkt = timestampOppdatering
-                  )
+              persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+                UtvidetBarnetrygdOgSmaabarnstilleggDto(
+                  grunnlagspakkeId = grunnlagspakkeId,
+                  personId = personIdOgPeriode.personId,
+                  type = ubst.stønadstype.toString(),
+                  periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
+                  // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+                  periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
+                    .plusMonths(1) else null,
+                  brukFra = timestampOppdatering,
+                  belop = BigDecimal.valueOf(ubst.beløp),
+                  manueltBeregnet = ubst.manueltBeregnet,
+                  deltBosted = ubst.deltBosted,
+                  hentetTidspunkt = timestampOppdatering
                 )
+              )
             }
           hentGrunnlagkallResponseListe.add(
             HentGrunnlagkallResponse(
@@ -399,7 +414,8 @@ class GrunnlagspakkeService(
     persistenceService.validerGrunnlagspakke(lukkGrunnlagspakkeRequest.grunnlagspakkeId)
 
     return persistenceService.lukkGrunnlagspakke(
-      lukkGrunnlagspakkeRequest.grunnlagspakkeId)
+      lukkGrunnlagspakkeRequest.grunnlagspakkeId
+    )
   }
 
   fun finnFilter(formaal: String): String {

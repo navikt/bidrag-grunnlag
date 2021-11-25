@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
+import no.nav.bidrag.grunnlag.comparator.IPeriod
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 
 import java.time.LocalDate
@@ -19,10 +20,10 @@ data class AinntektDto(
   val personId: String = "",
 
   @Schema(description = "Periode fra-dato")
-  val periodeFra: LocalDate = LocalDate.now(),
+  override val periodeFra: LocalDate = LocalDate.now(),
 
   @Schema(description = "Periode til-dato")
-  val periodeTil: LocalDate = LocalDate.now(),
+  override val periodeTil: LocalDate = LocalDate.now(),
 
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
   val aktiv: Boolean = true,
@@ -35,7 +36,7 @@ data class AinntektDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  )
+  ): IPeriod
 
 fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
   val propertiesByName = AinntektDto::class.memberProperties.associateBy { it.name }
