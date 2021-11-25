@@ -13,16 +13,23 @@ spec:
     inbound:
       rules:
         - application: bidrag-grunnlag
+        - application: bidrag-gcp-proxy
+          cluster: prod-fss
+          namespace: bidrag
+    outbound:
+      external:
+        - host: familie-ba-sak.prod-fss-pub.nais.io
+        - host: bidrag-gcp-proxy.prod-fss-pub.nais.io/bidrag-gcp-proxy
   image: {{ image }}
   liveness:
     path: /bidrag-grunnlag/actuator/health
-    initialDelay: 70
+    initialDelay: 20
     timeout: 1
     periodSeconds: 5
     failureThreshold: 10
   readiness:
     path: /bidrag-grunnlag/actuator/health
-    initialDelay: 70
+    initialDelay: 20
     timeout: 1
   prometheus:
     enabled: true
@@ -30,17 +37,17 @@ spec:
   resources:
     limits:
       cpu: 1000m
-      memory: 1024Mi
+      memory: 2048Mi
     requests:
       cpu: 500m
-      memory: 512Mi
+      memory: 1024Mi
   ingresses:
     - https://bidrag-grunnlag.intern.nav.no
   gcp:
     sqlInstances:
-      - name: bidrag-grunnlag
+      - name: bidrag-grunnlag-prod
         type: POSTGRES_12
         cascadingDelete: true
         databases:
-          - name: bidrag-grunnlag-db
+          - name: bidrag-grunnlag-prod
             envVarPrefix: DB
