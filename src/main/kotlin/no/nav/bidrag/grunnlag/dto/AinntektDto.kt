@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.comparator.IComparable
+import no.nav.bidrag.grunnlag.comparator.IPeriod
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 
 import java.time.LocalDate
@@ -36,19 +36,7 @@ data class AinntektDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  ): IComparable<Ainntekt> {
-  override fun expire(brukTil: LocalDateTime): Ainntekt {
-    return this.copy(brukTil = brukTil, aktiv = false).toAinntektEntity()
-  }
-
-  override fun update(hentetTidspunkt: LocalDateTime): Ainntekt {
-    return this.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
-  }
-
-  override fun create(): Ainntekt {
-    return this.toAinntektEntity()
-  }
-}
+  ): IPeriod
 
 fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
   val propertiesByName = AinntektDto::class.memberProperties.associateBy { it.name }

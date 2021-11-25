@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.comparator.IComparableChild
+import no.nav.bidrag.grunnlag.comparator.IPeriod
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 
@@ -43,11 +43,7 @@ data class AinntektspostDto(
 
   @Schema(description = "Belop")
   val belop: BigDecimal = BigDecimal.ZERO
-) : IComparableChild<Ainntektspost, Ainntekt> {
-  override fun create(parent: Ainntekt): Ainntektspost {
-    return this.copy(inntektId = parent.inntektId).toAinntektspostEntity()
-  }
-}
+)
 
 fun AinntektspostDto.toAinntektspostEntity() = with(::Ainntektspost) {
   val propertiesByName = AinntektspostDto::class.memberProperties.associateBy { it.name }

@@ -1,9 +1,6 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.comparator.IComparableChild
-import no.nav.bidrag.grunnlag.comparator.IPeriod
-import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import java.math.BigDecimal
 import kotlin.reflect.full.memberProperties
@@ -24,12 +21,7 @@ data class SkattegrunnlagspostDto(
 
   @Schema(description = "Belop")
   val belop: BigDecimal = BigDecimal.ZERO
-) : IComparableChild<Skattegrunnlagspost, Skattegrunnlag> {
-
-  override fun create(parent: Skattegrunnlag): Skattegrunnlagspost {
-    return this.copy(skattegrunnlagId = parent.skattegrunnlagId).toSkattegrunnlagspostEntity()
-  }
-}
+)
 
 fun SkattegrunnlagspostDto.toSkattegrunnlagspostEntity() = with(::Skattegrunnlagspost) {
   val propertiesByName = SkattegrunnlagspostDto::class.memberProperties.associateBy { it.name }

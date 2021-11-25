@@ -17,5 +17,4 @@ interface SkattegrunnlagRepository : JpaRepository<Skattegrunnlag, Int?> {
   )
   @Modifying
   fun settSkattegrunnlagSomInaktiv(inntektId: Int)
-
 }

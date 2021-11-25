@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.comparator.IComparable
+import no.nav.bidrag.grunnlag.comparator.IPeriod
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,19 +35,7 @@ data class SkattegrunnlagDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-) : IComparable<Skattegrunnlag> {
-  override fun expire(brukTil: LocalDateTime): Skattegrunnlag {
-    return this.copy(brukTil = brukTil, aktiv = false).toSkattegrunnlagEntity()
-  }
-
-  override fun update(hentetTidspunkt: LocalDateTime): Skattegrunnlag {
-    return this.copy(hentetTidspunkt = hentetTidspunkt).toSkattegrunnlagEntity()
-  }
-
-  override fun create(): Skattegrunnlag {
-    return this.toSkattegrunnlagEntity()
-  }
-}
+) : IPeriod
 
 fun SkattegrunnlagDto.toSkattegrunnlagEntity() = with(::Skattegrunnlag) {
   val propertiesByName = SkattegrunnlagDto::class.memberProperties.associateBy { it.name }
