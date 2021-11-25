@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.comparator.IPeriod
+import no.nav.bidrag.grunnlag.comparator.IComparable
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 
 import java.time.LocalDate
@@ -36,7 +36,7 @@ data class AinntektDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  ): IPeriod, IComparable<Ainntekt, Nothing> {
+  ): IComparable<Ainntekt> {
   override fun expire(brukTil: LocalDateTime): Ainntekt {
     return this.copy(brukTil = brukTil, aktiv = false).toAinntektEntity()
   }
@@ -45,7 +45,7 @@ data class AinntektDto(
     return this.copy(hentetTidspunkt = hentetTidspunkt).toAinntektEntity()
   }
 
-  override fun create(parent: Nothing): Ainntekt {
+  override fun create(): Ainntekt {
     return this.toAinntektEntity()
   }
 }
@@ -58,9 +58,4 @@ fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
     }
   })
 
-}
-
-interface IComparable<T, Parent> : IComparableChild<T, Parent> {
-  fun expire(brukTil: LocalDateTime): T
-  fun update(hentetTidspunkt: LocalDateTime): T
 }

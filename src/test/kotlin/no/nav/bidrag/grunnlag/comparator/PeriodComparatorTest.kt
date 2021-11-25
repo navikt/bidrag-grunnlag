@@ -2,6 +2,8 @@ package no.nav.bidrag.grunnlag.comparator
 
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -187,12 +189,12 @@ class PeriodComparatorTest {
   private fun createPeriodEntities(
     period: IPeriod,
     inntektsposter: List<AinntektspostDto> = emptyList()
-  ): MutableList<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>> {
-    val existingEntities = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
+  ): MutableList<PeriodComparable<AinntektDto, AinntektspostDto>> {
+    val existingEntities = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
     var currentStartDate = period.periodeFra
     while (currentStartDate.isBefore(period.periodeTil)) {
       existingEntities.add(
-        PeriodComparableWithChildren(
+        PeriodComparable(
           AinntektDto(periodeFra = currentStartDate, periodeTil = currentStartDate.plusMonths(1)),
           inntektsposter
         )
