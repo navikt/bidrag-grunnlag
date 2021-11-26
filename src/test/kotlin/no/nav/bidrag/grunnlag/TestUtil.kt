@@ -6,18 +6,28 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjon
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektMaaned
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektListe
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.AinntektDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.service.Formaal
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import no.nav.bidrag.grunnlag.service.SkattegrunnlagType
+import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
@@ -37,7 +47,7 @@ class TestUtil {
     fun byggNyGrunnlagspakkeRequest() = OpprettGrunnlagspakkeRequest(
       opprettetAv = "RTV9999",
       formaal = Formaal.BIDRAG,
-      )
+    )
 
     fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
       grunnlagspakkeId = grunnlagspakkeId,
@@ -46,20 +56,31 @@ class TestUtil {
       grunnlagtypeRequestListe = listOf(
         GrunnlagstypeRequest(
           Grunnlagstype.AINNTEKT,
-          listOf(PersonIdOgPeriodeRequest("12345678910",
-            LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
-        )),
+          listOf(
+            PersonIdOgPeriodeRequest(
+              "12345678910",
+              LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01")
+            )
+          )
+        ),
         GrunnlagstypeRequest(
           Grunnlagstype.SKATTEGRUNNLAG,
-          listOf(PersonIdOgPeriodeRequest("12345678910",
-            LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
-        )),
+          listOf(
+            PersonIdOgPeriodeRequest(
+              "12345678910",
+              LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01")
+            )
+          )
+        ),
         GrunnlagstypeRequest(
           Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
-          listOf(PersonIdOgPeriodeRequest("12345678910",
-            LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"))
+          listOf(
+            PersonIdOgPeriodeRequest(
+              "12345678910",
+              LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01")
+            )
+          )
         )
-      )
       )
     )
 
@@ -149,6 +170,76 @@ class TestUtil {
       return mutableListOf(utvidetBarnetrygdOgSmaabarnstilleggPeriode)
     }
 
+    fun byggHentInntektRequest() = HentInntektRequest(
+      ident = "ident",
+      innsynHistoriskeInntekterDato = LocalDate.now(),
+      maanedFom = LocalDate.now().toString(),
+      maanedTom = LocalDate.now().toString(),
+      ainntektsfilter = "BidragA-Inntekt",
+      formaal = "Bidrag"
+    )
+
+    fun byggHentInntektListeResponse() = HentInntektListeResponse(byggArbeidsInntektMaanedListe())
+
+    private fun byggArbeidsInntektMaanedListe() = immutableListOf(
+      ArbeidsInntektMaaned(
+        aarMaaned = "2021-01",
+        ArbeidsInntektInformasjon(byggInntektListe())
+      )
+    )
+
+    private fun byggInntektListe(): List<InntektListe> {
+      return immutableListOf(
+        InntektListe(
+          inntektType = "LOENNSINNTEKT",
+          beloep = 10000,
+          fordel = null,
+          inntektskilde = null,
+          inntektsperiodetype = null,
+          inntektsstatus = null,
+          leveringstidspunkt = null,
+          opptjeningsland = null,
+          opptjeningsperiodeFom = null,
+          opptjeningsperiodeTom = null,
+          utbetaltIMaaned = null,
+          opplysningspliktig = null,
+          virksomhet = null,
+          tilleggsinformasjon = null,
+          inntektsmottaker = null,
+          inngaarIGrunnlagForTrekk = false,
+          utloeserArbeidsgiveravgift = false,
+          informasjonsstatus = null,
+          beskrivelse = null,
+          skatteOgAvgiftsregel = null,
+          antall = null
+        )
+      )
+    }
+
+    fun byggHentSkattegrunnlagRequest() = HentSkattegrunnlagRequest(
+      inntektsAar = "2021",
+      inntektsFilter = "inntektsfilter",
+      personId = "personId"
+    )
+
+    fun byggHentSkattegrunnlagResponse() = HentSkattegrunnlagResponse(
+      grunnlag = byggSkattegrunnlagListe(),
+      svalbardGrunnlag = byggSkattegrunnlagListe(),
+      skatteoppgjoersdato = LocalDate.now().toString()
+    )
+
+    private fun byggSkattegrunnlagListe() = immutableListOf(
+      Skattegrunnlag(
+        beloep = "100000",
+        tekniskNavn = "tekniskNavn"
+      )
+    )
+
+    fun byggFamilieBaSakRequest() = FamilieBaSakRequest(
+      personIdent = "personIdent",
+      fraDato = LocalDate.now()
+    )
+
     fun <Request, Response> performRequest(
       mockMvc: MockMvc,
       method: HttpMethod,
@@ -161,7 +252,7 @@ class TestUtil {
       val mockHttpServletRequestDsl: MockHttpServletRequestDsl.() -> Unit = {
         contentType = MediaType.APPLICATION_JSON
         if (input != null) {
-          content = when(input) {
+          content = when (input) {
             is String -> input
             else -> ObjectMapper().findAndRegisterModules().writeValueAsString(input)
           }
@@ -178,7 +269,7 @@ class TestUtil {
         content { contentType(MediaType.APPLICATION_JSON) }
       }.andReturn()
 
-      return when(responseType) {
+      return when (responseType) {
         String::class.java -> mvcResult.response.contentAsString as Response
         else -> ObjectMapper().readValue(mvcResult.response.contentAsString, responseType)
       }

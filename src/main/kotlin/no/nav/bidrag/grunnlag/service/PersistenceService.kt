@@ -59,14 +59,6 @@ class PersistenceService(
     return grunnlagspakke.toGrunnlagspakkeDto()
   }
 
-  // Henter inn grunnlag fra eksterne kilder og returnerer
-  fun oppdaterGrunnlagspakke(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest) {
-
-    // bygg opp inntektsgrunnlag og lagre
-
-
-  }
-
   fun opprettAinntekt(ainntektDto: AinntektDto): AinntektDto {
     val nyInntekt = ainntektDto.toAinntektEntity()
     val inntekt = ainntektRepository.save(nyInntekt)
