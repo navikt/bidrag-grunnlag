@@ -304,6 +304,7 @@ class GrunnlagspakkeService(
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
                   ))
               }
+              nyeSkattegrunnlag.add(PeriodComparable(skattegrunnlag, skattegrunnlagsposter))
             }
             persistenceService.oppdaterSkattegrunnlagForGrunnlagspakke(grunnlagspakkeId, nyeSkattegrunnlag, periodeFra, periodeTil, personIdOgPeriode.personId)
             hentGrunnlagkallResponseListe.add(
