@@ -3,8 +3,18 @@
 ![](https://github.com/navikt/bidrag-grunnlag/workflows/continuous%20integration/badge.svg)
 ![](https://github.com/navikt/bidrag-grunnlag/workflows/release%20bidrag-grunnlag/badge.svg)
 
-Tjeneste for innhenting og behandling av grunnlag i bidragssaker.
+Tjeneste for innhenting av grunnlag i bidragssaker. Tjenesten er sentrert rundt begrepet `grunnlagspakke`, som fungerer som en beholder for alle grunnlag tilknyttet en bestemt bidragssak. Konsumenter av tjenesten kan opprette grunnlagspakker og bestemme hvilke grunnlag og perioder som skal hentes for de ulike partene. Tjenesten vil hente alle ønskede grunnlag og knytte de opp mot opprettet grunnlagspakke. Grunnlagspakken kan deretter hentes ut med alle tilhørende grunnlag. Frem til det er fattet et vedtak i en bidragssak tilknyttet en grunnlagspakke, kan alle grunnlagene oppdateres og/eller endres.
 
+Støtter foreløpig følgende grunnlag:
+* Inntekt
+* Skattegrunnlag
+* Utvidet barnetrygd og småbarnstillegg
+* ... resterende grunnlag legges til fortløpende
+
+Miljøer:
+* GCP-DEB-FEATURE ([https://bidrag-grunnlag-feature.dev.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag-feature.dev.intern.nav.no/bidrag-grunnlag/))
+* GCP-DEV ([https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/))
+* GCP-PROD ([https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/))
 
 ## Kjøre applikasjon lokalt
 En fullstendig fungerende applikasjon kan for øyeblikket ikke kjøres opp lokalt på egen maskin da vi ikke har mulighet til å kommunisere med eksterne tjenester. Applikasjonen kan allikevel kjøres opp for å teste endepunkter fra Swagger ([http://localhost:8080/bidrag-grunnlag](http://localhost:8080/bidrag-grunnlag)) og annen logikk i applikasjonen som er uavhengig av kontakt med eksterne tjenester. Operasjoner som går rett mot databasen, som opprettelse og henting av grunnlagspakker, vil også fungere ved hjelp av in-memory databasen H2.
