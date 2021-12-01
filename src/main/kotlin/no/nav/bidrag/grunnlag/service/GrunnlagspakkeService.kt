@@ -10,7 +10,6 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
-import no.nav.bidrag.grunnlag.comparator.PeriodComparableWithChildren
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -160,7 +159,7 @@ class GrunnlagspakkeService(
           LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
-          val nyeAinntekter = mutableListOf<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>()
+          val nyeAinntekter = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
 
           if (hentInntektListeResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
             hentGrunnlagkallResponseListe.add(
@@ -201,7 +200,7 @@ class GrunnlagspakkeService(
                 )
 //                )
               }
-              nyeAinntekter.add(PeriodComparableWithChildren(inntekt, inntektsposter))
+              nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
             }
             persistenceService.oppdaterAinntektForGrunnlagspakke(
               grunnlagspakkeId,
@@ -245,6 +244,11 @@ class GrunnlagspakkeService(
       var inntektAar = personIdOgPeriode.periodeFra.year
       val sluttAar = personIdOgPeriode.periodeTil.year
 
+      val periodeFra = LocalDate.of(inntektAar, 1, 1)
+      val periodeTil = LocalDate.of(sluttAar, 1, 1)
+
+      val nyeSkattegrunnlag = mutableListOf<PeriodComparable<SkattegrunnlagDto, SkattegrunnlagspostDto>>()
+
       while (inntektAar < sluttAar) {
         val skattegrunnlagRequest = HentSkattegrunnlagRequest(
           inntektAar.toString(),
@@ -273,8 +277,7 @@ class GrunnlagspakkeService(
             skattegrunnlagsPosterSvalbard.addAll(skattegrunnlagResponse.svalbardGrunnlag!!.toMutableList())
 
             if (skattegrunnlagsPosterOrdinaer.size > 0 || skattegrunnlagsPosterSvalbard.size > 0) {
-              val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(
-                SkattegrunnlagDto(
+                val skattegrunnlag = SkattegrunnlagDto(
                   grunnlagspakkeId = grunnlagspakkeId,
                   personId = personIdOgPeriode.personId,
                   periodeFra = LocalDate.parse("$inntektAar-01-01"),
@@ -282,30 +285,28 @@ class GrunnlagspakkeService(
                   brukFra = timestampOppdatering,
                   hentetTidspunkt = timestampOppdatering
                 )
-              )
+              val skattegrunnlagsposter = mutableListOf<SkattegrunnlagspostDto>()
               skattegrunnlagsPosterOrdinaer.forEach { skattegrunnlagsPost ->
                 antallSkattegrunnlagsposter++
-                persistenceService.opprettSkattegrunnlagspost(
-                  SkattegrunnlagspostDto(
-                    skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
+                  skattegrunnlagsposter.add(SkattegrunnlagspostDto(
+                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
                     inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
-                  )
-                )
+                  ))
               }
               skattegrunnlagsPosterSvalbard.forEach { skattegrunnlagsPost ->
                 antallSkattegrunnlagsposter++
-                persistenceService.opprettSkattegrunnlagspost(
-                  SkattegrunnlagspostDto(
-                    skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
+                  skattegrunnlagsposter.add(SkattegrunnlagspostDto(
+                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
                     inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
-                  )
-                )
+                  ))
               }
+              nyeSkattegrunnlag.add(PeriodComparable(skattegrunnlag, skattegrunnlagsposter))
             }
+            persistenceService.oppdaterSkattegrunnlagForGrunnlagspakke(grunnlagspakkeId, nyeSkattegrunnlag, periodeFra, periodeTil, personIdOgPeriode.personId)
             hentGrunnlagkallResponseListe.add(
               HentGrunnlagkallResponse(
                 personIdOgPeriode.personId,

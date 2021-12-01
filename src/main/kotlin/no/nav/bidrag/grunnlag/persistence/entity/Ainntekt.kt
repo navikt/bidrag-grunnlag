@@ -51,4 +51,3 @@ fun Ainntekt.toAinntektDto() = with(::AinntektDto) {
   })
 }
 
-

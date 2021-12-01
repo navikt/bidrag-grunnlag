@@ -4,50 +4,32 @@ import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
 import no.nav.bidrag.grunnlag.util.toJsonString
 
-class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparableWithChildren<AinntektDto, AinntektspostDto>>() {
+class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<AinntektDto, AinntektspostDto>>() {
   override fun isEntitiesEqual(
-    newEntity: PeriodComparableWithChildren<AinntektDto, AinntektspostDto>,
-    existingEntity: PeriodComparableWithChildren<AinntektDto, AinntektspostDto>
+    newEntity: PeriodComparable<AinntektDto, AinntektspostDto>,
+    existingEntity: PeriodComparable<AinntektDto, AinntektspostDto>
   ): Boolean {
-    val newAinntektsposter = sortAinntektsposter(newEntity.children)
-    val existingAinntektsposter = sortAinntektsposter(existingEntity.children)
+    val newAinntektsposter = sortAinntektsposter(newEntity.children!!)
+    val existingAinntektsposter = sortAinntektsposter(existingEntity.children!!)
     if (newAinntektsposter.size != existingAinntektsposter.size) {
       return false
     }
-    val differentFields = mutableMapOf<String, String>()
+    val differences = mutableMapOf<String, String>()
     for (i in newAinntektsposter.indices) {
-      if (newAinntektsposter[i].inntektType != existingAinntektsposter[i].inntektType) {
-        differentFields["inntektType"] = "${newAinntektsposter[i].inntektType} != ${existingAinntektsposter[i].inntektType}"
-      }
-      if (newAinntektsposter[i].beskrivelse != existingAinntektsposter[i].beskrivelse) {
-        differentFields["beskrivelse"] = "${newAinntektsposter[i].beskrivelse} != ${existingAinntektsposter[i].beskrivelse}"
-      }
-      if (newAinntektsposter[i].belop.compareTo(existingAinntektsposter[i].belop) != 0) {
-        differentFields["belop"] = "${newAinntektsposter[i].belop} != ${existingAinntektsposter[i].belop}"
-      }
-      if (newAinntektsposter[i].fordelType != existingAinntektsposter[i].fordelType) {
-        differentFields["fordelType"] = "${newAinntektsposter[i].fordelType} != ${existingAinntektsposter[i].fordelType}"
-      }
-      if (newAinntektsposter[i].opplysningspliktigId != existingAinntektsposter[i].opplysningspliktigId) {
-        differentFields["opplysningspliktigId"] = "${newAinntektsposter[i].opplysningspliktigId} != ${existingAinntektsposter[i].opplysningspliktigId}"
-      }
-      if (newAinntektsposter[i].opptjeningsperiodeFra != existingAinntektsposter[i].opptjeningsperiodeFra) {
-        differentFields["opptjeningsperiodeFra"] = "${newAinntektsposter[i].opptjeningsperiodeFra} != ${existingAinntektsposter[i].opptjeningsperiodeFra}"
-      }
-      if (newAinntektsposter[i].opptjeningsperiodeTil != existingAinntektsposter[i].opptjeningsperiodeTil) {
-        differentFields["opptjeningsperiodeTil"] = "${newAinntektsposter[i].opptjeningsperiodeTil} != ${existingAinntektsposter[i].opptjeningsperiodeTil}"
-      }
-      if (newAinntektsposter[i].utbetalingsperiode != existingAinntektsposter[i].utbetalingsperiode) {
-        differentFields["utbetalingsperiode"] = "${newAinntektsposter[i].utbetalingsperiode} != ${existingAinntektsposter[i].utbetalingsperiode}"
-      }
-      if (newAinntektsposter[i].virksomhetId != existingAinntektsposter[i].virksomhetId) {
-        differentFields["virksomhetId"] = "${newAinntektsposter[i].virksomhetId} != ${existingAinntektsposter[i].virksomhetId}"
-      }
+      differences.putAll(compareFields(newAinntektsposter[i].inntektType, existingAinntektsposter[i].inntektType,"inntektType"))
+      differences.putAll(compareFields(newAinntektsposter[i].beskrivelse, existingAinntektsposter[i].beskrivelse,"beskrivelse"))
+      differences.putAll(compareFields(newAinntektsposter[i].belop, existingAinntektsposter[i].belop,"belop"))
+      differences.putAll(compareFields(newAinntektsposter[i].fordelType, existingAinntektsposter[i].fordelType,"fordelType"))
+      differences.putAll(compareFields(newAinntektsposter[i].opplysningspliktigId, existingAinntektsposter[i].opplysningspliktigId,"opplysningspliktigId"))
+      differences.putAll(compareFields(newAinntektsposter[i].opptjeningsperiodeFra, existingAinntektsposter[i].opptjeningsperiodeFra,"opptjeningsperiodeFra"))
+      differences.putAll(compareFields(newAinntektsposter[i].opptjeningsperiodeTil, existingAinntektsposter[i].opptjeningsperiodeTil,"opptjeningsperiodeTil"))
+      differences.putAll(compareFields(newAinntektsposter[i].utbetalingsperiode, existingAinntektsposter[i].utbetalingsperiode,"utbetalingsperiode"))
+      differences.putAll(compareFields(newAinntektsposter[i].virksomhetId, existingAinntektsposter[i].virksomhetId,"virksomhetId"))
     }
-    if (differentFields.isNotEmpty()) {
-      LOGGER.debug(toJsonString(differentFields))
+    if (differences.isNotEmpty()) {
+      LOGGER.debug(toJsonString(differences))
     }
-    return differentFields.isEmpty()
+    return differences.isEmpty()
   }
 
   private fun sortAinntektsposter(ainntektsposter: List<AinntektspostDto>): List<AinntektspostDto> {
