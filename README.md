@@ -12,12 +12,12 @@ Støtter foreløpig følgende grunnlag:
 * ... resterende grunnlag legges til fortløpende
 
 Miljøer:
-* GCP-DEB-FEATURE ([https://bidrag-grunnlag-feature.dev.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag-feature.dev.intern.nav.no/bidrag-grunnlag/))
-* GCP-DEV ([https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/))
-* GCP-PROD ([https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/))
+* DEV-GCP-FEATURE ([https://bidrag-grunnlag-feature.dev.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag-feature.dev.intern.nav.no/bidrag-grunnlag/))
+* DEV-GCP ([https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/))
+* PROD-GCP ([https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/))
 
 ## Utstede gyldig token i gcp-dev
-For å kunne teste applikasjonen i `gcp-dev` trenger man et gyldig AzureAD JWT-token. For å utstede et slikt token trenger man miljøvariablene `AZURE_APP_CLIENT_ID` og `AZURE_APP_CLIENT_SECRET`. Disse ligger tilgjengelig i de kjørene pod'ene til applikasjonen.
+For å kunne teste applikasjonen i `dev-gcp` trenger man et gyldig AzureAD JWT-token. For å utstede et slikt token trenger man miljøvariablene `AZURE_APP_CLIENT_ID` og `AZURE_APP_CLIENT_SECRET`. Disse ligger tilgjengelig i de kjørende pod'ene til applikasjonen.
 
 Koble seg til en kjørende pod (feature-branch):
 ```
@@ -53,3 +53,9 @@ For å starte applikasjonen kjører man `main`-metoden i fila `BidragGrunnlagLoc
 Også når man kjører applikasjonen lokalt vil man trenge et gyldig JWT-token for å kunne kalle på endepunktene. For å utstede et slikt token kan man benytte det åpne endepunktet `GET /local/cookie/` med `issuerId=aad` og `audience=aud-localhost`. Her benyttes en "fake" token-issuer som er satt med wiremock ved hjelp av annotasjonen: `@EnableMockOAuth2Server` fra NAV-biblioteket `token-support`.
 
 Kan vurdere å sette opp wiremocks for de eksterne tjenestene for å kunne kjøre opp en mer fullstedig applikasjon i fremtiden.
+
+## Testing i Swagger
+Applikasjonen testes enklest i Swagger (for generering av gyldig token, se over):
+```
+https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/swagger-ui/index.html?configUrl=/bidrag-grunnlag/v3/api-docs/swagger-config#/grunnlagspakke-controller
+```
