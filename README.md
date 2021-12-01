@@ -16,7 +16,7 @@ Miljøer:
 * DEV-GCP ([https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/))
 * PROD-GCP ([https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/](https://bidrag-grunnlag.intern.nav.no/bidrag-grunnlag/))
 
-## Utstede gyldig token i gcp-dev
+## Utstede gyldig token i dev-gcp
 For å kunne teste applikasjonen i `dev-gcp` trenger man et gyldig AzureAD JWT-token. For å utstede et slikt token trenger man miljøvariablene `AZURE_APP_CLIENT_ID` og `AZURE_APP_CLIENT_SECRET`. Disse ligger tilgjengelig i de kjørende pod'ene til applikasjonen.
 
 Koble seg til en kjørende pod (feature-branch):
