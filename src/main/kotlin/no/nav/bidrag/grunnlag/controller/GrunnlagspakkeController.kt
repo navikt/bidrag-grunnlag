@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
@@ -45,9 +44,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     val grunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(request)
     LOGGER.info("Følgende grunnlagspakke er opprettet: $grunnlagspakkeOpprettet")
     return ResponseEntity(grunnlagspakkeOpprettet, HttpStatus.OK)
-
   }
-
 
   @PostMapping(GRUNNLAGSPAKKE_OPPDATER)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Trigger innhenting av grunnlag for grunnlagspakke")
@@ -61,14 +58,14 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
       ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
     ]
   )
-  fun oppdaterGrunnlagspakke(@Valid @RequestBody request: OppdaterGrunnlagspakkeRequest): ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
-    val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(request)
-    LOGGER.info("Følgende grunnlagspakke ble oppdatert: ${request.grunnlagspakkeId}")
+  fun oppdaterGrunnlagspakke(@PathVariable @NotNull grunnlagspakkeId: Int, @Valid @RequestBody request: OppdaterGrunnlagspakkeRequest):
+      ResponseEntity<OppdaterGrunnlagspakkeResponse>? {
+    val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(grunnlagspakkeId, request)
+    LOGGER.info("Følgende grunnlagspakke ble oppdatert: $grunnlagspakkeId")
     return ResponseEntity(grunnlagspakkeOppdatert, HttpStatus.OK)
   }
 
-
-  @GetMapping("$GRUNNLAGSPAKKE_HENT/{grunnlagspakkeId}")
+  @GetMapping(GRUNNLAGSPAKKE_HENT)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Finn alle data for en grunnlagspakke")
   @ApiResponses(
     value = [
@@ -88,7 +85,6 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
 
   }
 
-
   @PostMapping(GRUNNLAGSPAKKE_LUKK)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Setter gyldigTil-dato = dagens dato for angitt grunnlagspakke")
   @ApiResponses(
@@ -102,18 +98,19 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     ]
   )
 
-  fun lukkGrunnlagspakke(@Valid @RequestBody request: LukkGrunnlagspakkeRequest): ResponseEntity<Int>? {
-    val oppdatertgrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(request)
+  fun lukkGrunnlagspakke(@PathVariable @NotNull grunnlagspakkeId: Int): ResponseEntity<Int>? {
+    val oppdatertgrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(grunnlagspakkeId)
     LOGGER.info("Følgende grunnlagspakke ble oppdatert med gyldigTil-dato: $oppdatertgrunnlagspakke")
-    return ResponseEntity(request.grunnlagspakkeId, HttpStatus.OK)
+    return ResponseEntity(grunnlagspakkeId, HttpStatus.OK)
 
   }
 
   companion object {
-    const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke/ny"
-    const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/oppdater"
-    const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/hent"
-    const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/lukk"
+
+    const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke"
+    const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/{grunnlagspakkeId}/oppdater"
+    const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/{grunnlagspakkeId}"
+    const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/{grunnlagspakkeId}/lukk"
     private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
   }
 }

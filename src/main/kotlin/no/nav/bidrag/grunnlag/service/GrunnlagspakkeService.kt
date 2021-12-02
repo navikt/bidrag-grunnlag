@@ -1,14 +1,13 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
@@ -62,72 +61,79 @@ class GrunnlagspakkeService(
 
   }
 
-  fun oppdaterGrunnlagspakke(oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): OppdaterGrunnlagspakkeResponse {
+  fun oppdaterGrunnlagspakke(grunnlagspakkeId: Int, oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): OppdaterGrunnlagspakkeResponse {
 
-    val grunnlagstypeResponseListe = mutableListOf<GrunnlagstypeResponse>()
+    val grunnlagResponseListe = mutableListOf<GrunnlagResponse>()
 
     // Validerer at grunnlagspakke eksisterer
-    persistenceService.validerGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId)
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
 
-/*    if(oppdaterGrunnlagspakkeRequest.gyldigTil != null) {
-      persistenceService.oppdaterGrunnlagspakke(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
-      oppdaterGrunnlagspakkeRequest.gyldigTil)
-    }*/
+    val ainntektRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
+    val skattegrunnlagRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
+    val ubstRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
 
-    oppdaterGrunnlagspakkeRequest.grunnlagtypeRequestListe!!.forEach() { grunnlagstypeRequest ->
-      when (grunnlagstypeRequest.grunnlagstype) {
+    oppdaterGrunnlagspakkeRequest.grunnlagRequestListe.forEach { grunnlagRequest ->
+      when (grunnlagRequest.grunnlagstype) {
 
-        // Henter Ainntekter
+        // Bygger opp liste over A-inntekter
         Grunnlagstype.AINNTEKT ->
-          grunnlagstypeResponseListe.add(
-            oppdaterAinntekt(
-              oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
-              oppdaterGrunnlagspakkeRequest.innsynHistoriskeInntekterDato,
-              grunnlagstypeRequest.personIdOgPeriodeRequestListe
-            )
-          )
+          ainntektRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
-        // Henter skattegrunnlag
+        // Bygger opp liste over skattegrunnlag
         Grunnlagstype.SKATTEGRUNNLAG ->
-          grunnlagstypeResponseListe.add(
-            oppdaterSkattegrunnlag(
-              oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
-              grunnlagstypeRequest.personIdOgPeriodeRequestListe
-            )
-          )
+          skattegrunnlagRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
-        // Henter utvidet barnetrygd og småbarnstillegg
+        // Bygger opp liste over utvidet barnetrygd og småbarnstillegg
         Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG ->
-          grunnlagstypeResponseListe.add(
-            oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-              oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
-              grunnlagstypeRequest.personIdOgPeriodeRequestListe
-            )
-          )
+          ubstRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
       }
     }
 
-/*    if (grunnlagstypeResponseListe.size.compareTo(0) > 0) {
-      persistenceService.oppdaterEndretTimestamp(oppdaterGrunnlagspakkeRequest.grunnlagspakkeId, timestampOppdatering)
-    }*/
-
-    return OppdaterGrunnlagspakkeResponse(
-      oppdaterGrunnlagspakkeRequest.grunnlagspakkeId,
-      grunnlagstypeResponseListe
+    // Oppdaterer grunnlag for A-inntekt
+    grunnlagResponseListe.add(
+      oppdaterAinntekt(
+        grunnlagspakkeId,
+        oppdaterGrunnlagspakkeRequest.innsynHistoriskeInntekterDato,
+        ainntektRequestListe
+      )
     )
 
+    // Oppdaterer grunnlag for skattegrunnlag
+    grunnlagResponseListe.add(
+      oppdaterSkattegrunnlag(
+        grunnlagspakkeId,
+        skattegrunnlagRequestListe
+      )
+    )
+
+    // Oppdaterer grunnlag for utvidet barnetrygd og småbarnstillegg
+    grunnlagResponseListe.add(
+      oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
+        grunnlagspakkeId,
+        ubstRequestListe
+      )
+    )
+
+    return OppdaterGrunnlagspakkeResponse(grunnlagspakkeId, grunnlagResponseListe)
   }
 
+  private fun nyPersonIdOgPeriode(grunnlagRequest: GrunnlagRequest) =
+    PersonIdOgPeriodeRequest(
+      personId = grunnlagRequest.personId,
+      periodeFra = grunnlagRequest.periodeFra,
+      periodeTil = grunnlagRequest.periodeTil
+    )
 
   private fun oppdaterAinntekt(
-    grunnlagspakkeId: Int, hentHistoriskeInntekterDato: LocalDate?,
+    grunnlagspakkeId: Int,
+    hentHistoriskeInntekterDato: LocalDate?,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagstypeResponse {
+  ): GrunnlagResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
     val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
 
-    personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
+    personIdOgPeriodeListe.forEach { personIdOgPeriode ->
 
       oppdaterGrunnlagspakkeResponseListe.add(OppdaterGrunnlagspakkeResponse())
 
@@ -169,7 +175,7 @@ class GrunnlagspakkeService(
               )
             )
           } else {
-            hentInntektListeResponse.arbeidsInntektMaaned.forEach() { inntektPeriode ->
+            hentInntektListeResponse.arbeidsInntektMaaned.forEach { inntektPeriode ->
               antallPerioderFunnet++
               val inntekt = AinntektDto(
                 grunnlagspakkeId = grunnlagspakkeId,
@@ -181,7 +187,7 @@ class GrunnlagspakkeService(
               )
 
               val inntektsposter = mutableListOf<AinntektspostDto>()
-              inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach() { inntektspost ->
+              inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach { inntektspost ->
                 inntektsposter.add(
                   AinntektspostDto(
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
@@ -198,7 +204,6 @@ class GrunnlagspakkeService(
                     belop = inntektspost.beloep.toBigDecimal()
                   )
                 )
-//                )
               }
               nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
             }
@@ -228,18 +233,18 @@ class GrunnlagspakkeService(
         }
       }
     }
-    return GrunnlagstypeResponse(Grunnlagstype.AINNTEKT.toString(), hentGrunnlagkallResponseListe)
+    return GrunnlagResponse(Grunnlagstype.AINNTEKT.toString(), hentGrunnlagkallResponseListe)
   }
 
 
   fun oppdaterSkattegrunnlag(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagstypeResponse {
+  ): GrunnlagResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
 
-    personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
+    personIdOgPeriodeListe.forEach { personIdOgPeriode ->
 
       var inntektAar = personIdOgPeriode.periodeFra.year
       val sluttAar = personIdOgPeriode.periodeTil.year
@@ -277,36 +282,46 @@ class GrunnlagspakkeService(
             skattegrunnlagsPosterSvalbard.addAll(skattegrunnlagResponse.svalbardGrunnlag!!.toMutableList())
 
             if (skattegrunnlagsPosterOrdinaer.size > 0 || skattegrunnlagsPosterSvalbard.size > 0) {
-                val skattegrunnlag = SkattegrunnlagDto(
-                  grunnlagspakkeId = grunnlagspakkeId,
-                  personId = personIdOgPeriode.personId,
-                  periodeFra = LocalDate.parse("$inntektAar-01-01"),
-                  periodeTil = LocalDate.parse("$inntektAar-01-01").plusYears(1),
-                  brukFra = timestampOppdatering,
-                  hentetTidspunkt = timestampOppdatering
-                )
+              val skattegrunnlag = SkattegrunnlagDto(
+                grunnlagspakkeId = grunnlagspakkeId,
+                personId = personIdOgPeriode.personId,
+                periodeFra = LocalDate.parse("$inntektAar-01-01"),
+                periodeTil = LocalDate.parse("$inntektAar-01-01").plusYears(1),
+                brukFra = timestampOppdatering,
+                hentetTidspunkt = timestampOppdatering
+              )
               val skattegrunnlagsposter = mutableListOf<SkattegrunnlagspostDto>()
               skattegrunnlagsPosterOrdinaer.forEach { skattegrunnlagsPost ->
                 antallSkattegrunnlagsposter++
-                  skattegrunnlagsposter.add(SkattegrunnlagspostDto(
+                skattegrunnlagsposter.add(
+                  SkattegrunnlagspostDto(
                     skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
                     inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
-                  ))
+                  )
+                )
               }
               skattegrunnlagsPosterSvalbard.forEach { skattegrunnlagsPost ->
                 antallSkattegrunnlagsposter++
-                  skattegrunnlagsposter.add(SkattegrunnlagspostDto(
+                skattegrunnlagsposter.add(
+                  SkattegrunnlagspostDto(
                     skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
                     inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
-                  ))
+                  )
+                )
               }
               nyeSkattegrunnlag.add(PeriodComparable(skattegrunnlag, skattegrunnlagsposter))
             }
-            persistenceService.oppdaterSkattegrunnlagForGrunnlagspakke(grunnlagspakkeId, nyeSkattegrunnlag, periodeFra, periodeTil, personIdOgPeriode.personId)
+            persistenceService.oppdaterSkattegrunnlagForGrunnlagspakke(
+              grunnlagspakkeId,
+              nyeSkattegrunnlag,
+              periodeFra,
+              periodeTil,
+              personIdOgPeriode.personId
+            )
             hentGrunnlagkallResponseListe.add(
               HentGrunnlagkallResponse(
                 personIdOgPeriode.personId,
@@ -325,7 +340,7 @@ class GrunnlagspakkeService(
         inntektAar++
       }
     }
-    return GrunnlagstypeResponse(
+    return GrunnlagResponse(
       Grunnlagstype.SKATTEGRUNNLAG.toString(),
       hentGrunnlagkallResponseListe
     )
@@ -334,11 +349,11 @@ class GrunnlagspakkeService(
 
   fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
     grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagstypeResponse {
+  ): GrunnlagResponse {
 
     val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
 
-    personIdOgPeriodeListe.forEach() { personIdOgPeriode ->
+    personIdOgPeriodeListe.forEach { personIdOgPeriode ->
 
       var antallPerioderFunnet = 0
 
@@ -363,7 +378,7 @@ class GrunnlagspakkeService(
           LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
 
           if (familieBaSakResponse.perioder.isNotEmpty())
-            familieBaSakResponse.perioder.forEach() { ubst ->
+            familieBaSakResponse.perioder.forEach { ubst ->
               if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil))
                 antallPerioderFunnet++
               persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
@@ -399,24 +414,22 @@ class GrunnlagspakkeService(
         )
       }
     }
-    return GrunnlagstypeResponse(
+    return GrunnlagResponse(
       Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
       hentGrunnlagkallResponseListe
     )
   }
 
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
+    // Validerer at grunnlagspakke eksisterer
     persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
     return persistenceService.hentKomplettGrunnlagspakke(grunnlagspakkeId)
   }
 
-  fun lukkGrunnlagspakke(lukkGrunnlagspakkeRequest: LukkGrunnlagspakkeRequest): Int {
+  fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
     // Validerer at grunnlagspakke eksisterer
-    persistenceService.validerGrunnlagspakke(lukkGrunnlagspakkeRequest.grunnlagspakkeId)
-
-    return persistenceService.lukkGrunnlagspakke(
-      lukkGrunnlagspakkeRequest.grunnlagspakkeId
-    )
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
+    return persistenceService.lukkGrunnlagspakke(grunnlagspakkeId)
   }
 
   fun finnFilter(formaal: String): String {
@@ -445,3 +458,9 @@ enum class SkattegrunnlagType {
   ORDINAER,
   SVALBARD
 }
+
+data class PersonIdOgPeriodeRequest(
+  val personId: String,
+  val periodeFra: LocalDate,
+  val periodeTil: LocalDate
+)
