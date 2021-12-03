@@ -5,14 +5,12 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
@@ -79,14 +77,13 @@ class GrunnlagspakkeControllerTest(
 
   @Test
   fun `skal opprette ny grunnlagspakke`() {
-    opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
+    opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
   }
-
 
   @Test
   fun `skal oppdatere en grunnlagspakke`() {
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
+    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
 
     Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenReturn(
       ResponseEntity(HentInntektListeResponse(emptyList()), HttpStatus.OK)
@@ -103,7 +100,8 @@ class GrunnlagspakkeControllerTest(
       )
 
     val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(
-      TestUtil.byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId),
+      nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+      TestUtil.byggOppdaterGrunnlagspakkeRequest(),
       OppdaterGrunnlagspakkeResponse::class.java
     ) { isOk() }
 
@@ -119,7 +117,7 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
+    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
 
     Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenThrow(
       HttpClientErrorException(HttpStatus.NOT_FOUND)
@@ -135,7 +133,8 @@ class GrunnlagspakkeControllerTest(
       )
 
     val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(
-      TestUtil.byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId),
+      nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+      TestUtil.byggOppdaterGrunnlagspakkeRequest(),
       OppdaterGrunnlagspakkeResponse::class.java
     ) { isOk() }
 
@@ -149,16 +148,15 @@ class GrunnlagspakkeControllerTest(
     }
   }
 
-
   @Test
   fun `skal finne data for en grunnlagspakke`() {
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
+    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
 
     val hentGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/${nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId}",
+      "/grunnlagspakke/${nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId}",
       null,
       HentKomplettGrunnlagspakkeResponse::class.java
     ) { isOk() }
@@ -173,14 +171,20 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD,  "X123456"))
+    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
 
-    Mockito.`when`(grunnlagspakkeService.oppdaterGrunnlagspakke(TestUtil.byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId)))
+    Mockito.`when`(
+      grunnlagspakkeService.oppdaterGrunnlagspakke(
+        nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+        TestUtil.byggOppdaterGrunnlagspakkeRequest()
+      )
+    )
       .thenThrow(HibernateException("Test-melding"))
 
     val oppdaterGrunnlagspakkeResponse =
       oppdaterGrunnlagspakke(
-        TestUtil.byggOppdaterGrunnlagspakkeRequest(nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId),
+        nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+        TestUtil.byggOppdaterGrunnlagspakkeRequest(),
         String::class.java,
         mockMvc
       ) { isInternalServerError() }
@@ -191,14 +195,14 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal fange opp og håndtere forespørsler på grunnlagspakker som ikke eksisterer`() {
 
-    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(TestUtil.byggOppdaterGrunnlagspakkeRequest(1), String::class.java) { isNotFound() }
+    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(1, TestUtil.byggOppdaterGrunnlagspakkeRequest(), String::class.java) { isNotFound() }
 
     assertNotNull(oppdaterGrunnlagspakkeResponse)
 
     val hentGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/1",
+      "/grunnlagspakke/1",
       null,
       String::class.java
     ) { isNotFound() }
@@ -208,8 +212,8 @@ class GrunnlagspakkeControllerTest(
     val lukkGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.POST,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_LUKK,
-      TestUtil.byggLukkGrunnlagspakkeRequest(1),
+      "/grunnlagspakke/1/lukk",
+      null,
       String::class.java
     ) { isNotFound() }
 
@@ -241,7 +245,7 @@ class GrunnlagspakkeControllerTest(
       GrunnlagspakkeController.GRUNNLAGSPAKKE_NY,
       fileContent,
       OpprettGrunnlagspakkeResponse::class.java
-    ) {isOk()}
+    ) { isOk() }
 
     assertNotNull(okResult)
   }
@@ -249,70 +253,79 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal håndtere feil eller manglende felter i input ved oppdater grunnlagspakke kall`() {
 
-    var errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
+    var errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", "/grunnlagspakke/null/oppdater")
 
     assertNotNull(errorResult)
     assertNotNull(errorResult["grunnlagspakkeId"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke2.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke2.json", "/grunnlagspakke/Test/oppdater")
 
     assertNotNull(errorResult)
     assertNotNull(errorResult["grunnlagspakkeId"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke3.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke3.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagtypeRequestListe"])
+    assertNotNull(errorResult["grunnlagRequestListe"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke4.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke4.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
     assertNotNull(errorResult["gyldigTil"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke5.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke5.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagtypeRequestListe[0].grunnlagstype"])
+    assertNotNull(errorResult["grunnlagRequestListe[0].grunnlagstype"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke6.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
-
-    assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagtypeRequestListe[0].personIdOgPeriodeRequestListe"])
-
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke7.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke6.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagtypeRequestListe[0].personIdOgPeriodeRequestListe[0].personId"])
+    assertNotNull(errorResult["grunnlagRequestListe[0].personId"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke8.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
-
-    assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagtypeRequestListe[0].personIdOgPeriodeRequestListe[0].periodeFra"])
-
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke9.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER)
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke7.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagtypeRequestListe[0].personIdOgPeriodeRequestListe[0].periodeTil"])
+    assertNotNull(errorResult["grunnlagRequestListe[0].personId"])
 
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke8.json", "/grunnlagspakke/1/oppdater")
+
+    assertNotNull(errorResult)
+    assertNotNull(errorResult["grunnlagRequestListe[0].periodeFra"])
+
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke9.json", "/grunnlagspakke/1/oppdater")
+
+    assertNotNull(errorResult)
+    assertNotNull(errorResult["grunnlagRequestListe[0].periodeTil"])
 
     val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
-    Mockito.`when`(grunnlagspakkeService.oppdaterGrunnlagspakke(OppdaterGrunnlagspakkeRequest(1, LocalDate.parse("2022-01-01"),
-      null, listOf(
-      GrunnlagstypeRequest(Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG, listOf(PersonIdOgPeriodeRequest("12345678901", LocalDate.parse("2021-11-01"), LocalDate.parse("2021-11-15"))))
-    ))))
+    Mockito.`when`(
+      grunnlagspakkeService.oppdaterGrunnlagspakke(1,
+        OppdaterGrunnlagspakkeRequest(
+          gyldigTil = LocalDate.parse("2022-01-01"),
+          innsynHistoriskeInntekterDato = null,
+          grunnlagRequestListe = listOf(
+            GrunnlagRequest(
+              grunnlagstype = Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              personId = "12345678901",
+              periodeFra = LocalDate.parse("2021-11-01"),
+              periodeTil = LocalDate.parse("2021-11-15")))
+            )
+          )
+        )
       .thenReturn(OppdaterGrunnlagspakkeResponse())
 
     val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")
     val okResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.POST,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER,
+      "/grunnlagspakke/1/oppdater",
       fileContent,
       OppdaterGrunnlagspakkeResponse::class.java
-    ) {isOk()}
+    ) { isOk() }
 
     assertNotNull(okResult)
   }
@@ -320,12 +333,7 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal håndtere feil eller manglende felter i input ved lukk grunnlagspakke kall`() {
 
-    var errorResult = performExpectedFailingRequest("/requests/lukkGrunnlagspakke1.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_LUKK)
-
-    assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagspakkeId"])
-
-    errorResult = performExpectedFailingRequest("/requests/lukkGrunnlagspakke2.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_LUKK)
+    val errorResult = performExpectedFailingRequest(null, "/grunnlagspakke/null/lukk")
 
     assertNotNull(errorResult)
     assertNotNull(errorResult["grunnlagspakkeId"])
@@ -334,17 +342,15 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
-    Mockito.`when`(grunnlagspakkeService.lukkGrunnlagspakke(LukkGrunnlagspakkeRequest(1)))
-      .thenReturn(1)
+    Mockito.`when`(grunnlagspakkeService.lukkGrunnlagspakke(1)).thenReturn(1)
 
-    val fileContent = getFileContent("/requests/lukkGrunnlagspakke3.json")
     val okResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.POST,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_LUKK,
-      fileContent,
+      "/grunnlagspakke/1/lukk",
+      null,
       Int::class.java
-    ) {isOk()}
+    ) { isOk() }
 
     assertNotNull(okResult)
   }
@@ -354,10 +360,10 @@ class GrunnlagspakkeControllerTest(
     val errorResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/null",
+      "/grunnlagspakke/null",
       null,
       MutableMap::class.java
-    ) {isBadRequest()}
+    ) { isBadRequest() }
 
     assertNotNull(errorResult)
     assertNotNull(errorResult["grunnlagspakkeId"])
@@ -372,10 +378,10 @@ class GrunnlagspakkeControllerTest(
     val okResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      "${GrunnlagspakkeController.GRUNNLAGSPAKKE_HENT}/1",
+      "/grunnlagspakke/1",
       null,
       HentKomplettGrunnlagspakkeResponse::class.java
-    ) {isOk()}
+    ) { isOk() }
 
     assertNotNull(okResult)
   }
@@ -406,6 +412,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   private fun <Response> oppdaterGrunnlagspakke(
+    grunnlagspakkeId: Int,
     oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest,
     responseType: Class<Response>,
     customMockMvc: MockMvc? = null,
@@ -414,20 +421,20 @@ class GrunnlagspakkeControllerTest(
     return TestUtil.performRequest(
       customMockMvc ?: mockMvc,
       HttpMethod.POST,
-      GrunnlagspakkeController.GRUNNLAGSPAKKE_OPPDATER,
+      "/grunnlagspakke/${grunnlagspakkeId}/oppdater",
       oppdaterGrunnlagspakkeRequest,
       responseType
     ) { expectedStatus() }
   }
 
-  private fun performExpectedFailingRequest(filepath: String, url: String): MutableMap<*, *> {
-    val json = getFileContent(filepath)
+  private fun performExpectedFailingRequest(filepath: String?, url: String): MutableMap<*, *> {
+    val json = if (filepath != null) getFileContent(filepath) else null
     return TestUtil.performRequest(
       mockMvc,
       HttpMethod.POST,
       url,
       json,
       MutableMap::class.java
-    ) {isBadRequest()}
+    ) { isBadRequest() }
   }
 }

@@ -2,7 +2,7 @@ package no.nav.bidrag.grunnlag.api.grunnlagspakke
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-data class GrunnlagstypeResponse(
+data class GrunnlagResponse(
 
   @Schema(description = "Hvilken type grunnlag som er hentet")
   val grunnlagstype: String = "",

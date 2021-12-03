@@ -1,11 +1,9 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagstypeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.LukkGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjon
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektMaaned
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
@@ -49,42 +47,30 @@ class TestUtil {
       formaal = Formaal.BIDRAG,
     )
 
-    fun byggOppdaterGrunnlagspakkeRequest(grunnlagspakkeId: Int) = OppdaterGrunnlagspakkeRequest(
-      grunnlagspakkeId = grunnlagspakkeId,
+    fun byggOppdaterGrunnlagspakkeRequest() = OppdaterGrunnlagspakkeRequest(
       gyldigTil = LocalDate.parse("2021-08-01"),
       innsynHistoriskeInntekterDato = null,
-      grunnlagtypeRequestListe = listOf(
-        GrunnlagstypeRequest(
-          Grunnlagstype.AINNTEKT,
-          listOf(
-            PersonIdOgPeriodeRequest(
-              "12345678910",
-              LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01")
-            )
-          )
+      grunnlagRequestListe = listOf(
+        GrunnlagRequest(
+          grunnlagstype = Grunnlagstype.AINNTEKT,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
         ),
-        GrunnlagstypeRequest(
-          Grunnlagstype.SKATTEGRUNNLAG,
-          listOf(
-            PersonIdOgPeriodeRequest(
-              "12345678910",
-              LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01")
-            )
-          )
+        GrunnlagRequest(
+          grunnlagstype = Grunnlagstype.SKATTEGRUNNLAG,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
         ),
-        GrunnlagstypeRequest(
-          Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
-          listOf(
-            PersonIdOgPeriodeRequest(
-              "12345678910",
-              LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01")
-            )
-          )
+        GrunnlagRequest(
+          grunnlagstype = Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
         )
       )
     )
-
-    fun byggLukkGrunnlagspakkeRequest(grunnlagspakkeId: Int) = LukkGrunnlagspakkeRequest(grunnlagspakkeId)
 
     fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
       grunnlagspakkeId = (1..100).random(),
@@ -158,7 +144,7 @@ class TestUtil {
       byggUtvidetBarnetrygdPeriode()
     )
 
-    fun byggUtvidetBarnetrygdPeriode(): List<UtvidetBarnetrygdPeriode> {
+    private fun byggUtvidetBarnetrygdPeriode(): List<UtvidetBarnetrygdPeriode> {
       val utvidetBarnetrygdOgSmaabarnstilleggPeriode = UtvidetBarnetrygdPeriode(
         stønadstype = BisysStønadstype.UTVIDET,
         fomMåned = YearMonth.now(),
