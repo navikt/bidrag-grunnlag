@@ -7,9 +7,6 @@ springdoc:
   swagger-ui:
     path: /
 
-server:
-  servlet:
-    context-path: /bidrag-grunnlag
 management:
   endpoints:
     web:
