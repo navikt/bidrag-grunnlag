@@ -306,7 +306,6 @@ class GrunnlagspakkeControllerTest(
       grunnlagspakkeService.oppdaterGrunnlagspakke(1,
         OppdaterGrunnlagspakkeRequest(
           gyldigTil = LocalDate.parse("2022-01-01"),
-          innsynHistoriskeInntekterDato = null,
           grunnlagRequestListe = listOf(
             GrunnlagRequest(
               grunnlagstype = Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
