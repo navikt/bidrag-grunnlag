@@ -21,5 +21,5 @@ data class GrunnlagRequest(
   val periodeTil: LocalDate,
 
   @Schema(description = "Hent historiske inntekter fra Inntektskomponenten på angitt dato, skal kun brukes til engangsinnhenting av historikk")
-  val innsynHistoriskeInntekterDato: LocalDate? = null,
+  val innsynHistoriskeInntekterDato: LocalDate? = null
 )
