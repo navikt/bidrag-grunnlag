@@ -93,7 +93,6 @@ class GrunnlagspakkeService(
     grunnlagResponseListe.add(
       oppdaterAinntekt(
         grunnlagspakkeId,
-        oppdaterGrunnlagspakkeRequest.innsynHistoriskeInntekterDato,
         ainntektRequestListe
       )
     )
@@ -121,12 +120,12 @@ class GrunnlagspakkeService(
     PersonIdOgPeriodeRequest(
       personId = grunnlagRequest.personId,
       periodeFra = grunnlagRequest.periodeFra,
-      periodeTil = grunnlagRequest.periodeTil
+      periodeTil = grunnlagRequest.periodeTil,
+      innsynHistoriskeInntekterDato = grunnlagRequest.innsynHistoriskeInntekterDato
     )
 
   private fun oppdaterAinntekt(
     grunnlagspakkeId: Int,
-    hentHistoriskeInntekterDato: LocalDate?,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
   ): GrunnlagResponse {
 
@@ -137,11 +136,11 @@ class GrunnlagspakkeService(
 
       oppdaterGrunnlagspakkeResponseListe.add(OppdaterGrunnlagspakkeResponse())
 
-      val hentHistoriskeInntekter = hentHistoriskeInntekterDato != null
+      val hentHistoriskeInntekter = personIdOgPeriode.innsynHistoriskeInntekterDato != null
 
       val hentAinntektRequest = HentInntektRequest(
         ident = personIdOgPeriode.personId,
-        innsynHistoriskeInntekterDato = hentHistoriskeInntekterDato,
+        innsynHistoriskeInntekterDato = personIdOgPeriode.innsynHistoriskeInntekterDato,
         maanedFom = personIdOgPeriode.periodeFra.toString().substring(0, 7),
         maanedTom = personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7),
         ainntektsfilter = finnFilter(formaal),
@@ -182,7 +181,7 @@ class GrunnlagspakkeService(
                 personId = personIdOgPeriode.personId,
                 periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                 periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                brukFra = if (hentHistoriskeInntekter) hentHistoriskeInntekterDato!!.atStartOfDay() else timestampOppdatering,
+                brukFra = if (hentHistoriskeInntekter) personIdOgPeriode.innsynHistoriskeInntekterDato!!.atStartOfDay() else timestampOppdatering,
                 hentetTidspunkt = timestampOppdatering
               )
 
@@ -217,7 +216,7 @@ class GrunnlagspakkeService(
             hentGrunnlagkallResponseListe.add(
               HentGrunnlagkallResponse(
                 personIdOgPeriode.personId,
-                "Antall inntekter funnet $antallPerioderFunnet"
+                "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet"
               )
             )
           }
@@ -401,7 +400,7 @@ class GrunnlagspakkeService(
           hentGrunnlagkallResponseListe.add(
             HentGrunnlagkallResponse(
               personIdOgPeriode.personId,
-              "Antall inntekter funnet $antallPerioderFunnet"
+              "Antall inntekter funnet: $antallPerioderFunnet"
             )
           )
         }
@@ -462,5 +461,6 @@ enum class SkattegrunnlagType {
 data class PersonIdOgPeriodeRequest(
   val personId: String,
   val periodeFra: LocalDate,
-  val periodeTil: LocalDate
+  val periodeTil: LocalDate,
+  val innsynHistoriskeInntekterDato: LocalDate?
 )

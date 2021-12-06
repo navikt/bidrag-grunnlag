@@ -18,5 +18,8 @@ data class GrunnlagRequest(
   val periodeFra: LocalDate,
 
   @Schema(description = "Grunnlag skal hentes TIL denne perioden, på formatet YYYY-MM-DD")
-  val periodeTil: LocalDate
+  val periodeTil: LocalDate,
+
+  @Schema(description = "Hent historiske inntekter fra Inntektskomponenten på angitt dato, skal kun brukes til engangsinnhenting av historikk")
+  val innsynHistoriskeInntekterDato: LocalDate? = null
 )
