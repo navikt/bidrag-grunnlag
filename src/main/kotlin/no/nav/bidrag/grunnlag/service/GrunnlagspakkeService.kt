@@ -407,7 +407,7 @@ class GrunnlagspakkeService(
               Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
               personIdOgPeriode.personId,
               GrunnlagsRequestStatus.HENTET,
-              "Antall inntekter funnet: $antallPerioderFunnet"
+              "Antall perioder funnet: $antallPerioderFunnet"
             )
           )
         }
