@@ -256,7 +256,7 @@ class TestUtil {
 
       return when (responseType) {
         String::class.java -> mvcResult.response.contentAsString as Response
-        else -> ObjectMapper().readValue(mvcResult.response.contentAsString, responseType)
+        else -> ObjectMapper().findAndRegisterModules().readValue(mvcResult.response.contentAsString, responseType)
       }
     }
   }

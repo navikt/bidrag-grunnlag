@@ -1,8 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagkallResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
@@ -23,6 +22,7 @@ import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -63,7 +63,7 @@ class GrunnlagspakkeService(
 
   fun oppdaterGrunnlagspakke(grunnlagspakkeId: Int, oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): OppdaterGrunnlagspakkeResponse {
 
-    val grunnlagResponseListe = mutableListOf<GrunnlagResponse>()
+    val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
 
     // Validerer at grunnlagspakke eksisterer
     persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
@@ -90,7 +90,7 @@ class GrunnlagspakkeService(
     }
 
     // Oppdaterer grunnlag for A-inntekt
-    grunnlagResponseListe.add(
+    hentGrunnlagResponseListe.addAll(
       oppdaterAinntekt(
         grunnlagspakkeId,
         ainntektRequestListe
@@ -98,7 +98,7 @@ class GrunnlagspakkeService(
     )
 
     // Oppdaterer grunnlag for skattegrunnlag
-    grunnlagResponseListe.add(
+    hentGrunnlagResponseListe.addAll(
       oppdaterSkattegrunnlag(
         grunnlagspakkeId,
         skattegrunnlagRequestListe
@@ -106,14 +106,14 @@ class GrunnlagspakkeService(
     )
 
     // Oppdaterer grunnlag for utvidet barnetrygd og småbarnstillegg
-    grunnlagResponseListe.add(
+    hentGrunnlagResponseListe.addAll(
       oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         grunnlagspakkeId,
         ubstRequestListe
       )
     )
 
-    return OppdaterGrunnlagspakkeResponse(grunnlagspakkeId, grunnlagResponseListe)
+    return OppdaterGrunnlagspakkeResponse(grunnlagspakkeId, hentGrunnlagResponseListe)
   }
 
   private fun nyPersonIdOgPeriode(grunnlagRequest: GrunnlagRequest) =
@@ -127,9 +127,9 @@ class GrunnlagspakkeService(
   private fun oppdaterAinntekt(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagResponse {
+  ): List<HentGrunnlagResponse> {
 
-    val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
+    val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
     val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
 
     personIdOgPeriodeListe.forEach { personIdOgPeriode ->
@@ -167,9 +167,11 @@ class GrunnlagspakkeService(
           val nyeAinntekter = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
 
           if (hentInntektListeResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
-            hentGrunnlagkallResponseListe.add(
-              HentGrunnlagkallResponse(
+            hentGrunnlagResponseListe.add(
+              HentGrunnlagResponse(
+                Grunnlagstype.AINNTEKT,
                 personIdOgPeriode.personId,
+                GrunnlagsRequestStatus.HENTET,
                 "Ingen inntekter funnet"
               )
             )
@@ -213,35 +215,38 @@ class GrunnlagspakkeService(
               personIdOgPeriode.periodeTil,
               personIdOgPeriode.personId
             )
-            hentGrunnlagkallResponseListe.add(
-              HentGrunnlagkallResponse(
+            hentGrunnlagResponseListe.add(
+              HentGrunnlagResponse(
+                Grunnlagstype.AINNTEKT,
                 personIdOgPeriode.personId,
-                "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet"
+                GrunnlagsRequestStatus.HENTET,
+                "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet",
               )
             )
           }
         }
         is RestResponse.Failure -> {
-          hentGrunnlagkallResponseListe.add(
-            HentGrunnlagkallResponse(
+          hentGrunnlagResponseListe.add(
+            HentGrunnlagResponse(
+              Grunnlagstype.AINNTEKT,
               personIdOgPeriode.personId,
-              "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
-              restResponseInntekt.statusCode.value()
+              if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+              "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
             )
           )
         }
       }
     }
-    return GrunnlagResponse(Grunnlagstype.AINNTEKT.toString(), hentGrunnlagkallResponseListe)
+    return hentGrunnlagResponseListe
   }
 
 
   fun oppdaterSkattegrunnlag(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagResponse {
+  ): List<HentGrunnlagResponse> {
 
-    val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
+    val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
 
     personIdOgPeriodeListe.forEach { personIdOgPeriode ->
 
@@ -321,36 +326,36 @@ class GrunnlagspakkeService(
               periodeTil,
               personIdOgPeriode.personId
             )
-            hentGrunnlagkallResponseListe.add(
-              HentGrunnlagkallResponse(
+            hentGrunnlagResponseListe.add(
+              HentGrunnlagResponse(
+                Grunnlagstype.SKATTEGRUNNLAG,
                 personIdOgPeriode.personId,
+                GrunnlagsRequestStatus.HENTET,
                 "Antall skattegrunnlagsposter funnet for innteksåret ${inntektAar}: $antallSkattegrunnlagsposter"
               )
             )
           }
-          is RestResponse.Failure -> hentGrunnlagkallResponseListe.add(
-            HentGrunnlagkallResponse(
+          is RestResponse.Failure -> hentGrunnlagResponseListe.add(
+            HentGrunnlagResponse(
+              Grunnlagstype.SKATTEGRUNNLAG,
               personIdOgPeriode.personId,
-              "Feil ved henting av skattegrunnlag for inntektsåret ${inntektAar}.",
-              restResponseSkattegrunnlag.statusCode.value()
+              if (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+              "Feil ved henting av skattegrunnlag for inntektsåret ${inntektAar}."
             )
           )
         }
         inntektAar++
       }
     }
-    return GrunnlagResponse(
-      Grunnlagstype.SKATTEGRUNNLAG.toString(),
-      hentGrunnlagkallResponseListe
-    )
+    return hentGrunnlagResponseListe
   }
 
 
   fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
     grunnlagspakkeId: Int, personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>
-  ): GrunnlagResponse {
+  ): List<HentGrunnlagResponse> {
 
-    val hentGrunnlagkallResponseListe = mutableListOf<HentGrunnlagkallResponse>()
+    val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
 
     personIdOgPeriodeListe.forEach { personIdOgPeriode ->
 
@@ -397,26 +402,26 @@ class GrunnlagspakkeService(
                 )
               )
             }
-          hentGrunnlagkallResponseListe.add(
-            HentGrunnlagkallResponse(
+          hentGrunnlagResponseListe.add(
+            HentGrunnlagResponse(
+              Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
               personIdOgPeriode.personId,
+              GrunnlagsRequestStatus.HENTET,
               "Antall inntekter funnet: $antallPerioderFunnet"
             )
           )
         }
-        is RestResponse.Failure -> hentGrunnlagkallResponseListe.add(
-          HentGrunnlagkallResponse(
+        is RestResponse.Failure -> hentGrunnlagResponseListe.add(
+          HentGrunnlagResponse(
+            Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
             personIdOgPeriode.personId,
-            "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
-            restResponseFamilieBaSak.statusCode.value()
+            if (restResponseFamilieBaSak.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+            "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
           )
         )
       }
     }
-    return GrunnlagResponse(
-      Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG.toString(),
-      hentGrunnlagkallResponseListe
-    )
+    return hentGrunnlagResponseListe
   }
 
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
@@ -456,6 +461,12 @@ enum class Grunnlagstype {
 enum class SkattegrunnlagType {
   ORDINAER,
   SVALBARD
+}
+
+enum class GrunnlagsRequestStatus {
+  HENTET,
+  IKKE_FUNNET,
+  FEILET,
 }
 
 data class PersonIdOgPeriodeRequest(

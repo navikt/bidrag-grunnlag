@@ -21,6 +21,7 @@ import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.Formaal
+import no.nav.bidrag.grunnlag.service.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -108,9 +109,7 @@ class GrunnlagspakkeControllerTest(
     assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(3)
 
     oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
-      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach { hentGrunnlagkallResponse ->
-        assertEquals(hentGrunnlagkallResponse.statuskode, HttpStatus.OK.value())
-      }
+      assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
     }
   }
 
@@ -142,9 +141,7 @@ class GrunnlagspakkeControllerTest(
     assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(3)
 
     oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
-      grunnlagstypeResponse.hentGrunnlagkallResponseListe.forEach { hentGrunnlagkallResponse ->
-        assertEquals(hentGrunnlagkallResponse.statuskode, HttpStatus.NOT_FOUND.value())
-      }
+        assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)
     }
   }
 
@@ -303,7 +300,8 @@ class GrunnlagspakkeControllerTest(
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
     Mockito.`when`(
-      grunnlagspakkeService.oppdaterGrunnlagspakke(1,
+      grunnlagspakkeService.oppdaterGrunnlagspakke(
+        1,
         OppdaterGrunnlagspakkeRequest(
           gyldigTil = LocalDate.parse("2022-01-01"),
           grunnlagRequestListe = listOf(
@@ -311,10 +309,12 @@ class GrunnlagspakkeControllerTest(
               grunnlagstype = Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
               personId = "12345678901",
               periodeFra = LocalDate.parse("2021-11-01"),
-              periodeTil = LocalDate.parse("2021-11-15")))
+              periodeTil = LocalDate.parse("2021-11-15")
             )
           )
         )
+      )
+    )
       .thenReturn(OppdaterGrunnlagspakkeResponse())
 
     val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")
