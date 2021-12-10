@@ -8,6 +8,6 @@ data class OppdaterGrunnlagspakkeResponse(
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
-  @Schema(description = "Liste over hvilke typer grunnlag som skal hentes inn. På nivået under er personId og status angitt")
-  val grunnlagtypeResponsListe: List<GrunnlagResponse> = emptyList()
+  @Schema(description = "Liste over grunnlagene som er hentet inn med person-id og status")
+  val grunnlagtypeResponsListe: List<HentGrunnlagResponse> = emptyList()
 )
