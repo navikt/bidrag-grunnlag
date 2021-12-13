@@ -57,7 +57,6 @@ spec:
     sqlInstances:
       - name: {{ dbname }}
         type: POSTGRES_12
-        cascadingDelete: true
         databases:
           - name: {{ dbname }}
             envVarPrefix: DB
