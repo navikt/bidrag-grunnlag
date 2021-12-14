@@ -193,9 +193,9 @@ class GrunnlagspakkeService(
                   AinntektspostDto(
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
                     opptjeningsperiodeFra =
-                    if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom + "-01") else null,
+                    if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom) else null,
                     opptjeningsperiodeTil =
-                    if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom + "-01")
+                    if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom)
                       .plusMonths(1) else null,
                     opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
                     virksomhetId = inntektspost.virksomhet?.identifikator,
