@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.comparator.IPeriod
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
+import org.mockito.kotlin.description
 
 import java.math.BigDecimal
 import java.time.LocalDate
+import javax.persistence.Column
 import kotlin.reflect.full.memberProperties
 
 data class AinntektspostDto(
@@ -42,7 +44,13 @@ data class AinntektspostDto(
   val beskrivelse: String? = "",
 
   @Schema(description = "Belop")
-  val belop: BigDecimal = BigDecimal.ZERO
+  val belop: BigDecimal = BigDecimal.ZERO,
+
+  @Schema(description = "Fra-dato etterbetaling")
+  val etterbetalingsperiodeFra: LocalDate?,
+
+  @Schema(description = "Til-dato etterbetaling")
+  val etterbetalingsperiodeTil: LocalDate?
 )
 
 fun AinntektspostDto.toAinntektspostEntity() = with(::Ainntektspost) {
