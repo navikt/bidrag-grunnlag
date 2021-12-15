@@ -107,7 +107,9 @@ class GrunnlagspakkeServiceTest {
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
-        belop = BigDecimal.valueOf(17000.01)
+        belop = BigDecimal.valueOf(17000.01),
+        etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1),
+        etterbetalingsperiodeTom = LocalDate.of(2021, 11, 1)
       )
     )
     persistenceService.opprettAinntektspost(
@@ -121,7 +123,9 @@ class GrunnlagspakkeServiceTest {
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/ferieLoenn",
-        belop = BigDecimal.valueOf(50000.01)
+        belop = BigDecimal.valueOf(50000.01),
+        etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1),
+        etterbetalingsperiodeTom = LocalDate.of(2021, 11, 1)
       )
     )
 
@@ -150,7 +154,9 @@ class GrunnlagspakkeServiceTest {
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
-        belop = BigDecimal.valueOf(50000.01)
+        belop = BigDecimal.valueOf(50000.01),
+        etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1),
+        etterbetalingsperiodeTom = LocalDate.of(2021, 11, 1)
       )
     )
 
@@ -179,7 +185,9 @@ class GrunnlagspakkeServiceTest {
         inntektType = "Loenn",
         fordelType = "Kontantytelse",
         beskrivelse = "Loenn/fastloenn",
-        belop = BigDecimal.valueOf(666000.01)
+        belop = BigDecimal.valueOf(666000.01),
+        etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1),
+        etterbetalingsperiodeTom = LocalDate.of(2021, 11, 1)
       )
     )
 
