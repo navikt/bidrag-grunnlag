@@ -503,7 +503,6 @@ class GrunnlagspakkeService(
                 ),
               )
             ) else null,
-
           inntektsmottaker = InntektsmottakerIntern(
             inntekt.inntektsmottaker.identifikator,
             inntekt.inntektsmottaker.aktoerType.toString()
