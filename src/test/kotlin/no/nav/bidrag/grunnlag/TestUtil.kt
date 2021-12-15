@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjon
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektMaaned
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjonIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektMaanedIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektListe
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
@@ -25,6 +25,17 @@ import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.service.Formaal
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import no.nav.bidrag.grunnlag.service.SkattegrunnlagType
+import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
+import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
+import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
+import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
+import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsforholdFrilanser
+import no.nav.tjenester.aordningen.inntektsinformasjon.Avvik
+import no.nav.tjenester.aordningen.inntektsinformasjon.Forskuddstrekk
+import no.nav.tjenester.aordningen.inntektsinformasjon.Fradrag
+import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.Inntekt
+import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
+import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -166,39 +177,56 @@ class TestUtil {
       formaal = "Bidrag"
     )
 
-    fun byggHentInntektListeResponse() = HentInntektListeResponse(byggArbeidsInntektMaanedListe())
-
-    private fun byggArbeidsInntektMaanedListe() = immutableListOf(
-      ArbeidsInntektMaaned(
-        aarMaaned = "2021-01",
-        ArbeidsInntektInformasjon(byggInntektListe())
-      )
+    fun byggHentInntektListeResponse() = HentInntektListeResponse(
+      byggArbeidsInntektMaanedListe(), Aktoer("", AktoerType.NATURLIG_IDENT)
     )
 
-    private fun byggInntektListe(): List<InntektListe> {
+    private fun byggArbeidsInntektMaanedListe(): List<ArbeidsInntektMaaned> {
+      val arbeidsforholdListe = mutableListOf<ArbeidsforholdFrilanser>()
+      val forskuddstrekkListe = mutableListOf<Forskuddstrekk>()
+      val fradragListe = mutableListOf<Fradrag>()
+      val avviksliste = mutableListOf<Avvik>()
+      val arbeidsinntektliste = mutableListOf<ArbeidsInntektMaaned>()
+      arbeidsinntektliste.add(ArbeidsInntektMaaned(
+        YearMonth.parse("2021-01"),
+        avviksliste,
+        ArbeidsInntektInformasjon(
+          arbeidsforholdListe,
+          byggInntektListe(),
+          forskuddstrekkListe,
+          fradragListe
+          )
+      )
+      )
+      return arbeidsinntektliste
+    }
+
+    private fun byggInntektListe(): List<Inntekt> {
       return immutableListOf(
-        InntektListe(
-          inntektType = "LOENNSINNTEKT",
-          beloep = 10000,
-          fordel = null,
-          inntektskilde = null,
-          inntektsperiodetype = null,
-          inntektsstatus = null,
-          leveringstidspunkt = null,
-          opptjeningsland = null,
-          opptjeningsperiodeFom = null,
-          opptjeningsperiodeTom = null,
-          utbetaltIMaaned = null,
-          opplysningspliktig = null,
-          virksomhet = null,
-          tilleggsinformasjon = null,
-          inntektsmottaker = null,
-          inngaarIGrunnlagForTrekk = false,
-          utloeserArbeidsgiveravgift = false,
-          informasjonsstatus = null,
-          beskrivelse = null,
-          skatteOgAvgiftsregel = null,
-          antall = null
+        Inntekt(
+          InntektType.LOENNSINNTEKT,
+          "",
+          BigDecimal.valueOf(10000),
+          null,
+          null,
+          null,
+          null,
+          YearMonth.parse("2021-10"),
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          false,
+          false,
+          null,
+          null,
+          null,
+          null
         )
       )
     }

@@ -2,12 +2,14 @@ package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
+import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
+import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
+import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -31,7 +33,7 @@ open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTempla
       HttpMethod.POST,
       initHttpEntity(request),
       HentInntektListeResponse::class.java,
-      HentInntektListeResponse(emptyList())
+      HentInntektListeResponse(emptyList(), Aktoer(request.ident, AktoerType.NATURLIG_IDENT))
     )
 
     logResponse(logger, restResponse)

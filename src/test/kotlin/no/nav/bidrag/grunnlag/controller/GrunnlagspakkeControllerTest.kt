@@ -12,7 +12,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -26,6 +26,9 @@ import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
+import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
+import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.hibernate.HibernateException
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -87,7 +90,7 @@ class GrunnlagspakkeControllerTest(
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
 
     Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenReturn(
-      ResponseEntity(HentInntektListeResponse(emptyList()), HttpStatus.OK)
+      ResponseEntity(HentInntektListeResponse(emptyList(), Aktoer("", AktoerType.NATURLIG_IDENT)), HttpStatus.OK)
     )
 
     Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>()))
@@ -118,7 +121,7 @@ class GrunnlagspakkeControllerTest(
 
     val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
 
-    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenThrow(
+    Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponseIntern>>())).thenThrow(
       HttpClientErrorException(HttpStatus.NOT_FOUND)
     )
 

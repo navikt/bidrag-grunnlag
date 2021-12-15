@@ -1,21 +1,24 @@
 package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt
 
-data class InntektListe(
+import java.math.BigDecimal
+import java.time.LocalDate
+
+data class InntektIntern(
   val inntektType: String,
-  val beloep: Int,
+  val beloep: BigDecimal,
   val fordel: String?,
   val inntektskilde: String?,
   val inntektsperiodetype: String?,
   val inntektsstatus: String?,
   val leveringstidspunkt: String?,
   val opptjeningsland: String?,
-  val opptjeningsperiodeFom: String?,
-  val opptjeningsperiodeTom: String?,
+  val opptjeningsperiodeFom: LocalDate?,
+  val opptjeningsperiodeTom: LocalDate?,
   val utbetaltIMaaned: String?,
-  val opplysningspliktig: Opplysningspliktig?,
-  val virksomhet: Virksomhet?,
-  val tilleggsinformasjon: Tilleggsinformasjon?,
-  val inntektsmottaker: Inntektsmottaker?,
+  val opplysningspliktig: OpplysningspliktigIntern?,
+  val virksomhet: VirksomhetIntern?,
+  val tilleggsinformasjon: TilleggsinformasjonIntern?,
+  val inntektsmottaker: InntektsmottakerIntern?,
   val inngaarIGrunnlagForTrekk: Boolean,
   val utloeserArbeidsgiveravgift: Boolean,
   val informasjonsstatus: String?,
