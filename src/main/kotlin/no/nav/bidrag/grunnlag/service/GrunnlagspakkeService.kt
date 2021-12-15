@@ -14,7 +14,6 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntek
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektIntern
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektsmottakerIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.OpplysningspliktigIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.TilleggsinformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.TilleggsinformasjonDetaljerIntern
@@ -477,11 +476,7 @@ class GrunnlagspakkeService(
           inntektType = inntekt.inntektType.toString(),
           beloep = inntekt.beloep,
           fordel = inntekt.fordel,
-          inntektskilde = inntekt.inntektskilde,
           inntektsperiodetype = inntekt.inntektsperiodetype,
-          inntektsstatus = inntekt.inntektsstatus,
-          leveringstidspunkt = inntekt.leveringstidspunkt.toString(),
-          opptjeningsland = inntekt.opptjeningsland,
           opptjeningsperiodeFom = inntekt.opptjeningsperiodeFom,
           opptjeningsperiodeTom = inntekt.opptjeningsperiodeTom,
           utbetaltIMaaned = inntekt.utbetaltIMaaned.toString(),
@@ -503,16 +498,7 @@ class GrunnlagspakkeService(
                 ),
               )
             ) else null,
-          inntektsmottaker = InntektsmottakerIntern(
-            inntekt.inntektsmottaker.identifikator,
-            inntekt.inntektsmottaker.aktoerType.toString()
-          ),
-          inngaarIGrunnlagForTrekk = inntekt.inngaarIGrunnlagForTrekk,
-          utloeserArbeidsgiveravgift = inntekt.utloeserArbeidsgiveravgift,
-          informasjonsstatus = inntekt.informasjonsstatus,
-          beskrivelse = inntekt.beskrivelse,
-          skatteOgAvgiftsregel = inntekt.skatteOgAvgiftsregel,
-          antall = inntekt.antall
+          beskrivelse = inntekt.beskrivelse
         )
         inntektInternListe.add(inntektIntern)
       }
