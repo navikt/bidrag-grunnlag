@@ -48,11 +48,11 @@ data class Ainntektspost(
   @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO,
 
-  @Column(nullable = true, name = "etterbetalingsperiodeFom")
-  val etterbetalingsperiodeFom: LocalDate?,
+  @Column(nullable = true, name = "etterbetalingsperiodeFra")
+  val etterbetalingsperiodeFra: LocalDate?,
 
-  @Column(nullable = true, name = "etterbetalingsperiodeTom")
-  val etterbetalingsperiodeTom: LocalDate?
+  @Column(nullable = true, name = "etterbetalingsperiodeTil")
+  val etterbetalingsperiodeTil: LocalDate?
 )
 
 fun Ainntektspost.toAinntektspostDto() = with(::AinntektspostDto) {

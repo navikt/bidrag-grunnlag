@@ -1,3 +1,3 @@
 ALTER TABLE ainntektspost
-ADD COLUMN etterbetalingsperiodeFom date
-ADD COLUMN etterbetalingsperiodeTom date
+ADD COLUMN etterbetalingsperiodeFra date
+ADD COLUMN etterbetalingsperiodeTil date

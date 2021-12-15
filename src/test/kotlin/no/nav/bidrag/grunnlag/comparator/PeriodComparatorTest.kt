@@ -2,8 +2,6 @@ package no.nav.bidrag.grunnlag.comparator
 
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -236,8 +234,8 @@ class PeriodComparatorTest {
       opptjeningsperiodeTil = opptjeningsperiodeTil,
       virksomhetId = virksomhetId,
       utbetalingsperiode = utbetalingsperiode,
-      etterbetalingsperiodeFom = etterbetalingsperiodeFom,
-      etterbetalingsperiodeTom = etterbetalingsperiodeTom
+      etterbetalingsperiodeFra = etterbetalingsperiodeFom,
+      etterbetalingsperiodeTil = etterbetalingsperiodeTom
     )
   }
 }

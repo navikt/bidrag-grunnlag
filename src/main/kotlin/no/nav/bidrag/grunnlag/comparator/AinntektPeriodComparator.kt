@@ -25,8 +25,8 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<Ainnt
       differences.putAll(compareFields(newAinntektsposter[i].opptjeningsperiodeTil, existingAinntektsposter[i].opptjeningsperiodeTil,"opptjeningsperiodeTil"))
       differences.putAll(compareFields(newAinntektsposter[i].utbetalingsperiode, existingAinntektsposter[i].utbetalingsperiode,"utbetalingsperiode"))
       differences.putAll(compareFields(newAinntektsposter[i].virksomhetId, existingAinntektsposter[i].virksomhetId,"virksomhetId"))
-      differences.putAll(compareFields(newAinntektsposter[i].etterbetalingsperiodeFom, existingAinntektsposter[i].etterbetalingsperiodeFom, "etterbetalingsperiodeFom"))
-      differences.putAll(compareFields(newAinntektsposter[i].etterbetalingsperiodeTom, existingAinntektsposter[i].etterbetalingsperiodeTom, "etterbetalingsperiodeTom"))
+      differences.putAll(compareFields(newAinntektsposter[i].etterbetalingsperiodeFra, existingAinntektsposter[i].etterbetalingsperiodeFra, "etterbetalingsperiodeFom"))
+      differences.putAll(compareFields(newAinntektsposter[i].etterbetalingsperiodeTil, existingAinntektsposter[i].etterbetalingsperiodeTil, "etterbetalingsperiodeTom"))
     }
     if (differences.isNotEmpty()) {
       LOGGER.debug(toJsonString(differences))

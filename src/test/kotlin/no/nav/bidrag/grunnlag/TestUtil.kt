@@ -101,8 +101,8 @@ class TestUtil {
       fordelType = "Kontantytelse",
       beskrivelse = "Loenn/ferieLoenn",
       belop = BigDecimal.valueOf(50000),
-      etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1),
-      etterbetalingsperiodeTom = LocalDate.of(2021, 11, 1)
+      etterbetalingsperiodeFra = LocalDate.of(2021, 10, 1),
+      etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1)
     )
 
     fun byggSkattegrunnlagSkattDto() = SkattegrunnlagDto(

@@ -47,10 +47,10 @@ data class AinntektspostDto(
   val belop: BigDecimal = BigDecimal.ZERO,
 
   @Schema(description = "Fra-dato etterbetaling")
-  val etterbetalingsperiodeFom: LocalDate?,
+  val etterbetalingsperiodeFra: LocalDate?,
 
   @Schema(description = "Til-dato etterbetaling")
-  val etterbetalingsperiodeTom: LocalDate?
+  val etterbetalingsperiodeTil: LocalDate?
 )
 
 fun AinntektspostDto.toAinntektspostEntity() = with(::Ainntektspost) {

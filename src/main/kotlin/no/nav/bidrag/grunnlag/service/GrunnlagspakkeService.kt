@@ -203,8 +203,8 @@ class GrunnlagspakkeService(
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
                     belop = inntektspost.beloep.toBigDecimal(),
-                    etterbetalingsperiodeFom = null, // TODO: Byttes ut med data fra inntektspost
-                    etterbetalingsperiodeTom = null // TODO: Byttes ut med data fra inntektspost
+                    etterbetalingsperiodeFra = null, // TODO: Byttes ut med data fra inntektspost
+                    etterbetalingsperiodeTil = null // TODO: Byttes ut med data fra inntektspost
                   )
                 )
               }
