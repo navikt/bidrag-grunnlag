@@ -48,10 +48,10 @@ data class Ainntektspost(
   @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO,
 
-  @Column(nullable = true, name = "etterbetalingsperiodeFra")
+  @Column(nullable = true, name = "etterbetalingsperiode_fra")
   val etterbetalingsperiodeFra: LocalDate?,
 
-  @Column(nullable = true, name = "etterbetalingsperiodeTil")
+  @Column(nullable = true, name = "etterbetalingsperiode_til")
   val etterbetalingsperiodeTil: LocalDate?
 )
 
