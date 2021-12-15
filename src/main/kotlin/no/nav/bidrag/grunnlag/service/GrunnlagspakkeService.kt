@@ -215,7 +215,10 @@ class GrunnlagspakkeService(
                     inntektType = inntektspost.inntektType,
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
-                    belop = inntektspost.beloep
+                    belop = inntektspost.beloep,
+                    etterbetalingsperiodeFra = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
+                    etterbetalingsperiodeTil = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom
+
                   )
                 )
               }

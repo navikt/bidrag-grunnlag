@@ -2,8 +2,6 @@ package no.nav.bidrag.grunnlag.comparator
 
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -130,6 +128,16 @@ class PeriodComparatorTest {
       createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(utbetalingsperiode = "Utb2")))
 
     assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
+
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1))))
+
+    assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
+
+    newEntities =
+      createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektpost(etterbetalingsperiodeTom = LocalDate.of(2021, 10, 1))))
+
+    assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
   }
 
   @Test
@@ -212,7 +220,9 @@ class PeriodComparatorTest {
     opptjeningsperiodeFra: LocalDate = LocalDate.of(2021, 8, 1),
     opptjeningsperiodeTil: LocalDate = LocalDate.of(2021, 9, 1),
     virksomhetId: String = "Virk1",
-    utbetalingsperiode: String = "Utb1"
+    utbetalingsperiode: String = "Utb1",
+    etterbetalingsperiodeFom: LocalDate? = null,
+    etterbetalingsperiodeTom: LocalDate? = null
   ): AinntektspostDto {
     return AinntektspostDto(
       belop = belop,
@@ -223,7 +233,9 @@ class PeriodComparatorTest {
       opptjeningsperiodeFra = opptjeningsperiodeFra,
       opptjeningsperiodeTil = opptjeningsperiodeTil,
       virksomhetId = virksomhetId,
-      utbetalingsperiode = utbetalingsperiode
+      utbetalingsperiode = utbetalingsperiode,
+      etterbetalingsperiodeFra = etterbetalingsperiodeFom,
+      etterbetalingsperiodeTil = etterbetalingsperiodeTom
     )
   }
 }
