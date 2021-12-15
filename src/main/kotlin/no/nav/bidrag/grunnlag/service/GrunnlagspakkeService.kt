@@ -74,7 +74,10 @@ class GrunnlagspakkeService(
 
   }
 
-  fun oppdaterGrunnlagspakke(grunnlagspakkeId: Int, oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest): OppdaterGrunnlagspakkeResponse {
+  fun oppdaterGrunnlagspakke(
+    grunnlagspakkeId: Int,
+    oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest
+  ): OppdaterGrunnlagspakkeResponse {
 
     val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
 
@@ -272,7 +275,8 @@ class GrunnlagspakkeService(
       val periodeFra = LocalDate.of(inntektAar, 1, 1)
       val periodeTil = LocalDate.of(sluttAar, 1, 1)
 
-      val nyeSkattegrunnlag = mutableListOf<PeriodComparable<SkattegrunnlagDto, SkattegrunnlagspostDto>>()
+      val nyeSkattegrunnlag =
+        mutableListOf<PeriodComparable<SkattegrunnlagDto, SkattegrunnlagspostDto>>()
 
       while (inntektAar < sluttAar) {
         val skattegrunnlagRequest = HentSkattegrunnlagRequest(
@@ -399,7 +403,9 @@ class GrunnlagspakkeService(
 
           if (familieBaSakResponse.perioder.isNotEmpty())
             familieBaSakResponse.perioder.forEach { ubst ->
-              if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil))
+              if (LocalDate.parse(ubst.fomMåned.toString() + "-01")
+                  .isBefore(personIdOgPeriode.periodeTil)
+              )
                 antallPerioderFunnet++
               persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
                 UtvidetBarnetrygdOgSmaabarnstilleggDto(
@@ -492,7 +498,9 @@ class GrunnlagspakkeService(
               inntekt.tilleggsinformasjon.kategori,
               TilleggsinformasjonDetaljerIntern(
                 (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
-                (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(1),
+                (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
+                  1
+                ),
               )
             ) else null,
 
@@ -509,7 +517,12 @@ class GrunnlagspakkeService(
         )
         inntektInternListe.add(inntektIntern)
       }
-      arbeidsInntektMaanedListe.add(ArbeidsInntektMaanedIntern(arbeidsInntektMaaned.aarMaaned.toString(), ArbeidsInntektInformasjonIntern(inntektInternListe)))
+      arbeidsInntektMaanedListe.add(
+        ArbeidsInntektMaanedIntern(
+          arbeidsInntektMaaned.aarMaaned.toString(),
+          ArbeidsInntektInformasjonIntern(inntektInternListe)
+        )
+      )
     }
     return HentInntektListeResponseIntern(arbeidsInntektMaanedListe)
   }
