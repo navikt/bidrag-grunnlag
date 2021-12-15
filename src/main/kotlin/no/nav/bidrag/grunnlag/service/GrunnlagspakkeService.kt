@@ -479,7 +479,7 @@ class GrunnlagspakkeService(
           inntektsperiodetype = inntekt.inntektsperiodetype,
           opptjeningsperiodeFom = inntekt.opptjeningsperiodeFom,
           opptjeningsperiodeTom = inntekt.opptjeningsperiodeTom,
-          utbetaltIMaaned = inntekt.utbetaltIMaaned.toString(),
+          utbetaltIMaaned = inntekt.utbetaltIMaaned?.toString(),
           opplysningspliktig = OpplysningspliktigIntern(
             inntekt.opplysningspliktig.identifikator,
             inntekt.opplysningspliktig.aktoerType.toString()
@@ -488,12 +488,12 @@ class GrunnlagspakkeService(
             inntekt.virksomhet.identifikator,
             inntekt.virksomhet.aktoerType.toString()
           ),
-          tilleggsinformasjon = if (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE)
+          tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE)
             TilleggsinformasjonIntern(
               inntekt.tilleggsinformasjon.kategori,
               TilleggsinformasjonDetaljerIntern(
-                (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
-                (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
+                (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
+                (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
                   1
                 ),
               )
