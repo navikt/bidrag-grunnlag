@@ -31,5 +31,11 @@ data class HentAinntektspostResponse (
   val beskrivelse: String? = "",
 
   @Schema(description = "Belop")
-  val belop: BigDecimal = BigDecimal.ZERO
+  val belop: BigDecimal = BigDecimal.ZERO,
+
+  @Schema(description = "Fra-dato etterbetaling")
+  val etterbetalingsperiodeFra: LocalDate?,
+
+  @Schema(description = "Til-dato etterbetaling")
+  val etterbetalingsperiodeTil: LocalDate?
 )

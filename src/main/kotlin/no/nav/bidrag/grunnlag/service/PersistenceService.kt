@@ -218,7 +218,9 @@ class PersistenceService(
                 inntektspost.inntektType,
                 inntektspost.fordelType,
                 inntektspost.beskrivelse,
-                inntektspost.belop
+                inntektspost.belop,
+                inntektspost.etterbetalingsperiodeFra,
+                inntektspost.etterbetalingsperiodeTil
               )
             )
           }
