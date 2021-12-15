@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt
 
-data class Opplysningspliktig(
+data class InntektsmottakerIntern(
   val identifikator: String,
   val aktoerType: String
 )

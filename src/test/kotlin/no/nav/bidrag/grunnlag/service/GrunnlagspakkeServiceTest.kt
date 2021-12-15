@@ -9,6 +9,10 @@ import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
+import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
+import no.nav.tjenester.aordningen.inntektsinformasjon.Avvik
+import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.BeforeEach
@@ -22,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 @DisplayName("GrunnlagspakkeServiceTest")
 @ActiveProfiles(BidragGrunnlagTest.TEST_PROFILE)
@@ -290,4 +295,5 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) }
     )
   }
+
 }

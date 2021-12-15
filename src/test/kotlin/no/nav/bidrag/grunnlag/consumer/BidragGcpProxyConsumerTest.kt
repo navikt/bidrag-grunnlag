@@ -3,9 +3,11 @@ package no.nav.bidrag.grunnlag.consumer
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
+import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertAll
@@ -26,7 +28,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
+import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 
 @ExtendWith(MockitoExtension::class)
 @DisplayName("BidragGrunnlagConsumerTest")
@@ -58,16 +62,16 @@ internal class BidragGcpProxyConsumerTest {
         assertAll(
           Executable { assertThat(hentInntektListeResponse).isNotNull },
           Executable { assertThat(hentInntektListeResponse.arbeidsInntektMaaned!!.size).isEqualTo(1) },
-          Executable { assertThat(hentInntektListeResponse.arbeidsInntektMaaned!![0].aarMaaned).isEqualTo("2021-01") },
+          Executable { assertThat(hentInntektListeResponse.arbeidsInntektMaaned!![0].aarMaaned).isEqualTo(YearMonth.parse("2021-01")) },
           Executable { assertThat(hentInntektListeResponse.arbeidsInntektMaaned!![0].arbeidsInntektInformasjon).isNotNull },
           Executable { assertThat(hentInntektListeResponse.arbeidsInntektMaaned!![0].arbeidsInntektInformasjon.inntektListe).isNotNull },
           Executable {
             assertThat(hentInntektListeResponse.arbeidsInntektMaaned!![0].arbeidsInntektInformasjon.inntektListe!![0].inntektType)
-              .isEqualTo("LOENNSINNTEKT")
+              .isEqualTo(InntektType.LOENNSINNTEKT)
           },
           Executable {
             assertThat(hentInntektListeResponse.arbeidsInntektMaaned!![0].arbeidsInntektInformasjon.inntektListe!![0].beloep)
-              .isEqualTo(10000)
+              .isEqualTo(BigDecimal.valueOf(10000))
           }
         )
       }
@@ -86,7 +90,7 @@ internal class BidragGcpProxyConsumerTest {
         eq(BIDRAGGCPPROXY_INNTEKT_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<HentInntektListeResponse>>()
+        any<Class<HentInntektListeResponseIntern>>()
       )
     )
       .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))

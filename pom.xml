@@ -33,6 +33,7 @@
     <nimbus-jose-jwt.version>9.15.2</nimbus-jose-jwt.version>
     <springframework-cloud.version>3.0.4</springframework-cloud.version>
     <com.squareup.okhttp3.version>4.9.2</com.squareup.okhttp3.version>
+    <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
 <!--    <com.fasterxml.jackson.datatype.version>2.13.0</com.fasterxml.jackson.datatype.version>-->
 
   </properties>
@@ -110,6 +111,11 @@
       <groupId>no.nav.security</groupId>
       <artifactId>token-client-spring</artifactId>
       <version>${token-support.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>no.nav.tjenester</groupId>
+      <artifactId>aordningen-inntektsinformasjon-v1</artifactId>
+      <version>${aordningen-inntektsinformasjon-v1.version}</version>
     </dependency>
 
     <!-- Database -->

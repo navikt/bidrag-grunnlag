@@ -9,7 +9,16 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjonIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektMaanedIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektsmottakerIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.OpplysningspliktigIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.TilleggsinformasjonIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.TilleggsinformasjonDetaljerIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.VirksomhetIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -21,6 +30,9 @@ import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
+import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
+import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.TilleggsinformasjonDetaljerType
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -28,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+
 
 @Service
 @Transactional
@@ -160,13 +173,13 @@ class GrunnlagspakkeService(
 
       when (val restResponseInntekt = bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest)) {
         is RestResponse.Success -> {
-          val hentInntektListeResponse = restResponseInntekt.body
+          val hentInntektListeResponse = mapResponsTilInternStruktur(restResponseInntekt.body)
           LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
           val nyeAinntekter = mutableListOf<PeriodComparable<AinntektDto, AinntektspostDto>>()
 
-          if (hentInntektListeResponse.arbeidsInntektMaaned.isNullOrEmpty()) {
+          if (hentInntektListeResponse.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
             hentGrunnlagResponseListe.add(
               HentGrunnlagResponse(
                 Grunnlagstype.AINNTEKT,
@@ -176,7 +189,7 @@ class GrunnlagspakkeService(
               )
             )
           } else {
-            hentInntektListeResponse.arbeidsInntektMaaned.forEach { inntektPeriode ->
+            hentInntektListeResponse.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
               antallPerioderFunnet++
               val inntekt = AinntektDto(
                 grunnlagspakkeId = grunnlagspakkeId,
@@ -188,21 +201,21 @@ class GrunnlagspakkeService(
               )
 
               val inntektsposter = mutableListOf<AinntektspostDto>()
-              inntektPeriode.arbeidsInntektInformasjon.inntektListe?.forEach { inntektspost ->
+              inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern?.forEach { inntektspost ->
                 inntektsposter.add(
                   AinntektspostDto(
                     utbetalingsperiode = inntektspost.utbetaltIMaaned,
                     opptjeningsperiodeFra =
-                    if (inntektspost.opptjeningsperiodeFom != null) LocalDate.parse(inntektspost.opptjeningsperiodeFom) else null,
+                    if (inntektspost.opptjeningsperiodeFom != null) inntektspost.opptjeningsperiodeFom else null,
                     opptjeningsperiodeTil =
-                    if (inntektspost.opptjeningsperiodeTom != null) LocalDate.parse(inntektspost.opptjeningsperiodeTom)
+                    if (inntektspost.opptjeningsperiodeTom != null) inntektspost.opptjeningsperiodeTom
                       .plusMonths(1) else null,
                     opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
                     virksomhetId = inntektspost.virksomhet?.identifikator,
                     inntektType = inntektspost.inntektType,
                     fordelType = inntektspost.fordel,
                     beskrivelse = inntektspost.beskrivelse,
-                    belop = inntektspost.beloep.toBigDecimal()
+                    belop = inntektspost.beloep
                   )
                 )
               }
@@ -442,6 +455,60 @@ class GrunnlagspakkeService(
 
   fun finnFormaal(formaal: String): String {
     return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
+  }
+
+  fun mapResponsTilInternStruktur(eksternRespons: HentInntektListeResponse): HentInntektListeResponseIntern {
+
+    val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
+
+    eksternRespons.arbeidsInntektMaaned.forEach() { arbeidsInntektMaaned ->
+      val inntektInternListe = mutableListOf<InntektIntern>()
+      arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe.forEach() { inntekt ->
+        val inntektIntern = InntektIntern(
+          inntektType = inntekt.inntektType.toString(),
+          beloep = inntekt.beloep,
+          fordel = inntekt.fordel,
+          inntektskilde = inntekt.inntektskilde,
+          inntektsperiodetype = inntekt.inntektsperiodetype,
+          inntektsstatus = inntekt.inntektsstatus,
+          leveringstidspunkt = inntekt.leveringstidspunkt.toString(),
+          opptjeningsland = inntekt.opptjeningsland,
+          opptjeningsperiodeFom = inntekt.opptjeningsperiodeFom,
+          opptjeningsperiodeTom = inntekt.opptjeningsperiodeTom,
+          utbetaltIMaaned = inntekt.utbetaltIMaaned.toString(),
+          opplysningspliktig = OpplysningspliktigIntern(
+            inntekt.opplysningspliktig.identifikator,
+            inntekt.opplysningspliktig.aktoerType.toString()
+          ),
+          virksomhet = VirksomhetIntern(
+            inntekt.virksomhet.identifikator,
+            inntekt.virksomhet.aktoerType.toString()
+          ),
+          tilleggsinformasjon = if (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE)
+            TilleggsinformasjonIntern(
+              inntekt.tilleggsinformasjon.kategori,
+              TilleggsinformasjonDetaljerIntern(
+                (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
+                (inntekt.tilleggsinformasjon.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(1),
+              )
+            ) else null,
+
+          inntektsmottaker = InntektsmottakerIntern(
+            inntekt.inntektsmottaker.identifikator,
+            inntekt.inntektsmottaker.aktoerType.toString()
+          ),
+          inngaarIGrunnlagForTrekk = inntekt.inngaarIGrunnlagForTrekk,
+          utloeserArbeidsgiveravgift = inntekt.utloeserArbeidsgiveravgift,
+          informasjonsstatus = inntekt.informasjonsstatus,
+          beskrivelse = inntekt.beskrivelse,
+          skatteOgAvgiftsregel = inntekt.skatteOgAvgiftsregel,
+          antall = inntekt.antall
+        )
+        inntektInternListe.add(inntektIntern)
+      }
+      arbeidsInntektMaanedListe.add(ArbeidsInntektMaanedIntern(arbeidsInntektMaaned.aarMaaned.toString(), ArbeidsInntektInformasjonIntern(inntektInternListe)))
+    }
+    return HentInntektListeResponseIntern(arbeidsInntektMaanedListe)
   }
 }
 
