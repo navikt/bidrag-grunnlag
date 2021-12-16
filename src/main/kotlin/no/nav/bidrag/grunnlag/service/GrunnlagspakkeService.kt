@@ -469,9 +469,9 @@ class GrunnlagspakkeService(
 
     val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
-    eksternRespons.arbeidsInntektMaaned.forEach() { arbeidsInntektMaaned ->
+    eksternRespons.arbeidsInntektMaaned?.forEach() { arbeidsInntektMaaned ->
       val inntektInternListe = mutableListOf<InntektIntern>()
-      arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe.forEach() { inntekt ->
+      arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach() { inntekt ->
         val inntektIntern = InntektIntern(
           inntektType = inntekt.inntektType.toString(),
           beloep = inntekt.beloep,
