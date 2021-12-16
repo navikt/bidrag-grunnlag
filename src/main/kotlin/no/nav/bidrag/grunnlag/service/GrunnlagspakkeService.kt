@@ -231,7 +231,8 @@ class GrunnlagspakkeService(
               nyeAinntekter,
               personIdOgPeriode.periodeFra,
               personIdOgPeriode.periodeTil,
-              personIdOgPeriode.personId
+              personIdOgPeriode.personId,
+              timestampOppdatering
             )
             hentGrunnlagResponseListe.add(
               HentGrunnlagResponse(
@@ -343,7 +344,8 @@ class GrunnlagspakkeService(
               nyeSkattegrunnlag,
               periodeFra,
               periodeTil,
-              personIdOgPeriode.personId
+              personIdOgPeriode.personId,
+              timestampOppdatering
             )
             hentGrunnlagResponseListe.add(
               HentGrunnlagResponse(
