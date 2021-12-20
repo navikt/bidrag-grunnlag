@@ -128,8 +128,7 @@ class PersistenceService(
     newAinntektForPersonId: List<PeriodComparable<AinntektDto, AinntektspostDto>>,
     periodeFra: LocalDate,
     periodeTil: LocalDate,
-    personId: String,
-    timestampOppdatering: LocalDateTime
+    personId: String
   ) {
     val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
     val ainntektPeriodComparator = AinntektPeriodComparator()
@@ -161,8 +160,6 @@ class PersistenceService(
         ainntektspostRepository.save(updatedAinntekt)
       }
     }
-    if (comparatorResult.expiredEntities.isNotEmpty() || comparatorResult.equalEntities.isNotEmpty())
-      oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
   }
 
   fun oppdaterSkattegrunnlagForGrunnlagspakke(
@@ -170,8 +167,7 @@ class PersistenceService(
     newSkattegrunnlagForPersonId: List<PeriodComparable<SkattegrunnlagDto, SkattegrunnlagspostDto>>,
     periodeFra: LocalDate,
     periodeTil: LocalDate,
-    personId: String,
-    timestampOppdatering: LocalDateTime
+    personId: String
   ) {
     val existingAinntektForPersonId = hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
     val ainntektPeriodComparator = SkattegrunnlagPeriodComparator()
@@ -203,8 +199,6 @@ class PersistenceService(
         skattegrunnlagspostRepository.save(skattegrunnlagspost)
       }
     }
-    if (comparatorResult.expiredEntities.isNotEmpty() || comparatorResult.equalEntities.isNotEmpty())
-      oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
   }
 
   fun hentAinntekt(grunnlagspakkeId: Int): List<HentAinntektResponse> {
