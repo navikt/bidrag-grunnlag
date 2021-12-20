@@ -44,8 +44,8 @@ spec:
       memory: 1024Mi
   replicas:
     cpuThresholdPercentage: 80
-      max: 4
-      min: 2
+    max: 4
+    min: 2
   ingresses:
     - {{ ingress }}
   env:
