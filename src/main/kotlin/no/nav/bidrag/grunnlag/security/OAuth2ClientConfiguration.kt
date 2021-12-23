@@ -1,4 +1,4 @@
-package no.nav.bidrag.gcp.proxy.security
+package no.nav.bidrag.grunnlag.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,9 +9,9 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 
 @Configuration
-open class OAuth2ClientConfiguration {
+class OAuth2ClientConfiguration {
     @Bean
-    open fun authorizedClientManager(
+    fun authorizedClientManager(
         clientRegistrationRepository: ClientRegistrationRepository?,
         authorizedClientService: OAuth2AuthorizedClientService?
     ): OAuth2AuthorizedClientManager? {
