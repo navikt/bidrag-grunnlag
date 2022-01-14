@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjonIntern
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektMaanedIntern
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.InntektIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
@@ -18,12 +17,14 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.dto.BarnetilleggDto
 import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.service.BarnType
 import no.nav.bidrag.grunnlag.service.Formaal
-import no.nav.bidrag.grunnlag.service.Grunnlagstype
+import no.nav.bidrag.grunnlag.service.GrunnlagType
 import no.nav.bidrag.grunnlag.service.SkattegrunnlagType
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
@@ -58,23 +59,53 @@ class TestUtil {
       formaal = Formaal.BIDRAG,
     )
 
-    fun byggOppdaterGrunnlagspakkeRequest() = OppdaterGrunnlagspakkeRequest(
+    fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequest(
       gyldigTil = LocalDate.parse("2021-08-01"),
       grunnlagRequestListe = listOf(
         GrunnlagRequest(
-          grunnlagstype = Grunnlagstype.AINNTEKT,
+          grunnlagType = GrunnlagType.AINNTEKT,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequest(
-          grunnlagstype = Grunnlagstype.SKATTEGRUNNLAG,
+          grunnlagType = GrunnlagType.SKATTEGRUNNLAG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequest(
-          grunnlagstype = Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        ),
+        GrunnlagRequest(
+          grunnlagType = GrunnlagType.BARNETILLEGG,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequest(
+      gyldigTil = LocalDate.parse("2021-08-01"),
+      grunnlagRequestListe = listOf(
+        GrunnlagRequest(
+          grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestBarnetillegg() = OppdaterGrunnlagspakkeRequest(
+      gyldigTil = LocalDate.parse("2021-08-01"),
+      grunnlagRequestListe = listOf(
+        GrunnlagRequest(
+          grunnlagType = GrunnlagType.BARNETILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -149,24 +180,43 @@ class TestUtil {
       belop = BigDecimal.valueOf(12468.01),
       manueltBeregnet = false,
       deltBosted = false
+    )
 
+    fun byggBarnetilleggDto() = BarnetilleggDto(
+      barnetilleggId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      partPersonId = "1234567",
+      barnetilleggType = "Utvidet barnetrygd",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      barnPersonId = "0123456",
+      belopBrutto = BigDecimal.valueOf(1000),
+      barnType = BarnType.FELLES.toString()
     )
 
     fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
-      byggUtvidetBarnetrygdPeriode()
-    )
-
-    private fun byggUtvidetBarnetrygdPeriode(): List<UtvidetBarnetrygdPeriode> {
-      val utvidetBarnetrygdOgSmaabarnstilleggPeriode = UtvidetBarnetrygdPeriode(
-        stønadstype = BisysStønadstype.UTVIDET,
-        fomMåned = YearMonth.now(),
-        tomMåned = YearMonth.now(),
-        beløp = 1000.00,
-        manueltBeregnet = false,
-        deltBosted = false
+      immutableListOf(
+        UtvidetBarnetrygdPeriode(
+          stønadstype = BisysStønadstype.UTVIDET,
+          fomMåned = YearMonth.parse("2021-01"),
+          tomMåned = YearMonth.parse("2021-12"),
+          beløp = 1000.11,
+          manueltBeregnet = false,
+          deltBosted = false
+        ),
+        UtvidetBarnetrygdPeriode(
+          stønadstype = BisysStønadstype.UTVIDET,
+          fomMåned = YearMonth.parse("2022-01"),
+          tomMåned = YearMonth.parse("2022-12"),
+          beløp = 2000.22,
+          manueltBeregnet = false,
+          deltBosted = false
+        )
       )
-      return mutableListOf(utvidetBarnetrygdOgSmaabarnstilleggPeriode)
-    }
+    )
 
     fun byggHentInntektRequest() = HentInntektRequest(
       ident = "ident",
@@ -187,49 +237,48 @@ class TestUtil {
       val fradragListe = mutableListOf<Fradrag>()
       val avviksliste = mutableListOf<Avvik>()
       val arbeidsinntektliste = mutableListOf<ArbeidsInntektMaaned>()
-      arbeidsinntektliste.add(ArbeidsInntektMaaned(
-        YearMonth.parse("2021-01"),
-        avviksliste,
-        ArbeidsInntektInformasjon(
-          arbeidsforholdListe,
-          byggInntektListe(),
-          forskuddstrekkListe,
-          fradragListe
+      arbeidsinntektliste.add(
+        ArbeidsInntektMaaned(
+          YearMonth.parse("2021-01"),
+          avviksliste,
+          ArbeidsInntektInformasjon(
+            arbeidsforholdListe,
+            byggInntektListe(),
+            forskuddstrekkListe,
+            fradragListe
           )
-      )
+        )
       )
       return arbeidsinntektliste
     }
 
-    private fun byggInntektListe(): List<Inntekt> {
-      return immutableListOf(
-        Inntekt(
-          InntektType.LOENNSINNTEKT,
-          "",
-          BigDecimal.valueOf(10000),
-          null,
-          null,
-          null,
-          null,
-          YearMonth.parse("2021-10"),
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          false,
-          false,
-          null,
-          null,
-          null,
-          null
-        )
+    private fun byggInntektListe() = immutableListOf(
+      Inntekt(
+        InntektType.LOENNSINNTEKT,
+        "",
+        BigDecimal.valueOf(10000),
+        null,
+        null,
+        null,
+        null,
+        YearMonth.parse("2021-10"),
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        false,
+        false,
+        null,
+        null,
+        null,
+        null
       )
-    }
+    )
 
     fun byggHentSkattegrunnlagRequest() = HentSkattegrunnlagRequest(
       inntektsAar = "2021",
@@ -253,6 +302,31 @@ class TestUtil {
     fun byggFamilieBaSakRequest() = FamilieBaSakRequest(
       personIdent = "personIdent",
       fraDato = LocalDate.now()
+    )
+
+    fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(
+      mottaker = "personIdent",
+      fom = LocalDate.now(),
+      tom = LocalDate.now()
+    )
+
+    fun byggHentBarnetilleggPensjonResponse() = HentBarnetilleggPensjonResponse(
+      immutableListOf(
+        BarnetilleggPensjon(
+          barn = "barnIdent",
+          beloep = BigDecimal.valueOf(1000.11),
+          fom = LocalDate.parse("2021-01-01"),
+          tom = LocalDate.parse("2021-12-31"),
+          erFellesbarn = true
+        ),
+        BarnetilleggPensjon(
+          barn = "barnIdent",
+          beloep = BigDecimal.valueOf(2000.22),
+          fom = LocalDate.parse("2022-01-01"),
+          tom = LocalDate.parse("2022-12-31"),
+          erFellesbarn = true
+        )
+      )
     )
 
     fun <Request, Response> performRequest(

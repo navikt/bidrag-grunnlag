@@ -20,7 +20,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
     val logger: Logger = LoggerFactory.getLogger(FamilieBaSakConsumer::class.java)
   }
 
-  fun hentFamilieBaSak(request: FamilieBaSakRequest): RestResponse<FamilieBaSakResponse> {
+  open fun hentFamilieBaSak(request: FamilieBaSakRequest): RestResponse<FamilieBaSakResponse> {
     logger.info("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
 
     val restResponse = restTemplate.tryExchange(

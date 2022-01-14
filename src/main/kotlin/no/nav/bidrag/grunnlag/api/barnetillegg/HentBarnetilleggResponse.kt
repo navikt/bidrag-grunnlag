@@ -1,17 +1,17 @@
-package no.nav.bidrag.grunnlag.api.ubst
+package no.nav.bidrag.grunnlag.api.barnetillegg
 
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
+data class HentBarnetilleggResponse(
 
-  @Schema(description = "Id til personen ubst er rapportert for")
-  val personId: String = "",
+  @Schema(description = "Id til personen barnetillegg er rapportert for")
+  val partPersonId: String = "",
 
-  @Schema(description = "Type stønad, utvidet barnetrygd eller småbarnstillegg")
-  val type: String = "",
+  @Schema(description = "Type barnetillegg")
+  val barnetilleggType: String = "",
 
   @Schema(description = "Periode fra- og med måned")
   val periodeFra: LocalDate = LocalDate.now(),
@@ -28,11 +28,14 @@ data class HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
   @Schema(description = "Tidspunkt stønaden ikke lenger er aktiv. Null betyr at stønaden er aktiv")
   val brukTil: LocalDateTime? = null,
 
-  @Schema(description = "Beløp")
-  val belop: BigDecimal = BigDecimal.ZERO,
+  @Schema(description = "Id til barnet barnetillegget er rapportert for")
+  val barnPersonId: String = "",
 
-  @Schema(description = "Angir om stønaden er manuelt beregnet")
-  val manueltBeregnet: Boolean = false,
+  @Schema(description = "Bruttobeløp")
+  val belopBrutto: BigDecimal = BigDecimal.ZERO,
+
+  @Schema(description = "Angir om barnet er felles- eller særkullsbarn")
+  val barnType: String = "",
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()

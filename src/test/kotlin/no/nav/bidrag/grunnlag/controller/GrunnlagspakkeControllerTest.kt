@@ -13,6 +13,7 @@ import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -21,9 +22,9 @@ import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.Formaal
+import no.nav.bidrag.grunnlag.service.GrunnlagType
 import no.nav.bidrag.grunnlag.service.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
-import no.nav.bidrag.grunnlag.service.Grunnlagstype
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -98,6 +99,11 @@ class GrunnlagspakkeControllerTest(
         ResponseEntity(HentSkattegrunnlagResponse(emptyList(), emptyList(), ""), HttpStatus.OK)
       )
 
+    Mockito.`when`(restTemplate.exchange(eq("/barnetillegg/pensjon/hent"), eq(HttpMethod.POST), any(), any<Class<HentBarnetilleggPensjonResponse>>()))
+      .thenReturn(
+        ResponseEntity(HentBarnetilleggPensjonResponse(emptyList()), HttpStatus.OK)
+      )
+
     Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utvidet-barnetrygd"), eq(HttpMethod.POST), any(), any<Class<FamilieBaSakResponse>>()))
       .thenReturn(
         ResponseEntity(FamilieBaSakResponse(emptyList()), HttpStatus.OK)
@@ -105,11 +111,11 @@ class GrunnlagspakkeControllerTest(
 
     val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(
       nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
-      TestUtil.byggOppdaterGrunnlagspakkeRequest(),
+      TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
       OppdaterGrunnlagspakkeResponse::class.java
     ) { isOk() }
 
-    assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(3)
+    assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(4)
 
     oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
@@ -129,6 +135,11 @@ class GrunnlagspakkeControllerTest(
       HttpClientErrorException(HttpStatus.NOT_FOUND)
     )
 
+    Mockito.`when`(restTemplate.exchange(eq("/barnetillegg/pensjon/hent"), eq(HttpMethod.POST), any(), any<Class<HentBarnetilleggPensjonResponse>>()))
+      .thenThrow(
+        HttpClientErrorException(HttpStatus.NOT_FOUND)
+      )
+
     Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utvidet-barnetrygd"), eq(HttpMethod.POST), any(), any<Class<FamilieBaSakResponse>>()))
       .thenThrow(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
@@ -136,15 +147,15 @@ class GrunnlagspakkeControllerTest(
 
     val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(
       nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
-      TestUtil.byggOppdaterGrunnlagspakkeRequest(),
+      TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
       OppdaterGrunnlagspakkeResponse::class.java
     ) { isOk() }
 
     assertThat(oppdaterGrunnlagspakkeResponse).isNotNull
-    assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(3)
+    assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(4)
 
     oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
-        assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)
+      assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)
     }
   }
 
@@ -176,7 +187,7 @@ class GrunnlagspakkeControllerTest(
     Mockito.`when`(
       grunnlagspakkeService.oppdaterGrunnlagspakke(
         nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
-        TestUtil.byggOppdaterGrunnlagspakkeRequest()
+        TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett()
       )
     )
       .thenThrow(HibernateException("Test-melding"))
@@ -184,7 +195,7 @@ class GrunnlagspakkeControllerTest(
     val oppdaterGrunnlagspakkeResponse =
       oppdaterGrunnlagspakke(
         nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
-        TestUtil.byggOppdaterGrunnlagspakkeRequest(),
+        TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
         String::class.java,
         mockMvc
       ) { isInternalServerError() }
@@ -195,7 +206,7 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal fange opp og håndtere forespørsler på grunnlagspakker som ikke eksisterer`() {
 
-    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(1, TestUtil.byggOppdaterGrunnlagspakkeRequest(), String::class.java) { isNotFound() }
+    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(1, TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(), String::class.java) { isNotFound() }
 
     assertNotNull(oppdaterGrunnlagspakkeResponse)
 
@@ -276,7 +287,7 @@ class GrunnlagspakkeControllerTest(
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke5.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestListe[0].grunnlagstype"])
+    assertNotNull(errorResult["grunnlagRequestListe[0].grunnlagType"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke6.json", "/grunnlagspakke/1/oppdater")
 
@@ -309,7 +320,7 @@ class GrunnlagspakkeControllerTest(
           gyldigTil = LocalDate.parse("2022-01-01"),
           grunnlagRequestListe = listOf(
             GrunnlagRequest(
-              grunnlagstype = Grunnlagstype.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
               personId = "12345678901",
               periodeFra = LocalDate.parse("2021-11-01"),
               periodeTil = LocalDate.parse("2021-11-15")

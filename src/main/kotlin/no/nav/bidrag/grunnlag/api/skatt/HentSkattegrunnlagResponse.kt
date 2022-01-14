@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 data class HentSkattegrunnlagResponse(
 
-  @Schema(description = "Id til personen inntekten er rapport for")
+  @Schema(description = "Id til personen inntekten er rapportert for")
   val personId: String = "",
 
   @Schema(description = "Periode fra")
@@ -21,7 +21,7 @@ data class HentSkattegrunnlagResponse(
   @Schema(description = "Tidspunkt inntekten taes i bruk")
   val brukFra: LocalDateTime = LocalDateTime.now(),
 
-  @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
+  @Schema(description = "Tidspunkt inntekten ikke lenger er aktiv. Null betyr at inntekten er aktiv")
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")

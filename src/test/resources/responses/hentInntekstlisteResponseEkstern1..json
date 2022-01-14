@@ -28,7 +28,8 @@
           "detaljerType": "ETTERBETALINGSPERIODE",
           "etterbetalingsperiodeFom": "2018-05-18",
           "etterbetalingsperiodeTom": "2018-06-01"
-        },
+        }
+      },
       "inntektsmottaker": {
         "identifikator": "12345678901",
         "aktoerType": "NATURLIG_IDENT"
@@ -66,7 +67,8 @@
           "detaljerType": "ETTERBETALINGSPERIODE",
           "etterbetalingsperiodeFom": "2018-06-18",
           "etterbetalingsperiodeTom": "2018-07-01"
-        },
+        }
+      },
       "inntektsmottaker": {
         "identifikator": "12345678901",
         "aktoerType": "NATURLIG_IDENT"

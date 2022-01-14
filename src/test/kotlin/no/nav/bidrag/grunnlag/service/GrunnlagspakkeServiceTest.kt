@@ -4,15 +4,12 @@ import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.dto.AinntektDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.dto.BarnetilleggDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
-import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
-import no.nav.tjenester.aordningen.inntektsinformasjon.Avvik
-import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.BeforeEach
@@ -26,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.YearMonth
 
 @DisplayName("GrunnlagspakkeServiceTest")
 @ActiveProfiles(BidragGrunnlagTest.TEST_PROFILE)
@@ -83,7 +79,7 @@ class GrunnlagspakkeServiceTest {
 
   @Test
   @Suppress("NonAsciiCharacters")
-  fun `Test på å hente grunnlagspakke med aktive og inaktive inntekter + utvidet barnetrygd og småbarnstillegg`() {
+  fun `Test på å hente grunnlagspakke med aktive og inaktive inntekter + andre grunnlag`() {
     val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
     val nyGrunnlagspakkeOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
@@ -231,6 +227,19 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
+    // Test på barnetillegg
+    persistenceService.opprettBarnetillegg(
+      BarnetilleggDto(
+        grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+        partPersonId = "22334455",
+        barnetilleggType = "Utvidet barnetrygd",
+        periodeFra = LocalDate.parse("2021-05-01"),
+        periodeTil = LocalDate.parse("2021-06-01"),
+        barnPersonId = "1234567",
+        belopBrutto = BigDecimal.valueOf(1000.01)
+      )
+    )
+
     val komplettGrunnlagspakkeFunnet =
       grunnlagspakkeService.hentKomplettGrunnlagspakke(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)
 
@@ -300,8 +309,17 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].aktiv).isEqualTo(true) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].brukTil).isNull() },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) }
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) },
+
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe.size).isEqualTo(1) },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].partPersonId).isEqualTo("22334455") },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo("Utvidet barnetrygd") },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].brukTil).isNull() },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo("1234567") },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) }
     )
   }
-
 }

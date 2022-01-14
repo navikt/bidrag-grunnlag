@@ -57,13 +57,19 @@ internal class FamilieBaSakConsumerTest {
         val hentFamilieBaSakResponse = restResponseFamilieBaSak.body
         assertAll(
           Executable { assertThat(hentFamilieBaSakResponse).isNotNull },
-          Executable { assertThat(hentFamilieBaSakResponse.perioder.size).isEqualTo(1) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder.size).isEqualTo(2) },
           Executable { assertThat(hentFamilieBaSakResponse.perioder[0].stønadstype).isEqualTo(BisysStønadstype.UTVIDET) },
-          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].fomMåned).isEqualTo(YearMonth.now()) },
-          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].tomMåned).isEqualTo(YearMonth.now()) },
-          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].beløp).isEqualTo(1000.00) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].fomMåned).isEqualTo(YearMonth.parse("2021-01")) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].tomMåned).isEqualTo(YearMonth.parse("2021-12")) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].beløp).isEqualTo(1000.11) },
           Executable { assertThat(hentFamilieBaSakResponse.perioder[0].manueltBeregnet).isFalse() },
-          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].deltBosted).isFalse() }
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[0].deltBosted).isFalse() },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[1].stønadstype).isEqualTo(BisysStønadstype.UTVIDET) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[1].fomMåned).isEqualTo(YearMonth.parse("2022-01")) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[1].tomMåned).isEqualTo(YearMonth.parse("2022-12")) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[1].beløp).isEqualTo(2000.22) },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[1].manueltBeregnet).isFalse() },
+          Executable { assertThat(hentFamilieBaSakResponse.perioder[1].deltBosted).isFalse() }
         )
       }
       else -> {

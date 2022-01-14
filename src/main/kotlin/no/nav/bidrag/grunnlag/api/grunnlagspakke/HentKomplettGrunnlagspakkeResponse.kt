@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag.api.grunnlagspakke
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektResponse
+import no.nav.bidrag.grunnlag.api.barnetillegg.HentBarnetilleggResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
 
@@ -17,5 +18,8 @@ data class HentKomplettGrunnlagspakkeResponse(
   val skattegrunnlagListe: List<HentSkattegrunnlagResponse> = emptyList(),
 
   @Schema(description = "Liste over innhentet utvidet barnetrygd og småbarnstillegg")
-  val ubstListe: List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> = emptyList()
+  val ubstListe: List<HentUtvidetBarnetrygdOgSmaabarnstilleggResponse> = emptyList(),
+
+  @Schema(description = "Liste over innhentet barnetillegg")
+  val barnetilleggListe: List<HentBarnetilleggResponse> = emptyList()
 )

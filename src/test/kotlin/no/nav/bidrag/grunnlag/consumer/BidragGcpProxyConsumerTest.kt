@@ -4,6 +4,7 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
@@ -169,6 +170,65 @@ internal class BidragGcpProxyConsumerTest {
     }
   }
 
+  @Test
+  fun `Sjekk at ok respons fra BidragGcpProxy barnetillegg pensjon endepunkt mappes korrekt`() {
+    val request = TestUtil.byggHentBarnetilleggPensjonRequest()
+
+    Mockito.`when`(
+      restTemplateMock?.exchange(
+        eq(BIDRAGGCPPROXY_BARNETILLEGG_PENSJON_CONTEXT),
+        eq(HttpMethod.POST),
+        eq(initHttpEntity(request)),
+        any<Class<HentBarnetilleggPensjonResponse>>()
+      )
+    )
+      .thenReturn(ResponseEntity(TestUtil.byggHentBarnetilleggPensjonResponse(), HttpStatus.OK))
+
+    when (val restResponseBarnetilleggPensjon = bidragGcpProxyConsumer!!.hentBarnetilleggPensjon(request)) {
+      is RestResponse.Success -> {
+        val hentBarnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
+        assertAll(
+          Executable { assertThat(hentBarnetilleggPensjonResponse).isNotNull },
+          Executable { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!!.size).isEqualTo(2) },
+          Executable { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![0].barn).isEqualTo("barnIdent") },
+          Executable { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![0].beloep).isEqualTo(BigDecimal.valueOf(1000.11)) },
+          Executable { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![1].barn).isEqualTo("barnIdent") },
+          Executable { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![1].beloep).isEqualTo(BigDecimal.valueOf(2000.22)) }
+        )
+      }
+      else -> {
+        fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
+      }
+    }
+  }
+
+  @Test
+  fun `Sjekk at exception fra BidragGcpProxy barnetillegg pensjon endepunkt håndteres korrekt`() {
+    val request = TestUtil.byggHentBarnetilleggPensjonRequest()
+
+    Mockito.`when`(
+      restTemplateMock?.exchange(
+        eq(BIDRAGGCPPROXY_BARNETILLEGG_PENSJON_CONTEXT),
+        eq(HttpMethod.POST),
+        eq(initHttpEntity(request)),
+        any<Class<HentBarnetilleggPensjonResponse>>()
+      )
+    )
+      .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
+
+    when (val restResponseBarnetilleggPensjon = bidragGcpProxyConsumer!!.hentBarnetilleggPensjon(request)) {
+      is RestResponse.Failure -> {
+        assertAll(
+          Executable { assertThat(restResponseBarnetilleggPensjon.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
+          Executable { assertThat(restResponseBarnetilleggPensjon.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+        )
+      }
+      else -> {
+        fail("Test returnerte med RestResponse.Success, som ikke var forventet")
+      }
+    }
+  }
+
   fun <T> initHttpEntity(body: T): HttpEntity<T> {
     val httpHeaders = HttpHeaders()
     httpHeaders.contentType = MediaType.APPLICATION_JSON
@@ -178,5 +238,6 @@ internal class BidragGcpProxyConsumerTest {
   companion object {
     private const val BIDRAGGCPPROXY_INNTEKT_CONTEXT = "/inntekt/hent"
     private const val BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT = "/skattegrunnlag/hent"
+    private const val BIDRAGGCPPROXY_BARNETILLEGG_PENSJON_CONTEXT = "/barnetillegg/pensjon/hent"
   }
 }
