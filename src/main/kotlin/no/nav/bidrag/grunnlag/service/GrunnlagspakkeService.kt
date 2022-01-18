@@ -63,7 +63,7 @@ class GrunnlagspakkeService(
   }
 
   val oppdaterGrunnlagspakkeResponseListe = mutableListOf<OppdaterGrunnlagspakkeResponse>()
-  val timestampOppdatering: LocalDateTime = LocalDateTime.now()
+  var timestampOppdatering = LocalDateTime.now()
 
   fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequest: OpprettGrunnlagspakkeRequest): OpprettGrunnlagspakkeResponse {
     val grunnlagspakkeDto = GrunnlagspakkeDto(
@@ -208,6 +208,7 @@ class GrunnlagspakkeService(
           } else {
             hentInntektListeResponse.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
               antallPerioderFunnet++
+              timestampOppdatering = LocalDateTime.now()
               val inntekt = AinntektDto(
                 grunnlagspakkeId = grunnlagspakkeId,
                 personId = personIdOgPeriode.personId,
@@ -320,6 +321,7 @@ class GrunnlagspakkeService(
             skattegrunnlagsPosterSvalbard.addAll(skattegrunnlagResponse.svalbardGrunnlag!!.toMutableList())
 
             if (skattegrunnlagsPosterOrdinaer.size > 0 || skattegrunnlagsPosterSvalbard.size > 0) {
+              timestampOppdatering = LocalDateTime.now()
               val skattegrunnlag = SkattegrunnlagDto(
                 grunnlagspakkeId = grunnlagspakkeId,
                 personId = personIdOgPeriode.personId,
@@ -418,6 +420,7 @@ class GrunnlagspakkeService(
           if (familieBaSakResponse.perioder.isNotEmpty())
             familieBaSakResponse.perioder.forEach { ubst ->
               if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil)) {
+                timestampOppdatering = LocalDateTime.now()
                 antallPerioderFunnet++
                 persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
                   UtvidetBarnetrygdOgSmaabarnstilleggDto(
@@ -496,6 +499,7 @@ class GrunnlagspakkeService(
             barnetilleggPensjonResponse.barnetilleggPensjonListe.forEach { bt ->
               if (bt.fom.isBefore(personIdOgPeriode.periodeTil)) {
                 antallPerioderFunnet++
+                timestampOppdatering = LocalDateTime.now()
                 persistenceService.opprettBarnetillegg(
                   BarnetilleggDto(
                     grunnlagspakkeId = grunnlagspakkeId,
