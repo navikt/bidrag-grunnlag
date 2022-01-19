@@ -24,6 +24,9 @@ data class Barnetillegg(
   @Column(nullable = false, name = "part_person_id")
   val partPersonId: String = "",
 
+  @Column(nullable = false, name = "barn_person_id")
+  val barnPersonId: String = "",
+
   @Column(nullable = false, name = "barnetillegg_type")
   val barnetilleggType: String = "",
 
@@ -41,9 +44,6 @@ data class Barnetillegg(
 
   @Column(nullable = true, name = "bruk_til")
   val brukTil: LocalDateTime? = null,
-
-  @Column(nullable = false, name = "barn_person_id")
-  val barnPersonId: String = "",
 
   @Column(nullable = false, name = "belop_brutto")
   val belopBrutto: BigDecimal = BigDecimal.ZERO,

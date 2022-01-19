@@ -186,13 +186,13 @@ class TestUtil {
       barnetilleggId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       partPersonId = "1234567",
+      barnPersonId = "0123456",
       barnetilleggType = "Utvidet barnetrygd",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      barnPersonId = "0123456",
       belopBrutto = BigDecimal.valueOf(1000),
       barnType = BarnType.FELLES.toString()
     )

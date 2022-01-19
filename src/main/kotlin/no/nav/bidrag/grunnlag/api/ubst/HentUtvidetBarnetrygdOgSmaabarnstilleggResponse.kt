@@ -8,32 +8,32 @@ import java.time.LocalDateTime
 data class HentUtvidetBarnetrygdOgSmaabarnstilleggResponse(
 
   @Schema(description = "Id til personen ubst er rapportert for")
-  val personId: String = "",
+  val personId: String,
 
   @Schema(description = "Type stønad, utvidet barnetrygd eller småbarnstillegg")
-  val type: String = "",
+  val type: String,
 
   @Schema(description = "Periode fra- og med måned")
-  val periodeFra: LocalDate = LocalDate.now(),
+  val periodeFra: LocalDate,
 
   @Schema(description = "Periode til- og med måned")
-  val periodeTil: LocalDate? = LocalDate.now(),
+  val periodeTil: LocalDate?,
 
   @Schema(description = "Angir om en stønad er aktiv")
-  val aktiv: Boolean = true,
+  val aktiv: Boolean,
 
   @Schema(description = "Tidspunkt stønaden taes i bruk")
-  val brukFra: LocalDateTime = LocalDateTime.now(),
+  val brukFra: LocalDateTime,
 
   @Schema(description = "Tidspunkt stønaden ikke lenger er aktiv. Null betyr at stønaden er aktiv")
-  val brukTil: LocalDateTime? = null,
+  val brukTil: LocalDateTime?,
 
   @Schema(description = "Beløp")
-  val belop: BigDecimal = BigDecimal.ZERO,
+  val belop: BigDecimal,
 
   @Schema(description = "Angir om stønaden er manuelt beregnet")
-  val manueltBeregnet: Boolean = false,
+  val manueltBeregnet: Boolean,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val hentetTidspunkt: LocalDateTime
 )

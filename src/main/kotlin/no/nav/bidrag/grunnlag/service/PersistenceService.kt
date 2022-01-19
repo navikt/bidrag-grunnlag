@@ -350,13 +350,13 @@ class PersistenceService(
         hentBarnetilleggResponseListe.add(
           HentBarnetilleggResponse(
             partPersonId = barnetillegg.partPersonId,
+            barnPersonId = barnetillegg.barnPersonId,
             barnetilleggType = barnetillegg.barnetilleggType,
             periodeFra = barnetillegg.periodeFra,
             periodeTil = barnetillegg.periodeTil,
             aktiv = barnetillegg.aktiv,
             brukFra = barnetillegg.brukFra,
             brukTil = barnetillegg.brukTil,
-            barnPersonId = barnetillegg.barnPersonId,
             belopBrutto = barnetillegg.belopBrutto,
             barnType = barnetillegg.barnType,
             hentetTidspunkt = barnetillegg.hentetTidspunkt

@@ -208,10 +208,10 @@ class GrunnlagspakkeServiceMockTest {
 
       // sjekk BarnetilleggDto
       Executable { assertThat(barnetilleggListe[0].partPersonId).isEqualTo("1234567") },
+      Executable { assertThat(barnetilleggListe[0].barnPersonId).isEqualTo("0123456") },
       Executable { assertThat(barnetilleggListe[0].barnetilleggType).isEqualTo("Utvidet barnetrygd") },
       Executable { assertThat(barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
       Executable { assertThat(barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-      Executable { assertThat(barnetilleggListe[0].barnPersonId).isEqualTo("0123456") },
       Executable { assertThat(barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000)) },
       Executable { assertThat(barnetilleggListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) }
     )
@@ -309,10 +309,10 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(barnetilleggListe).isNotNull() },
       Executable { assertThat(barnetilleggListe.size).isEqualTo(1) },
       Executable { assertThat(barnetilleggListe[0].partPersonId).isEqualTo("12345678910") },
+      Executable { assertThat(barnetilleggListe[0].barnPersonId).isEqualTo("barnIdent") },
       Executable { assertThat(barnetilleggListe[0].barnetilleggType).isEqualTo(BarnetilleggType.PENSJON.toString()) },
       Executable { assertThat(barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
       Executable { assertThat(barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-01-01")) },
-      Executable { assertThat(barnetilleggListe[0].barnPersonId).isEqualTo("barnIdent") },
       Executable { assertThat(barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.11)) },
       Executable { assertThat(barnetilleggListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) },
 

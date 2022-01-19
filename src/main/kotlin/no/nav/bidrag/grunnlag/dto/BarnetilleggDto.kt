@@ -18,6 +18,9 @@ data class BarnetilleggDto(
   @Schema(description = "Id til personen barnetillegget er rapport for")
   val partPersonId: String = "",
 
+  @Schema(description = "Id til barnet barnetillegget gjelder for")
+  val barnPersonId: String = "",
+
   @Schema(description = "Type barnetillegg")
   val barnetilleggType: String = "",
 
@@ -35,9 +38,6 @@ data class BarnetilleggDto(
 
   @Schema(description = "Tidspunkt barnetillegget ikke lenger er aktivt. Null betyr at barnetillegget er aktivt")
   val brukTil: LocalDateTime? = null,
-
-  @Schema(description = "Id til barnet barnetillegget gjelder for")
-  val barnPersonId: String = "",
 
   @Schema(description = "Bruttobeløp")
   val belopBrutto: BigDecimal = BigDecimal.ZERO,

@@ -232,10 +232,10 @@ class GrunnlagspakkeServiceTest {
       BarnetilleggDto(
         grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
         partPersonId = "22334455",
+        barnPersonId = "1234567",
         barnetilleggType = "Utvidet barnetrygd",
         periodeFra = LocalDate.parse("2021-05-01"),
         periodeTil = LocalDate.parse("2021-06-01"),
-        barnPersonId = "1234567",
         belopBrutto = BigDecimal.valueOf(1000.01)
       )
     )
@@ -313,12 +313,12 @@ class GrunnlagspakkeServiceTest {
 
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe.size).isEqualTo(1) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].partPersonId).isEqualTo("22334455") },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo("1234567") },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo("Utvidet barnetrygd") },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].brukTil).isNull() },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo("1234567") },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) }
     )
   }
