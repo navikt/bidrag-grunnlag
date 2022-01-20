@@ -2,7 +2,7 @@
   "gyldigTil": "2022-01-01",
   "grunnlagRequestListe": [
     {
-      "grunnlagstype": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG",
+      "grunnlagType": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG",
       "personId": "12345678901",
       "periodeFra": "2021-11-01",
       "periodeTil": "2021-11-15"

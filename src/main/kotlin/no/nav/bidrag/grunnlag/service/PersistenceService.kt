@@ -1,39 +1,43 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektResponse
+import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektspostResponse
+import no.nav.bidrag.grunnlag.api.barnetillegg.HentBarnetilleggResponse
 import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagResponse
-import no.nav.bidrag.grunnlag.api.ainntekt.HentAinntektspostResponse
 import no.nav.bidrag.grunnlag.api.skatt.HentSkattegrunnlagspostResponse
 import no.nav.bidrag.grunnlag.api.ubst.HentUtvidetBarnetrygdOgSmaabarnstilleggResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
 import no.nav.bidrag.grunnlag.comparator.Period
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.comparator.SkattegrunnlagPeriodComparator
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.dto.AinntektDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.dto.BarnetilleggDto
+import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
 import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
-import no.nav.bidrag.grunnlag.dto.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.dto.toAinntektEntity
-import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.dto.toAinntektspostEntity
+import no.nav.bidrag.grunnlag.dto.toBarnetilleggEntity
+import no.nav.bidrag.grunnlag.dto.toGrunnlagspakkeEntity
+import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.dto.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.dto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
-import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektDto
-import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektspostDto
+import no.nav.bidrag.grunnlag.persistence.entity.toBarnetilleggDto
+import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagDto
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostDto
 import no.nav.bidrag.grunnlag.persistence.entity.toUtvidetBarnetrygdOgSmaabarnstilleggDto
-import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
-import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
+import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
+import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
+import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
 import org.slf4j.LoggerFactory
@@ -48,7 +52,8 @@ class PersistenceService(
   val ainntektspostRepository: AinntektspostRepository,
   val skattegrunnlagRepository: SkattegrunnlagRepository,
   val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
-  val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository
+  val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository,
+  val barnetilleggRepository: BarnetilleggRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -83,11 +88,16 @@ class PersistenceService(
     return inntektspost.toSkattegrunnlagspostDto()
   }
 
-
   fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggDto: UtvidetBarnetrygdOgSmaabarnstilleggDto): UtvidetBarnetrygdOgSmaabarnstilleggDto {
-    val nyubst = utvidetBarnetrygdOgSmaabarnstilleggDto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
-    val utvidetBarnetrygdOgSmaabarnstillegg = utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyubst)
+    val nyUbst = utvidetBarnetrygdOgSmaabarnstilleggDto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
+    val utvidetBarnetrygdOgSmaabarnstillegg = utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
     return utvidetBarnetrygdOgSmaabarnstillegg.toUtvidetBarnetrygdOgSmaabarnstilleggDto()
+  }
+
+  fun opprettBarnetillegg(barnetilleggDto: BarnetilleggDto): BarnetilleggDto {
+    val nyBarnetillegg = barnetilleggDto.toBarnetilleggEntity()
+    val barnetillegg = barnetilleggRepository.save(nyBarnetillegg)
+    return barnetillegg.toBarnetilleggDto()
   }
 
 
@@ -95,7 +105,7 @@ class PersistenceService(
   fun hentKomplettGrunnlagspakke(grunnlagspakkeId: Int): HentKomplettGrunnlagspakkeResponse {
     return HentKomplettGrunnlagspakkeResponse(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
-      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId)
+      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId)
     )
   }
 
@@ -331,5 +341,28 @@ class PersistenceService(
         )
       }
     return hentUtvidetBarnetrygdOgSmaabarnstilleggResponseListe
+  }
+
+  fun hentBarnetillegg(grunnlagspakkeId: Int): List<HentBarnetilleggResponse> {
+    val hentBarnetilleggResponseListe = mutableListOf<HentBarnetilleggResponse>()
+    barnetilleggRepository.hentBarnetillegg(grunnlagspakkeId)
+      .forEach { barnetillegg ->
+        hentBarnetilleggResponseListe.add(
+          HentBarnetilleggResponse(
+            partPersonId = barnetillegg.partPersonId,
+            barnPersonId = barnetillegg.barnPersonId,
+            barnetilleggType = barnetillegg.barnetilleggType,
+            periodeFra = barnetillegg.periodeFra,
+            periodeTil = barnetillegg.periodeTil,
+            aktiv = barnetillegg.aktiv,
+            brukFra = barnetillegg.brukFra,
+            brukTil = barnetillegg.brukTil,
+            belopBrutto = barnetillegg.belopBrutto,
+            barnType = barnetillegg.barnType,
+            hentetTidspunkt = barnetillegg.hentetTidspunkt
+          )
+        )
+      }
+    return hentBarnetilleggResponseListe
   }
 }

@@ -2,7 +2,7 @@
   "gyldigTil": "2022-01-01",
   "grunnlagRequestListe": [
     {
-      "grunnlagstype": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG"
+      "grunnlagType": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG"
     }
   ]
 }

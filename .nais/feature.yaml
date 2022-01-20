@@ -2,8 +2,8 @@ name: bidrag-grunnlag-feature
 ingress: https://bidrag-grunnlag-feature.dev.intern.nav.no
 azure:
   tenant: trygdeetaten.no
-  familiebasak_url: familie-ba-sak.dev-fss-pub.nais.io
-  familiebasak_scope: dev-fss.teamfamilie.familie-ba-sak
+  familiebasak_url: familie-ba-sak.dev.intern.nav.no
+  familiebasak_scope: dev-gcp.teamfamilie.familie-ba-sak
   bidraggcpproxy_url: bidrag-gcp-proxy-feature.dev-fss-pub.nais.io
   bidraggcpproxy_scope: dev-fss.bidrag.bidrag-gcp-proxy-feature
   bidraggcpproxy_app: bidrag-gcp-proxy-feature

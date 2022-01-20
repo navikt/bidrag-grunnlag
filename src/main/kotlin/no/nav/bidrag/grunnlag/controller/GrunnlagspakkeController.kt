@@ -53,7 +53,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
       ApiResponse(responseCode = "200", description = "Grunnlagspakke oppdatert"),
       ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
       ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
-      ApiResponse(responseCode = "404", description = "grunnlagspakke ikke funnet"),
+      ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
       ApiResponse(responseCode = "500", description = "Serverfeil"),
       ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
     ]
@@ -72,7 +72,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
       ApiResponse(responseCode = "200", description = "Grunnlagspakke funnet"),
       ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
       ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
-      ApiResponse(responseCode = "404", description = "grunnlagspakke ikke funnet"),
+      ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
       ApiResponse(responseCode = "500", description = "Serverfeil"),
       ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
     ]
@@ -92,7 +92,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
       ApiResponse(responseCode = "200", description = "Grunnlagspakke oppdatert"),
       ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
       ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
-      ApiResponse(responseCode = "404", description = "grunnlagspakke ikke funnet"),
+      ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
       ApiResponse(responseCode = "500", description = "Serverfeil"),
       ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
     ]
