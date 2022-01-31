@@ -269,20 +269,15 @@ class GrunnlagspakkeControllerTest(
     assertNotNull(errorResult)
     assertNotNull(errorResult["grunnlagspakkeId"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke2.json", "/grunnlagspakke/Test/oppdater")
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", "/grunnlagspakke/Test/oppdater")
 
     assertNotNull(errorResult)
     assertNotNull(errorResult["grunnlagspakkeId"])
 
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke3.json", "/grunnlagspakke/1/oppdater")
+    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
     assertNotNull(errorResult["grunnlagRequestListe"])
-
-    errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke4.json", "/grunnlagspakke/1/oppdater")
-
-    assertNotNull(errorResult)
-    assertNotNull(errorResult["gyldigTil"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke5.json", "/grunnlagspakke/1/oppdater")
 
@@ -317,7 +312,6 @@ class GrunnlagspakkeControllerTest(
       grunnlagspakkeService.oppdaterGrunnlagspakke(
         1,
         OppdaterGrunnlagspakkeRequest(
-          gyldigTil = LocalDate.parse("2022-01-01"),
           grunnlagRequestListe = listOf(
             GrunnlagRequest(
               grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,

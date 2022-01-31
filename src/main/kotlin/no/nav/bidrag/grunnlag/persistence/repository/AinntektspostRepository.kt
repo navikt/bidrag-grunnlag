@@ -10,5 +10,4 @@ interface AinntektspostRepository : JpaRepository<Ainntektspost, Int?> {
     "select ainp from Ainntektspost ainp where ainp.inntektId = :inntektId order by ainp.utbetalingsperiode, ainp.inntektType"
   )
   fun hentInntektsposter(inntektId: Int): List<Ainntektspost>
-
 }
