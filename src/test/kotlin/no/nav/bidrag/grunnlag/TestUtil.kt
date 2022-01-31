@@ -60,7 +60,6 @@ class TestUtil {
     )
 
     fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequest(
-      gyldigTil = LocalDate.parse("2021-08-01"),
       grunnlagRequestListe = listOf(
         GrunnlagRequest(
           grunnlagType = GrunnlagType.AINNTEKT,
@@ -90,7 +89,6 @@ class TestUtil {
     )
 
     fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequest(
-      gyldigTil = LocalDate.parse("2021-08-01"),
       grunnlagRequestListe = listOf(
         GrunnlagRequest(
           grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
@@ -102,7 +100,6 @@ class TestUtil {
     )
 
     fun byggOppdaterGrunnlagspakkeRequestBarnetillegg() = OppdaterGrunnlagspakkeRequest(
-      gyldigTil = LocalDate.parse("2021-08-01"),
       grunnlagRequestListe = listOf(
         GrunnlagRequest(
           grunnlagType = GrunnlagType.BARNETILLEGG,

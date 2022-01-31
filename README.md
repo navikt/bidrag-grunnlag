@@ -5,10 +5,13 @@
 
 Tjeneste for innhenting av grunnlag i bidragssaker. Tjenesten er sentrert rundt begrepet `grunnlagspakke`, som fungerer som en beholder for alle grunnlag tilknyttet en bestemt bidragssak. Konsumenter av tjenesten kan opprette grunnlagspakker og bestemme hvilke grunnlag og perioder som skal hentes for de ulike partene. Tjenesten vil hente alle ønskede grunnlag og knytte de opp mot opprettet grunnlagspakke. Grunnlagspakken kan deretter hentes ut med alle tilhørende grunnlag. Frem til det er fattet et vedtak i en bidragssak tilknyttet en grunnlagspakke, kan alle grunnlagene oppdateres og/eller endres.
 
+For de grunnlagene som er relatert til inntekt og som potensielt inneholder flere underposter (A-inntekt og Skattegrunnlag), gjøres det en sammenligning mot eksisterende forekomster når det blir kjørt en oppdatering av grunnlagspakke. Hvis de(n) nye forekomsten(e) som hentes er identisk(e) med de(n) som er hentet fra før, oppdateres kun timestamp på eksisterende forekomst(er). For alle andre grunnlagstyper blir det ikke gjort noen sammenligning. Her insertes det ny(e) forekomst(er) og eksisterende forekomst(er) settes til aktiv=false og gyldigTil=current timestamp.
+
 Støtter foreløpig følgende grunnlag:
-* Inntekt
+* A-inntekt
 * Skattegrunnlag
 * Utvidet barnetrygd og småbarnstillegg
+* Barnetillegg fra Pensjon
 * ... resterende grunnlag legges til fortløpende
 
 Miljøer:

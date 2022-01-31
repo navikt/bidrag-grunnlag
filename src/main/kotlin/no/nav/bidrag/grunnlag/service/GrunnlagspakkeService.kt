@@ -71,7 +71,6 @@ class GrunnlagspakkeService(
     )
     val opprettetGrunnlagspakke = persistenceService.opprettNyGrunnlagspakke(grunnlagspakkeDto)
     return OpprettGrunnlagspakkeResponse(opprettetGrunnlagspakke.grunnlagspakkeId)
-
   }
 
   fun oppdaterGrunnlagspakke(
@@ -111,12 +110,15 @@ class GrunnlagspakkeService(
       }
     }
 
+    val forekomsterFunnet = false
+
     // Oppdaterer grunnlag for A-inntekt
     hentGrunnlagResponseListe.addAll(
       oppdaterAinntekt(
         grunnlagspakkeId,
         ainntektRequestListe,
-        timestampOppdatering
+        timestampOppdatering,
+        forekomsterFunnet
       )
     )
 
@@ -125,7 +127,8 @@ class GrunnlagspakkeService(
       oppdaterSkattegrunnlag(
         grunnlagspakkeId,
         skattegrunnlagRequestListe,
-        timestampOppdatering
+        timestampOppdatering,
+        forekomsterFunnet
       )
     )
 
@@ -134,7 +137,8 @@ class GrunnlagspakkeService(
       oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         grunnlagspakkeId,
         ubstRequestListe,
-        timestampOppdatering
+        timestampOppdatering,
+        forekomsterFunnet
       )
     )
 
@@ -143,9 +147,15 @@ class GrunnlagspakkeService(
       oppdaterBarnetillegg(
         grunnlagspakkeId,
         barnetilleggRequestListe,
-        timestampOppdatering
+        timestampOppdatering,
+        forekomsterFunnet
       )
     )
+
+    // Oppdaterer endret_timestamp på grunnlagspakke
+    if (forekomsterFunnet) {
+      persistenceService.oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
+    }
 
     return OppdaterGrunnlagspakkeResponse(grunnlagspakkeId, hentGrunnlagResponseListe)
   }
@@ -161,7 +171,8 @@ class GrunnlagspakkeService(
   private fun oppdaterAinntekt(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
-    timestampOppdatering: LocalDateTime
+    timestampOppdatering: LocalDateTime,
+    forekomsterFunnet: Boolean
   ): List<HentGrunnlagResponse> {
 
     val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
@@ -251,7 +262,8 @@ class GrunnlagspakkeService(
               nyeAinntekter,
               personIdOgPeriode.periodeFra,
               personIdOgPeriode.periodeTil,
-              personIdOgPeriode.personId
+              personIdOgPeriode.personId,
+              timestampOppdatering
             )
             hentGrunnlagResponseListe.add(
               HentGrunnlagResponse(
@@ -261,6 +273,9 @@ class GrunnlagspakkeService(
                 "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet",
               )
             )
+            if (antallPerioderFunnet > 0) {
+              forekomsterFunnet
+            }
           }
         }
         is RestResponse.Failure -> {
@@ -282,7 +297,8 @@ class GrunnlagspakkeService(
   fun oppdaterSkattegrunnlag(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
-    timestampOppdatering: LocalDateTime
+    timestampOppdatering: LocalDateTime,
+    forekomsterFunnet: Boolean
   ): List<HentGrunnlagResponse> {
 
     val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
@@ -364,7 +380,8 @@ class GrunnlagspakkeService(
               nyeSkattegrunnlag,
               periodeFra,
               periodeTil,
-              personIdOgPeriode.personId
+              personIdOgPeriode.personId,
+              timestampOppdatering
             )
             hentGrunnlagResponseListe.add(
               HentGrunnlagResponse(
@@ -374,6 +391,9 @@ class GrunnlagspakkeService(
                 "Antall skattegrunnlagsposter funnet for innteksåret ${inntektAar}: $antallSkattegrunnlagsposter"
               )
             )
+            if (antallSkattegrunnlagsposter > 0) {
+              forekomsterFunnet
+            }
           }
           is RestResponse.Failure -> hentGrunnlagResponseListe.add(
             HentGrunnlagResponse(
@@ -394,7 +414,8 @@ class GrunnlagspakkeService(
   fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
-    timestampOppdatering: LocalDateTime
+    timestampOppdatering: LocalDateTime,
+    forekomsterFunnet: Boolean
   ): List<HentGrunnlagResponse> {
 
     val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
@@ -423,7 +444,12 @@ class GrunnlagspakkeService(
           val familieBaSakResponse = restResponseFamilieBaSak.body
           LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
 
-          if (familieBaSakResponse.perioder.isNotEmpty())
+          if (familieBaSakResponse.perioder.isNotEmpty()) {
+            persistenceService.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+              grunnlagspakkeId,
+              personIdOgPeriode.personId,
+              timestampOppdatering
+            )
             familieBaSakResponse.perioder.forEach { ubst ->
               if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil)) {
                 antallPerioderFunnet++
@@ -445,6 +471,7 @@ class GrunnlagspakkeService(
                 )
               }
             }
+          }
           hentGrunnlagResponseListe.add(
             HentGrunnlagResponse(
               GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
@@ -453,6 +480,9 @@ class GrunnlagspakkeService(
               "Antall perioder funnet: $antallPerioderFunnet"
             )
           )
+          if (antallPerioderFunnet > 0) {
+            forekomsterFunnet
+          }
         }
         is RestResponse.Failure -> hentGrunnlagResponseListe.add(
           HentGrunnlagResponse(
@@ -471,7 +501,8 @@ class GrunnlagspakkeService(
   fun oppdaterBarnetillegg(
     grunnlagspakkeId: Int,
     personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
-    timestampOppdatering: LocalDateTime
+    timestampOppdatering: LocalDateTime,
+    forekomsterFunnet: Boolean
   ): List<HentGrunnlagResponse> {
 
     val hentGrunnlagResponseListe = mutableListOf<HentGrunnlagResponse>()
@@ -502,7 +533,12 @@ class GrunnlagspakkeService(
           val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
           LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
 
-          if ((barnetilleggPensjonResponse.barnetilleggPensjonListe != null) && (barnetilleggPensjonResponse.barnetilleggPensjonListe.isNotEmpty()))
+          if ((barnetilleggPensjonResponse.barnetilleggPensjonListe != null) && (barnetilleggPensjonResponse.barnetilleggPensjonListe.isNotEmpty())) {
+            persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
+              grunnlagspakkeId,
+              personIdOgPeriode.personId,
+              timestampOppdatering
+            )
             barnetilleggPensjonResponse.barnetilleggPensjonListe.forEach { bt ->
               if (bt.fom.isBefore(personIdOgPeriode.periodeTil)) {
                 antallPerioderFunnet++
@@ -523,6 +559,7 @@ class GrunnlagspakkeService(
                 )
               }
             }
+          }
           hentGrunnlagResponseListe.add(
             HentGrunnlagResponse(
               GrunnlagType.BARNETILLEGG,
@@ -531,6 +568,9 @@ class GrunnlagspakkeService(
               "Antall perioder funnet: $antallPerioderFunnet"
             )
           )
+          if (antallPerioderFunnet > 0) {
+            forekomsterFunnet
+          }
         }
         is RestResponse.Failure -> hentGrunnlagResponseListe.add(
           HentGrunnlagResponse(

@@ -2,7 +2,9 @@ package no.nav.bidrag.grunnlag.persistence.repository
 
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import java.time.LocalDateTime
 
 interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetBarnetrygdOgSmaabarnstillegg, Int?> {
 
@@ -11,6 +13,11 @@ interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetB
   )
   fun hentUbst(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
 
-
-
+  @Modifying
+  @Query(
+    "update UtvidetBarnetrygdOgSmaabarnstillegg ubst " +
+        "set ubst.aktiv = false, ubst.brukTil = :timestampOppdatering " +
+        "where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.personId = :personId and ubst.aktiv = true"
+  )
+  fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
 }
