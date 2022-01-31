@@ -10,5 +10,4 @@ interface SkattegrunnlagspostRepository : JpaRepository<Skattegrunnlagspost, Int
       "select sgp from Skattegrunnlagspost sgp where sgp.skattegrunnlagId = :inntektId"
   )
   fun hentSkattegrunnlagsposter(inntektId: Int): List<Skattegrunnlagspost>
-
 }
