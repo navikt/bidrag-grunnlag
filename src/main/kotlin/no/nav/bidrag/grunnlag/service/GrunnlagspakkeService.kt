@@ -164,8 +164,7 @@ class GrunnlagspakkeService(
     PersonIdOgPeriodeRequest(
       personId = grunnlagRequest.personId,
       periodeFra = grunnlagRequest.periodeFra,
-      periodeTil = grunnlagRequest.periodeTil,
-      innsynHistoriskeInntekterDato = grunnlagRequest.innsynHistoriskeInntekterDato
+      periodeTil = grunnlagRequest.periodeTil
     )
 
   private fun oppdaterAinntekt(
@@ -182,11 +181,9 @@ class GrunnlagspakkeService(
 
       oppdaterGrunnlagspakkeResponseListe.add(OppdaterGrunnlagspakkeResponse())
 
-      val hentHistoriskeInntekter = personIdOgPeriode.innsynHistoriskeInntekterDato != null
-
       val hentAinntektRequest = HentInntektRequest(
         ident = personIdOgPeriode.personId,
-        innsynHistoriskeInntekterDato = personIdOgPeriode.innsynHistoriskeInntekterDato,
+        innsynHistoriskeInntekterDato = null,
         maanedFom = personIdOgPeriode.periodeFra.toString().substring(0, 7),
         maanedTom = personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7),
         ainntektsfilter = finnFilter(formaal),
@@ -229,7 +226,7 @@ class GrunnlagspakkeService(
                 personId = personIdOgPeriode.personId,
                 periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                 periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                brukFra = if (hentHistoriskeInntekter) personIdOgPeriode.innsynHistoriskeInntekterDato!!.atStartOfDay() else timestampOppdatering,
+                brukFra = timestampOppdatering,
                 hentetTidspunkt = timestampOppdatering
               )
 
@@ -690,6 +687,5 @@ enum class GrunnlagsRequestStatus {
 data class PersonIdOgPeriodeRequest(
   val personId: String,
   val periodeFra: LocalDate,
-  val periodeTil: LocalDate,
-  val innsynHistoriskeInntekterDato: LocalDate?
+  val periodeTil: LocalDate
 )
