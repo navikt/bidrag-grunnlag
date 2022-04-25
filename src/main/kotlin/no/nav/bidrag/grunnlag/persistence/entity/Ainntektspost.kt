@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.Column
@@ -55,11 +55,11 @@ data class Ainntektspost(
   val etterbetalingsperiodeTil: LocalDate?
 )
 
-fun Ainntektspost.toAinntektspostDto() = with(::AinntektspostDto) {
+fun Ainntektspost.toAinntektspostBo() = with(::AinntektspostBo) {
   val propertiesByName = Ainntektspost::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toAinntektspostDto)
+      else -> propertiesByName[parameter.name]?.get(this@toAinntektspostBo)
     }
   })
 }

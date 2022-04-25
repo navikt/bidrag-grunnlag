@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
@@ -8,7 +8,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.reflect.full.memberProperties
 
-data class UtvidetBarnetrygdOgSmaabarnstilleggDto(
+data class UtvidetBarnetrygdOgSmaabarnstilleggBo(
 
   @Schema(description = "ubst-id")
   val ubstId: Int = 0,
@@ -50,8 +50,8 @@ data class UtvidetBarnetrygdOgSmaabarnstilleggDto(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
   )
 
-fun UtvidetBarnetrygdOgSmaabarnstilleggDto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity() = with(::UtvidetBarnetrygdOgSmaabarnstillegg) {
-  val propertiesByName = UtvidetBarnetrygdOgSmaabarnstilleggDto::class.memberProperties.associateBy { it.name }
+fun UtvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity() = with(::UtvidetBarnetrygdOgSmaabarnstillegg) {
+  val propertiesByName = UtvidetBarnetrygdOgSmaabarnstilleggBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       else -> propertiesByName[parameter.name]?.get(this@toUtvidetBarnetrygdOgSmaabarnstilleggEntity)

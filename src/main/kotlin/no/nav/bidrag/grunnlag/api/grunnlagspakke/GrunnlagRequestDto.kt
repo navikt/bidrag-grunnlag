@@ -5,7 +5,7 @@ import no.nav.bidrag.grunnlag.service.GrunnlagType
 import java.time.LocalDate
 import javax.validation.constraints.Pattern
 
-data class GrunnlagRequest(
+data class GrunnlagRequestDto(
 
   @Schema(description = "Hvilken type grunnlag skal hentes")
   val grunnlagType: GrunnlagType,

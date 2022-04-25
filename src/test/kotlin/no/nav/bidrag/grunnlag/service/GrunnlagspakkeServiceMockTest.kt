@@ -14,13 +14,13 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
-import no.nav.bidrag.grunnlag.dto.AinntektDto
-import no.nav.bidrag.grunnlag.dto.AinntektspostDto
-import no.nav.bidrag.grunnlag.dto.BarnetilleggDto
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
-import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.bo.AinntektBo
+import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
+import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
@@ -54,33 +54,33 @@ class GrunnlagspakkeServiceMockTest {
   private lateinit var bidragGcpProxyConsumerMock: BidragGcpProxyConsumer
 
   @Captor
-  private lateinit var grunnlagspakkeDtoCaptor: ArgumentCaptor<GrunnlagspakkeDto>
+  private lateinit var grunnlagspakkeBoCaptor: ArgumentCaptor<GrunnlagspakkeBo>
 
   @Captor
-  private lateinit var ainntektDtoCaptor: ArgumentCaptor<AinntektDto>
+  private lateinit var ainntektBoCaptor: ArgumentCaptor<AinntektBo>
 
   @Captor
-  private lateinit var ainntektspostDtoCaptor: ArgumentCaptor<AinntektspostDto>
+  private lateinit var ainntektspostBoCaptor: ArgumentCaptor<AinntektspostBo>
 
   @Captor
-  private lateinit var skattegrunnlagDtoCaptor: ArgumentCaptor<SkattegrunnlagDto>
+  private lateinit var skattegrunnlagBoCaptor: ArgumentCaptor<SkattegrunnlagBo>
 
   @Captor
-  private lateinit var skattegrunnlagspostDtoCaptor: ArgumentCaptor<SkattegrunnlagspostDto>
+  private lateinit var skattegrunnlagspostBoCaptor: ArgumentCaptor<SkattegrunnlagspostBo>
 
   @Captor
-  private lateinit var utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor: ArgumentCaptor<UtvidetBarnetrygdOgSmaabarnstilleggDto>
+  private lateinit var utvidetBarnetrygdOgSmaabarnstilleggBoCaptor: ArgumentCaptor<UtvidetBarnetrygdOgSmaabarnstilleggBo>
 
   @Captor
-  private lateinit var barnetilleggDtoCaptor: ArgumentCaptor<BarnetilleggDto>
+  private lateinit var barnetilleggBoCaptor: ArgumentCaptor<BarnetilleggBo>
 
   @Test
   fun `Skal opprette ny grunnlagspakke`() {
-    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeBoCaptor)))
       .thenReturn(byggGrunnlagspakkeDto())
     val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
-    val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
+    val grunnlagspakkeDto = grunnlagspakkeBoCaptor.value
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeBo::class.java))
     assertAll(
       Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull() },
       // sjekk GrunnlagspakkeDto
@@ -92,28 +92,28 @@ class GrunnlagspakkeServiceMockTest {
   @Suppress("NonAsciiCharacters")
   fun `Skal hente grunnlagspakke med tilhørende grunnlag`() {
 
-    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeBoCaptor)))
       .thenReturn(byggGrunnlagspakkeDto())
-    Mockito.`when`(persistenceServiceMock.opprettAinntekt(MockitoHelper.capture(ainntektDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettAinntekt(MockitoHelper.capture(ainntektBoCaptor)))
       .thenReturn(byggAinntektDto())
-    Mockito.`when`(persistenceServiceMock.opprettAinntektspost(MockitoHelper.capture(ainntektspostDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettAinntektspost(MockitoHelper.capture(ainntektspostBoCaptor)))
       .thenReturn(byggAinntektspostDto())
-    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlag(MockitoHelper.capture(skattegrunnlagDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlag(MockitoHelper.capture(skattegrunnlagBoCaptor)))
       .thenReturn(byggSkattegrunnlagSkattDto())
-    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlagspost(MockitoHelper.capture(skattegrunnlagspostDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettSkattegrunnlagspost(MockitoHelper.capture(skattegrunnlagspostBoCaptor)))
       .thenReturn(byggSkattegrunnlagspostDto())
     Mockito.`when`(
       persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
         MockitoHelper.capture(
-          utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor
+          utvidetBarnetrygdOgSmaabarnstilleggBoCaptor
         )
       )
     )
       .thenReturn(byggUtvidetBarnetrygdOgSmaabarnstilleggDto())
-    Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(MockitoHelper.capture(barnetilleggDtoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(MockitoHelper.capture(barnetilleggBoCaptor)))
       .thenReturn(byggBarnetilleggDto())
 
-    val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
+    val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val nyAinntektOpprettet = persistenceServiceMock.opprettAinntekt(byggAinntektDto())
     val nyAinntektspostOpprettet = persistenceServiceMock.opprettAinntektspost(byggAinntektspostDto())
     val nyttSkattegrunnlagOpprettet = persistenceServiceMock.opprettSkattegrunnlag(byggSkattegrunnlagSkattDto())
@@ -122,26 +122,26 @@ class GrunnlagspakkeServiceMockTest {
       persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(byggUtvidetBarnetrygdOgSmaabarnstilleggDto())
     val nyBarnetilleggOpprettet = persistenceServiceMock.opprettBarnetillegg(byggBarnetilleggDto())
 
-    val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
-    val ainntektDtoListe = ainntektDtoCaptor.allValues
-    val ainntektspostDtoListe = ainntektspostDtoCaptor.allValues
-    val skattegrunnlagDtoListe = skattegrunnlagDtoCaptor.allValues
-    val skattegrunnlagspostDtoListe = skattegrunnlagspostDtoCaptor.allValues
-    val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor.allValues
-    val barnetilleggListe = barnetilleggDtoCaptor.allValues
+    val grunnlagspakkeDto = grunnlagspakkeBoCaptor.value
+    val ainntektDtoListe = ainntektBoCaptor.allValues
+    val ainntektspostDtoListe = ainntektspostBoCaptor.allValues
+    val skattegrunnlagDtoListe = skattegrunnlagBoCaptor.allValues
+    val skattegrunnlagspostDtoListe = skattegrunnlagspostBoCaptor.allValues
+    val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
+    val barnetilleggListe = barnetilleggBoCaptor.allValues
 
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(MockitoHelper.any(AinntektDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntektspost(MockitoHelper.any(AinntektspostDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSkattegrunnlag(MockitoHelper.any(SkattegrunnlagDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSkattegrunnlagspost(MockitoHelper.any(SkattegrunnlagspostDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(MockitoHelper.any(AinntektBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntektspost(MockitoHelper.any(AinntektspostBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSkattegrunnlag(MockitoHelper.any(SkattegrunnlagBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSkattegrunnlagspost(MockitoHelper.any(SkattegrunnlagspostBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1))
-      .opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.any(UtvidetBarnetrygdOgSmaabarnstilleggDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarnetillegg(MockitoHelper.any(BarnetilleggDto::class.java))
+      .opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.any(UtvidetBarnetrygdOgSmaabarnstilleggBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarnetillegg(MockitoHelper.any(BarnetilleggBo::class.java))
 
     assertAll(
-      Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull() },
-      Executable { assertThat(nyGrunnlagspakkeOpprettet.grunnlagspakkeId).isNotNull() },
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       Executable { assertThat(nyAinntektOpprettet).isNotNull() },
       Executable { assertThat(nyAinntektOpprettet.inntektId).isNotNull() },
@@ -221,31 +221,31 @@ class GrunnlagspakkeServiceMockTest {
   @Suppress("NonAsciiCharacters")
   fun `Skal oppdatere grunnlagspakke med utvidet barnetrygd`() {
 
-    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor))).thenReturn(byggGrunnlagspakkeDto())
+    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeBoCaptor))).thenReturn(byggGrunnlagspakkeDto())
     Mockito.`when`(
       persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-        MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor)
+        MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggBoCaptor)
       )
     ).thenReturn(byggUtvidetBarnetrygdOgSmaabarnstilleggDto())
     Mockito.`when`(familieBaSakConsumerMock.hentFamilieBaSak(MockitoHelper.any(FamilieBaSakRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggFamilieBaSakResponse()))
 
-    val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
+    val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val oppdatertGrunnlagspakke = grunnlagspakkeService.oppdaterGrunnlagspakke(
-      nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+      grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd()
     )
 
-    val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
-    val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggDtoCaptor.allValues
+    val grunnlagspakkeDto = grunnlagspakkeBoCaptor.value
+    val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
 
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1))
-      .opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.any(UtvidetBarnetrygdOgSmaabarnstilleggDto::class.java))
+      .opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.any(UtvidetBarnetrygdOgSmaabarnstilleggBo::class.java))
 
     assertAll(
-      Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull() },
-      Executable { assertThat(nyGrunnlagspakkeOpprettet.grunnlagspakkeId).isNotNull() },
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       // sjekk GrunnlagspakkeDto
       Executable { assertThat(grunnlagspakkeDto).isNotNull() },
@@ -265,7 +265,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(ubstListe[0].deltBosted).isFalse },
 
       // sjekk oppdatertGrunnlagspakke
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe.size).isEqualTo(1) },
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].grunnlagType).isEqualTo(GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG) },
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].personId).isEqualTo("12345678910") },
@@ -278,26 +278,26 @@ class GrunnlagspakkeServiceMockTest {
   @Suppress("NonAsciiCharacters")
   fun `Skal oppdatere grunnlagspakke med barnetillegg fra Pensjon`() {
 
-    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeDtoCaptor))).thenReturn(byggGrunnlagspakkeDto())
-    Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(MockitoHelper.capture(barnetilleggDtoCaptor))).thenReturn(byggBarnetilleggDto())
+    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(grunnlagspakkeBoCaptor))).thenReturn(byggGrunnlagspakkeDto())
+    Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(MockitoHelper.capture(barnetilleggBoCaptor))).thenReturn(byggBarnetilleggDto())
     Mockito.`when`(bidragGcpProxyConsumerMock.hentBarnetilleggPensjon(MockitoHelper.any(HentBarnetilleggPensjonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentBarnetilleggPensjonResponse()))
 
-    val nyGrunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
+    val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val oppdatertGrunnlagspakke = grunnlagspakkeService.oppdaterGrunnlagspakke(
-      nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+      grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg()
     )
 
-    val grunnlagspakkeDto = grunnlagspakkeDtoCaptor.value
-    val barnetilleggListe = barnetilleggDtoCaptor.allValues
+    val grunnlagspakkeDto = grunnlagspakkeBoCaptor.value
+    val barnetilleggListe = barnetilleggBoCaptor.allValues
 
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeDto::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarnetillegg(MockitoHelper.any(BarnetilleggDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(GrunnlagspakkeBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarnetillegg(MockitoHelper.any(BarnetilleggBo::class.java))
 
     assertAll(
-      Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull() },
-      Executable { assertThat(nyGrunnlagspakkeOpprettet.grunnlagspakkeId).isNotNull() },
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       // sjekk GrunnlagspakkeDto
       Executable { assertThat(grunnlagspakkeDto).isNotNull() },
@@ -317,7 +317,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(barnetilleggListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) },
 
       // sjekk oppdatertGrunnlagspakke
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe.size).isEqualTo(1) },
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].grunnlagType).isEqualTo(GrunnlagType.BARNETILLEGG) },
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].personId).isEqualTo("12345678910") },

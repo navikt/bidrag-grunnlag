@@ -1,11 +1,11 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import java.math.BigDecimal
 import kotlin.reflect.full.memberProperties
 
-data class SkattegrunnlagspostDto(
+data class SkattegrunnlagspostBo(
 
   @Schema(description = "Skattegrunnlagspost-id")
   val skattegrunnlagspostId: Int = 0,
@@ -23,8 +23,8 @@ data class SkattegrunnlagspostDto(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun SkattegrunnlagspostDto.toSkattegrunnlagspostEntity() = with(::Skattegrunnlagspost) {
-  val propertiesByName = SkattegrunnlagspostDto::class.memberProperties.associateBy { it.name }
+fun SkattegrunnlagspostBo.toSkattegrunnlagspostEntity() = with(::Skattegrunnlagspost) {
+  val propertiesByName = SkattegrunnlagspostBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostEntity)

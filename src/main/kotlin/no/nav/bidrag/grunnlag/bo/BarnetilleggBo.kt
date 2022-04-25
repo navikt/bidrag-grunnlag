@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class BarnetilleggDto(
+data class BarnetilleggBo(
 
   @Schema(description = "Barnetillegg-id")
   val barnetilleggId: Int = 0,
@@ -49,8 +49,8 @@ data class BarnetilleggDto(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
   )
 
-fun BarnetilleggDto.toBarnetilleggEntity() = with(::Barnetillegg) {
-  val propertiesByName = BarnetilleggDto::class.memberProperties.associateBy { it.name }
+fun BarnetilleggBo.toBarnetilleggEntity() = with(::Barnetillegg) {
+  val propertiesByName = BarnetilleggBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggEntity)

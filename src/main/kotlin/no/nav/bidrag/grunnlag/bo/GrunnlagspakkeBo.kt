@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class GrunnlagspakkeDto (
+data class GrunnlagspakkeBo (
 
   @Schema(description = "grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
@@ -27,8 +27,8 @@ data class GrunnlagspakkeDto (
   val formaal: String = ""
   )
 
-fun GrunnlagspakkeDto.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
-  val propertiesByName = GrunnlagspakkeDto::class.memberProperties.associateBy { it.name }
+fun GrunnlagspakkeBo.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
+  val propertiesByName = GrunnlagspakkeBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeEntity)

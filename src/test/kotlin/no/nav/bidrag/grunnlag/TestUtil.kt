@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequestDto
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
@@ -15,13 +15,13 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
-import no.nav.bidrag.grunnlag.dto.AinntektDto
-import no.nav.bidrag.grunnlag.dto.AinntektspostDto
-import no.nav.bidrag.grunnlag.dto.BarnetilleggDto
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
-import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.bo.AinntektBo
+import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
+import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.service.BarnType
 import no.nav.bidrag.grunnlag.service.Formaal
 import no.nav.bidrag.grunnlag.service.GrunnlagType
@@ -54,32 +54,32 @@ class TestUtil {
 
   companion object {
 
-    fun byggNyGrunnlagspakkeRequest() = OpprettGrunnlagspakkeRequest(
+    fun byggNyGrunnlagspakkeRequest() = OpprettGrunnlagspakkeRequestDto(
       opprettetAv = "RTV9999",
       formaal = Formaal.BIDRAG,
     )
 
-    fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequest(
-      grunnlagRequestListe = listOf(
-        GrunnlagRequest(
+    fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
           grunnlagType = GrunnlagType.AINNTEKT,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
-        GrunnlagRequest(
+        GrunnlagRequestDto(
           grunnlagType = GrunnlagType.SKATTEGRUNNLAG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
-        GrunnlagRequest(
+        GrunnlagRequestDto(
           grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
-        GrunnlagRequest(
+        GrunnlagRequestDto(
           grunnlagType = GrunnlagType.BARNETILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
@@ -88,9 +88,9 @@ class TestUtil {
       )
     )
 
-    fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequest(
-      grunnlagRequestListe = listOf(
-        GrunnlagRequest(
+    fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
           grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
@@ -99,9 +99,9 @@ class TestUtil {
       )
     )
 
-    fun byggOppdaterGrunnlagspakkeRequestBarnetillegg() = OppdaterGrunnlagspakkeRequest(
-      grunnlagRequestListe = listOf(
-        GrunnlagRequest(
+    fun byggOppdaterGrunnlagspakkeRequestBarnetillegg() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
           grunnlagType = GrunnlagType.BARNETILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
@@ -110,14 +110,14 @@ class TestUtil {
       )
     )
 
-    fun byggGrunnlagspakkeDto() = GrunnlagspakkeDto(
+    fun byggGrunnlagspakkeDto() = GrunnlagspakkeBo(
       grunnlagspakkeId = (1..100).random(),
       opprettetAv = "RTV9999",
       opprettetTimestamp = LocalDateTime.now(),
       endretTimestamp = LocalDateTime.now()
     )
 
-    fun byggAinntektDto() = AinntektDto(
+    fun byggAinntektDto() = AinntektBo(
       inntektId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
@@ -129,7 +129,7 @@ class TestUtil {
       brukTil = null
     )
 
-    fun byggAinntektspostDto() = AinntektspostDto(
+    fun byggAinntektspostDto() = AinntektspostBo(
       inntektspostId = (1..100).random(),
       inntektId = (1..100).random(),
       utbetalingsperiode = "202108",
@@ -144,7 +144,7 @@ class TestUtil {
       etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1)
     )
 
-    fun byggSkattegrunnlagSkattDto() = SkattegrunnlagDto(
+    fun byggSkattegrunnlagSkattDto() = SkattegrunnlagBo(
       skattegrunnlagId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "7654321",
@@ -156,7 +156,7 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggSkattegrunnlagspostDto() = SkattegrunnlagspostDto(
+    fun byggSkattegrunnlagspostDto() = SkattegrunnlagspostBo(
       skattegrunnlagspostId = (1..100).random(),
       skattegrunnlagId = (1..100).random(),
       skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
@@ -164,7 +164,7 @@ class TestUtil {
       belop = BigDecimal.valueOf(171717),
     )
 
-    fun byggUtvidetBarnetrygdOgSmaabarnstilleggDto() = UtvidetBarnetrygdOgSmaabarnstilleggDto(
+    fun byggUtvidetBarnetrygdOgSmaabarnstilleggDto() = UtvidetBarnetrygdOgSmaabarnstilleggBo(
       ubstId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
@@ -179,7 +179,7 @@ class TestUtil {
       deltBosted = false
     )
 
-    fun byggBarnetilleggDto() = BarnetilleggDto(
+    fun byggBarnetilleggDto() = BarnetilleggBo(
       barnetilleggId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       partPersonId = "1234567",

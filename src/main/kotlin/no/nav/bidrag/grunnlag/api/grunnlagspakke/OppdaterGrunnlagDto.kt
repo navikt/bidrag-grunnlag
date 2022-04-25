@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.service.GrunnlagType
 import no.nav.bidrag.grunnlag.service.GrunnlagsRequestStatus
 
-data class HentGrunnlagResponse(
+data class OppdaterGrunnlagDto(
 
   @Schema(description = "Hvilken type grunnlag som er hentet")
   val grunnlagType: GrunnlagType,

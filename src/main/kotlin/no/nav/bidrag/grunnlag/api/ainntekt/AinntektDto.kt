@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class HentAinntektResponse(
+data class AinntektDto(
 
   @Schema(description = "Id til personen inntekten er rapportert for")
   val personId: String,
@@ -28,5 +28,5 @@ data class HentAinntektResponse(
   val hentetTidspunkt: LocalDateTime,
 
   @Schema(description = "Liste over poster for innhentede inntektsposter")
-  val ainntektspostListe: List<HentAinntektspostResponse>
+  val ainntektspostListe: List<AinntektspostDto>
   )

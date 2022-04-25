@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import java.math.BigDecimal
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -30,11 +30,11 @@ data class Skattegrunnlagspost(
   val belop: BigDecimal = BigDecimal.ZERO
 )
 
-fun Skattegrunnlagspost.toSkattegrunnlagspostDto() = with(::SkattegrunnlagspostDto) {
+fun Skattegrunnlagspost.toSkattegrunnlagspostBo() = with(::SkattegrunnlagspostBo) {
   val propertiesByName = Skattegrunnlagspost::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostDto)
+      else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostBo)
     }
   })
 }

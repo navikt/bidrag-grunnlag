@@ -1,17 +1,13 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.comparator.IPeriod
-import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
-import org.mockito.kotlin.description
 
 import java.math.BigDecimal
 import java.time.LocalDate
-import javax.persistence.Column
 import kotlin.reflect.full.memberProperties
 
-data class AinntektspostDto(
+data class AinntektspostBo(
 
   @Schema(description = "Inntektspost-id")
   val inntektspostId: Int = 0,
@@ -53,8 +49,8 @@ data class AinntektspostDto(
   val etterbetalingsperiodeTil: LocalDate?
 )
 
-fun AinntektspostDto.toAinntektspostEntity() = with(::Ainntektspost) {
-  val propertiesByName = AinntektspostDto::class.memberProperties.associateBy { it.name }
+fun AinntektspostBo.toAinntektspostEntity() = with(::Ainntektspost) {
+  val propertiesByName = AinntektspostBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       else -> propertiesByName[parameter.name]?.get(this@toAinntektspostEntity)

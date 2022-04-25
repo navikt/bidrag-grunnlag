@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class HentAinntektspostResponse (
+data class AinntektspostDto (
 
   @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
   val utbetalingsperiode: String?,

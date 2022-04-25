@@ -5,12 +5,11 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentKomplettGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeResponse
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeResponse
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequestDto
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
@@ -82,13 +81,13 @@ class GrunnlagspakkeControllerTest(
 
   @Test
   fun `skal opprette ny grunnlagspakke`() {
-    opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
+    opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
   }
 
   @Test
   fun `skal oppdatere en grunnlagspakke`() {
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
+    val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
     Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenReturn(
       ResponseEntity(HentInntektListeResponse(emptyList(), Aktoer("", AktoerType.NATURLIG_IDENT)), HttpStatus.OK)
@@ -109,15 +108,15 @@ class GrunnlagspakkeControllerTest(
         ResponseEntity(FamilieBaSakResponse(emptyList()), HttpStatus.OK)
       )
 
-    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(
-      nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+    val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
+      grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
-      OppdaterGrunnlagspakkeResponse::class.java
+      OppdaterGrunnlagspakkeDto::class.java
     ) { isOk() }
 
-    assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.size).isEqualTo(4)
 
-    oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+    oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
     }
   }
@@ -125,7 +124,7 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
+    val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
     Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponseIntern>>())).thenThrow(
       HttpClientErrorException(HttpStatus.NOT_FOUND)
@@ -145,16 +144,16 @@ class GrunnlagspakkeControllerTest(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
 
-    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(
-      nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+    val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
+      grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
-      OppdaterGrunnlagspakkeResponse::class.java
+      OppdaterGrunnlagspakkeDto::class.java
     ) { isOk() }
 
-    assertThat(oppdaterGrunnlagspakkeResponse).isNotNull
-    assertThat(oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto).isNotNull
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.size).isEqualTo(4)
 
-    oppdaterGrunnlagspakkeResponse.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+    oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)
     }
   }
@@ -162,18 +161,18 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal finne data for en grunnlagspakke`() {
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
+    val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
     val hentGrunnlagspakkeResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
-      "/grunnlagspakke/${nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId}",
+      "/grunnlagspakke/${grunnlagspakkeIdOpprettet}",
       null,
-      HentKomplettGrunnlagspakkeResponse::class.java
+      HentGrunnlagspakkeDto::class.java
     ) { isOk() }
 
     assertNotNull(hentGrunnlagspakkeResponse)
-    assertThat(hentGrunnlagspakkeResponse.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId)
+    assertThat(hentGrunnlagspakkeResponse.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet)
   }
 
   @Test
@@ -182,11 +181,11 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
 
-    val nyGrunnlagspakkeOpprettetResponse = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456"))
+    val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
     Mockito.`when`(
       grunnlagspakkeService.oppdaterGrunnlagspakke(
-        nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+        grunnlagspakkeIdOpprettet,
         TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett()
       )
     )
@@ -194,7 +193,7 @@ class GrunnlagspakkeControllerTest(
 
     val oppdaterGrunnlagspakkeResponse =
       oppdaterGrunnlagspakke(
-        nyGrunnlagspakkeOpprettetResponse.grunnlagspakkeId,
+        grunnlagspakkeIdOpprettet,
         TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
         String::class.java,
         mockMvc
@@ -255,7 +254,7 @@ class GrunnlagspakkeControllerTest(
       HttpMethod.POST,
       GrunnlagspakkeController.GRUNNLAGSPAKKE_NY,
       fileContent,
-      OpprettGrunnlagspakkeResponse::class.java
+      Int::class.java
     ) { isOk() }
 
     assertNotNull(okResult)
@@ -277,32 +276,32 @@ class GrunnlagspakkeControllerTest(
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestListe"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke5.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestListe[0].grunnlagType"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe[0].grunnlagType"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke6.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestListe[0].personId"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe[0].personId"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke7.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestListe[0].personId"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe[0].personId"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke8.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestListe[0].periodeFra"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe[0].periodeFra"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke9.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestListe[0].periodeTil"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe[0].periodeTil"])
 
     val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
@@ -311,9 +310,9 @@ class GrunnlagspakkeControllerTest(
     Mockito.`when`(
       grunnlagspakkeService.oppdaterGrunnlagspakke(
         1,
-        OppdaterGrunnlagspakkeRequest(
-          grunnlagRequestListe = listOf(
-            GrunnlagRequest(
+        OppdaterGrunnlagspakkeRequestDto(
+          grunnlagRequestDtoListe = listOf(
+            GrunnlagRequestDto(
               grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
               personId = "12345678901",
               periodeFra = LocalDate.parse("2021-11-01"),
@@ -323,7 +322,7 @@ class GrunnlagspakkeControllerTest(
         )
       )
     )
-      .thenReturn(OppdaterGrunnlagspakkeResponse())
+      .thenReturn(OppdaterGrunnlagspakkeDto())
 
     val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")
     val okResult = TestUtil.performRequest(
@@ -331,7 +330,7 @@ class GrunnlagspakkeControllerTest(
       HttpMethod.POST,
       "/grunnlagspakke/1/oppdater",
       fileContent,
-      OppdaterGrunnlagspakkeResponse::class.java
+      OppdaterGrunnlagspakkeDto::class.java
     ) { isOk() }
 
     assertNotNull(okResult)
@@ -379,27 +378,27 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
-    Mockito.`when`(grunnlagspakkeService.hentKomplettGrunnlagspakke(1))
-      .thenReturn(HentKomplettGrunnlagspakkeResponse())
+    Mockito.`when`(grunnlagspakkeService.hentGrunnlagspakke(1))
+      .thenReturn(HentGrunnlagspakkeDto())
 
     val okResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,
       "/grunnlagspakke/1",
       null,
-      HentKomplettGrunnlagspakkeResponse::class.java
+      HentGrunnlagspakkeDto::class.java
     ) { isOk() }
 
     assertNotNull(okResult)
   }
 
-  private fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequest: OpprettGrunnlagspakkeRequest): OpprettGrunnlagspakkeResponse {
+  private fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Int {
     val nyGrunnlagspakkeOpprettetResponse = TestUtil.performRequest(
       mockMvc,
       HttpMethod.POST,
       GrunnlagspakkeController.GRUNNLAGSPAKKE_NY,
-      opprettGrunnlagspakkeRequest,
-      OpprettGrunnlagspakkeResponse::class.java
+      opprettGrunnlagspakkeRequestDto,
+      Int::class.java
     ) { isOk() }
 
     assertNotNull(nyGrunnlagspakkeOpprettetResponse)
@@ -420,7 +419,7 @@ class GrunnlagspakkeControllerTest(
 
   private fun <Response> oppdaterGrunnlagspakke(
     grunnlagspakkeId: Int,
-    oppdaterGrunnlagspakkeRequest: OppdaterGrunnlagspakkeRequest,
+    oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
     responseType: Class<Response>,
     customMockMvc: MockMvc? = null,
     expectedStatus: StatusResultMatchersDsl.() -> Unit
@@ -429,7 +428,7 @@ class GrunnlagspakkeControllerTest(
       customMockMvc ?: mockMvc,
       HttpMethod.POST,
       "/grunnlagspakke/${grunnlagspakkeId}/oppdater",
-      oppdaterGrunnlagspakkeRequest,
+      oppdaterGrunnlagspakkeRequestDto,
       responseType
     ) { expectedStatus() }
   }

@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.api.skatt
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 
-data class HentSkattegrunnlagspostResponse(
+data class SkattegrunnlagspostDto(
 
   @Schema(description = "Type skattegrunnlag, ordinær eller Svalbard")
   val skattegrunnlagType: String,

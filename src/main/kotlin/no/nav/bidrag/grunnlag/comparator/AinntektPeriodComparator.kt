@@ -1,13 +1,13 @@
 package no.nav.bidrag.grunnlag.comparator
 
-import no.nav.bidrag.grunnlag.dto.AinntektDto
-import no.nav.bidrag.grunnlag.dto.AinntektspostDto
+import no.nav.bidrag.grunnlag.bo.AinntektBo
+import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.util.toJsonString
 
-class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<AinntektDto, AinntektspostDto>>() {
+class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<AinntektBo, AinntektspostBo>>() {
   override fun isEntitiesEqual(
-    newEntity: PeriodComparable<AinntektDto, AinntektspostDto>,
-    existingEntity: PeriodComparable<AinntektDto, AinntektspostDto>
+    newEntity: PeriodComparable<AinntektBo, AinntektspostBo>,
+    existingEntity: PeriodComparable<AinntektBo, AinntektspostBo>
   ): Boolean {
     val newAinntektsposter = sortAinntektsposter(newEntity.children!!)
     val existingAinntektsposter = sortAinntektsposter(existingEntity.children!!)
@@ -34,7 +34,7 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<Ainnt
     return differences.isEmpty()
   }
 
-  private fun sortAinntektsposter(ainntektsposter: List<AinntektspostDto>): List<AinntektspostDto> {
+  private fun sortAinntektsposter(ainntektsposter: List<AinntektspostBo>): List<AinntektspostBo> {
     return ainntektsposter.sortedWith(compareBy({it.utbetalingsperiode}, {it.virksomhetId}, {it.opplysningspliktigId}, { it.inntektType }, { it.fordelType }, {it.beskrivelse}))
   }
 }

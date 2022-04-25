@@ -5,7 +5,7 @@ import no.nav.bidrag.grunnlag.service.Formaal
 import javax.validation.constraints.NotBlank
 
 @Schema(description ="Request for å opprette ny grunnlagspakke, uten annet innhold")
-data class OpprettGrunnlagspakkeRequest (
+data class OpprettGrunnlagspakkeRequestDto (
 
   @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. BIDRAG, FORSKUDD eller SAERTILSKUDD")
   val formaal: Formaal,

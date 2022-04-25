@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -33,11 +33,11 @@ data class Grunnlagspakke(
   val formaal: String = ""
 )
 
-fun Grunnlagspakke.toGrunnlagspakkeDto() = with(::GrunnlagspakkeDto) {
+fun Grunnlagspakke.toGrunnlagspakkeBo() = with(::GrunnlagspakkeBo) {
   val propertiesByName = Grunnlagspakke::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeDto)
+      else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeBo)
     }
   })
 }

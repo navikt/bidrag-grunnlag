@@ -1,17 +1,16 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.comparator.IPeriod
-import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
-
+import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class AinntektDto(
+data class SkattegrunnlagBo(
 
-  @Schema(description = "Inntekt-id")
-  val inntektId: Int = 0,
+  @Schema(description = "Skattegrunnlag-id")
+  val skattegrunnlagId: Int = 0,
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
@@ -36,13 +35,13 @@ data class AinntektDto(
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  ): IPeriod
+) : IPeriod
 
-fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
-  val propertiesByName = AinntektDto::class.memberProperties.associateBy { it.name }
+fun SkattegrunnlagBo.toSkattegrunnlagEntity() = with(::Skattegrunnlag) {
+  val propertiesByName = SkattegrunnlagBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toAinntektEntity)
+      else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagEntity)
     }
   })
 

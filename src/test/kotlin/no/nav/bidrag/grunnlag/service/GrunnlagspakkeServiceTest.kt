@@ -1,13 +1,13 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.dto.AinntektDto
-import no.nav.bidrag.grunnlag.dto.AinntektspostDto
-import no.nav.bidrag.grunnlag.dto.BarnetilleggDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
-import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.grunnlag.bo.AinntektBo
+import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
+import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.assertj.core.api.Assertions.assertThat
@@ -52,12 +52,12 @@ class GrunnlagspakkeServiceTest {
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på å opprette ny grunnlagspakke`() {
-    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(
+    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(
       Formaal.FORSKUDD, "X123456"
     )
 
     val nyGrunnlagspakkeOpprettet =
-      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
+      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
 
     assertAll(
       Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull }
@@ -67,25 +67,25 @@ class GrunnlagspakkeServiceTest {
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på å lukke en grunnlagspakke`() {
-    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
-    val opprettGrunnlagspakkeResponse = grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
-    val lukketGrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(opprettGrunnlagspakkeResponse.grunnlagspakkeId)
+    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
+    val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
+    val lukketGrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(grunnlagspakkeIdOpprettet)
 
     assertAll(
-      Executable { assertThat(opprettGrunnlagspakkeResponse).isNotNull },
-      Executable { assertThat(lukketGrunnlagspakke).isEqualTo(opprettGrunnlagspakkeResponse.grunnlagspakkeId) }
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull },
+      Executable { assertThat(lukketGrunnlagspakke).isEqualTo(grunnlagspakkeIdOpprettet) }
     )
   }
 
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på å hente grunnlagspakke med aktive og inaktive inntekter + andre grunnlag`() {
-    val opprettGrunnlagspakkeRequest = OpprettGrunnlagspakkeRequest(Formaal.FORSKUDD, "X123456")
-    val nyGrunnlagspakkeOpprettet =
-      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequest)
+    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
+    val grunnlagspakkeIdOpprettet =
+      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
 
-    val ainntektDto = AinntektDto(
-      grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+    val ainntektBo = AinntektBo(
+      grunnlagspakkeId = grunnlagspakkeIdOpprettet,
       personId = "1234567",
       periodeFra = LocalDate.parse("2021-06-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
@@ -95,10 +95,10 @@ class GrunnlagspakkeServiceTest {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    val opprettetAinntekt = persistenceService.opprettAinntekt(ainntektDto)
+    val opprettetAinntekt = persistenceService.opprettAinntekt(ainntektBo)
 
     persistenceService.opprettAinntektspost(
-      AinntektspostDto(
+      AinntektspostBo(
         inntektId = opprettetAinntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2021-05-01"),
@@ -114,7 +114,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
     persistenceService.opprettAinntektspost(
-      AinntektspostDto(
+      AinntektspostBo(
         inntektId = opprettetAinntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2020-01-01"),
@@ -131,8 +131,8 @@ class GrunnlagspakkeServiceTest {
     )
 
     // tester at inntekt som er merket med aktiv = false ikke hentes
-    val inaktivInntektDto = AinntektDto(
-      grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+    val inaktivInntektDto = AinntektBo(
+      grunnlagspakkeId = grunnlagspakkeIdOpprettet,
       personId = "1234567",
       periodeFra = LocalDate.parse("2020-06-01"),
       periodeTil = LocalDate.parse("2020-07-01"),
@@ -145,7 +145,7 @@ class GrunnlagspakkeServiceTest {
     val inaktivAinntekt = persistenceService.opprettAinntekt(inaktivInntektDto)
 
     persistenceService.opprettAinntektspost(
-      AinntektspostDto(
+      AinntektspostBo(
         inntektId = inaktivAinntekt.inntektId,
         utbetalingsperiode = "202006",
         opptjeningsperiodeFra = LocalDate.parse("2020-05-01"),
@@ -162,8 +162,8 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Legger inn inntekt for person nr 2
-    val inntektDto2 = AinntektDto(
-      grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+    val inntektDto2 = AinntektBo(
+      grunnlagspakkeId = grunnlagspakkeIdOpprettet,
       personId = "999999",
       periodeFra = LocalDate.parse("2021-07-01"),
       periodeTil = LocalDate.parse("2021-08-01"),
@@ -176,7 +176,7 @@ class GrunnlagspakkeServiceTest {
     val opprettetAinntekt2 = persistenceService.opprettAinntekt(inntektDto2)
 
     persistenceService.opprettAinntektspost(
-      AinntektspostDto(
+      AinntektspostBo(
         inntektId = opprettetAinntekt2.inntektId,
         utbetalingsperiode = "202107",
         opptjeningsperiodeFra = LocalDate.parse("2021-06-01"),
@@ -193,8 +193,8 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Test på inntekt fra Skatt
-    val skattegrunnlagDto = SkattegrunnlagDto(
-      grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+    val skattegrunnlagBo = SkattegrunnlagBo(
+      grunnlagspakkeId = grunnlagspakkeIdOpprettet,
       personId = "345678",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2022-01-01"),
@@ -204,10 +204,10 @@ class GrunnlagspakkeServiceTest {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(skattegrunnlagDto)
+    val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(skattegrunnlagBo)
 
     persistenceService.opprettSkattegrunnlagspost(
-      SkattegrunnlagspostDto(
+      SkattegrunnlagspostBo(
         skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
         skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
         inntektType = "Loenn",
@@ -217,8 +217,8 @@ class GrunnlagspakkeServiceTest {
 
     // Test på utvidet barnetrygd og småbarnstillegg
     persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-      UtvidetBarnetrygdOgSmaabarnstilleggDto(
-        grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+      UtvidetBarnetrygdOgSmaabarnstilleggBo(
+        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
         personId = "22334455",
         type = "Utvidet barnetrygd",
         periodeFra = LocalDate.parse("2021-05-01"),
@@ -229,8 +229,8 @@ class GrunnlagspakkeServiceTest {
 
     // Test på barnetillegg
     persistenceService.opprettBarnetillegg(
-      BarnetilleggDto(
-        grunnlagspakkeId = nyGrunnlagspakkeOpprettet.grunnlagspakkeId,
+      BarnetilleggBo(
+        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
         partPersonId = "22334455",
         barnPersonId = "1234567",
         barnetilleggType = BarnetilleggType.PENSJON.toString(),
@@ -241,11 +241,11 @@ class GrunnlagspakkeServiceTest {
     )
 
     val komplettGrunnlagspakkeFunnet =
-      grunnlagspakkeService.hentKomplettGrunnlagspakke(nyGrunnlagspakkeOpprettet.grunnlagspakkeId)
+      grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeIdOpprettet)
 
     assertAll(
       Executable { assertThat(komplettGrunnlagspakkeFunnet).isNotNull },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(nyGrunnlagspakkeOpprettet.grunnlagspakkeId) },
+      Executable { assertThat(komplettGrunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe.size).isEqualTo(2) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].personId).isEqualTo("1234567") },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-06-01")) },
