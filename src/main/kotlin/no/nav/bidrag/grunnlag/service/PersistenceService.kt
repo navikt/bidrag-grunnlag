@@ -1,12 +1,13 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.api.ainntekt.AinntektDto
-import no.nav.bidrag.grunnlag.api.ainntekt.AinntektspostDto
-import no.nav.bidrag.grunnlag.api.barnetillegg.BarnetilleggDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.api.skatt.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.api.skatt.SkattegrunnlagspostDto
-import no.nav.bidrag.grunnlag.api.ubst.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
 import no.nav.bidrag.grunnlag.comparator.Period
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable

@@ -1,11 +1,17 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequestDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequestDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.enums.BarnType
+import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
+import no.nav.bidrag.behandling.felles.enums.Formaal
+import no.nav.bidrag.behandling.felles.enums.GrunnlagType
+import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjonIntern
@@ -61,8 +67,6 @@ class GrunnlagspakkeService(
     const val FORSKUDD_FORMAAL = "Bidragsforskudd"
   }
 
-  val oppdaterGrunnlagspakkeDtoListe = mutableListOf<OppdaterGrunnlagspakkeDto>()
-
   fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Int {
     val grunnlagspakkeBo = GrunnlagspakkeBo(
       opprettetAv = opprettGrunnlagspakkeRequestDto.opprettetAv,
@@ -106,6 +110,9 @@ class GrunnlagspakkeService(
         // Bygger opp liste over barnetillegg
         GrunnlagType.BARNETILLEGG ->
           barnetilleggRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
+        else -> {
+          //Todo
+        }
       }
     }
 
@@ -177,8 +184,6 @@ class GrunnlagspakkeService(
     val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
 
     personIdOgPeriodeListe.forEach { personIdOgPeriode ->
-
-      oppdaterGrunnlagspakkeDtoListe.add(OppdaterGrunnlagspakkeDto())
 
       val hentAinntektRequest = HentInntektRequest(
         ident = personIdOgPeriode.personId,
@@ -647,40 +652,6 @@ class GrunnlagspakkeService(
     }
     return HentInntektListeResponseIntern(arbeidsInntektMaanedListe)
   }
-}
-
-
-enum class Formaal {
-  FORSKUDD,
-  BIDRAG,
-  SAERTILSKUDD
-}
-
-enum class GrunnlagType {
-  AINNTEKT,
-  SKATTEGRUNNLAG,
-  UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
-  BARNETILLEGG
-}
-
-enum class SkattegrunnlagType {
-  ORDINAER,
-  SVALBARD
-}
-
-enum class BarnetilleggType {
-  PENSJON
-}
-
-enum class BarnType {
-  FELLES,
-  SÆRKULL
-}
-
-enum class GrunnlagsRequestStatus {
-  HENTET,
-  IKKE_FUNNET,
-  FEILET,
 }
 
 data class PersonIdOgPeriodeRequest(

@@ -1,15 +1,16 @@
 package no.nav.bidrag.grunnlag.controller
 
+import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.GrunnlagRequestDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.HentGrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeRequestDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OppdaterGrunnlagspakkeDto
-import no.nav.bidrag.grunnlag.api.grunnlagspakke.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
@@ -20,9 +21,9 @@ import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.grunnlag.service.Formaal
-import no.nav.bidrag.grunnlag.service.GrunnlagType
-import no.nav.bidrag.grunnlag.service.GrunnlagsRequestStatus
+import no.nav.bidrag.behandling.felles.enums.Formaal
+import no.nav.bidrag.behandling.felles.enums.GrunnlagType
+import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -322,7 +323,18 @@ class GrunnlagspakkeControllerTest(
         )
       )
     )
-      .thenReturn(OppdaterGrunnlagspakkeDto())
+      .thenReturn(OppdaterGrunnlagspakkeDto(
+        grunnlagspakkeId = 1
+        , grunnlagtypeResponsListe =
+        listOf(
+          OppdaterGrunnlagDto(
+            grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+            personId = "12345678901",
+            status = GrunnlagsRequestStatus.HENTET,
+            statusMelding = "Ok"
+          )
+        )
+        ))
 
     val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")
     val okResult = TestUtil.performRequest(
@@ -379,7 +391,13 @@ class GrunnlagspakkeControllerTest(
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
     Mockito.`when`(grunnlagspakkeService.hentGrunnlagspakke(1))
-      .thenReturn(HentGrunnlagspakkeDto())
+      .thenReturn(HentGrunnlagspakkeDto(
+        grunnlagspakkeId = 1,
+        ainntektListe = emptyList(),
+        skattegrunnlagListe = emptyList(),
+        ubstListe = emptyList(),
+        barnetilleggListe = emptyList()
+      ))
 
     val okResult = TestUtil.performRequest(
       mockMvc,
