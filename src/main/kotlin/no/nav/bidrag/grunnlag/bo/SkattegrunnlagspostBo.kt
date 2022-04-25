@@ -7,11 +7,8 @@ import kotlin.reflect.full.memberProperties
 
 data class SkattegrunnlagspostBo(
 
-  @Schema(description = "Skattegrunnlagspost-id")
-  val skattegrunnlagspostId: Int,
-
   @Schema(description = "Skattegrunnlag-id")
-  val skattegrunnlagId: Int,
+  val skattegrunnlagId: Int = 0,
 
   @Schema(description = "Ordinær eller Svalbard")
   val skattegrunnlagType: String,

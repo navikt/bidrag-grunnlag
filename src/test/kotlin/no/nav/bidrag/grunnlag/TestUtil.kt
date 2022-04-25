@@ -26,6 +26,7 @@ import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
@@ -110,32 +111,41 @@ class TestUtil {
       )
     )
 
-    fun byggGrunnlagspakkeDto() = GrunnlagspakkeBo(
-      grunnlagspakkeId = (1..100).random(),
+    fun byggGrunnlagspakkeBo() = GrunnlagspakkeBo(
       opprettetAv = "RTV9999",
       opprettetTimestamp = LocalDateTime.now(),
-      endretTimestamp = LocalDateTime.now()
+      endretTimestamp = LocalDateTime.now(),
+      gyldigTil = null,
+      formaal = Formaal.BIDRAG.toString()
     )
 
-    fun byggAinntektDto() = AinntektBo(
-      inntektId = (1..100).random(),
+    fun byggGrunnlagspakke() = Grunnlagspakke(
+      grunnlagspakkeId = 0,
+      opprettetAv = "RTV9999",
+      opprettetTimestamp = LocalDateTime.now(),
+      endretTimestamp = LocalDateTime.now(),
+      gyldigTil = null,
+      formaal = Formaal.BIDRAG.toString()
+    )
+
+    fun byggAinntektBo() = AinntektBo(
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
       periodeFra = LocalDate.parse("2021-07-01"),
       periodeTil = LocalDate.parse("2021-08-01"),
       aktiv = true,
-      hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
-      brukTil = null
+      brukTil = null,
+      hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggAinntektspostDto() = AinntektspostBo(
-      inntektspostId = (1..100).random(),
+    fun byggAinntektspostBo() = AinntektspostBo(
       inntektId = (1..100).random(),
       utbetalingsperiode = "202108",
       opptjeningsperiodeFra = LocalDate.parse("2021-07-01"),
       opptjeningsperiodeTil = LocalDate.parse("2021-08-01"),
       opplysningspliktigId = "123",
+      virksomhetId = null,
       inntektType = "Loenn",
       fordelType = "Kontantytelse",
       beskrivelse = "Loenn/ferieLoenn",
@@ -144,8 +154,7 @@ class TestUtil {
       etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1)
     )
 
-    fun byggSkattegrunnlagSkattDto() = SkattegrunnlagBo(
-      skattegrunnlagId = (1..100).random(),
+    fun byggSkattegrunnlagSkattBo() = SkattegrunnlagBo(
       grunnlagspakkeId = (1..100).random(),
       personId = "7654321",
       periodeFra = LocalDate.parse("2021-01-01"),
@@ -156,16 +165,14 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggSkattegrunnlagspostDto() = SkattegrunnlagspostBo(
-      skattegrunnlagspostId = (1..100).random(),
+    fun byggSkattegrunnlagspostBo() = SkattegrunnlagspostBo(
       skattegrunnlagId = (1..100).random(),
       skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
       inntektType = "Loenn",
       belop = BigDecimal.valueOf(171717),
     )
 
-    fun byggUtvidetBarnetrygdOgSmaabarnstilleggDto() = UtvidetBarnetrygdOgSmaabarnstilleggBo(
-      ubstId = (1..100).random(),
+    fun byggUtvidetBarnetrygdOgSmaabarnstilleggBo() = UtvidetBarnetrygdOgSmaabarnstilleggBo(
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
       type = "Utvidet barnetrygd",
@@ -176,11 +183,11 @@ class TestUtil {
       brukTil = null,
       belop = BigDecimal.valueOf(12468.01),
       manueltBeregnet = false,
-      deltBosted = false
+      deltBosted = false,
+      hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggBarnetilleggDto() = BarnetilleggBo(
-      barnetilleggId = (1..100).random(),
+    fun byggBarnetilleggBo() = BarnetilleggBo(
       grunnlagspakkeId = (1..100).random(),
       partPersonId = "1234567",
       barnPersonId = "0123456",
@@ -191,7 +198,8 @@ class TestUtil {
       brukFra = LocalDateTime.now(),
       brukTil = null,
       belopBrutto = BigDecimal.valueOf(1000),
-      barnType = BarnType.FELLES.toString()
+      barnType = BarnType.FELLES.toString(),
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggFamilieBaSakResponse() = FamilieBaSakResponse(

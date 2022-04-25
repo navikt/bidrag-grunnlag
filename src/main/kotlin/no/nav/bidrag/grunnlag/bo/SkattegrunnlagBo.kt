@@ -9,11 +9,8 @@ import kotlin.reflect.full.memberProperties
 
 data class SkattegrunnlagBo(
 
-  @Schema(description = "Skattegrunnlag-id")
-  val skattegrunnlagId: Int,
-
   @Schema(description = "Grunnlagspakke-id")
-  val grunnlagspakkeId: Int,
+  val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Id til personen inntekten er rapport for")
   val personId: String,
@@ -25,13 +22,13 @@ data class SkattegrunnlagBo(
   override val periodeTil: LocalDate,
 
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
-  val aktiv: Boolean,
+  val aktiv: Boolean = true,
 
   @Schema(description = "Tidspunkt inntekten taes i bruk")
   val brukFra: LocalDateTime,
 
   @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
-  val brukTil: LocalDateTime?,
+  val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime

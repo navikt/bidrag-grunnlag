@@ -10,14 +10,11 @@ import kotlin.reflect.full.memberProperties
 
 data class AinntektBo(
 
-  @Schema(description = "Inntekt-id")
-  val inntektId: Int,
-
   @Schema(description = "Grunnlagspakke-id")
-  val grunnlagspakkeId: Int,
+  val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Id til personen inntekten er rapport for")
-  val personId: String,
+  val personId: String = "",
 
   @Schema(description = "Periode fra-dato")
   override val periodeFra: LocalDate,
@@ -26,18 +23,18 @@ data class AinntektBo(
   override val periodeTil: LocalDate,
 
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
-  val aktiv: Boolean,
+  val aktiv: Boolean = true,
 
   @Schema(description = "Tidspunkt inntekten taes i bruk")
-  val brukFra: LocalDateTime,
+  val brukFra: LocalDateTime = LocalDateTime.now(),
 
   @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
-  val brukTil: LocalDateTime?,
+  val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 
-  ): IPeriod
+): IPeriod
 
 fun AinntektBo.toAinntektEntity() = with(::Ainntekt) {
   val propertiesByName = AinntektBo::class.memberProperties.associateBy { it.name }

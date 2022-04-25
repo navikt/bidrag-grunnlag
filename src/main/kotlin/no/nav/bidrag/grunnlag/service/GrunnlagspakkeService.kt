@@ -31,7 +31,6 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -354,7 +353,7 @@ class GrunnlagspakkeService(
                 antallSkattegrunnlagsposter++
                 skattegrunnlagsposter.add(
                   SkattegrunnlagspostBo(
-                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
+//                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
                     inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
@@ -365,7 +364,7 @@ class GrunnlagspakkeService(
                 antallSkattegrunnlagsposter++
                 skattegrunnlagsposter.add(
                   SkattegrunnlagspostBo(
-                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
+//                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                     skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
                     inntektType = skattegrunnlagsPost.tekniskNavn,
                     belop = BigDecimal(skattegrunnlagsPost.beloep),
@@ -550,7 +549,9 @@ class GrunnlagspakkeService(
                     periodeFra = bt.fom,
                     // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
                     periodeTil = if (bt.tom != null) bt.tom.plusMonths(1).withDayOfMonth(1) else null,
+                    aktiv = true,
                     brukFra = timestampOppdatering,
+                    brukTil = null,
                     belopBrutto = bt.beloep,
                     barnType = if (bt.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
                     hentetTidspunkt = timestampOppdatering

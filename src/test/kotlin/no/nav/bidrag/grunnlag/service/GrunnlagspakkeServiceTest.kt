@@ -102,7 +102,6 @@ class GrunnlagspakkeServiceTest {
 
     persistenceService.opprettAinntektspost(
       AinntektspostBo(
-        inntektId = opprettetAinntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2021-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-06-01"),
@@ -118,7 +117,6 @@ class GrunnlagspakkeServiceTest {
     )
     persistenceService.opprettAinntektspost(
       AinntektspostBo(
-        inntektId = opprettetAinntekt.inntektId,
         utbetalingsperiode = "202106",
         opptjeningsperiodeFra = LocalDate.parse("2020-01-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-01-01"),
@@ -149,7 +147,6 @@ class GrunnlagspakkeServiceTest {
 
     persistenceService.opprettAinntektspost(
       AinntektspostBo(
-        inntektId = inaktivAinntekt.inntektId,
         utbetalingsperiode = "202006",
         opptjeningsperiodeFra = LocalDate.parse("2020-05-01"),
         opptjeningsperiodeTil = LocalDate.parse("2020-06-01"),
@@ -180,7 +177,6 @@ class GrunnlagspakkeServiceTest {
 
     persistenceService.opprettAinntektspost(
       AinntektspostBo(
-        inntektId = opprettetAinntekt2.inntektId,
         utbetalingsperiode = "202107",
         opptjeningsperiodeFra = LocalDate.parse("2021-06-01"),
         opptjeningsperiodeTil = LocalDate.parse("2021-07-01"),
@@ -211,7 +207,6 @@ class GrunnlagspakkeServiceTest {
 
     persistenceService.opprettSkattegrunnlagspost(
       SkattegrunnlagspostBo(
-        skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
         skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
         inntektType = "Loenn",
         belop = BigDecimal.valueOf(23456.01)
@@ -226,7 +221,13 @@ class GrunnlagspakkeServiceTest {
         type = "Utvidet barnetrygd",
         periodeFra = LocalDate.parse("2021-05-01"),
         periodeTil = LocalDate.parse("2021-06-01"),
-        belop = BigDecimal.valueOf(12468.01)
+        aktiv = true,
+        brukFra = LocalDateTime.now(),
+        brukTil = null,
+        belop = BigDecimal.valueOf(12468.01),
+        manueltBeregnet = false,
+        deltBosted = false,
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 

@@ -6,10 +6,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class GrunnlagspakkeBo (
-
-  @Schema(description = "grunnlagspakke-id")
-  val grunnlagspakkeId: Int,
+data class GrunnlagspakkeBo(
 
   @Schema(description = "opprettet av")
   val opprettetAv: String,
@@ -25,7 +22,7 @@ data class GrunnlagspakkeBo (
 
   @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
   val formaal: String
-  )
+)
 
 fun GrunnlagspakkeBo.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
   val propertiesByName = GrunnlagspakkeBo::class.memberProperties.associateBy { it.name }
