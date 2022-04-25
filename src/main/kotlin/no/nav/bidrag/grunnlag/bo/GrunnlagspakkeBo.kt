@@ -9,22 +9,22 @@ import kotlin.reflect.full.memberProperties
 data class GrunnlagspakkeBo (
 
   @Schema(description = "grunnlagspakke-id")
-  val grunnlagspakkeId: Int = 0,
+  val grunnlagspakkeId: Int,
 
   @Schema(description = "opprettet av")
-  val opprettetAv: String = "",
+  val opprettetAv: String,
 
   @Schema(description = "opprettet timestamp")
-  val opprettetTimestamp: LocalDateTime = LocalDateTime.now(),
+  val opprettetTimestamp: LocalDateTime,
 
   @Schema(description = "Endret timestamp")
-  val endretTimestamp: LocalDateTime? = null,
+  val endretTimestamp: LocalDateTime?,
 
   @Schema(description = "Gyldig til-dato")
-  val gyldigTil: LocalDate? = null,
+  val gyldigTil: LocalDate?,
 
   @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
-  val formaal: String = ""
+  val formaal: String
   )
 
 fun GrunnlagspakkeBo.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {

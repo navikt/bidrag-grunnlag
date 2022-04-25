@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -40,6 +41,16 @@ fun Grunnlagspakke.toGrunnlagspakkeBo() = with(::GrunnlagspakkeBo) {
       else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeBo)
     }
   })
+}
+
+fun OpprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
+  val propertiesByName = OpprettGrunnlagspakkeRequestDto::class.memberProperties.associateBy { it.name }
+  callBy(parameters.associateWith { parameter ->
+    when (parameter.name) {
+      else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeEntity)
+    }
+  })
+
 }
 
 

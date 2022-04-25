@@ -4,6 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
@@ -27,10 +28,12 @@ import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.bo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
+import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektBo
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektspostBo
 import no.nav.bidrag.grunnlag.persistence.entity.toBarnetilleggBo
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeBo
+import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagBo
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.persistence.entity.toUtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -59,10 +62,9 @@ class PersistenceService(
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
 
-  fun opprettNyGrunnlagspakke(grunnlagspakkeBo: GrunnlagspakkeBo): GrunnlagspakkeBo {
-    val nyGrunnlagspakke = grunnlagspakkeBo.toGrunnlagspakkeEntity()
-    val grunnlagspakke = grunnlagspakkeRepository.save(nyGrunnlagspakke)
-    return grunnlagspakke.toGrunnlagspakkeBo()
+  fun opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Grunnlagspakke {
+    val nyGrunnlagspakke = opprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity()
+    return grunnlagspakkeRepository.save(nyGrunnlagspakke)
   }
 
   fun opprettAinntekt(ainntektBo: AinntektBo): AinntektBo {

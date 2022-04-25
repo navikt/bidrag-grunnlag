@@ -10,37 +10,37 @@ import kotlin.reflect.full.memberProperties
 data class AinntektspostBo(
 
   @Schema(description = "Inntektspost-id")
-  val inntektspostId: Int = 0,
+  val inntektspostId: Int,
 
   @Schema(description = "Inntekt-id")
-  val inntektId: Int = 0,
+  val inntektId: Int,
 
   @Schema(description = "Perioden inntektsposten er utbetalt YYYYMM")
-  val utbetalingsperiode: String? = "",
+  val utbetalingsperiode: String?,
 
   @Schema(description = "Fra-dato for opptjening")
-  val opptjeningsperiodeFra: LocalDate? = LocalDate.now(),
+  val opptjeningsperiodeFra: LocalDate?,
 
   @Schema(description = "Til-dato for opptjening")
-  val opptjeningsperiodeTil: LocalDate? = LocalDate.now(),
+  val opptjeningsperiodeTil: LocalDate?,
 
   @Schema(description = "Id til de som rapporterer inn inntekten")
-  val opplysningspliktigId: String? = "",
+  val opplysningspliktigId: String?,
 
   @Schema(description = "Id til virksomheten som rapporterer inn inntekten")
-  val virksomhetId: String? = "",
+  val virksomhetId: String?,
 
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
-  val inntektType: String = "",
+  val inntektType: String,
 
   @Schema(description = "Type fordel, Kontantytelse, Naturalytelse, Utgiftsgodtgjorelse")
-  val fordelType: String? = "",
+  val fordelType: String?,
 
   @Schema(description = "Beskrivelse av inntekt")
-  val beskrivelse: String? = "",
+  val beskrivelse: String?,
 
   @Schema(description = "Belop")
-  val belop: BigDecimal = BigDecimal.ZERO,
+  val belop: BigDecimal,
 
   @Schema(description = "Fra-dato etterbetaling")
   val etterbetalingsperiodeFra: LocalDate?,

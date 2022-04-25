@@ -68,11 +68,7 @@ class GrunnlagspakkeService(
   }
 
   fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Int {
-    val grunnlagspakkeBo = GrunnlagspakkeBo(
-      opprettetAv = opprettGrunnlagspakkeRequestDto.opprettetAv,
-      formaal = opprettGrunnlagspakkeRequestDto.formaal.name
-    )
-    val opprettetGrunnlagspakke = persistenceService.opprettNyGrunnlagspakke(grunnlagspakkeBo)
+    val opprettetGrunnlagspakke = persistenceService.opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
     return opprettetGrunnlagspakke.grunnlagspakkeId
   }
 
@@ -230,7 +226,9 @@ class GrunnlagspakkeService(
                 personId = personIdOgPeriode.personId,
                 periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                 periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                aktiv = true,
                 brukFra = timestampOppdatering,
+                brukTil = null,
                 hentetTidspunkt = timestampOppdatering
               )
 

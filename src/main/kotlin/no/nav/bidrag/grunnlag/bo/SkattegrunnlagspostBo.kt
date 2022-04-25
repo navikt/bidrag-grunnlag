@@ -8,19 +8,19 @@ import kotlin.reflect.full.memberProperties
 data class SkattegrunnlagspostBo(
 
   @Schema(description = "Skattegrunnlagspost-id")
-  val skattegrunnlagspostId: Int = 0,
+  val skattegrunnlagspostId: Int,
 
   @Schema(description = "Skattegrunnlag-id")
-  val skattegrunnlagId: Int = 0,
+  val skattegrunnlagId: Int,
 
   @Schema(description = "Ordinær eller Svalbard")
-  val skattegrunnlagType: String = "",
+  val skattegrunnlagType: String,
 
   @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
-  val inntektType: String = "",
+  val inntektType: String,
 
   @Schema(description = "Belop")
-  val belop: BigDecimal = BigDecimal.ZERO
+  val belop: BigDecimal
 )
 
 fun SkattegrunnlagspostBo.toSkattegrunnlagspostEntity() = with(::Skattegrunnlagspost) {
