@@ -50,6 +50,7 @@ fun AinntektspostBo.toAinntektspostEntity() = with(::Ainntektspost) {
   val propertiesByName = AinntektspostBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      Ainntektspost::inntektspostId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toAinntektspostEntity)
     }
   })

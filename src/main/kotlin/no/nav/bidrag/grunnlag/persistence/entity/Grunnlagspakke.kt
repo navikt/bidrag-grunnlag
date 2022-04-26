@@ -47,6 +47,9 @@ fun OpprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity() = with(::Grunnlagsp
   val propertiesByName = OpprettGrunnlagspakkeRequestDto::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      Grunnlagspakke::grunnlagspakkeId.name -> 0
+      Grunnlagspakke::opprettetTimestamp.name -> LocalDateTime.now()
+      Grunnlagspakke::formaal.name -> formaal.toString()
       else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeEntity)
     }
   })

@@ -28,6 +28,7 @@ fun GrunnlagspakkeBo.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
   val propertiesByName = GrunnlagspakkeBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      Grunnlagspakke::grunnlagspakkeId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeEntity)
     }
   })

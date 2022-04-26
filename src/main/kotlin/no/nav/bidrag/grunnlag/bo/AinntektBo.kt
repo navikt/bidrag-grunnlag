@@ -40,6 +40,7 @@ fun AinntektBo.toAinntektEntity() = with(::Ainntekt) {
   val propertiesByName = AinntektBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      Ainntekt::inntektId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toAinntektEntity)
     }
   })

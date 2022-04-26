@@ -24,6 +24,7 @@ fun SkattegrunnlagspostBo.toSkattegrunnlagspostEntity() = with(::Skattegrunnlags
   val propertiesByName = SkattegrunnlagspostBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      Skattegrunnlagspost::skattegrunnlagspostId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostEntity)
     }
   })

@@ -51,6 +51,7 @@ fun BarnetilleggBo.toBarnetilleggEntity() = with(::Barnetillegg) {
   val propertiesByName = BarnetilleggBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      Barnetillegg::barnetilleggId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggEntity)
     }
   })

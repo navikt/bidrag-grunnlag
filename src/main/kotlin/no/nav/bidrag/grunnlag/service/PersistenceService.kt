@@ -28,7 +28,13 @@ import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.bo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
+import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
+import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
+import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
+import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
+import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektBo
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektspostBo
 import no.nav.bidrag.grunnlag.persistence.entity.toBarnetilleggBo
@@ -67,28 +73,24 @@ class PersistenceService(
     return grunnlagspakkeRepository.save(nyGrunnlagspakke)
   }
 
-  fun opprettAinntekt(ainntektBo: AinntektBo): AinntektBo {
+  fun opprettAinntekt(ainntektBo: AinntektBo): Ainntekt {
     val nyInntekt = ainntektBo.toAinntektEntity()
-    val inntekt = ainntektRepository.save(nyInntekt)
-    return inntekt.toAinntektBo()
+    return ainntektRepository.save(nyInntekt)
   }
 
-  fun opprettAinntektspost(ainntektspostBo: AinntektspostBo): AinntektspostBo {
+  fun opprettAinntektspost(ainntektspostBo: AinntektspostBo): Ainntektspost {
     val nyInntektspost = ainntektspostBo.toAinntektspostEntity()
-    val inntektspost = ainntektspostRepository.save(nyInntektspost)
-    return inntektspost.toAinntektspostBo()
+    return ainntektspostRepository.save(nyInntektspost)
   }
 
-  fun opprettSkattegrunnlag(skattegrunnlagBo: SkattegrunnlagBo): SkattegrunnlagBo {
+  fun opprettSkattegrunnlag(skattegrunnlagBo: SkattegrunnlagBo): Skattegrunnlag {
     val nyInntekt = skattegrunnlagBo.toSkattegrunnlagEntity()
-    val inntekt = skattegrunnlagRepository.save(nyInntekt)
-    return inntekt.toSkattegrunnlagBo()
+    return skattegrunnlagRepository.save(nyInntekt)
   }
 
-  fun opprettSkattegrunnlagspost(skattegrunnlagspostBo: SkattegrunnlagspostBo): SkattegrunnlagspostBo {
+  fun opprettSkattegrunnlagspost(skattegrunnlagspostBo: SkattegrunnlagspostBo): Skattegrunnlagspost {
     val nyInntektspost = skattegrunnlagspostBo.toSkattegrunnlagspostEntity()
-    val inntektspost = skattegrunnlagspostRepository.save(nyInntektspost)
-    return inntektspost.toSkattegrunnlagspostBo()
+    return skattegrunnlagspostRepository.save(nyInntektspost)
   }
 
   fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime) {
@@ -99,10 +101,10 @@ class PersistenceService(
     )
   }
 
-  fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo): UtvidetBarnetrygdOgSmaabarnstilleggBo {
+  fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo)
+  : UtvidetBarnetrygdOgSmaabarnstillegg {
     val nyUbst = utvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
-    val utvidetBarnetrygdOgSmaabarnstillegg = utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
-    return utvidetBarnetrygdOgSmaabarnstillegg.toUtvidetBarnetrygdOgSmaabarnstilleggBo()
+    return utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
   }
 
   fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
@@ -114,10 +116,9 @@ class PersistenceService(
     )
   }
 
-  fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): BarnetilleggBo {
+  fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
     val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
-    val barnetillegg = barnetilleggRepository.save(nyBarnetillegg)
-    return barnetillegg.toBarnetilleggBo()
+    return barnetilleggRepository.save(nyBarnetillegg)
   }
 
   // Returnerer lagret, komplett grunnlagspakke
