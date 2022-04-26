@@ -1,48 +1,45 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.comparator.IPeriod
-import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
-
+import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class AinntektDto(
-
-  @Schema(description = "Inntekt-id")
-  val inntektId: Int = 0,
+data class SkattegrunnlagBo(
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Id til personen inntekten er rapport for")
-  val personId: String = "",
+  val personId: String,
 
   @Schema(description = "Periode fra-dato")
-  override val periodeFra: LocalDate = LocalDate.now(),
+  override val periodeFra: LocalDate,
 
   @Schema(description = "Periode til-dato")
-  override val periodeTil: LocalDate = LocalDate.now(),
+  override val periodeTil: LocalDate,
 
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
   val aktiv: Boolean = true,
 
   @Schema(description = "Tidspunkt inntekten taes i bruk")
-  val brukFra: LocalDateTime = LocalDateTime.now(),
+  val brukFra: LocalDateTime,
 
   @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  ): IPeriod
+  val hentetTidspunkt: LocalDateTime
+) : IPeriod
 
-fun AinntektDto.toAinntektEntity() = with(::Ainntekt) {
-  val propertiesByName = AinntektDto::class.memberProperties.associateBy { it.name }
+fun SkattegrunnlagBo.toSkattegrunnlagEntity() = with(::Skattegrunnlag) {
+  val propertiesByName = SkattegrunnlagBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toAinntektEntity)
+      Skattegrunnlag::skattegrunnlagId.name -> 0
+      else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagEntity)
     }
   })
 

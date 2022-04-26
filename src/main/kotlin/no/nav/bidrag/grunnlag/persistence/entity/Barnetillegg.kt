@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.BarnetilleggDto
+import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -55,11 +55,11 @@ data class Barnetillegg(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
-fun Barnetillegg.toBarnetilleggDto() = with(::BarnetilleggDto) {
+fun Barnetillegg.toBarnetilleggBo() = with(::BarnetilleggBo) {
   val propertiesByName = Barnetillegg::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggDto)
+      else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggBo)
     }
   })
 }

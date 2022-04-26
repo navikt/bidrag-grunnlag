@@ -1,5 +1,5 @@
 {
-  "grunnlagRequestListe": [
+  "grunnlagRequestDtoListe": [
     {
       "grunnlagType": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG",
       "personId": "12345678901",

@@ -1,34 +1,32 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
+import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class BarnetilleggDto(
-
-  @Schema(description = "Barnetillegg-id")
-  val barnetilleggId: Int = 0,
+data class BarnetilleggBo(
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Id til personen barnetillegget er rapport for")
-  val partPersonId: String = "",
+  val partPersonId: String,
 
   @Schema(description = "Id til barnet barnetillegget gjelder for")
-  val barnPersonId: String = "",
+  val barnPersonId: String,
 
   @Schema(description = "Type barnetillegg")
-  val barnetilleggType: String = "",
+  val barnetilleggType: String,
 
   @Schema(description = "Periode fra- og med måned")
-  val periodeFra: LocalDate = LocalDate.now(),
+  val periodeFra: LocalDate,
 
   @Schema(description = "Periode til- og med måned")
-  val periodeTil: LocalDate? = LocalDate.now(),
+  val periodeTil: LocalDate?,
 
   @Schema(description = "Angir om en barnetilleggopplysning er aktiv")
   val aktiv: Boolean = true,
@@ -40,19 +38,20 @@ data class BarnetilleggDto(
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Bruttobeløp")
-  val belopBrutto: BigDecimal = BigDecimal.ZERO,
+  val belopBrutto: BigDecimal,
 
   @Schema(description = "Angir om barnet er felles- eller særkullsbarn")
   val barnType: String = "",
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  )
+)
 
-fun BarnetilleggDto.toBarnetilleggEntity() = with(::Barnetillegg) {
-  val propertiesByName = BarnetilleggDto::class.memberProperties.associateBy { it.name }
+fun BarnetilleggBo.toBarnetilleggEntity() = with(::Barnetillegg) {
+  val propertiesByName = BarnetilleggBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      Barnetillegg::barnetilleggId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggEntity)
     }
   })

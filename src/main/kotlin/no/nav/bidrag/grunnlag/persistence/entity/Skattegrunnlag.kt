@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -42,11 +42,11 @@ data class Skattegrunnlag(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
-fun Skattegrunnlag.toSkattegrunnlagDto() = with(::SkattegrunnlagDto) {
+fun Skattegrunnlag.toSkattegrunnlagBo() = with(::SkattegrunnlagBo) {
   val propertiesByName = Skattegrunnlag::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagDto)
+      else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagBo)
     }
   })
 }

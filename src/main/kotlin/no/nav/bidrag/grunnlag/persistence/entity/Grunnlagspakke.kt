@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.GrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -33,13 +34,26 @@ data class Grunnlagspakke(
   val formaal: String = ""
 )
 
-fun Grunnlagspakke.toGrunnlagspakkeDto() = with(::GrunnlagspakkeDto) {
+fun Grunnlagspakke.toGrunnlagspakkeBo() = with(::GrunnlagspakkeBo) {
   val propertiesByName = Grunnlagspakke::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeDto)
+      else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeBo)
     }
   })
+}
+
+fun OpprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
+  val propertiesByName = OpprettGrunnlagspakkeRequestDto::class.memberProperties.associateBy { it.name }
+  callBy(parameters.associateWith { parameter ->
+    when (parameter.name) {
+      Grunnlagspakke::grunnlagspakkeId.name -> 0
+      Grunnlagspakke::opprettetTimestamp.name -> LocalDateTime.now()
+      Grunnlagspakke::formaal.name -> formaal.toString()
+      else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeEntity)
+    }
+  })
+
 }
 
 

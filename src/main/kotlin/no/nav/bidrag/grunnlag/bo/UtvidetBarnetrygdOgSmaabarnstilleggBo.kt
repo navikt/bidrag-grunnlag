@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.dto
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
@@ -8,52 +8,50 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import kotlin.reflect.full.memberProperties
 
-data class UtvidetBarnetrygdOgSmaabarnstilleggDto(
-
-  @Schema(description = "ubst-id")
-  val ubstId: Int = 0,
+data class UtvidetBarnetrygdOgSmaabarnstilleggBo(
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Id til personen inntekten er rapport for")
-  val personId: String = "",
+  val personId: String,
 
   @Schema(description = "Type stønad")
-  val type: String = "",
+  val type: String,
 
   @Schema(description = "Periode fra- og med måned")
-  val periodeFra: LocalDate = LocalDate.now(),
+  val periodeFra: LocalDate,
 
   @Schema(description = "Periode til- og med måned")
-  val periodeTil: LocalDate? = LocalDate.now(),
+  val periodeTil: LocalDate?,
 
   @Schema(description = "Angir om en inntektsopplysning er aktiv")
   val aktiv: Boolean = true,
 
   @Schema(description = "Tidspunkt inntekten taes i bruk")
-  val brukFra: LocalDateTime = LocalDateTime.now(),
+  val brukFra: LocalDateTime,
 
   @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Belop")
-  val belop: BigDecimal = BigDecimal.ZERO,
+  val belop: BigDecimal,
 
   @Schema(description = "Angir om stønaden er manuelt beregnet")
-  val manueltBeregnet: Boolean = false,
+  val manueltBeregnet: Boolean,
 
   @Schema(description = "Angir om barnet har delt bosted")
-  val deltBosted: Boolean = false,
+  val deltBosted: Boolean,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
-  )
+  val hentetTidspunkt: LocalDateTime
+)
 
-fun UtvidetBarnetrygdOgSmaabarnstilleggDto.toUtvidetBarnetrygdOgSmaabarnstilleggEntity() = with(::UtvidetBarnetrygdOgSmaabarnstillegg) {
-  val propertiesByName = UtvidetBarnetrygdOgSmaabarnstilleggDto::class.memberProperties.associateBy { it.name }
+fun UtvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity() = with(::UtvidetBarnetrygdOgSmaabarnstillegg) {
+  val propertiesByName = UtvidetBarnetrygdOgSmaabarnstilleggBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
+      UtvidetBarnetrygdOgSmaabarnstillegg::ubstId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toUtvidetBarnetrygdOgSmaabarnstilleggEntity)
     }
   })

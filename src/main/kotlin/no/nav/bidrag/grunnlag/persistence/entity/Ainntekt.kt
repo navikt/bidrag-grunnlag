@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.AinntektDto
+import no.nav.bidrag.grunnlag.bo.AinntektBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -42,12 +42,11 @@ data class Ainntekt(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
-fun Ainntekt.toAinntektDto() = with(::AinntektDto) {
+fun Ainntekt.toAinntektBo() = with(::AinntektBo) {
   val propertiesByName = Ainntekt::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toAinntektDto)
+      else -> propertiesByName[parameter.name]?.get(this@toAinntektBo)
     }
   })
 }
-

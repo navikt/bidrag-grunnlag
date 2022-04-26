@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.dto.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -55,11 +55,11 @@ data class UtvidetBarnetrygdOgSmaabarnstillegg(
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
-fun UtvidetBarnetrygdOgSmaabarnstillegg.toUtvidetBarnetrygdOgSmaabarnstilleggDto() = with(::UtvidetBarnetrygdOgSmaabarnstilleggDto) {
+fun UtvidetBarnetrygdOgSmaabarnstillegg.toUtvidetBarnetrygdOgSmaabarnstilleggBo() = with(::UtvidetBarnetrygdOgSmaabarnstilleggBo) {
   val propertiesByName = UtvidetBarnetrygdOgSmaabarnstillegg::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toUtvidetBarnetrygdOgSmaabarnstilleggDto)
+      else -> propertiesByName[parameter.name]?.get(this@toUtvidetBarnetrygdOgSmaabarnstilleggBo)
     }
   })
 }

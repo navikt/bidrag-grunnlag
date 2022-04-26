@@ -1,13 +1,13 @@
 package no.nav.bidrag.grunnlag.comparator
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagDto
-import no.nav.bidrag.grunnlag.dto.SkattegrunnlagspostDto
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 
-class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable<SkattegrunnlagDto, SkattegrunnlagspostDto>>() {
+class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>() {
   override fun isEntitiesEqual(
-    newEntity: PeriodComparable<SkattegrunnlagDto, SkattegrunnlagspostDto>,
-    existingEntity: PeriodComparable<SkattegrunnlagDto, SkattegrunnlagspostDto>
+    newEntity: PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>,
+    existingEntity: PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>
   ): Boolean {
     val newSkattegrunnlagsposter = sortSkattegrunnlagsposter(newEntity.children!!)
     val existingSkattegrunnlagsposter = sortSkattegrunnlagsposter(existingEntity.children!!)
@@ -29,7 +29,7 @@ class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable
     return differences.isEmpty()
   }
 
-  private fun sortSkattegrunnlagsposter(ainntektsposter: List<SkattegrunnlagspostDto>): List<SkattegrunnlagspostDto> {
+  private fun sortSkattegrunnlagsposter(ainntektsposter: List<SkattegrunnlagspostBo>): List<SkattegrunnlagspostBo> {
     return ainntektsposter.sortedWith(compareBy({ it.inntektType }, { it.skattegrunnlagType }))
   }
 }

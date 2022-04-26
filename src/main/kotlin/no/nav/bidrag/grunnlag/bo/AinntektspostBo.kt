@@ -1,12 +1,18 @@
-package no.nav.bidrag.grunnlag.api.ainntekt
+package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
+import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
+
 import java.math.BigDecimal
 import java.time.LocalDate
+import kotlin.reflect.full.memberProperties
 
-data class HentAinntektspostResponse (
+data class AinntektspostBo(
 
-  @Schema(description = "Perioden innteksposten er utbetalt YYYYMM")
+  @Schema(description = "Inntekt-id")
+  val inntektId: Int = 0,
+
+  @Schema(description = "Perioden inntektsposten er utbetalt YYYYMM")
   val utbetalingsperiode: String?,
 
   @Schema(description = "Fra-dato for opptjening")
@@ -31,7 +37,7 @@ data class HentAinntektspostResponse (
   val beskrivelse: String?,
 
   @Schema(description = "Belop")
-  val belop: BigDecimal,
+  val belop: java.math.BigDecimal,
 
   @Schema(description = "Fra-dato etterbetaling")
   val etterbetalingsperiodeFra: LocalDate?,
@@ -39,3 +45,14 @@ data class HentAinntektspostResponse (
   @Schema(description = "Til-dato etterbetaling")
   val etterbetalingsperiodeTil: LocalDate?
 )
+
+fun AinntektspostBo.toAinntektspostEntity() = with(::Ainntektspost) {
+  val propertiesByName = AinntektspostBo::class.memberProperties.associateBy { it.name }
+  callBy(parameters.associateWith { parameter ->
+    when (parameter.name) {
+      Ainntektspost::inntektspostId.name -> 0
+      else -> propertiesByName[parameter.name]?.get(this@toAinntektspostEntity)
+    }
+  })
+
+}
