@@ -1,7 +1,7 @@
 {
   "grunnlagRequestDtoListe": [
     {
-      "grunnlagType": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG",
+      "type": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG",
       "personId": "12345678901",
       "periodeFra": null,
       "periodeTil": "2021-11-15"

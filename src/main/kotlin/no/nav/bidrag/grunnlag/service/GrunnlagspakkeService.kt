@@ -9,9 +9,15 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.GrunnlagType
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
+import no.nav.bidrag.grunnlag.bo.AinntektBo
+import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
+import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjonIntern
@@ -28,12 +34,6 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnl
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
-import no.nav.bidrag.grunnlag.bo.AinntektBo
-import no.nav.bidrag.grunnlag.bo.AinntektspostBo
-import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
-import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
-import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
@@ -88,22 +88,22 @@ class GrunnlagspakkeService(
     val barnetilleggRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
 
     oppdaterGrunnlagspakkeRequestDto.grunnlagRequestDtoListe.forEach { grunnlagRequest ->
-      when (grunnlagRequest.grunnlagType) {
+      when (grunnlagRequest.type) {
 
         // Bygger opp liste over A-inntekter
-        GrunnlagType.AINNTEKT ->
+        GrunnlagRequestType.AINNTEKT ->
           ainntektRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         // Bygger opp liste over skattegrunnlag
-        GrunnlagType.SKATTEGRUNNLAG ->
+        GrunnlagRequestType.SKATTEGRUNNLAG ->
           skattegrunnlagRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         // Bygger opp liste over utvidet barnetrygd og småbarnstillegg
-        GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG ->
+        GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG ->
           ubstRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         // Bygger opp liste over barnetillegg
-        GrunnlagType.BARNETILLEGG ->
+        GrunnlagRequestType.BARNETILLEGG ->
           barnetilleggRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
         else -> {
           //Todo
@@ -211,7 +211,7 @@ class GrunnlagspakkeService(
           if (hentInntektListeResponse.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
             oppdaterGrunnlagDtoListe.add(
               OppdaterGrunnlagDto(
-                GrunnlagType.AINNTEKT,
+                GrunnlagRequestType.AINNTEKT,
                 personIdOgPeriode.personId,
                 GrunnlagsRequestStatus.HENTET,
                 "Ingen inntekter funnet"
@@ -265,7 +265,7 @@ class GrunnlagspakkeService(
             )
             oppdaterGrunnlagDtoListe.add(
               OppdaterGrunnlagDto(
-                GrunnlagType.AINNTEKT,
+                GrunnlagRequestType.AINNTEKT,
                 personIdOgPeriode.personId,
                 GrunnlagsRequestStatus.HENTET,
                 "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet",
@@ -279,7 +279,7 @@ class GrunnlagspakkeService(
         is RestResponse.Failure -> {
           oppdaterGrunnlagDtoListe.add(
             OppdaterGrunnlagDto(
-              GrunnlagType.AINNTEKT,
+              GrunnlagRequestType.AINNTEKT,
               personIdOgPeriode.personId,
               if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
               "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
@@ -383,7 +383,7 @@ class GrunnlagspakkeService(
             )
             oppdaterGrunnlagDtoListe.add(
               OppdaterGrunnlagDto(
-                GrunnlagType.SKATTEGRUNNLAG,
+                GrunnlagRequestType.SKATTEGRUNNLAG,
                 personIdOgPeriode.personId,
                 GrunnlagsRequestStatus.HENTET,
                 "Antall skattegrunnlagsposter funnet for innteksåret ${inntektAar}: $antallSkattegrunnlagsposter"
@@ -395,7 +395,7 @@ class GrunnlagspakkeService(
           }
           is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
             OppdaterGrunnlagDto(
-              GrunnlagType.SKATTEGRUNNLAG,
+              GrunnlagRequestType.SKATTEGRUNNLAG,
               personIdOgPeriode.personId,
               if (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
               "Feil ved henting av skattegrunnlag for inntektsåret ${inntektAar}."
@@ -472,7 +472,7 @@ class GrunnlagspakkeService(
           }
           oppdaterGrunnlagDtoListe.add(
             OppdaterGrunnlagDto(
-              GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
               personIdOgPeriode.personId,
               GrunnlagsRequestStatus.HENTET,
               "Antall perioder funnet: $antallPerioderFunnet"
@@ -484,7 +484,7 @@ class GrunnlagspakkeService(
         }
         is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
           OppdaterGrunnlagDto(
-            GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+            GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
             personIdOgPeriode.personId,
             if (restResponseFamilieBaSak.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
             "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
@@ -562,7 +562,7 @@ class GrunnlagspakkeService(
           }
           oppdaterGrunnlagDtoListe.add(
             OppdaterGrunnlagDto(
-              GrunnlagType.BARNETILLEGG,
+              GrunnlagRequestType.BARNETILLEGG,
               personIdOgPeriode.personId,
               GrunnlagsRequestStatus.HENTET,
               "Antall perioder funnet: $antallPerioderFunnet"
@@ -574,7 +574,7 @@ class GrunnlagspakkeService(
         }
         is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
           OppdaterGrunnlagDto(
-            GrunnlagType.BARNETILLEGG,
+            GrunnlagRequestType.BARNETILLEGG,
             personIdOgPeriode.personId,
             if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
             "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
