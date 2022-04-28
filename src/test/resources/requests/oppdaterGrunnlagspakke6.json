@@ -1,7 +1,7 @@
 {
   "grunnlagRequestDtoListe": [
     {
-      "grunnlagType": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG"
+      "type": "UTVIDETBARNETRYGDOGSMAABARNSTILLEGG"
     }
   ]
 }

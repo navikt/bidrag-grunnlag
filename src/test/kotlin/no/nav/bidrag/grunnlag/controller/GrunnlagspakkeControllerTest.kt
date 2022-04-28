@@ -5,12 +5,15 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.enums.Formaal
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
+import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
@@ -21,9 +24,6 @@ import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.GrunnlagType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -115,9 +115,9 @@ class GrunnlagspakkeControllerTest(
       OppdaterGrunnlagspakkeDto::class.java
     ) { isOk() }
 
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
 
-    oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+    oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
     }
   }
@@ -152,9 +152,9 @@ class GrunnlagspakkeControllerTest(
     ) { isOk() }
 
     assertThat(oppdaterGrunnlagspakkeDto).isNotNull
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
 
-    oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+    oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)
     }
   }
@@ -206,7 +206,8 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal fange opp og håndtere forespørsler på grunnlagspakker som ikke eksisterer`() {
 
-    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(1, TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(), String::class.java) { isNotFound() }
+    val oppdaterGrunnlagspakkeResponse =
+      oppdaterGrunnlagspakke(1, TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(), String::class.java) { isNotFound() }
 
     assertNotNull(oppdaterGrunnlagspakkeResponse)
 
@@ -282,7 +283,7 @@ class GrunnlagspakkeControllerTest(
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke5.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestDtoListe[0].grunnlagType"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe[0].type"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke6.json", "/grunnlagspakke/1/oppdater")
 
@@ -314,7 +315,7 @@ class GrunnlagspakkeControllerTest(
         OppdaterGrunnlagspakkeRequestDto(
           grunnlagRequestDtoListe = listOf(
             GrunnlagRequestDto(
-              grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
               personId = "12345678901",
               periodeFra = LocalDate.parse("2021-11-01"),
               periodeTil = LocalDate.parse("2021-11-15")
@@ -323,18 +324,20 @@ class GrunnlagspakkeControllerTest(
         )
       )
     )
-      .thenReturn(OppdaterGrunnlagspakkeDto(
-        grunnlagspakkeId = 1
-        , grunnlagtypeResponsListe =
-        listOf(
-          OppdaterGrunnlagDto(
-            grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
-            personId = "12345678901",
-            status = GrunnlagsRequestStatus.HENTET,
-            statusMelding = "Ok"
+      .thenReturn(
+        OppdaterGrunnlagspakkeDto(
+          grunnlagspakkeId = 1,
+          grunnlagTypeResponsListe =
+          listOf(
+            OppdaterGrunnlagDto(
+              type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              personId = "12345678901",
+              status = GrunnlagsRequestStatus.HENTET,
+              statusMelding = "Ok"
+            )
           )
         )
-        ))
+      )
 
     val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")
     val okResult = TestUtil.performRequest(
@@ -391,13 +394,15 @@ class GrunnlagspakkeControllerTest(
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
     Mockito.`when`(grunnlagspakkeService.hentGrunnlagspakke(1))
-      .thenReturn(HentGrunnlagspakkeDto(
-        grunnlagspakkeId = 1,
-        ainntektListe = emptyList(),
-        skattegrunnlagListe = emptyList(),
-        ubstListe = emptyList(),
-        barnetilleggListe = emptyList()
-      ))
+      .thenReturn(
+        HentGrunnlagspakkeDto(
+          grunnlagspakkeId = 1,
+          ainntektListe = emptyList(),
+          skattegrunnlagListe = emptyList(),
+          ubstListe = emptyList(),
+          barnetilleggListe = emptyList()
+        )
+      )
 
     val okResult = TestUtil.performRequest(
       mockMvc,
