@@ -13,7 +13,9 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -73,14 +75,14 @@ class IntegrasjonsController(
 
   @PostMapping(HENT_HUSSTANDSMEDLEMMER)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
-  fun hentHusstandsmedlemmer(@RequestBody bidragPersonRequest: String): ResponseEntity<HusstandsmedlemmerDto> {
-    return handleRestResponse(bidragPersonConsumer.hentHusstandsmedlemmer(bidragPersonRequest))
+  fun hentHusstandsmedlemmer(@RequestBody husstandsmedlemmerRequest: HusstandsmedlemmerRequest): ResponseEntity<HusstandsmedlemmerDto> {
+    return handleRestResponse(bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest))
   }
 
   @PostMapping(HENT_SIVILSTAND)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
-  fun hentSivilstand(@RequestBody bidragPersonRequest: String): ResponseEntity<SivilstandDto> {
-    return handleRestResponse(bidragPersonConsumer.hentSivilstand(bidragPersonRequest))
+  fun hentSivilstand(@RequestBody sivilstandRequest: SivilstandRequest): ResponseEntity<SivilstandDto> {
+    return handleRestResponse(bidragPersonConsumer.hentSivilstand(sivilstandRequest))
   }
 
 

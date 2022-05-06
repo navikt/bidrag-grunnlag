@@ -5,7 +5,9 @@ import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
@@ -57,7 +59,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentHusstandsmedlemmer(request: String): RestResponse<HusstandsmedlemmerDto> {
+  open fun hentHusstandsmedlemmer(request: HusstandsmedlemmerRequest): RestResponse<HusstandsmedlemmerDto> {
     logger.info("Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
 
     val restResponse = restTemplate.tryExchange(
@@ -73,7 +75,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentSivilstand(request: String): RestResponse<SivilstandDto> {
+  open fun hentSivilstand(request: SivilstandRequest): RestResponse<SivilstandDto> {
     logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
     val restResponse = restTemplate.tryExchange(
