@@ -9,6 +9,11 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -24,7 +29,10 @@ import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
-class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyConsumer, private val familieBaSakConsumer: FamilieBaSakConsumer) {
+class IntegrasjonsController(
+  private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
+  private val familieBaSakConsumer: FamilieBaSakConsumer,
+  private val bidragPersonConsumer: BidragPersonConsumer) {
 
 
   @PostMapping(HENT_AINNTEKT)
@@ -51,6 +59,34 @@ class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyC
     return handleRestResponse(familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest))
   }
 
+  @PostMapping(HENT_FOEDSEL_DOED)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL")
+  fun hentFoedselOgDoed(@RequestBody bidragPersonRequest: String): ResponseEntity<FoedselOgDoedDto> {
+    return handleRestResponse(bidragPersonConsumer.hentFoedselOgDoed(bidragPersonRequest))
+  }
+
+  @PostMapping(HENT_FORELDER_BARN_RELASJON)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
+  fun hentForelderbarnrelasjon(@RequestBody bidragPersonRequest: String): ResponseEntity<ForelderBarnRelasjonDto> {
+    return handleRestResponse(bidragPersonConsumer.hentForelderbarnrelasjon(bidragPersonRequest))
+  }
+
+  @PostMapping(HENT_HUSSTANDSMEDLEMMER)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
+  fun hentHusstandsmedlemmer(@RequestBody bidragPersonRequest: String): ResponseEntity<HusstandsmedlemmerDto> {
+    return handleRestResponse(bidragPersonConsumer.hentHusstandsmedlemmer(bidragPersonRequest))
+  }
+
+  @PostMapping(HENT_SIVILSTAND)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
+  fun hentSivilstand(@RequestBody bidragPersonRequest: String): ResponseEntity<SivilstandDto> {
+    return handleRestResponse(bidragPersonConsumer.hentSivilstand(bidragPersonRequest))
+  }
+
+
+
+
+
   private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {
     return when (restResponse) {
       is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
@@ -63,5 +99,9 @@ class IntegrasjonsController(private val bidragGcpProxyConsumer: BidragGcpProxyC
     const val HENT_SKATTEGRUNNLAG = "/integrasjoner/skattegrunnlag"
     const val HENT_BARNETILLEGG_PENSJON = "/integrasjoner/barnetillegg"
     const val HENT_FAMILIEBASAK = "/integrasjoner/familiebasak"
+    const val HENT_FORELDER_BARN_RELASJON = "/integrasjoner/foedselogdoed"
+    const val HENT_FOEDSEL_DOED = "/integrasjoner/forelderbarnrelasjon"
+    const val HENT_HUSSTANDSMEDLEMMER = "/integrasjoner/husstandsmedlemmer"
+    const val HENT_SIVILSTAND = "/integrasjoner/sivilstand"
   }
 }

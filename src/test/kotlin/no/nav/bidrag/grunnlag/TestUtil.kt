@@ -68,25 +68,25 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagType.AINNTEKT,
+          grunnlagType = GrunnlagRequestType.AINNTEKT,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagType.SKATTEGRUNNLAG,
+          grunnlagType = GrunnlagRequestType.SKATTEGRUNNLAG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          grunnlagType = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagType.BARNETILLEGG,
+          grunnlagType = GrunnlagRequestType.BARNETILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -97,7 +97,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          grunnlagType = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -108,7 +108,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestBarnetillegg() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagType.BARNETILLEGG,
+          grunnlagType = GrunnlagRequestType.BARNETILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")

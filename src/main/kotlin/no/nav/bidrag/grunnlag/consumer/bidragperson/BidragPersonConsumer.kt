@@ -42,7 +42,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
   }
 
   open fun hentForelderbarnrelasjon(request: String): RestResponse<ForelderBarnRelasjonDto> {
-    logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
+    logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON,
@@ -77,7 +77,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
     val restResponse = restTemplate.tryExchange(
-      BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
+      BIDRAGPERSON_CONTEXT_SIVILSTAND,
       HttpMethod.POST,
       initHttpEntity(request),
       SivilstandDto::class.java,
