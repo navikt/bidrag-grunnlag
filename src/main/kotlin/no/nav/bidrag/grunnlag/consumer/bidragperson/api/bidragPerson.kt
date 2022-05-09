@@ -2,6 +2,8 @@ package no.nav.bidrag.grunnlag.consumer.bidragperson.api
 
 import java.time.LocalDate
 
+// Request til bidrag-person
+
 data class HusstandsmedlemmerRequest(
   val personId: String,
   val periodeFra: LocalDate
@@ -12,6 +14,8 @@ data class SivilstandRequest(
   val periodeFra: LocalDate
 )
 
+
+// Response fra bidrag-person
 
 data class FoedselOgDoedDto(
 // Gir fødselsdato og fødselsår for angitt person. Fødselsår finnes for alle i PDL, mens noen ikke har utfyllt fødselsdato

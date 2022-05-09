@@ -87,25 +87,41 @@ class GrunnlagspakkeService(
     val skattegrunnlagRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
     val ubstRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
     val barnetilleggRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
+    val egneBarnRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
+    val husstandsmedlemmerRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
+    val sivilstandRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
 
     oppdaterGrunnlagspakkeRequestDto.grunnlagRequestDtoListe.forEach { grunnlagRequest ->
       when (grunnlagRequest.type) {
 
-        // Bygger opp liste over A-inntekter
+        // Bygger opp liste over hvilke personer og perioder A-inntekter skal hentes for
         GrunnlagRequestType.AINNTEKT ->
           ainntektRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
-        // Bygger opp liste over skattegrunnlag
+        // Bygger opp liste over hvilke personer og perioder skattegrunnlag skal hentes for
         GrunnlagRequestType.SKATTEGRUNNLAG ->
           skattegrunnlagRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
-        // Bygger opp liste over utvidet barnetrygd og småbarnstillegg
+        // Bygger opp liste over hvilke personer og perioder utvidet barnetrygd og småbarnstillegg skal hentes for
         GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG ->
           ubstRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
-        // Bygger opp liste over barnetillegg
+        // Bygger opp liste over hvilke personer og perioder barnetillegg skal hentes for
         GrunnlagRequestType.BARNETILLEGG ->
           barnetilleggRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
+
+        // Bygger opp liste over hvilke personer og perioder egne barn skal hentes for
+        GrunnlagRequestType.EGNE_BARN ->
+          egneBarnRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
+
+        // Bygger opp liste over hvilke personer og perioder husstandsmedlemmer skal hentes for
+        GrunnlagRequestType.HUSSTANDSMEDLEMMER ->
+          husstandsmedlemmerRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
+
+        // Bygger opp liste over hvilke personer og perioder sivilstand skal hentes for
+        GrunnlagRequestType.SIVILSTAND ->
+          sivilstandRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
+
         else -> {
           //Todo
         }
