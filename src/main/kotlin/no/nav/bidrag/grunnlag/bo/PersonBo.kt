@@ -9,7 +9,7 @@ import kotlin.reflect.full.memberProperties
 data class PersonBo(
 
   @Schema(description = "Person-id til BM/BP")
-  val personId: Int = 0,
+  val personId: Int,
 
   @Schema(description = "Personens navn")
   val navn: String?,
@@ -20,11 +20,17 @@ data class PersonBo(
   @Schema(description = "Personens eventuelle dødsdato")
   val doedsdato: LocalDate?,
 
-  @Schema(description = "Angis hvis barnet er manuelt registrert")
-  val opprettetAv: String? = "",
+  @Schema(description = "Angir om en personopplysning er aktiv")
+  val aktiv: Boolean = true,
 
-  @Schema(description = "Lagret tidspunkt")
-  val lagretTidspunkt: LocalDateTime = LocalDateTime.now()
+  @Schema(description = "Tidspunkt personopplysning taes i bruk")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Schema(description = "Tidspunkt personopplysningen ikke lenger aktiv. Null betyr at personopplysningen er aktiv")
+  val brukTil: LocalDateTime? = null,
+
+  @Schema(description = "Hentet tidspunkt")
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 
 )
 

@@ -9,7 +9,7 @@ import kotlin.reflect.full.memberProperties
 data class BarnBo(
 
   @Schema(description = "Person-id til forelder til barnet")
-  val personId: Int = 0,
+  val personId: Int,
 
   @Schema(description = "Person-id til barnet")
   val personIdBarn: String?,
@@ -18,7 +18,7 @@ data class BarnBo(
   val navn: String?,
 
   @Schema(description = "Barnets fødselsdato")
-  val foedselsdato: LocalDate,
+  val foedselsdato: LocalDate?,
 
   @Schema(description = "Barnets fødselsår")
   val foedselsaar: Int?,
@@ -27,10 +27,10 @@ data class BarnBo(
   val doedsdato: LocalDate?,
 
   @Schema(description = "Angis hvis barnet er manuelt registrert")
-  val opprettetAv: String? = "",
+  val opprettetAv: String?,
 
   @Schema(description = "Lagret tidspunkt")
-  val lagretTidspunkt: LocalDateTime = LocalDateTime.now()
+  val lagretTidspunkt: LocalDateTime
 
 )
 

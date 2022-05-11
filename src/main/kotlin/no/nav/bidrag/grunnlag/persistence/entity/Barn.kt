@@ -21,8 +21,8 @@ data class Barn(
   @Column(nullable = true, name = "person_id")
   val personId: String? = "",
 
-  @Column(nullable = false, name = "personn_db_id")
-  val personnDbId: Int = 0,
+  @Column(nullable = false, name = "person_db_id")
+  val personDbId: Int = 0,
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,

@@ -9,7 +9,7 @@ import kotlin.reflect.full.memberProperties
 data class HusstandBo(
 
   @Schema(description = "Person-id til personen husstandsinformasjonen er hentet for")
-  val personId: Int = 0,
+  val personId: Int,
 
   @Schema(description = "Personen bor i husstanden fra om med periode")
   val periodeFra: LocalDate,
@@ -42,10 +42,10 @@ data class HusstandBo(
   val matrikkelId: String?,
 
   @Schema(description = "Angis hvis barnet er manuelt registrert")
-  val opprettetAv: String? = "",
+  val opprettetAv: String?,
 
   @Schema(description = "Lagret tidspunkt")
-  val lagretTidspunkt: LocalDateTime = LocalDateTime.now()
+  val lagretTidspunkt: LocalDateTime
 
 )
 

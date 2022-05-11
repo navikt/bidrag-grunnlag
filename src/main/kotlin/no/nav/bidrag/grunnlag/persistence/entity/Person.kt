@@ -32,6 +32,15 @@ data class Person(
   @Column(nullable = true, name = "doedsdato")
   val doedsdato: LocalDate? = null,
 
+  @Column(nullable = false, name = "aktiv")
+  val aktiv: Boolean = true,
+
+  @Column(nullable = false, name = "bruk_fra")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Column(nullable = true, name = "bruk_til")
+  val brukTil: LocalDateTime? = null,
+
   @Column(nullable = true, name = "opprettet_av")
   val opprettetAv: String? = null,
 

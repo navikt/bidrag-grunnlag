@@ -398,7 +398,9 @@ class GrunnlagspakkeControllerTest(
         skattegrunnlagListe = emptyList(),
         ubstListe = emptyList(),
         barnetilleggListe = emptyList(),
-        husstandsmedlemmerListe = emptyList()
+        barnListe = emptyList(),
+        husstandListe = emptyList(),
+        sivilstandListe = emptyList()
       ))
 
     val okResult = TestUtil.performRequest(
