@@ -22,6 +22,7 @@ import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.behandling.felles.enums.Formaal
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
@@ -115,9 +116,9 @@ class GrunnlagspakkeControllerTest(
       OppdaterGrunnlagspakkeDto::class.java
     ) { isOk() }
 
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
 
-    oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+    oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
     }
   }
@@ -152,9 +153,9 @@ class GrunnlagspakkeControllerTest(
     ) { isOk() }
 
     assertThat(oppdaterGrunnlagspakkeDto).isNotNull
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
 
-    oppdaterGrunnlagspakkeDto.grunnlagtypeResponsListe.forEach { grunnlagstypeResponse ->
+    oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)
     }
   }
@@ -262,7 +263,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved oppdater grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved oppdater grunnlagspakke-kall`() {
 
     var errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", "/grunnlagspakke/null/oppdater")
 
@@ -282,7 +283,7 @@ class GrunnlagspakkeControllerTest(
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke5.json", "/grunnlagspakke/1/oppdater")
 
     assertNotNull(errorResult)
-    assertNotNull(errorResult["grunnlagRequestDtoListe[0].grunnlagType"])
+    assertNotNull(errorResult["grunnlagRequestDtoListe[0].type"])
 
     errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke6.json", "/grunnlagspakke/1/oppdater")
 
@@ -314,7 +315,7 @@ class GrunnlagspakkeControllerTest(
         OppdaterGrunnlagspakkeRequestDto(
           grunnlagRequestDtoListe = listOf(
             GrunnlagRequestDto(
-              grunnlagType = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+              type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
               personId = "12345678901",
               periodeFra = LocalDate.parse("2021-11-01"),
               periodeTil = LocalDate.parse("2021-11-15")
@@ -325,10 +326,10 @@ class GrunnlagspakkeControllerTest(
     )
       .thenReturn(OppdaterGrunnlagspakkeDto(
         grunnlagspakkeId = 1
-        , grunnlagtypeResponsListe =
+        , grunnlagTypeResponsListe =
         listOf(
           OppdaterGrunnlagDto(
-            grunnlagType = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+            type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
             personId = "12345678901",
             status = GrunnlagsRequestStatus.HENTET,
             statusMelding = "Ok"
@@ -396,7 +397,8 @@ class GrunnlagspakkeControllerTest(
         ainntektListe = emptyList(),
         skattegrunnlagListe = emptyList(),
         ubstListe = emptyList(),
-        barnetilleggListe = emptyList()
+        barnetilleggListe = emptyList(),
+        husstandsmedlemmerListe = emptyList()
       ))
 
     val okResult = TestUtil.performRequest(

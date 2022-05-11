@@ -8,4 +8,8 @@ azure:
   bidraggcpproxy_scope: dev-fss.bidrag.bidrag-gcp-proxy-feature
   bidraggcpproxy_app: bidrag-gcp-proxy-feature
   bidraggcpproxy_cluster: dev-fss
+  bidragperson_url: bidrag-person-feature.dev-fss-pub.nais.io
+  bidragperson_scope: dev-fss.bidrag.bidrag-person-feature
+  bidragperson_app: bidrag-person-feature
+  bidragperson_cluster: dev-fss
 dbname: bidrag-grunnlag-feature

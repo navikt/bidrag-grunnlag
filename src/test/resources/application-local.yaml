@@ -1,5 +1,6 @@
 FAMILIEBASAK_URL: http://localhost:${wiremock.server.https-port}/familiebasak
 BIDRAGGCPPROXY_URL: http://localhost:${wiremock.server.https-port}/bidraggcpproxy
+BIDRAGPERSON_URL: http://localhost:${wiremock.server.https-port}/bidragperson
 spring:
   config.activate.on-profile: local
   flyway.enabled: false

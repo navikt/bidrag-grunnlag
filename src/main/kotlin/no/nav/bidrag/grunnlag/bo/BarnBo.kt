@@ -2,7 +2,6 @@ package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
@@ -13,22 +12,22 @@ data class BarnBo(
   val personId: Int = 0,
 
   @Schema(description = "Person-id til barnet")
-  val personIdBarn: String,
+  val personIdBarn: String?,
 
   @Schema(description = "Barnets navn")
-  val navn: String,
+  val navn: String?,
 
   @Schema(description = "Barnets fødselsdato")
   val foedselsdato: LocalDate,
 
   @Schema(description = "Barnets fødselsår")
-  val foedselsaar: Int,
+  val foedselsaar: Int?,
 
   @Schema(description = "Barnets eventuelle dødsdato")
-  val doedsdato: LocalDate,
+  val doedsdato: LocalDate?,
 
   @Schema(description = "Angis hvis barnet er manuelt registrert")
-  val opprettetAv: String = "",
+  val opprettetAv: String? = "",
 
   @Schema(description = "Lagret tidspunkt")
   val lagretTidspunkt: LocalDateTime = LocalDateTime.now()

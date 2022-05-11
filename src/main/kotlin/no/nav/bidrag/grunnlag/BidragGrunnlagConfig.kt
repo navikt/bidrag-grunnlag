@@ -96,7 +96,7 @@ class BidragGrunnlagConfig {
   ): BidragPersonConsumer {
     LOGGER.info("Url satt i config: $url")
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiebasak"))
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidragperson"))
     return BidragPersonConsumer(restTemplate)
   }
 

@@ -4,6 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.Formaal
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.TestUtil
@@ -276,13 +277,13 @@ class GrunnlagspakkeServiceMockTest {
 
       // sjekk oppdatertGrunnlagspakke
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe.size).isEqualTo(1) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].grunnlagType).isEqualTo(
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(
         GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].personId).isEqualTo("12345678910") },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].status).isEqualTo(
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(
         GrunnlagsRequestStatus.HENTET) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 1") }
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 1") }
     )
   }
 
@@ -330,11 +331,11 @@ class GrunnlagspakkeServiceMockTest {
 
       // sjekk oppdatertGrunnlagspakke
       Executable { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe.size).isEqualTo(1) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].grunnlagType).isEqualTo(GrunnlagRequestType.BARNETILLEGG) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].personId).isEqualTo("12345678910") },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagtypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 1") }
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.BARNETILLEGG) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 1") }
     )
   }
 

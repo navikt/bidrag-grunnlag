@@ -6,7 +6,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeReques
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.GrunnlagType
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
@@ -68,25 +68,25 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagRequestType.AINNTEKT,
+          type = GrunnlagRequestType.AINNTEKT,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagRequestType.SKATTEGRUNNLAG,
+          type = GrunnlagRequestType.SKATTEGRUNNLAG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+          type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagRequestType.BARNETILLEGG,
+          type = GrunnlagRequestType.BARNETILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -97,7 +97,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+          type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -108,7 +108,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestBarnetillegg() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          grunnlagType = GrunnlagRequestType.BARNETILLEGG,
+          type = GrunnlagRequestType.BARNETILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")

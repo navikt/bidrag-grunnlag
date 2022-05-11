@@ -8,41 +8,38 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
-import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
-import no.nav.bidrag.grunnlag.comparator.Period
-import no.nav.bidrag.grunnlag.comparator.PeriodComparable
-import no.nav.bidrag.grunnlag.comparator.SkattegrunnlagPeriodComparator
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
-import no.nav.bidrag.grunnlag.bo.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.bo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
+import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
+import no.nav.bidrag.grunnlag.comparator.Period
+import no.nav.bidrag.grunnlag.comparator.PeriodComparable
+import no.nav.bidrag.grunnlag.comparator.SkattegrunnlagPeriodComparator
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import no.nav.bidrag.grunnlag.persistence.entity.Husstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektBo
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektspostBo
-import no.nav.bidrag.grunnlag.persistence.entity.toBarnetilleggBo
-import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeBo
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagBo
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostBo
-import no.nav.bidrag.grunnlag.persistence.entity.toUtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
@@ -123,9 +120,11 @@ class PersistenceService(
 
   // Returnerer lagret, komplett grunnlagspakke
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
+    var dummyliste: List<HusstandDto> = emptyList()
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
-      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId)
+      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
+      dummyliste
     )
   }
 
