@@ -8,6 +8,9 @@ import kotlin.reflect.full.memberProperties
 
 data class HusstandBo(
 
+  @Schema(description = "Grunnlagspakke-id")
+  val grunnlagspakkeId: Int = 0,
+
   @Schema(description = "Person-id til personen husstandsinformasjonen er hentet for")
   val personId: Int,
 
@@ -41,11 +44,20 @@ data class HusstandBo(
   @Schema(description = "Nøkkel til geografisk adresse registrert i Kartverkets matrikkel")
   val matrikkelId: String?,
 
+  @Schema(description = "Angir om en husstandsopplysning er aktiv")
+  val aktiv: Boolean = true,
+
+  @Schema(description = "Tidspunkt husstandsopplysning taes i bruk")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Schema(description = "Tidspunkt husstandsopplysningen ikke lenger er aktiv. Null betyr at husstandsopplysningen er aktiv")
+  val brukTil: LocalDateTime? = null,
+
   @Schema(description = "Angis hvis barnet er manuelt registrert")
   val opprettetAv: String?,
 
-  @Schema(description = "Lagret tidspunkt")
-  val lagretTidspunkt: LocalDateTime
+  @Schema(description = "Opprettet tidspunkt")
+  val opprettetTidspunkt: LocalDateTime
 
 )
 

@@ -95,7 +95,7 @@ class GrunnlagspakkeServiceTest {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     val opprettetAinntekt = persistenceService.opprettAinntekt(ainntektBo)
@@ -140,7 +140,7 @@ class GrunnlagspakkeServiceTest {
       periodeFra = LocalDate.parse("2020-06-01"),
       periodeTil = LocalDate.parse("2020-07-01"),
       aktiv = false,
-      hentetTidspunkt = LocalDateTime.now(),
+      opprettetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
       brukTil = null
     )
@@ -171,7 +171,7 @@ class GrunnlagspakkeServiceTest {
       periodeFra = LocalDate.parse("2021-07-01"),
       periodeTil = LocalDate.parse("2021-08-01"),
       aktiv = true,
-      hentetTidspunkt = LocalDateTime.now(),
+      opprettetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
       brukTil = null
     )
@@ -204,7 +204,7 @@ class GrunnlagspakkeServiceTest {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(skattegrunnlagBo)
@@ -232,7 +232,7 @@ class GrunnlagspakkeServiceTest {
         belop = BigDecimal.valueOf(12468.01),
         manueltBeregnet = false,
         deltBosted = false,
-        hentetTidspunkt = LocalDateTime.now()
+        opprettetTidspunkt = LocalDateTime.now()
       )
     )
 

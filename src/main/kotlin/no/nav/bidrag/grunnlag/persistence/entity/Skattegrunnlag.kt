@@ -39,7 +39,7 @@ data class Skattegrunnlag(
   val brukTil: LocalDateTime? = null,
 
   @Column(nullable = false, name = "hentet_tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun Skattegrunnlag.toSkattegrunnlagBo() = with(::SkattegrunnlagBo) {

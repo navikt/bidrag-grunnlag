@@ -31,7 +31,7 @@ data class SkattegrunnlagBo(
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime
+  val opprettetTidspunkt: LocalDateTime
 ) : IPeriod
 
 fun SkattegrunnlagBo.toSkattegrunnlagEntity() = with(::Skattegrunnlag) {

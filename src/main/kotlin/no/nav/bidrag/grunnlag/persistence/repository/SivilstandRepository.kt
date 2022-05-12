@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query
 interface SivilstandRepository : JpaRepository<Sivilstand, Int?> {
 
   @Query(
-    "select si from Sivilstand si where si.personDbId = :personDnId"
+    "select si from Sivilstand si where si.personId = :personDnId and si.aktiv = true"
   )
-  fun hentSivilstand(personnDbId: Int): List<Sivilstand>
+  fun hentSivilstand(personId: Int): List<Sivilstand>
 }

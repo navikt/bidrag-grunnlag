@@ -26,8 +26,8 @@ data class HusstandsmedlemBo(
   @Schema(description = "Manuelt opprettet av")
   val opprettetAv: String?,
 
-  @Schema(description = "Lagret tidspunkt")
-  val lagretTidspunkt: LocalDateTime
+  @Schema(description = "Opprettet tidspunkt")
+  val opprettetTidspunkt: LocalDateTime
 )
 
 fun HusstandsmedlemBo.toHusstandsmedlemEntity() = with(::Husstandsmedlem) {

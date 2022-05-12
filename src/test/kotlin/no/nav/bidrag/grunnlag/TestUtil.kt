@@ -141,7 +141,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggAinntekt() = Ainntekt(
@@ -153,7 +153,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggAinntektspostBo() = AinntektspostBo(
@@ -195,7 +195,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggSkattegrunnlagSkatt() = no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
@@ -207,7 +207,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggSkattegrunnlagspostBo() = SkattegrunnlagspostBo(
@@ -237,7 +237,7 @@ class TestUtil {
       belop = BigDecimal.valueOf(12468.01),
       manueltBeregnet = false,
       deltBosted = false,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggUtvidetBarnetrygdOgSmaabarnstillegg() = UtvidetBarnetrygdOgSmaabarnstillegg(
@@ -253,7 +253,7 @@ class TestUtil {
       belop = BigDecimal.valueOf(12468.01),
       manueltBeregnet = false,
       deltBosted = false,
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggBarnetilleggBo() = BarnetilleggBo(
@@ -268,7 +268,7 @@ class TestUtil {
       brukTil = null,
       belopBrutto = BigDecimal.valueOf(1000),
       barnType = BarnType.FELLES.toString(),
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggBarnetillegg() = Barnetillegg(
@@ -284,7 +284,7 @@ class TestUtil {
       brukTil = null,
       belopBrutto = BigDecimal.valueOf(1000),
       barnType = BarnType.FELLES.toString(),
-      hentetTidspunkt = LocalDateTime.now()
+      opprettetTidspunkt = LocalDateTime.now()
     )
 
     fun byggFamilieBaSakResponse() = FamilieBaSakResponse(

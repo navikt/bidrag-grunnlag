@@ -4,6 +4,11 @@ import java.time.LocalDate
 
 // Request til bidrag-person
 
+data class ForelderBarnRequest (
+  val personId: String,
+  val periodeFra: LocalDate
+)
+
 data class HusstandsmedlemmerRequest(
   val personId: String,
   val periodeFra: LocalDate
@@ -28,7 +33,7 @@ data class FoedselOgDoedDto(
 
 data class ForelderBarnRelasjonDto(
 // Liste over alle hentede forekomster av foreldre-barnrelasjoner
-  var forelderBarnRelasjon: List<ForelderBarnRelasjon>?
+  val forelderBarnRelasjon: List<ForelderBarnRelasjon>?
 )
 
 data class ForelderBarnRelasjon(

@@ -10,6 +10,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.grunnlag.bo.AinntektBo
@@ -139,6 +140,14 @@ class PersistenceService(
     )
   }
 
+  fun oppdaterEksisterendeBarnTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    barnRepository.oppdaterEksisterendeBarnTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
   fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
     val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
     return barnetilleggRepository.save(nyBarnetillegg)
@@ -174,10 +183,11 @@ class PersistenceService(
     var dummyliste1: List<BarnDto> = emptyList()
     var dummyliste2: List<HusstandDto> = emptyList()
     var dummyliste3: List<SivilstandDto> = emptyList()
+    var dummyliste4: List<PersonDto> = emptyList()
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      dummyliste1, dummyliste2, dummyliste3
+      dummyliste1, dummyliste2, dummyliste3, dummyliste4
     )
   }
 
@@ -228,7 +238,7 @@ class PersistenceService(
     // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
     LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
-      val unchangedAinntekt = equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
+      val unchangedAinntekt = equalEntity.periodEntity.copy(opprettetTidspunkt = timestampOppdatering).toAinntektEntity()
       ainntektRepository.save(unchangedAinntekt)
     }
     // Lagrer nye Ainntekter og Ainntektsposter.
@@ -266,7 +276,7 @@ class PersistenceService(
     // Oppdaterer hentet tidspunkt for uendrede skattegrunnlag.
     LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
-      val unchangedSkattegrunnlag = equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toSkattegrunnlagEntity()
+      val unchangedSkattegrunnlag = equalEntity.periodEntity.copy(opprettetTidspunkt = timestampOppdatering).toSkattegrunnlagEntity()
       skattegrunnlagRepository.save(unchangedSkattegrunnlag)
     }
     // Lagrer nye skattegrunnlag og skattegrunnlagsposter.
@@ -311,7 +321,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            hentetTidspunkt = inntekt.hentetTidspunkt,
+            opprettetTidspunkt = inntekt.opprettetTidspunkt,
             ainntektspostListe = hentAinntektspostListe
           )
         )
@@ -380,7 +390,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            hentetTidspunkt = inntekt.hentetTidspunkt,
+            opprettetTidspunkt = inntekt.opprettetTidspunkt,
             hentSkattegrunnlagspostListe
           )
         )
@@ -405,7 +415,7 @@ class PersistenceService(
             brukTil = ubst.brukTil,
             belop = ubst.belop,
             manueltBeregnet = ubst.manueltBeregnet,
-            hentetTidspunkt = ubst.hentetTidspunkt
+            opprettetTidspunkt = ubst.opprettetTidspunkt
           )
         )
       }
@@ -428,10 +438,35 @@ class PersistenceService(
             brukTil = barnetillegg.brukTil,
             belopBrutto = barnetillegg.belopBrutto,
             barnType = barnetillegg.barnType,
-            hentetTidspunkt = barnetillegg.hentetTidspunkt
+            opprettetTidspunkt = barnetillegg.opprettetTidspunkt
           )
         )
       }
     return barnetilleggDtoListe
   }
+
+  fun hentBarn(grunnlagspakkeId: Int): List<BarnetilleggDto> {
+    val barnetilleggDtoListe = mutableListOf<BarnetilleggDto>()
+    barnetilleggRepository.hentBarnetillegg(grunnlagspakkeId)
+      .forEach { barnetillegg ->
+        barnetilleggDtoListe.add(
+          BarnetilleggDto(
+            partPersonId = barnetillegg.partPersonId,
+            barnPersonId = barnetillegg.barnPersonId,
+            barnetilleggType = barnetillegg.barnetilleggType,
+            periodeFra = barnetillegg.periodeFra,
+            periodeTil = barnetillegg.periodeTil,
+            aktiv = barnetillegg.aktiv,
+            brukFra = barnetillegg.brukFra,
+            brukTil = barnetillegg.brukTil,
+            belopBrutto = barnetillegg.belopBrutto,
+            barnType = barnetillegg.barnType,
+            opprettetTidspunkt = barnetillegg.opprettetTidspunkt
+          )
+        )
+      }
+    return barnetilleggDtoListe
+  }
+
+
 }

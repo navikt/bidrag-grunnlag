@@ -9,6 +9,9 @@ import kotlin.reflect.full.memberProperties
 
 data class SivilstandBo(
 
+  @Schema(description = "Grunnlagspakke-id")
+  val grunnlagspakkeId: Int = 0,
+
   @Schema(description = "Person-id til personen sivilstanden gjelder for")
   val personId: Int,
 
@@ -21,11 +24,20 @@ data class SivilstandBo(
   @Schema(description = "Person-id til barnet")
   val sivilstand: SivilstandKode,
 
+  @Schema(description = "Angir om en sivilstand er aktiv")
+  val aktiv: Boolean = true,
+
+  @Schema(description = "Tidspunkt sivilstanden taes i bruk")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Schema(description = "Tidspunkt sivilstanden ikke lenger er aktiv. Null betyr at sivilstanden er aktiv")
+  val brukTil: LocalDateTime? = null,
+
   @Schema(description = "Angis hvis barnet er manuelt registrert")
   val opprettetAv: String?,
 
-  @Schema(description = "Lagret tidspunkt")
-  val lagretTidspunkt: LocalDateTime
+  @Schema(description = "Opprettet tidspunkt")
+  val opprettetTidspunkt: LocalDateTime
 
 )
 

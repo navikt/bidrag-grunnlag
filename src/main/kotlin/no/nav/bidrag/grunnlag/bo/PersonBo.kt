@@ -8,7 +8,10 @@ import kotlin.reflect.full.memberProperties
 
 data class PersonBo(
 
-  @Schema(description = "Person-id til BM/BP")
+  @Schema(description = "Grunnlagspakke-id")
+  val grunnlagspakkeId: Int = 0,
+
+  @Schema(description = "Person-id til angitt person")
   val personId: Int,
 
   @Schema(description = "Personens navn")
@@ -26,11 +29,14 @@ data class PersonBo(
   @Schema(description = "Tidspunkt personopplysning taes i bruk")
   val brukFra: LocalDateTime = LocalDateTime.now(),
 
-  @Schema(description = "Tidspunkt personopplysningen ikke lenger aktiv. Null betyr at personopplysningen er aktiv")
+  @Schema(description = "Tidspunkt personopplysningen ikke lenger er aktiv. Null betyr at personopplysningen er aktiv")
   val brukTil: LocalDateTime? = null,
 
-  @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+  @Schema(description = "Manuelt opprettet av")
+  val opprettetAv: String?,
+
+  @Schema(description = "Opprettet tidspunkt")
+  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 
 )
 
@@ -38,7 +44,7 @@ fun PersonBo.toPersonEntity() = with(::Person) {
   val propertiesByName = PersonBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      Person::personnDbId.name -> 0
+      Person::personDbId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toPersonEntity)
     }
   })

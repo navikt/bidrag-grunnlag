@@ -1,7 +1,9 @@
 package no.nav.bidrag.grunnlag.consumer.bidragperson
 
+import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
@@ -13,6 +15,7 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
+import java.time.LocalDateTime
 
 private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/foedselogdoed"
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
@@ -43,7 +46,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentForelderbarnrelasjon(request: String): RestResponse<ForelderBarnRelasjonDto> {
+  open fun hentForelderBarnRelasjon(request: ForelderBarnRequest): RestResponse<ForelderBarnRelasjonDto> {
     logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
 
     val restResponse = restTemplate.tryExchange(
@@ -90,5 +93,22 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
 
     return restResponse
   }
+
+  open fun hentPerson(request: String): RestResponse<PersonDto> {
+    logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
+
+    val restResponse = restTemplate.tryExchange(
+      BIDRAGPERSON_CONTEXT_SIVILSTAND,
+      HttpMethod.POST,
+      initHttpEntity(request),
+      PersonDto::class.java,
+      PersonDto(0,null, null, null, null, LocalDateTime.now())
+    )
+
+    logResponse(logger, restResponse)
+
+    return restResponse
+  }
+
 
 }

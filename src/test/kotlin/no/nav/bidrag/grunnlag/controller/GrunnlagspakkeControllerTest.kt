@@ -25,6 +25,7 @@ import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -70,7 +71,8 @@ class GrunnlagspakkeControllerTest(
   private val restTemplate: HttpHeaderRestTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
   private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
-  private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer)
+  private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
+  private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer)
   private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
   private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)
     .setControllerAdvice(RestExceptionHandler(exceptionLogger), CustomExceptionHandler(exceptionLogger), HibernateExceptionHandler(exceptionLogger))
@@ -400,7 +402,8 @@ class GrunnlagspakkeControllerTest(
         barnetilleggListe = emptyList(),
         barnListe = emptyList(),
         husstandListe = emptyList(),
-        sivilstandListe = emptyList()
+        sivilstandListe = emptyList(),
+        personListe = emptyList()
       ))
 
     val okResult = TestUtil.performRequest(

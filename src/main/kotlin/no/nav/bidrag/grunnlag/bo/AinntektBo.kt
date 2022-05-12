@@ -28,11 +28,11 @@ data class AinntektBo(
   @Schema(description = "Tidspunkt inntekten taes i bruk")
   val brukFra: LocalDateTime = LocalDateTime.now(),
 
-  @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
+  @Schema(description = "Tidspunkt inntekten ikke lenger er aktiv. Null betyr at inntekten er aktiv")
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 
 ): IPeriod
 

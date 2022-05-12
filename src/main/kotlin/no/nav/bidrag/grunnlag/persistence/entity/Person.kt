@@ -15,7 +15,7 @@ data class Person(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "person_db_id")
-  val personnDbId: Int = 0,
+  val personDbId: Int = 0,
 
   @Column(nullable = false, name = "grunnlagspakke_id")
   val grunnlagspakkeId: Int = 0,
@@ -44,8 +44,8 @@ data class Person(
   @Column(nullable = true, name = "opprettet_av")
   val opprettetAv: String? = null,
 
-  @Column(nullable = false, name = "lagret_tidspunkt")
-  val lagretTidspunkt: LocalDateTime = LocalDateTime.now()
+  @Column(nullable = false, name = "opprettet_tidspunkt")
+  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun Person.toPersonBo() = with(::PersonBo) {

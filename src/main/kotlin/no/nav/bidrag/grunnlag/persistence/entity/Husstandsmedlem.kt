@@ -32,8 +32,8 @@ data class Husstandsmedlem(
   @Column(nullable = true, name = "opprettet_av")
   val opprettetAv: String? = null,
 
-  @Column(nullable = false, name = "lagret_tidspunkt")
-  val lagretTidspunkt: LocalDateTime = LocalDateTime.now()
+  @Column(nullable = false, name = "opprettet_tidspunkt")
+  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 

@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
 import no.nav.bidrag.grunnlag.bo.BarnBo
-import no.nav.bidrag.grunnlag.bo.PersonBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -18,11 +17,14 @@ data class Barn(
   @Column(name = "barn_id")
   val barnId: Int = 0,
 
-  @Column(nullable = true, name = "person_id")
-  val personId: String? = "",
+  @Column(nullable = false, name = "grunnlagspakke_id")
+  val grunnlagspakkeId: Int = 0,
 
-  @Column(nullable = false, name = "person_db_id")
-  val personDbId: Int = 0,
+  @Column(nullable = true, name = "person_id_barn")
+  val personIdBarn: String? = "",
+
+  @Column(nullable = false, name = "person_id_voksen")
+  val personIdVoksen: Int = 0,
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,
@@ -30,14 +32,26 @@ data class Barn(
   @Column(nullable = true, name = "foedselsdato")
   val foedselsdato: LocalDate? = null,
 
+  @Column(nullable = true, name = "foedselsaar")
+  val foedselsaar: String? = null,
+
   @Column(nullable = true, name = "doedsdato")
   val doedsdato: LocalDate? = null,
+
+  @Column(nullable = false, name = "aktiv")
+  val aktiv: Boolean = true,
+
+  @Column(nullable = false, name = "bruk_fra")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Column(nullable = true, name = "bruk_til")
+  val brukTil: LocalDateTime? = null,
 
   @Column(nullable = true, name = "opprettet_av")
   val opprettetAv: String? = null,
 
-  @Column(nullable = false, name = "lagret_tidspunkt")
-  val lagretTidspunkt: LocalDateTime = LocalDateTime.now()
+  @Column(nullable = false, name = "opprettet_tidspunkt")
+  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun Barn.toBarnBo() = with(::BarnBo) {

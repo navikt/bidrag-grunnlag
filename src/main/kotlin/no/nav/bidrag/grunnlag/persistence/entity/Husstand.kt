@@ -17,8 +17,11 @@ data class Husstand(
   @Column(name = "husstand_id")
   val husstandId: Int = 0,
 
-  @Column(nullable = false, name = "personn_db_id")
-  val personnDbId: String = "",
+  @Column(nullable = false, name = "grunnlagspakke_id")
+  val grunnlagspakkeId: Int = 0,
+
+  @Column(nullable = false, name = "person_id")
+  val personId: String = "",
 
   @Column(nullable = false, name = "periode_fra")
   val periodeFra: LocalDate = LocalDate.now(),
@@ -50,11 +53,20 @@ data class Husstand(
   @Column(nullable = true, name = "matrikkelId")
   val matrikkelId: String? = null,
 
+  @Column(nullable = false, name = "aktiv")
+  val aktiv: Boolean = true,
+
+  @Column(nullable = false, name = "bruk_fra")
+  val brukFra: LocalDateTime = LocalDateTime.now(),
+
+  @Column(nullable = true, name = "bruk_til")
+  val brukTil: LocalDateTime? = null,
+
   @Column(nullable = true, name = "opprettet_av")
   val opprettetAv: String? = null,
 
-  @Column(nullable = false, name = "lagret_tidspunkt")
-  val lagretTidspunkt: LocalDateTime = LocalDateTime.now()
+  @Column(nullable = false, name = "opprettet_tidspunkt")
+  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 
