@@ -28,8 +28,13 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
+import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import no.nav.bidrag.grunnlag.persistence.entity.Husstand
+import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
+import no.nav.bidrag.grunnlag.persistence.entity.Person
+import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -284,6 +289,79 @@ class TestUtil {
       brukTil = null,
       belopBrutto = BigDecimal.valueOf(1000),
       barnType = BarnType.FELLES.toString(),
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggBarn() = Barn(
+      barnId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      personIdBarn = "1234567",
+      personIdVoksen = "0123456",
+      navn = "Svett Elefant",
+      foedselsdato = LocalDate.parse("2011-01-01"),
+      foedselsaar = "2011-01-01",
+      doedsdato = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggHusstand() = Husstand(
+      husstandId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      periodeFra = LocalDate.parse("2011-01-01"),
+      periodeTil = LocalDate.parse("2011-01-01"),
+      adressenavn = "",
+      husnummer = "",
+      husbokstav = "",
+      bruksenhetsnummer = "",
+      postnr = "",
+      bydelsnummer = "",
+      matrikkelId = "",
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggHusstandsmedlem() = Husstandsmedlem(
+      husstandsmedlemId = (1..100).random(),
+      husstandId = (1..100).random(),
+      navn = "",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggSivilstand() = Sivilstand(
+      sivilstandId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      personId = "",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      sivilstand = "",
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggPerson() = Person(
+      personDbId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      personId = "",
+      navn = "",
+      foedselsdato = LocalDate.parse("2011-01-01"),
+      doedsdato = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
       opprettetTidspunkt = LocalDateTime.now()
     )
 

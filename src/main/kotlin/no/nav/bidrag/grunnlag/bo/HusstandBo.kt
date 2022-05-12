@@ -12,7 +12,7 @@ data class HusstandBo(
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Person-id til personen husstandsinformasjonen er hentet for")
-  val personId: Int,
+  val personId: String,
 
   @Schema(description = "Personen bor i husstanden fra om med periode")
   val periodeFra: LocalDate,

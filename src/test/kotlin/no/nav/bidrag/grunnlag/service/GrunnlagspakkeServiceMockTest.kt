@@ -33,6 +33,7 @@ import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import org.assertj.core.api.Assertions.assertThat
@@ -65,6 +66,9 @@ class GrunnlagspakkeServiceMockTest {
 
   @Mock
   private lateinit var bidragGcpProxyConsumerMock: BidragGcpProxyConsumer
+
+  @Mock
+  private lateinit var bidragPersonConsumerMock: BidragPersonConsumer
 
   @Captor
   private lateinit var grunnlagspakkeCaptor: ArgumentCaptor<Grunnlagspakke>

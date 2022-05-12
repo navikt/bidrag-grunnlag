@@ -18,7 +18,7 @@ data class Husstandsmedlem(
   val husstandsmedlemId: Int = 0,
 
   @Column(nullable = false, name = "husstand_id")
-  val husstandId: String = "",
+  val husstandId: Int = 0,
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,

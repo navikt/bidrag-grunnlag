@@ -13,7 +13,7 @@ data class SivilstandBo(
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Person-id til personen sivilstanden gjelder for")
-  val personId: Int,
+  val personId: String,
 
   @Schema(description = "Periode fra- og med måned")
   val periodeFra: LocalDate,

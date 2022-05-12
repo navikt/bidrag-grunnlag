@@ -11,7 +11,7 @@ interface BarnRepository : JpaRepository<Barn, Int?> {
   @Query(
     "select ba from Barn ba where ba.personIdVoksen = :personIdVoksen and ba.aktiv = true"
   )
-  fun hentBarn(personIdVoksen: Int): List<Barn>
+  fun hentBarn(personIdVoksen: String): List<Barn>
 
   @Modifying
   @Query(

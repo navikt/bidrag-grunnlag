@@ -445,7 +445,7 @@ class PersistenceService(
     return barnetilleggDtoListe
   }
 
-  fun hentBarn(grunnlagspakkeId: Int): List<BarnetilleggDto> {
+  fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<BarnetilleggDto> {
     val barnetilleggDtoListe = mutableListOf<BarnetilleggDto>()
     barnetilleggRepository.hentBarnetillegg(grunnlagspakkeId)
       .forEach { barnetillegg ->

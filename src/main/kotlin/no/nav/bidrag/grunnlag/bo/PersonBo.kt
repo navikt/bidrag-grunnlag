@@ -12,7 +12,7 @@ data class PersonBo(
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Person-id til angitt person")
-  val personId: Int,
+  val personId: String,
 
   @Schema(description = "Personens navn")
   val navn: String?,
