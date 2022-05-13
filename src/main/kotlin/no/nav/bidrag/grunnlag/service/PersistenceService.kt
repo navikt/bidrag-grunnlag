@@ -148,6 +148,30 @@ class PersistenceService(
     )
   }
 
+  fun oppdaterEksisterendeHusstandTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    husstandRepository.oppdaterEksisterendeHusstandTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
+  fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
+  fun oppdaterEksisterendePersonTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    personRepository.oppdaterEksisterendePersonTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
   fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
     val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
     return barnetilleggRepository.save(nyBarnetillegg)

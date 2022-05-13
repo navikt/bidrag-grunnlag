@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS barn
     person_id_voksen varchar(50),
     navn varchar(255),
     foedselsdato date,
-    foedselsaar char(4),
+    foedselsaar integer,
     doedsdato date,
     aktiv boolean DEFAULT true NOT NULL,
     bruk_fra timestamp DEFAULT now() NOT NULL,

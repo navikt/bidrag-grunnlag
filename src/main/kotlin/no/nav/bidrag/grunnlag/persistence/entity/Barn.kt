@@ -33,7 +33,7 @@ data class Barn(
   val foedselsdato: LocalDate? = null,
 
   @Column(nullable = true, name = "foedselsaar")
-  val foedselsaar: String? = null,
+  val foedselsaar: Int? = null,
 
   @Column(nullable = true, name = "doedsdato")
   val doedsdato: LocalDate? = null,

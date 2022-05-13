@@ -11,6 +11,7 @@ import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
@@ -32,6 +33,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -39,6 +41,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
@@ -185,7 +189,6 @@ class GrunnlagspakkeService(
       )
     )
 
-
     // Oppdaterer grunnlag for egne barn i husstanden
     oppdaterGrunnlagDtoListe.addAll(
       oppdaterEgneBarnIHusstanden(
@@ -195,6 +198,36 @@ class GrunnlagspakkeService(
         forekomsterFunnet
       )
     )
+
+//    // Oppdaterer grunnlag for husstandsmedlemmer
+//    oppdaterGrunnlagDtoListe.addAll(
+//      oppdaterHusstandsmedlemmer(
+//        grunnlagspakkeId,
+//        husstandsmedlemmerRequestListe,
+//        timestampOppdatering,
+//        forekomsterFunnet
+//      )
+//    )
+
+    // Oppdaterer grunnlag med sivilstand
+    oppdaterGrunnlagDtoListe.addAll(
+      oppdaterSivilstand(
+        grunnlagspakkeId,
+        sivilstandRequestListe,
+        timestampOppdatering,
+        forekomsterFunnet
+      )
+    )
+
+//    // Oppdaterer grunnlag med persondata fra pdl
+//    oppdaterGrunnlagDtoListe.addAll(
+//      oppdaterPerson(
+//        grunnlagspakkeId,
+//        personRequestListe,
+//        timestampOppdatering,
+//        forekomsterFunnet
+//      )
+//    )
 
     // Oppdaterer endret_timestamp på grunnlagspakke
     if (forekomsterFunnet) {
@@ -765,6 +798,105 @@ class GrunnlagspakkeService(
       is RestResponse.Failure ->
         return null
     }
+  }
+
+
+
+  fun oppdaterSivilstand(
+    grunnlagspakkeId: Int,
+    personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
+    timestampOppdatering: LocalDateTime,
+    forekomsterFunnet: Boolean
+  ): List<OppdaterGrunnlagDto> {
+
+    val oppdaterGrunnlagDtoListe = mutableListOf<OppdaterGrunnlagDto>()
+
+    personIdOgPeriodeListe.forEach { personIdOgPeriode ->
+
+      var antallPerioderFunnet = 0
+
+      val hentSivilstandRequest = SivilstandRequest(
+        personId = personIdOgPeriode.personId,
+        periodeFra = personIdOgPeriode.periodeFra,
+      )
+
+      LOGGER.info(
+        "Kaller bidrag-person og henter sivilstand for personIdent ********${
+          hentSivilstandRequest.personId.substring(
+            IntRange(8, 10)
+          )
+        } " +
+            ", fraDato " + "${hentSivilstandRequest.periodeFra}"
+      )
+
+      when (val restResponseSivilstand =
+        bidragPersonConsumer.hentSivilstand(hentSivilstandRequest)) {
+        is RestResponse.Success -> {
+          val sivilstandResponse = restResponseSivilstand.body
+          LOGGER.info("Kall til vbidrag-person for å hente sivilstand følgende respons: $sivilstandResponse")
+
+          if ((sivilstandResponse.sivilstand != null) && (sivilstandResponse.sivilstand.isNotEmpty())) {
+            persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
+              grunnlagspakkeId,
+              personIdOgPeriode.personId,
+              timestampOppdatering
+            )
+            sivilstandResponse.sivilstand.forEach { si ->
+              // Pga vekslende datakvalitet fra PDL må det taes høyde for at begge disse datoene kan være null.
+              // Hvis de er det så kan ikke periodekontroll gjøres og sivilstanden må lagres uten fra-dato
+              val dato = si.gyldigFraOgMed?: si.bekreftelsesdato
+              if ((dato != null && dato.isBefore(personIdOgPeriode.periodeTil)) || (dato == null)) {
+                antallPerioderFunnet++
+                lagreSivilstand(si, grunnlagspakkeId, timestampOppdatering, personIdOgPeriode.personId)
+
+              }
+            }
+          }
+          oppdaterGrunnlagDtoListe.add(
+            OppdaterGrunnlagDto(
+              GrunnlagRequestType.SIVILSTAND,
+              personIdOgPeriode.personId,
+              GrunnlagsRequestStatus.HENTET,
+              "Antall perioder funnet: $antallPerioderFunnet"
+            )
+          )
+          if (antallPerioderFunnet > 0) {
+            forekomsterFunnet
+          }
+        }
+        is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
+          OppdaterGrunnlagDto(
+            GrunnlagRequestType.SIVILSTAND,
+            personIdOgPeriode.personId,
+            if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+            "Feil ved henting av sivilstand fra bidrag-person/PDL for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+          )
+        )
+      }
+    }
+    return oppdaterGrunnlagDtoListe
+  }
+
+  fun lagreSivilstand(sivilstand: SivilstandResponse, grunnlagspakkeId: Int, timestampOppdatering: LocalDateTime, personId: String) {
+    persistenceService.opprettSivilstand(
+      SivilstandBo(
+        grunnlagspakkeId = grunnlagspakkeId,
+        personId = personId,
+        periodeFra = sivilstand.gyldigFraOgMed?: sivilstand.bekreftelsesdato,
+        // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+//        periodeTil = if (sivilstand.tom != null) si.tom.plusMonths(1)
+//          .withDayOfMonth(1) else null,
+        periodeTil = null,
+        sivilstand = sivilstand.type,
+        aktiv = true,
+        brukFra = timestampOppdatering,
+        brukTil = null,
+        opprettetAv = null,
+        opprettetTidspunkt = timestampOppdatering
+      )
+    )
+
+
   }
 
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {

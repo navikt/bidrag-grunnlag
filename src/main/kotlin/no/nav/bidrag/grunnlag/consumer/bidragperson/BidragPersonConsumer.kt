@@ -3,13 +3,13 @@ package no.nav.bidrag.grunnlag.consumer.bidragperson
 import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
@@ -78,15 +78,15 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentSivilstand(request: SivilstandRequest): RestResponse<SivilstandDto> {
+  open fun hentSivilstand(request: SivilstandRequest): RestResponse<SivilstandResponseDto> {
     logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGPERSON_CONTEXT_SIVILSTAND,
       HttpMethod.POST,
       initHttpEntity(request),
-      SivilstandDto::class.java,
-      SivilstandDto(emptyList())
+      SivilstandResponseDto::class.java,
+      SivilstandResponseDto(emptyList())
     )
 
     logResponse(logger, restResponse)

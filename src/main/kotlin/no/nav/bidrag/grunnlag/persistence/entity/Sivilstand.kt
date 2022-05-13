@@ -23,8 +23,8 @@ data class Sivilstand(
   @Column(nullable = false, name = "person_id")
   val personId: String = "",
 
-  @Column(nullable = false, name = "periode_fra")
-  val periodeFra: LocalDate = LocalDate.now(),
+  @Column(nullable = true, name = "periode_fra")
+  val periodeFra: LocalDate? = null,
 
   @Column(nullable = true, name = "periode_til")
   val periodeTil: LocalDate? = null,

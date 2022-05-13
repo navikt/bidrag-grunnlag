@@ -7,6 +7,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
+import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
@@ -21,8 +22,13 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
+import no.nav.bidrag.grunnlag.bo.HusstandBo
+import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
+import no.nav.bidrag.grunnlag.bo.PersonBo
+import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -48,6 +54,8 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.Fradrag
 import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.Inntekt
 import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
 import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -114,6 +122,50 @@ class TestUtil {
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
           type = GrunnlagRequestType.BARNETILLEGG,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-02-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestEgneBarnIHusstanden() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmer() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestSivilstand() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.SIVILSTAND,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestPerson() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.PERSON,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -292,6 +344,21 @@ class TestUtil {
       opprettetTidspunkt = LocalDateTime.now()
     )
 
+    fun byggBarnBo() = BarnBo(
+      grunnlagspakkeId = (1..100).random(),
+      personIdBarn = "1234567",
+      personIdVoksen = "0123456",
+      navn = "Svett Elefant",
+      foedselsdato = LocalDate.parse("2011-01-01"),
+      foedselsaar = 2011,
+      doedsdato = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
     fun byggBarn() = Barn(
       barnId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
@@ -299,8 +366,28 @@ class TestUtil {
       personIdVoksen = "0123456",
       navn = "Svett Elefant",
       foedselsdato = LocalDate.parse("2011-01-01"),
-      foedselsaar = "2011-01-01",
+      foedselsaar = 2011,
       doedsdato = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggHusstandBo() = HusstandBo(
+      grunnlagspakkeId = (1..100).random(),
+      personId = "1234567",
+      periodeFra = LocalDate.parse("2011-01-01"),
+      periodeTil = LocalDate.parse("2011-02-01"),
+      adressenavn = "adressenavn1",
+      husnummer = "husnummer1",
+      husbokstav = "husbokstav1",
+      bruksenhetsnummer = "bruksenhetsnummer1",
+      postnr = "postnr1",
+      bydelsnummer = "bydelsnummer1",
+      kommunenummer = "kommunenummer1",
+      matrikkelId = "matrikkelId1",
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -311,15 +398,17 @@ class TestUtil {
     fun byggHusstand() = Husstand(
       husstandId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
+      personId = "1234567",
       periodeFra = LocalDate.parse("2011-01-01"),
-      periodeTil = LocalDate.parse("2011-01-01"),
-      adressenavn = "",
-      husnummer = "",
-      husbokstav = "",
-      bruksenhetsnummer = "",
-      postnr = "",
-      bydelsnummer = "",
-      matrikkelId = "",
+      periodeTil = LocalDate.parse("2011-02-01"),
+      adressenavn = "adressenavn1",
+      husnummer = "husnummer1",
+      husbokstav = "husbokstav1",
+      bruksenhetsnummer = "bruksenhetsnummer1",
+      postnr = "postnr1",
+      bydelsnummer = "bydelsnummer1",
+      kommunenummer = "kommunenummer1",
+      matrikkelId = "matrikkelId1",
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -327,12 +416,35 @@ class TestUtil {
       opprettetTidspunkt = LocalDateTime.now()
     )
 
+    fun byggHusstandsmedlemBo() = HusstandsmedlemBo(
+      husstandId = (1..100).random(),
+      personId = "123",
+      navn = "navn1",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
     fun byggHusstandsmedlem() = Husstandsmedlem(
       husstandsmedlemId = (1..100).random(),
       husstandId = (1..100).random(),
-      navn = "",
+      navn = "navn1",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggSivilstandBo() = SivilstandBo(
+      grunnlagspakkeId = (1..100).random(),
+      personId = "1234",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      sivilstand = "Samboer",
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
       opprettetAv = null,
       opprettetTidspunkt = LocalDateTime.now()
     )
@@ -340,10 +452,23 @@ class TestUtil {
     fun byggSivilstand() = Sivilstand(
       sivilstandId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
-      personId = "",
+      personId = "1234",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
-      sivilstand = "",
+      sivilstand = SivilstandKode.SAMBOER.toString(),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      opprettetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggPersonBo() = PersonBo(
+      grunnlagspakkeId = (1..100).random(),
+      personId = "4321",
+      navn = "navn1",
+      foedselsdato = LocalDate.parse("2011-01-01"),
+      doedsdato = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -493,6 +618,26 @@ class TestUtil {
           fom = LocalDate.parse("2022-01-01"),
           tom = LocalDate.parse("2022-12-31"),
           erFellesbarn = true
+        )
+      )
+    )
+
+    fun byggHentSivilstandResponse() = SivilstandResponseDto(
+      immutableListOf(
+        SivilstandResponse(
+          type = "ENSLIG",
+          gyldigFraOgMed = null,
+          bekreftelsesdato = null
+        ),
+        SivilstandResponse(
+          type = "SAMBOER",
+          gyldigFraOgMed = null,
+          bekreftelsesdato = LocalDate.parse("2021-01-01")
+        ),
+        SivilstandResponse(
+          type = "GIFT",
+          gyldigFraOgMed = LocalDate.parse("2021-09-01"),
+          bekreftelsesdato = null
         )
       )
     )

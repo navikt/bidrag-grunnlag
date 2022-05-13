@@ -9,7 +9,7 @@ import kotlin.reflect.full.memberProperties
 data class HusstandsmedlemBo(
 
   @Schema(description = "Generert Id til husstanden")
-  var husstandId: String?,
+  var husstandId: Int,
 
   @Schema(description = "Identen til husstandsmedlemmet")
   var personId: String?,

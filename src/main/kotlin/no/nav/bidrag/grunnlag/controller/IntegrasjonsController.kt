@@ -15,7 +15,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -82,7 +82,7 @@ class IntegrasjonsController(
 
   @PostMapping(HENT_SIVILSTAND)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
-  fun hentSivilstand(@RequestBody sivilstandRequest: SivilstandRequest): ResponseEntity<SivilstandDto> {
+  fun hentSivilstand(@RequestBody sivilstandRequest: SivilstandRequest): ResponseEntity<SivilstandResponseDto> {
     return handleRestResponse(bidragPersonConsumer.hentSivilstand(sivilstandRequest))
   }
 

@@ -76,13 +76,13 @@ data class Husstandsmedlemmer(
 )
 
 
-data class SivilstandDto(
+data class SivilstandResponseDto(
 //  Liste over alle hentede forekomster av sivilstand for personen i requesten
-  var sivilstand: List<Sivilstand>?
+  val sivilstand: List<SivilstandResponse>?
 )
 
-data class Sivilstand(
-  val type: String?,
+data class SivilstandResponse(
+  val type: String,
   val gyldigFraOgMed: LocalDate?,
   val bekreftelsesdato: LocalDate?
 )

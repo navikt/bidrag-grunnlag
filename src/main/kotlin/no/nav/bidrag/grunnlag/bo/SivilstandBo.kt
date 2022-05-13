@@ -16,13 +16,13 @@ data class SivilstandBo(
   val personId: String,
 
   @Schema(description = "Periode fra- og med måned")
-  val periodeFra: LocalDate,
+  val periodeFra: LocalDate?,
 
   @Schema(description = "Periode til- og med måned")
   val periodeTil: LocalDate?,
 
-  @Schema(description = "Person-id til barnet")
-  val sivilstand: SivilstandKode,
+  @Schema(description = "Kode for sivilstand i perioden")
+  val sivilstand: String,
 
   @Schema(description = "Angir om en sivilstand er aktiv")
   val aktiv: Boolean = true,
