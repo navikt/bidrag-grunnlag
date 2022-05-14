@@ -29,8 +29,8 @@ data class Sivilstand(
   @Column(nullable = true, name = "periode_til")
   val periodeTil: LocalDate? = null,
 
-  @Column(nullable = true, name = "sivilstand")
-  val sivilstand: String? = null,
+  @Column(nullable = false, name = "sivilstand")
+  val sivilstand: String = "",
 
   @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,

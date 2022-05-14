@@ -32,6 +32,7 @@ import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
@@ -595,6 +596,11 @@ class TestUtil {
     fun byggFamilieBaSakRequest() = FamilieBaSakRequest(
       personIdent = "personIdent",
       fraDato = LocalDate.now()
+    )
+
+    fun byggSivilstandRequest() = SivilstandRequest(
+      personId = "personIdent",
+      periodeFra = LocalDate.now()
     )
 
     fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(

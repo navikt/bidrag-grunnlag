@@ -180,7 +180,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal fange opp og håndtere Hibernate feil`() {
+  fun `skal fange opp og håndtere Hibernate-feil`() {
     val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
@@ -235,7 +235,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved opprett grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved opprett-grunnlagspakke-kall`() {
 
     var errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke1.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_NY)
 
@@ -352,7 +352,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved lukk grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved lukk-grunnlagspakke-kall`() {
 
     val errorResult = performExpectedFailingRequest(null, "/grunnlagspakke/null/lukk")
 
@@ -377,7 +377,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved hent-grunnlagspakke-kall`() {
     val errorResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,

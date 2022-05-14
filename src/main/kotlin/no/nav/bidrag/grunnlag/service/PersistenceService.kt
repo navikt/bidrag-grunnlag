@@ -13,6 +13,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
+import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
@@ -206,12 +207,13 @@ class PersistenceService(
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
     var dummyliste1: List<BarnDto> = emptyList()
     var dummyliste2: List<HusstandDto> = emptyList()
-    var dummyliste3: List<SivilstandDto> = emptyList()
     var dummyliste4: List<PersonDto> = emptyList()
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      dummyliste1, dummyliste2, dummyliste3, dummyliste4
+      dummyliste1, dummyliste2,
+      hentSivilstand(grunnlagspakkeId),
+      dummyliste4
     )
   }
 
@@ -490,6 +492,23 @@ class PersistenceService(
         )
       }
     return barnetilleggDtoListe
+  }
+
+  fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
+    val sivilstandDtoListe = mutableListOf<SivilstandDto>()
+    sivilstandRepository.hentSivilstand(grunnlagspakkeId)
+      .forEach { sivilstand ->
+        sivilstandDtoListe.add(
+          SivilstandDto(
+            periodeFra = sivilstand.periodeFra,
+            periodeTil = sivilstand.periodeTil,
+            sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
+            opprettetAv = sivilstand.opprettetAv,
+            opprettetTidspunkt = sivilstand.opprettetTidspunkt
+          )
+        )
+      }
+    return sivilstandDtoListe
   }
 
 
