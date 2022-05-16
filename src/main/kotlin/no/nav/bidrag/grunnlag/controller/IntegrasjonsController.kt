@@ -10,10 +10,10 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
@@ -64,19 +64,19 @@ class IntegrasjonsController(
 
   @PostMapping(HENT_FOEDSEL_DOED)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL")
-  fun hentFoedselOgDoed(@RequestBody bidragPersonRequest: String): ResponseEntity<FoedselOgDoedDto> {
+  fun hentFoedselOgDoed(@RequestBody bidragPersonRequest: String): ResponseEntity<FoedselOgDoedResponseDto> {
     return handleRestResponse(bidragPersonConsumer.hentFoedselOgDoed(bidragPersonRequest))
   }
 
   @PostMapping(HENT_FORELDER_BARN_RELASJON)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
-  fun hentForelderbarnrelasjon(@RequestBody bidragPersonRequest: ForelderBarnRequest): ResponseEntity<ForelderBarnRelasjonDto> {
+  fun hentForelderbarnrelasjon(@RequestBody bidragPersonRequest: ForelderBarnRequest): ResponseEntity<ForelderBarnRelasjonResponseDto> {
     return handleRestResponse(bidragPersonConsumer.hentForelderBarnRelasjon(bidragPersonRequest))
   }
 
   @PostMapping(HENT_HUSSTANDSMEDLEMMER)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
-  fun hentHusstandsmedlemmer(@RequestBody husstandsmedlemmerRequest: HusstandsmedlemmerRequest): ResponseEntity<HusstandsmedlemmerDto> {
+  fun hentHusstandsmedlemmer(@RequestBody husstandsmedlemmerRequest: HusstandsmedlemmerRequest): ResponseEntity<HusstandsmedlemmerResponseDto> {
     return handleRestResponse(bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest))
   }
 

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS husstand
     husnummer varchar(255),
     husbokstav varchar(255),
     bruksenhetsnummer varchar(255),
-    postnr varchar(255),
+    postnummer varchar(255),
     bydelsnummer varchar(255),
     kommunenummer varchar(255),
     matrikkelId varchar(255),
@@ -31,3 +31,4 @@ CREATE TABLE IF NOT EXISTS husstand
 )
 
     TABLESPACE pg_default;
+

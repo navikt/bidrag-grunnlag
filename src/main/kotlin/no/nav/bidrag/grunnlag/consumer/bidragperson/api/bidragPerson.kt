@@ -22,21 +22,21 @@ data class SivilstandRequest(
 
 // Response fra bidrag-person
 
-data class FoedselOgDoedDto(
+data class FoedselOgDoedResponseDto(
 // Gir fødselsdato og fødselsår for angitt person. Fødselsår finnes for alle i PDL, mens noen ikke har utfyllt fødselsdato
-  var foedselsdato: LocalDate?,
-  var foedselsaar: Int,
+  val foedselsdato: LocalDate?,
+  val foedselsaar: Int,
 // Eventuell dødsdato til personen
-  var doedsdato: LocalDate?
+  val doedsdato: LocalDate?
 )
 
 
-data class ForelderBarnRelasjonDto(
+data class ForelderBarnRelasjonResponseDto(
 // Liste over alle hentede forekomster av foreldre-barnrelasjoner
-  val forelderBarnRelasjon: List<ForelderBarnRelasjon>?
+  val forelderBarnRelasjonResponse: List<ForelderBarnRelasjonResponse>?
 )
 
-data class ForelderBarnRelasjon(
+data class ForelderBarnRelasjonResponse(
   val relatertPersonsIdent: String,
   val relatertPersonsRolle: ForelderBarnRelasjonRolle,
 // Hvilken rolle personen i requesten har til personen i responsen
@@ -48,31 +48,41 @@ enum class ForelderBarnRelasjonRolle {
 }
 
 
-data class HusstandsmedlemmerDto(
+data class HusstandsmedlemmerResponseDto(
 // Periodisert liste over husstander for personen i requesten og husstandens medlemmer i perioden
-  var husstandListe: List<Husstand>?
+  val husstandResponseListe: List<HusstandResponse>?
 )
 
-data class Husstand(
-  val gyldigFraOgMed: LocalDate?,
-  val gyldigTilOgMed: LocalDate?,
-  var adressenavn: String? = null,
-  var husnummer: String? = null,
-  var husbokstav: String? = null,
-  var bruksenhetsnummer: String? = null,
-  var postnummer: String? = null,
-  var bydelsnummer: String? = null,
-  var kommunenummer: String? = null,
-  val husstandsmedlemmerListe: List<Husstandsmedlemmer>
+data class HusstandResponse(
+  val gyldigFraOgMed: LocalDate? = null,
+  val gyldigTilOgMed: LocalDate? = null,
+  val adressenavn: String? = null,
+  val husnummer: String? = null,
+  val husbokstav: String? = null,
+  val bruksenhetsnummer: String? = null,
+  val postnummer: String? = null,
+  val bydelsnummer: String? = null,
+  val kommunenummer: String? = null,
+  val matrikkelId: Long? = null,
+  val husstandsmedlemmerResponseListe: List<HusstandsmedlemmerResponse>
 )
 
-data class Husstandsmedlemmer(
-  var personId: String? = null,
-  var fornavn: String? = null,
-  var mellomnavn: String? = null,
-  var etternavn: String? = null,
-  val gyldigFraOgMed: LocalDate?,
-  val gyldigTilOgMed: LocalDate?
+data class HusstandsmedlemmerResponse(
+  val personId: String? = null,
+  val fornavn: String? = null,
+  val mellomnavn: String? = null,
+  val etternavn: String? = null,
+  val gyldigFraOgMed: LocalDate? = null,
+  val gyldigTilOgMed: LocalDate? = null
+)
+
+data class PersonResponseDto(
+  val ident: String = "",
+  val navn: String? = null,
+  val doedsdato: LocalDate? = null,
+  val diskresjonskode: String? = null,
+  val aktoerId: String? = null
+
 )
 
 

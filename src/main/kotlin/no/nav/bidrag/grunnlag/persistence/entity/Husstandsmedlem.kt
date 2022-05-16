@@ -20,6 +20,9 @@ data class Husstandsmedlem(
   @Column(nullable = false, name = "husstand_id")
   val husstandId: Int = 0,
 
+  @Column(nullable = true, name = "person_id")
+  val personId: String? = null,
+
   @Column(nullable = true, name = "navn")
   val navn: String? = null,
 

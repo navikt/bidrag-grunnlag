@@ -32,6 +32,11 @@ import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
@@ -385,7 +390,7 @@ class TestUtil {
       husnummer = "husnummer1",
       husbokstav = "husbokstav1",
       bruksenhetsnummer = "bruksenhetsnummer1",
-      postnr = "postnr1",
+      postnummer = "postnr1",
       bydelsnummer = "bydelsnummer1",
       kommunenummer = "kommunenummer1",
       matrikkelId = "matrikkelId1",
@@ -406,7 +411,7 @@ class TestUtil {
       husnummer = "husnummer1",
       husbokstav = "husbokstav1",
       bruksenhetsnummer = "bruksenhetsnummer1",
-      postnr = "postnr1",
+      postnummer = "postnr1",
       bydelsnummer = "bydelsnummer1",
       kommunenummer = "kommunenummer1",
       matrikkelId = "matrikkelId1",
@@ -598,6 +603,17 @@ class TestUtil {
       fraDato = LocalDate.now()
     )
 
+    fun byggForelderBarnRequest() = ForelderBarnRequest(
+      personId = "personIdent",
+      periodeFra = LocalDate.now()
+    )
+
+    fun byggHusstandsmedlemmerRequest() = HusstandsmedlemmerRequest(
+      personId = "personIdent",
+      periodeFra = LocalDate.now()
+    )
+
+
     fun byggSivilstandRequest() = SivilstandRequest(
       personId = "personIdent",
       periodeFra = LocalDate.now()
@@ -627,6 +643,81 @@ class TestUtil {
         )
       )
     )
+
+
+    fun byggHentHusstandsmedlemmerResponse() = HusstandsmedlemmerResponseDto(
+      immutableListOf(
+        HusstandResponse(
+          gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+          gyldigTilOgMed = LocalDate.parse("2011-10-01"),
+          adressenavn = "adressenavn1",
+          husnummer = "husnummer1",
+          husbokstav = "husbokstav1",
+          bruksenhetsnummer = "bruksenhetsnummer1",
+          postnummer = "postnr1",
+          bydelsnummer = "bydelsnummer1",
+          kommunenummer = "kommunenummer1",
+          matrikkelId = 12345,
+          immutableListOf(
+            HusstandsmedlemmerResponse(
+              personId = "123",
+              fornavn = "fornavn1",
+              mellomnavn = "mellomnavn1",
+              etternavn = "etternavn1",
+              gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+              gyldigTilOgMed = LocalDate.parse("2011-02-01")
+            ),
+            HusstandsmedlemmerResponse(
+              personId = "234",
+              fornavn = "fornavn2",
+              mellomnavn = "mellomnavn2",
+              etternavn = "etternavn2",
+              gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+              gyldigTilOgMed = LocalDate.parse("2011-12-01")
+            ),
+            HusstandsmedlemmerResponse(
+              personId = "345",
+              fornavn = "fornavn3",
+              mellomnavn = "mellomnavn3",
+              etternavn = "etternavn3",
+              gyldigFraOgMed = LocalDate.parse("2011-05-01"),
+              gyldigTilOgMed = LocalDate.parse("2011-06-01")
+            )
+          )
+        ),
+        HusstandResponse(
+          gyldigFraOgMed = LocalDate.parse("2011-10-01"),
+          gyldigTilOgMed = null,
+          adressenavn = "adressenavn2",
+          husnummer = "husnummer2",
+          husbokstav = "husbokstav2",
+          bruksenhetsnummer = "bruksenhetsnummer2",
+          postnummer = "postnr2",
+          bydelsnummer = "bydelsnummer2",
+          kommunenummer = "kommunenummer2",
+          matrikkelId = 54321,
+          immutableListOf(
+            HusstandsmedlemmerResponse(
+              personId = "987",
+              fornavn = "fornavn1bosted2",
+              mellomnavn = "mellomnavn1bosted2",
+              etternavn = "etternavn1bosted2",
+              gyldigFraOgMed = LocalDate.parse("2017-01-01"),
+              gyldigTilOgMed = LocalDate.parse("2018-02-01")
+            ),
+            HusstandsmedlemmerResponse(
+              personId = "234",
+              fornavn = "fornavn2bosted2",
+              mellomnavn = "mellomnavn2bosted2",
+              etternavn = "etternavn2bosted2",
+              gyldigFraOgMed = LocalDate.parse("2020-01-01"),
+              gyldigTilOgMed = null
+            )
+          )
+        )
+      )
+    )
+
 
     fun byggHentSivilstandResponse() = SivilstandResponseDto(
       immutableListOf(
@@ -679,7 +770,8 @@ class TestUtil {
 
       return when (responseType) {
         String::class.java -> mvcResult.response.contentAsString as Response
-        else -> ObjectMapper().findAndRegisterModules().readValue(mvcResult.response.contentAsString, responseType)
+        else -> ObjectMapper().findAndRegisterModules()
+          .readValue(mvcResult.response.contentAsString, responseType)
       }
     }
   }

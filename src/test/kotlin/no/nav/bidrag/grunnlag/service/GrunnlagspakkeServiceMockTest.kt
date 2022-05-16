@@ -49,6 +49,7 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
@@ -176,7 +177,7 @@ class GrunnlagspakkeServiceMockTest {
     val nySkattegrunnlagspostOpprettet = persistenceServiceMock.opprettSkattegrunnlagspost(byggSkattegrunnlagspostBo())
     val nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet =
       persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(byggUtvidetBarnetrygdOgSmaabarnstilleggBo())
-    val nyBarnetilleggOpprettet = persistenceServiceMock.opprettBarnetillegg(byggBarnetilleggBo())
+    val nyttBarnetilleggOpprettet = persistenceServiceMock.opprettBarnetillegg(byggBarnetilleggBo())
     val nyttBarnOpprettet = persistenceServiceMock.opprettBarn(byggBarnBo())
     val nyHusstandOpprettet = persistenceServiceMock.opprettHusstand(byggHusstandBo())
     val nyHusstandsmedlemOpprettet = persistenceServiceMock.opprettHusstandsmedlem(byggHusstandsmedlemBo())
@@ -229,8 +230,23 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet).isNotNull() },
       Executable { assertThat(nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet.grunnlagspakkeId).isNotNull() },
 
-      Executable { assertThat(nyBarnetilleggOpprettet).isNotNull() },
-      Executable { assertThat(nyBarnetilleggOpprettet.grunnlagspakkeId).isNotNull() },
+      Executable { assertThat(nyttBarnetilleggOpprettet).isNotNull() },
+      Executable { assertThat(nyttBarnetilleggOpprettet.grunnlagspakkeId).isNotNull() },
+
+      Executable { assertThat(nyttBarnOpprettet).isNotNull() },
+      Executable { assertThat(nyttBarnOpprettet.barnId).isNotNull() },
+
+      Executable { assertThat(nyHusstandOpprettet).isNotNull() },
+      Executable { assertThat(nyHusstandOpprettet.husstandId).isNotNull() },
+
+      Executable { assertThat(nyHusstandsmedlemOpprettet).isNotNull() },
+      Executable { assertThat(nyHusstandsmedlemOpprettet.husstandsmedlemId).isNotNull() },
+
+      Executable { assertThat(nySivilstandOpprettet).isNotNull() },
+      Executable { assertThat(nySivilstandOpprettet.sivilstandId).isNotNull() },
+
+      Executable { assertThat(nyPersonOpprettet).isNotNull() },
+      Executable { assertThat(nyPersonOpprettet.personDbId).isNotNull() },
 
       // sjekk GrunnlagspakkeBo
       Executable { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
@@ -306,7 +322,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(husstandListe[0].adressenavn).isEqualTo("adressenavn1") },
       Executable { assertThat(husstandListe[0].husnummer).isEqualTo("husnummer1") },
       Executable { assertThat(husstandListe[0].husbokstav).isEqualTo("husbokstav1") },
-      Executable { assertThat(husstandListe[0].postnr).isEqualTo("postnr1") },
+      Executable { assertThat(husstandListe[0].postnummer).isEqualTo("postnr1") },
       Executable { assertThat(husstandListe[0].bydelsnummer).isEqualTo("bydelsnummer1") },
       Executable { assertThat(husstandListe[0].kommunenummer).isEqualTo("kommunenummer1") },
       Executable { assertThat(husstandListe[0].matrikkelId).isEqualTo("matrikkelId1") },
@@ -378,7 +394,6 @@ class GrunnlagspakkeServiceMockTest {
 
     assertAll(
       Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
-      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       // sjekk GrunnlagspakkeDto
       Executable { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
@@ -432,7 +447,6 @@ class GrunnlagspakkeServiceMockTest {
 
     assertAll(
       Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
-      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       // sjekk GrunnlagspakkeBo
       Executable { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
@@ -468,6 +482,96 @@ class GrunnlagspakkeServiceMockTest {
     )
   }
 
+
+  @Test
+  @Suppress("NonAsciiCharacters")
+  fun `Skal oppdatere grunnlagspakke med husstand og husstandsmedlemmer fra PDL via bidrag-person`() {
+
+    Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(opprettGrunnlagspakkeRequestDtoCaptor)))
+      .thenReturn(byggGrunnlagspakke())
+    Mockito.`when`(persistenceServiceMock.opprettHusstand(MockitoHelper.capture(husstandBoCaptor))).thenReturn(byggHusstand())
+    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlem(MockitoHelper.capture(husstandsmedlemBoCaptor))).thenReturn(byggHusstandsmedlem())
+    Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(MockitoHelper.any(HusstandsmedlemmerRequest::class.java)))
+      .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
+
+    val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
+    val oppdatertGrunnlagspakke = grunnlagspakkeService.oppdaterGrunnlagspakke(
+      grunnlagspakkeIdOpprettet,
+      TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmer()
+    )
+
+    val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
+    val husstandListe = husstandBoCaptor.allValues
+    val husstandsmedlemListe = husstandsmedlemBoCaptor.allValues
+
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(2)).opprettHusstand(MockitoHelper.any(HusstandBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(5)).opprettHusstandsmedlem(MockitoHelper.any(HusstandsmedlemBo::class.java))
+
+    assertAll(
+      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
+
+      // sjekk GrunnlagspakkeBo
+      Executable { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
+      Executable { assertThat(opprettGrunnlagspakkeRequestDto.opprettetAv).isEqualTo("RTV9999") },
+      Executable { assertThat(opprettGrunnlagspakkeRequestDto.formaal).isEqualTo(Formaal.BIDRAG) },
+
+      // sjekk HusstandBo
+      Executable { assertThat(husstandListe).isNotNull() },
+      Executable { assertThat(husstandListe.size).isEqualTo(3) },
+
+      Executable { assertThat(husstandListe.size).isEqualTo(2) },
+      Executable { assertThat(husstandListe[0]?.periodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
+      Executable { assertThat(husstandListe[0]?.periodeTil).isEqualTo(LocalDate.parse("2011-10-01")) },
+      Executable { assertThat(husstandListe[0]?.adressenavn).isEqualTo("adressenavn1") },
+      Executable { assertThat(husstandListe[0]?.husnummer).isEqualTo("husnummer1") },
+      Executable { assertThat(husstandListe[0]?.husbokstav).isEqualTo("husbokstav1") },
+      Executable { assertThat(husstandListe[0]?.bruksenhetsnummer).isEqualTo("bruksenhetsnummer1") },
+      Executable { assertThat(husstandListe[0]?.postnummer).isEqualTo("postnr1") },
+      Executable { assertThat(husstandListe[0]?.bydelsnummer).isEqualTo("bydelsnummer1") },
+      Executable { assertThat(husstandListe[0]?.kommunenummer).isEqualTo("kommunenummer1") },
+      Executable { assertThat(husstandListe[0]?.matrikkelId).isEqualTo(12345) },
+      Executable { assertThat(husstandListe[0]?.aktiv).isTrue() },
+      Executable { assertThat(husstandListe[0]?.brukFra).isNotNull() },
+      Executable { assertThat(husstandListe[0]?.brukTil).isNull() },
+      Executable { assertThat(husstandListe[0]?.opprettetAv).isNull() },
+      Executable { assertThat(husstandListe[0]?.opprettetTidspunkt).isNotNull() },
+
+      Executable { assertThat(husstandsmedlemListe?.get(0)?.personId).isEqualTo("123") },
+      Executable { assertThat(husstandsmedlemListe?.get(0)?.navn).isEqualTo("fornavn1 mellomnavn1 etternavn1") },
+      Executable { assertThat(husstandsmedlemListe?.get(0)?.periodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
+      Executable { assertThat(husstandsmedlemListe?.get(0)?.periodeTil).isEqualTo(LocalDate.parse("2011-02-01")) },
+      Executable { assertThat(husstandsmedlemListe?.get(0)?.opprettetAv).isNull() },
+      Executable { assertThat(husstandsmedlemListe?.get(0)?.opprettetTidspunkt).isNotNull() },
+
+      Executable { assertThat(husstandsmedlemListe?.get(1)?.personId).isEqualTo("234") },
+      Executable { assertThat(husstandsmedlemListe?.get(1)?.navn).isEqualTo("fornavn2 mellomnavn2 etternavn2") },
+      Executable { assertThat(husstandsmedlemListe?.get(1)?.periodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
+      Executable { assertThat(husstandsmedlemListe?.get(1)?.periodeTil).isEqualTo(LocalDate.parse("2011-12-01")) },
+      Executable { assertThat(husstandsmedlemListe?.get(1)?.opprettetAv).isNull() },
+      Executable { assertThat(husstandsmedlemListe?.get(1)?.opprettetTidspunkt).isNotNull() },
+
+      Executable { assertThat(husstandsmedlemListe?.get(2)?.personId).isEqualTo("345") },
+      Executable { assertThat(husstandsmedlemListe?.get(2)?.navn).isEqualTo("fornavn3 mellomnavn3 etternavn3") },
+      Executable { assertThat(husstandsmedlemListe?.get(2)?.periodeFra).isEqualTo(LocalDate.parse("2011-05-01")) },
+      Executable { assertThat(husstandsmedlemListe?.get(2)?.periodeTil).isEqualTo(LocalDate.parse("2011-06-01")) },
+      Executable { assertThat(husstandsmedlemListe?.get(2)?.opprettetAv).isNull() },
+      Executable { assertThat(husstandsmedlemListe?.get(2)?.opprettetTidspunkt).isNotNull() },
+
+
+
+          // sjekk oppdatertGrunnlagspakke
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.HUSSTANDSMEDLEMMER) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
+      Executable { assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall husstander funnet: 2") }
+    )
+  }
+
+
+
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Skal oppdatere grunnlagspakke med sivilstand fra PDL via bidrag-person`() {
@@ -492,14 +596,13 @@ class GrunnlagspakkeServiceMockTest {
 
     assertAll(
       Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
-      Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       // sjekk GrunnlagspakkeBo
       Executable { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
       Executable { assertThat(opprettGrunnlagspakkeRequestDto.opprettetAv).isEqualTo("RTV9999") },
       Executable { assertThat(opprettGrunnlagspakkeRequestDto.formaal).isEqualTo(Formaal.BIDRAG) },
 
-      // sjekk BarnetilleggBo
+      // sjekk SivilstandBo
       Executable { assertThat(sivilstandListe).isNotNull() },
       Executable { assertThat(sivilstandListe.size).isEqualTo(3) },
       Executable { assertThat(sivilstandListe[0].personId).isEqualTo("12345678910") },

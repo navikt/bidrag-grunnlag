@@ -41,8 +41,8 @@ data class Husstand(
   @Column(nullable = true, name = "bruksenhetsnummer")
   val bruksenhetsnummer: String? = null,
 
-  @Column(nullable = true, name = "postnr")
-  val postnr: String? = null,
+  @Column(nullable = true, name = "postnummer")
+  val postnummer: String? = null,
 
   @Column(nullable = true, name = "bydelsnummer")
   val bydelsnummer: String? = null,

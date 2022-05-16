@@ -33,7 +33,7 @@ data class HusstandBo(
   val bruksenhetsnummer: String?,
 
   @Schema(description = "Norsk postnummer")
-  val postnr: String?,
+  val postnummer: String?,
 
   @Schema(description = "6 siffer, identifiserer bydel")
   val bydelsnummer: String?,

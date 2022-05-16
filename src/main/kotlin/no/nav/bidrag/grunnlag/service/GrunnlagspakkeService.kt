@@ -11,7 +11,6 @@ import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
@@ -38,7 +37,7 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
@@ -697,8 +696,8 @@ class GrunnlagspakkeService(
           val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
           LOGGER.info("Bidrag-person ga følgende respons på forelder-barn: $forelderBarnRelasjonResponse")
 
-          if ((forelderBarnRelasjonResponse.forelderBarnRelasjon != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjon.isNotEmpty())) {
-            forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { fbr ->
+          if ((forelderBarnRelasjonResponse.forelderBarnRelasjonResponse != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNotEmpty())) {
+            forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.forEach { fbr ->
               if (fbr.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
                 antallBarnFunnet++
 
@@ -787,13 +786,13 @@ class GrunnlagspakkeService(
     }
 
 
-  fun hentFoedselOgDoed(personId: String): FoedselOgDoedDto? {
+  fun hentFoedselOgDoed(personId: String): FoedselOgDoedResponseDto? {
     //hent fødselsdato og eventuell dødsdato for barn fra bidrag-person
     when (val restResponseFoedselOgDoed =
       bidragPersonConsumer.hentFoedselOgDoed(personId)) {
       is RestResponse.Success -> {
         val foedselOgDoedResponse = restResponseFoedselOgDoed.body
-        return FoedselOgDoedDto(foedselOgDoedResponse.foedselsdato, foedselOgDoedResponse.foedselsaar, foedselOgDoedResponse.doedsdato)
+        return FoedselOgDoedResponseDto(foedselOgDoedResponse.foedselsdato, foedselOgDoedResponse.foedselsaar, foedselOgDoedResponse.doedsdato)
       }
       is RestResponse.Failure ->
         return null

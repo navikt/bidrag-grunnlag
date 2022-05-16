@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import java.time.LocalDate
 import java.time.LocalDateTime
