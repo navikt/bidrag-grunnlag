@@ -32,6 +32,10 @@ import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
@@ -393,7 +397,7 @@ class TestUtil {
       postnummer = "postnr1",
       bydelsnummer = "bydelsnummer1",
       kommunenummer = "kommunenummer1",
-      matrikkelId = "matrikkelId1",
+      matrikkelId = 11223344,
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -414,7 +418,7 @@ class TestUtil {
       postnummer = "postnr1",
       bydelsnummer = "bydelsnummer1",
       kommunenummer = "kommunenummer1",
-      matrikkelId = "matrikkelId1",
+      matrikkelId = 11223344,
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -642,6 +646,34 @@ class TestUtil {
           erFellesbarn = true
         )
       )
+    )
+
+
+    fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonResponseDto(
+      immutableListOf(
+        ForelderBarnRelasjonResponse(
+          relatertPersonsIdent = "111",
+          relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
+          minRolleForPerson = ForelderBarnRelasjonRolle.FAR
+        ),
+        ForelderBarnRelasjonResponse(
+          relatertPersonsIdent = "234",
+          relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
+          minRolleForPerson = ForelderBarnRelasjonRolle.FAR
+        ),
+        ForelderBarnRelasjonResponse(
+          relatertPersonsIdent = "333",
+          relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
+          minRolleForPerson = ForelderBarnRelasjonRolle.FAR
+        )
+      )
+    )
+
+
+    fun byggHentFoedselOgDoedResponse() = FoedselOgDoedResponseDto(
+      foedselsdato = LocalDate.parse("2017-04-17"),
+      foedselsaar = 2017,
+      doedsdato = null
     )
 
 

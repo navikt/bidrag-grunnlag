@@ -102,7 +102,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
       HttpMethod.POST,
       initHttpEntity(request),
       PersonDto::class.java,
-      PersonDto(0,null, null, null, null, LocalDateTime.now())
+      PersonDto("0",null, null, null, null, LocalDateTime.now())
     )
 
     logResponse(logger, restResponse)

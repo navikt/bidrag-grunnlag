@@ -41,7 +41,7 @@ internal class BidragPersonConsumerTest {
 
 
   @Test
-  fun `Sjekk at ok respons fra Bidrag-person-endepunkt for husstander mappes korrekt`() {
+  fun `Sjekk at ok respons fra Bidrag-person-endepunkt for husstandsmedlemmer mappes korrekt`() {
     val request = TestUtil.byggHusstandsmedlemmerRequest()
 
     Mockito.`when`(
@@ -127,7 +127,7 @@ internal class BidragPersonConsumerTest {
   }
 
   @Test
-  fun `Sjekk at exception fra Bidrag-person-husstander-endepunkt håndteres korrekt`() {
+  fun `Sjekk at exception fra Bidrag-person-husstandsmedlemmer-endepunkt håndteres korrekt`() {
     val request = TestUtil.byggHusstandsmedlemmerRequest()
 
     Mockito.`when`(

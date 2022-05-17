@@ -42,7 +42,7 @@ data class HusstandBo(
   val kommunenummer: String?,
 
   @Schema(description = "Nøkkel til geografisk adresse registrert i Kartverkets matrikkel")
-  val matrikkelId: String?,
+  val matrikkelId: Long?,
 
   @Schema(description = "Angir om en husstandsopplysning er aktiv")
   val aktiv: Boolean = true,

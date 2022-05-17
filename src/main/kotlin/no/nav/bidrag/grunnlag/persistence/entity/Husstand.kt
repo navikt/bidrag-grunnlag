@@ -51,7 +51,7 @@ data class Husstand(
   val kommunenummer: String? = null,
 
   @Column(nullable = true, name = "matrikkelId")
-  val matrikkelId: String? = null,
+  val matrikkelId: Long? = null,
 
   @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,

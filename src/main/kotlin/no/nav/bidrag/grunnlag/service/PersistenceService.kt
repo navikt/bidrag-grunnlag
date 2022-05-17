@@ -4,15 +4,16 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandsmedlemDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandsmedlemDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.grunnlag.bo.AinntektBo
@@ -235,7 +236,7 @@ class PersistenceService(
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      dummyliste1, hentHusstandsmedlemmer(grunnlagspakkeId),
+      hentBarn(), hentHusstandsmedlemmer(grunnlagspakkeId),
       hentSivilstand(grunnlagspakkeId),
       dummyliste4
     )
@@ -520,27 +521,33 @@ class PersistenceService(
     return barnetilleggDtoListe
   }
 
-  fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<BarnetilleggDto> {
-    val barnetilleggDtoListe = mutableListOf<BarnetilleggDto>()
-    barnetilleggRepository.hentBarnetillegg(grunnlagspakkeId)
-      .forEach { barnetillegg ->
-        barnetilleggDtoListe.add(
-          BarnetilleggDto(
-            partPersonId = barnetillegg.partPersonId,
-            barnPersonId = barnetillegg.barnPersonId,
-            barnetilleggType = barnetillegg.barnetilleggType,
-            periodeFra = barnetillegg.periodeFra,
-            periodeTil = barnetillegg.periodeTil,
-            aktiv = barnetillegg.aktiv,
-            brukFra = barnetillegg.brukFra,
-            brukTil = barnetillegg.brukTil,
-            belopBrutto = barnetillegg.belopBrutto,
-            barnType = barnetillegg.barnType,
-            opprettetTidspunkt = barnetillegg.opprettetTidspunkt
+  fun hentBarn(grunnlagspakkeId: Int): List<BarnDto> {
+    val barnDtoListe = mutableListOf<BarnDto>()
+
+    val husstandsmedlemmer = mutableListOf<HusstandsmedlemDto>()
+
+    val husstandListe = hentHusstandsmedlemmer(grunnlagspakkeId)
+
+
+
+    barnRepository.hentBarn(grunnlagspakkeId)
+      .forEach { barn ->
+        val borISammeHusstandDtoListe = mutableListOf<BorISammeHusstandDto>()
+        barnDtoListe.add(
+          BarnDto(
+            personIdBarn = barn.personIdBarn,
+            personIdVoksen = barn.personIdVoksen,
+            navn = barn.navn,
+            foedselsdato = barn.foedselsdato,
+            foedselsaar = barn.foedselsaar,
+            doedsdato = barn.doedsdato,
+            opprettetAv = barn.opprettetAv,
+            opprettetTidspunkt = barn.opprettetTidspunkt,
+            borISammeHusstandDtoListe = borISammeHusstandDtoListe
           )
         )
       }
-    return barnetilleggDtoListe
+    return barnDtoListe
   }
 
   fun hentHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
@@ -576,7 +583,7 @@ class PersistenceService(
             husnummer = husstand.husnummer,
             husbokstav = husstand.husbokstav,
             bruksenhetsnummer = husstand.bruksenhetsnummer,
-            postnr = husstand.postnummer,
+            postnummer = husstand.postnummer,
             bydelsnummer = husstand.bydelsnummer,
             kommunenummer = husstand.kommunenummer,
             matrikkelId = husstand.matrikkelId,
@@ -592,7 +599,6 @@ class PersistenceService(
   fun sjekkOmHusstandsmedlemErPersonsBarn(personId: String, barnListe: List<Barn>): Boolean {
     val barnid = barnListe.filter { barn -> barn.personIdBarn == personId }
     return barnid.isNotEmpty()
-
   }
 
 
