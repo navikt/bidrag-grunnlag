@@ -21,6 +21,7 @@ private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/foedselogd
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
 private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER = "/bidrag-person/husstandsmedlemmer"
 private const val BIDRAGPERSON_CONTEXT_SIVILSTAND = "/bidrag-person/sivilstand"
+private const val BIDRAGPERSON_CONTEXT_PERSON = "/bidrag-person/informasjon"
 
 open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate) :
   GrunnlagsConsumer() {
@@ -95,10 +96,10 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
   }
 
   open fun hentPerson(request: String): RestResponse<PersonDto> {
-    logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
+    logger.info("Kaller bidrag-person som igjen kaller PDL for å finne informasjon om en person")
 
     val restResponse = restTemplate.tryExchange(
-      BIDRAGPERSON_CONTEXT_SIVILSTAND,
+      BIDRAGPERSON_CONTEXT_PERSON,
       HttpMethod.POST,
       initHttpEntity(request),
       PersonDto::class.java,

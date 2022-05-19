@@ -22,8 +22,8 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandsmedlem
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandsmedlemBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggPerson
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggPersonBo
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelder
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstand
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstandBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSkattegrunnlagSkatt
@@ -43,7 +43,7 @@ import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.bo.PersonBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -124,7 +124,7 @@ class GrunnlagspakkeServiceMockTest {
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
 
   @Captor
-  private lateinit var personBoCaptor: ArgumentCaptor<PersonBo>
+  private lateinit var forelderBoCaptor: ArgumentCaptor<ForelderBo>
 
   @Test
   fun `Skal opprette ny grunnlagspakke`() {
@@ -167,8 +167,8 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggHusstandsmedlem())
     Mockito.`when`(persistenceServiceMock.opprettSivilstand(MockitoHelper.capture(sivilstandBoCaptor)))
       .thenReturn(byggSivilstand())
-    Mockito.`when`(persistenceServiceMock.opprettPerson(MockitoHelper.capture(personBoCaptor)))
-      .thenReturn(byggPerson())
+    Mockito.`when`(persistenceServiceMock.opprettForelder(MockitoHelper.capture(forelderBoCaptor)))
+      .thenReturn(byggForelder())
 
     val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val nyAinntektOpprettet = persistenceServiceMock.opprettAinntekt(byggAinntektBo())
@@ -182,7 +182,7 @@ class GrunnlagspakkeServiceMockTest {
     val nyHusstandOpprettet = persistenceServiceMock.opprettHusstand(byggHusstandBo())
     val nyHusstandsmedlemOpprettet = persistenceServiceMock.opprettHusstandsmedlem(byggHusstandsmedlemBo())
     val nySivilstandOpprettet = persistenceServiceMock.opprettSivilstand(byggSivilstandBo())
-    val nyPersonOpprettet = persistenceServiceMock.opprettPerson(byggPersonBo())
+    val nyPersonOpprettet = persistenceServiceMock.opprettForelder(byggForelderBo())
 
     val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
     val ainntektDtoListe = ainntektBoCaptor.allValues
@@ -195,7 +195,7 @@ class GrunnlagspakkeServiceMockTest {
     val husstandListe = husstandBoCaptor.allValues
     val husstandsmedlemListe = husstandsmedlemBoCaptor.allValues
     val sivilstandListe = sivilstandBoCaptor.allValues
-    val personListe = personBoCaptor.allValues
+    val personListe = forelderBoCaptor.allValues
 
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(MockitoHelper.any(AinntektBo::class.java))
@@ -209,7 +209,7 @@ class GrunnlagspakkeServiceMockTest {
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstand(MockitoHelper.any(HusstandBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstandsmedlem(MockitoHelper.any(HusstandsmedlemBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSivilstand(MockitoHelper.any(SivilstandBo::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettPerson(MockitoHelper.any(PersonBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettForelder(MockitoHelper.any(ForelderBo::class.java))
 
     assertAll(
       Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
@@ -246,7 +246,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(nySivilstandOpprettet.sivilstandId).isNotNull() },
 
       Executable { assertThat(nyPersonOpprettet).isNotNull() },
-      Executable { assertThat(nyPersonOpprettet.personDbId).isNotNull() },
+      Executable { assertThat(nyPersonOpprettet.forelderId).isNotNull() },
 
       // sjekk GrunnlagspakkeBo
       Executable { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
@@ -303,8 +303,7 @@ class GrunnlagspakkeServiceMockTest {
       Executable { assertThat(barnetilleggListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) },
 
       // sjekk BarnBo
-      Executable { assertThat(barnListe[0].personIdBarn).isEqualTo("1234567") },
-      Executable { assertThat(barnListe[0].personIdVoksen).isEqualTo("0123456") },
+      Executable { assertThat(barnListe[0].personId).isEqualTo("1234567") },
       Executable { assertThat(barnListe[0].navn).isEqualTo("Svett Elefant") },
       Executable { assertThat(barnListe[0].foedselsdato).isEqualTo(LocalDate.parse("2021-01-01")) },
       Executable { assertThat(barnListe[0].foedselsaar).isEqualTo(2011) },

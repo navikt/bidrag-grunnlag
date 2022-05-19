@@ -27,7 +27,7 @@ import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.bo.PersonBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -49,7 +49,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Husstand
 import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
-import no.nav.bidrag.grunnlag.persistence.entity.Person
+import no.nav.bidrag.grunnlag.persistence.entity.Forelder
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
@@ -356,8 +356,7 @@ class TestUtil {
 
     fun byggBarnBo() = BarnBo(
       grunnlagspakkeId = (1..100).random(),
-      personIdBarn = "1234567",
-      personIdVoksen = "0123456",
+      personId = "1234567",
       navn = "Svett Elefant",
       foedselsdato = LocalDate.parse("2011-01-01"),
       foedselsaar = 2011,
@@ -372,8 +371,7 @@ class TestUtil {
     fun byggBarn() = Barn(
       barnId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
-      personIdBarn = "1234567",
-      personIdVoksen = "0123456",
+      personId = "1234567",
       navn = "Svett Elefant",
       foedselsdato = LocalDate.parse("2011-01-01"),
       foedselsaar = 2011,
@@ -473,7 +471,7 @@ class TestUtil {
       opprettetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggPersonBo() = PersonBo(
+    fun byggForelderBo() = ForelderBo(
       grunnlagspakkeId = (1..100).random(),
       personId = "4321",
       navn = "navn1",
@@ -486,8 +484,8 @@ class TestUtil {
       opprettetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggPerson() = Person(
-      personDbId = (1..100).random(),
+    fun byggForelder() = Forelder(
+      forelderId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "",
       navn = "",

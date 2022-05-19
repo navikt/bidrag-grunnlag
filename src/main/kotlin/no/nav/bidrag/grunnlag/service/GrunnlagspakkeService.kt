@@ -683,12 +683,8 @@ class GrunnlagspakkeService(
 
       LOGGER.info(
         "Kaller bidrag-person Forelder-barn-relasjon med personIdent ********${
-          forelderBarnRequest.personId.substring(
-            IntRange(8, 10)
-          )
-        } " +
-            ", fraDato " + "${forelderBarnRequest.periodeFra}"
-      )
+          forelderBarnRequest.personId.substring(IntRange(8, 10)) } " +
+            ", fraDato " + "${forelderBarnRequest.periodeFra}" )
 
       when (val restResponseForelderBarnRelasjon =
         bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)) {
@@ -700,25 +696,21 @@ class GrunnlagspakkeService(
             forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.forEach { fbr ->
               if (fbr.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
                 antallBarnFunnet++
-
                 val navn = hentNavnPerson(fbr.relatertPersonsIdent)
                 LOGGER.info("Bidrag-person ga følgende respons på hent navn for barn: $navn")
                 val foedselOgDoed = hentFoedselOgDoed(fbr.relatertPersonsIdent)
                 LOGGER.info("Bidrag-person ga følgende respons på hent fødselsinfo for barn: $foedselOgDoed")
 
-
                 // Sett eksisterende forekomst av Barn til inaktiv
                 persistenceService.oppdaterEksisterendeBarnTilInaktiv(
                   grunnlagspakkeId,
                   personIdOgPeriode.personId,
-                  timestampOppdatering
-                )
+                  timestampOppdatering)
 
                 persistenceService.opprettBarn(
                   BarnBo(
                     grunnlagspakkeId = grunnlagspakkeId,
-                    personIdBarn = fbr.relatertPersonsIdent,
-                    personIdVoksen = personIdOgPeriode.personId,
+                    personId = fbr.relatertPersonsIdent,
                     navn = navn,
                     foedselsdato = foedselOgDoed?.foedselsdato,
                     foedselsaar = foedselOgDoed?.foedselsaar,
@@ -727,11 +719,7 @@ class GrunnlagspakkeService(
                     brukFra = timestampOppdatering,
                     brukTil = null,
                     opprettetAv = null,
-                    opprettetTidspunkt = timestampOppdatering
-                  )
-                )
-
-
+                    opprettetTidspunkt = timestampOppdatering))
               }
             }
             oppdaterGrunnlagDtoListe.add(
@@ -739,12 +727,9 @@ class GrunnlagspakkeService(
                 GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
                 personIdOgPeriode.personId,
                 GrunnlagsRequestStatus.HENTET,
-                "Antall barn funnet: $antallBarnFunnet"
-              )
-            )
+                "Antall barn funnet: $antallBarnFunnet"))
             if (antallBarnFunnet > 0) {
-              forekomsterFunnet
-            }
+              forekomsterFunnet }
           }
         }
 
@@ -754,7 +739,7 @@ class GrunnlagspakkeService(
             GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
             personIdOgPeriode.personId,
             if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-            "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+            "Feil ved henting av egne barn i husstanden for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
           )
         )
       }
@@ -780,8 +765,14 @@ class GrunnlagspakkeService(
         val personResponse = restResponsePerson.body
         return personResponse.navn
       }
-      is RestResponse.Failure ->
-        return null
+      is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
+        OppdaterGrunnlagDto(
+          GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
+          personIdOgPeriode.personId,
+          if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+          "Feil ved henting av egne barn i husstanden for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+        )
+      )
       }
     }
 

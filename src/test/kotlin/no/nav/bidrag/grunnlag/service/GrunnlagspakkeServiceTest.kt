@@ -12,7 +12,7 @@ import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.bo.PersonBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -259,8 +259,7 @@ class GrunnlagspakkeServiceTest {
     persistenceService.opprettBarn(
       BarnBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
-        personIdBarn = "1234567",
-        personIdVoksen = "0123456",
+        personId = "1234567",
         navn = "Svett Elefant",
         foedselsdato = LocalDate.parse("2011-01-01"),
         foedselsaar = 2011,
@@ -327,8 +326,8 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Test på person
-    persistenceService.opprettPerson(
-      PersonBo(
+    persistenceService.opprettForelder(
+      ForelderBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
         personId = "44448888",
         navn = "Sliten Kartong",
@@ -424,8 +423,7 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) },
 
       Executable { assertThat(grunnlagspakkeFunnet.barnListe.size).isEqualTo(1) },
-      Executable { assertThat(grunnlagspakkeFunnet.barnListe[0].personIdBarn).isEqualTo("123") },
-      Executable { assertThat(grunnlagspakkeFunnet.barnListe[0].personIdVoksen).isEqualTo("222") },
+      Executable { assertThat(grunnlagspakkeFunnet.barnListe[0].personId).isEqualTo("123") },
       Executable { assertThat(grunnlagspakkeFunnet.barnListe[0].navn).isEqualTo("Svett Elefant") },
       Executable { assertThat(grunnlagspakkeFunnet.barnListe[0].foedselsdato).isEqualTo(LocalDate.parse("2017-05-01")) },
       Executable { assertThat(grunnlagspakkeFunnet.barnListe[0].foedselsaar).isEqualTo(2017) },

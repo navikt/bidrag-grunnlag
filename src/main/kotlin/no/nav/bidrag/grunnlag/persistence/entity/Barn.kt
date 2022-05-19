@@ -21,10 +21,7 @@ data class Barn(
   val grunnlagspakkeId: Int = 0,
 
   @Column(nullable = true, name = "person_id_barn")
-  val personIdBarn: String? = "",
-
-  @Column(nullable = false, name = "person_id_voksen")
-  val personIdVoksen: String = "",
+  val personId: String? = "",
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,

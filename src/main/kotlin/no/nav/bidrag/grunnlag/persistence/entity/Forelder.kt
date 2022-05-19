@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.bo.PersonBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -11,11 +11,11 @@ import javax.persistence.Id
 import kotlin.reflect.full.memberProperties
 
 @Entity
-data class Person(
+data class Forelder(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "person_db_id")
-  val personDbId: Int = 0,
+  @Column(name = "forelder_id")
+  val forelderId: Int = 0,
 
   @Column(nullable = false, name = "grunnlagspakke_id")
   val grunnlagspakkeId: Int = 0,
@@ -48,8 +48,8 @@ data class Person(
   val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
-fun Person.toPersonBo() = with(::PersonBo) {
-  val propertiesByName = Person::class.memberProperties.associateBy { it.name }
+fun Forelder.toPersonBo() = with(::ForelderBo) {
+  val propertiesByName = Forelder::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       else -> propertiesByName[parameter.name]?.get(this@toPersonBo)

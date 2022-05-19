@@ -12,10 +12,7 @@ data class BarnBo(
   val grunnlagspakkeId: Int = 0,
 
   @Schema(description = "Person-id til barnet")
-  val personIdBarn: String?,
-
-  @Schema(description = "Person-id til forelder til barnet")
-  val personIdVoksen: String,
+  val personId: String?,
 
   @Schema(description = "Barnets navn")
   val navn: String?,

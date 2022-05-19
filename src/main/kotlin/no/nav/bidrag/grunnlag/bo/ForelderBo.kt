@@ -1,12 +1,12 @@
 package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.Person
+import no.nav.bidrag.grunnlag.persistence.entity.Forelder
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class PersonBo(
+data class ForelderBo(
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
@@ -40,11 +40,11 @@ data class PersonBo(
 
 )
 
-fun PersonBo.toPersonEntity() = with(::Person) {
-  val propertiesByName = PersonBo::class.memberProperties.associateBy { it.name }
+fun ForelderBo.toPersonEntity() = with(::Forelder) {
+  val propertiesByName = ForelderBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      Person::personDbId.name -> 0
+      Forelder::forelderId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toPersonEntity)
     }
   })
