@@ -99,7 +99,7 @@ class GrunnlagspakkeService(
           skattegrunnlagRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         // Bygger opp liste over utvidet barnetrygd og småbarnstillegg
-        GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG ->
+        GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG ->
           ubstRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         // Bygger opp liste over barnetillegg
@@ -472,7 +472,7 @@ class GrunnlagspakkeService(
           }
           oppdaterGrunnlagDtoListe.add(
             OppdaterGrunnlagDto(
-              GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
               personIdOgPeriode.personId,
               GrunnlagsRequestStatus.HENTET,
               "Antall perioder funnet: $antallPerioderFunnet"
@@ -484,7 +484,7 @@ class GrunnlagspakkeService(
         }
         is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
           OppdaterGrunnlagDto(
-            GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+            GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
             personIdOgPeriode.personId,
             if (restResponseFamilieBaSak.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
             "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."

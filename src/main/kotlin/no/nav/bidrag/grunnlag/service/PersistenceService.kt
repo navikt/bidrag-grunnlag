@@ -125,7 +125,8 @@ class PersistenceService(
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
-      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId)
+      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
+      emptyList(), emptyList(), emptyList(), emptyList()
     )
   }
 
@@ -259,7 +260,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            hentetTidspunkt = inntekt.hentetTidspunkt,
+            opprettetTidspunkt = inntekt.hentetTidspunkt,
             ainntektspostListe = hentAinntektspostListe
           )
         )
@@ -328,7 +329,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            hentetTidspunkt = inntekt.hentetTidspunkt,
+            opprettetTidspunkt = inntekt.hentetTidspunkt,
             hentSkattegrunnlagspostListe
           )
         )
@@ -353,7 +354,7 @@ class PersistenceService(
             brukTil = ubst.brukTil,
             belop = ubst.belop,
             manueltBeregnet = ubst.manueltBeregnet,
-            hentetTidspunkt = ubst.hentetTidspunkt
+            opprettetTidspunkt = ubst.hentetTidspunkt
           )
         )
       }
@@ -376,7 +377,7 @@ class PersistenceService(
             brukTil = barnetillegg.brukTil,
             belopBrutto = barnetillegg.belopBrutto,
             barnType = barnetillegg.barnType,
-            hentetTidspunkt = barnetillegg.hentetTidspunkt
+            opprettetTidspunkt = barnetillegg.hentetTidspunkt
           )
         )
       }

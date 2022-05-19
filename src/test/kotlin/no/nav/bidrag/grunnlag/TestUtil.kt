@@ -79,7 +79,7 @@ class TestUtil {
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -96,7 +96,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")

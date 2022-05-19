@@ -315,7 +315,7 @@ class GrunnlagspakkeControllerTest(
         OppdaterGrunnlagspakkeRequestDto(
           grunnlagRequestDtoListe = listOf(
             GrunnlagRequestDto(
-              type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
               personId = "12345678901",
               periodeFra = LocalDate.parse("2021-11-01"),
               periodeTil = LocalDate.parse("2021-11-15")
@@ -330,7 +330,7 @@ class GrunnlagspakkeControllerTest(
           grunnlagTypeResponsListe =
           listOf(
             OppdaterGrunnlagDto(
-              type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+              type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
               personId = "12345678901",
               status = GrunnlagsRequestStatus.HENTET,
               statusMelding = "Ok"
@@ -400,7 +400,11 @@ class GrunnlagspakkeControllerTest(
           ainntektListe = emptyList(),
           skattegrunnlagListe = emptyList(),
           ubstListe = emptyList(),
-          barnetilleggListe = emptyList()
+          barnetilleggListe = emptyList(),
+          barnListe = emptyList(),
+          husstandListe = emptyList(),
+          sivilstandListe = emptyList(),
+          personListe = emptyList()
         )
       )
 
