@@ -5,27 +5,26 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.enums.Formaal
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
+import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -209,7 +208,8 @@ class GrunnlagspakkeControllerTest(
   @Test
   fun `skal fange opp og håndtere forespørsler på grunnlagspakker som ikke eksisterer`() {
 
-    val oppdaterGrunnlagspakkeResponse = oppdaterGrunnlagspakke(1, TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(), String::class.java) { isNotFound() }
+    val oppdaterGrunnlagspakkeResponse =
+      oppdaterGrunnlagspakke(1, TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(), String::class.java) { isNotFound() }
 
     assertNotNull(oppdaterGrunnlagspakkeResponse)
 
@@ -337,7 +337,8 @@ class GrunnlagspakkeControllerTest(
             statusMelding = "Ok"
           )
         )
-        ))
+      )
+      )
 
     val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")
     val okResult = TestUtil.performRequest(

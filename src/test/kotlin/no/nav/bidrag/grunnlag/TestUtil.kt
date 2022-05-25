@@ -7,8 +7,17 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
+<<<<<<< HEAD
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
+=======
+>>>>>>> main
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
+import no.nav.bidrag.grunnlag.bo.AinntektBo
+import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
+import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
+import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
@@ -20,6 +29,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
+<<<<<<< HEAD
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
@@ -42,6 +52,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerReques
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
+=======
+>>>>>>> main
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
@@ -132,6 +144,7 @@ class TestUtil {
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
           type = GrunnlagRequestType.BARNETILLEGG,
+<<<<<<< HEAD
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-02-01")
@@ -176,19 +189,13 @@ class TestUtil {
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
           type = GrunnlagRequestType.PERSON,
+=======
+>>>>>>> main
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         )
       )
-    )
-
-    fun byggGrunnlagspakkeBo() = GrunnlagspakkeBo(
-      opprettetAv = "RTV9999",
-      opprettetTimestamp = LocalDateTime.now(),
-      endretTimestamp = LocalDateTime.now(),
-      gyldigTil = null,
-      formaal = Formaal.BIDRAG.toString()
     )
 
     fun byggGrunnlagspakke() = Grunnlagspakke(
