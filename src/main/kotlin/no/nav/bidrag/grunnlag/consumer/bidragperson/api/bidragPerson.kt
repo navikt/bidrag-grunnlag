@@ -22,14 +22,14 @@ data class SivilstandRequest(
 
 // Response fra bidrag-person
 
-data class FoedselOgDoedResponseDto(
-// Gir fødselsdato og fødselsår for angitt person. Fødselsår finnes for alle i PDL, mens noen ikke har utfyllt fødselsdato
+data class NavnFoedselDoedResponseDto(
+// Gir navn, fødselsdato og fødselsår for angitt person. Fødselsår finnes for alle i PDL, mens noen ikke har utfyllt fødselsdato
+  var navn: String?,
   val foedselsdato: LocalDate?,
   val foedselsaar: Int,
 // Eventuell dødsdato til personen
   val doedsdato: LocalDate?
 )
-
 
 data class ForelderBarnRelasjonResponseDto(
 // Liste over alle hentede forekomster av foreldre-barnrelasjoner
@@ -68,12 +68,14 @@ data class HusstandResponse(
 )
 
 data class HusstandsmedlemmerResponse(
+  val gyldigFraOgMed: LocalDate? = null,
+  val gyldigTilOgMed: LocalDate? = null,
   val personId: String? = null,
   val fornavn: String? = null,
   val mellomnavn: String? = null,
   val etternavn: String? = null,
-  val gyldigFraOgMed: LocalDate? = null,
-  val gyldigTilOgMed: LocalDate? = null
+  var foedselsdato: LocalDate? = null,
+  var doedsdato: LocalDate? = null,
 )
 
 data class PersonResponseDto(

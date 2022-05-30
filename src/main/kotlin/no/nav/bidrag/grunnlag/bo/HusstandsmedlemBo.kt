@@ -8,6 +8,12 @@ import kotlin.reflect.full.memberProperties
 
 data class HusstandsmedlemBo(
 
+  @Schema(description = "Husstandsmedlemmet bor i husstanden fra- og med måned")
+  val periodeFra: LocalDate?,
+
+  @Schema(description = "Husstandsmedlemmet bor i husstanden til- og med måned")
+  val periodeTil: LocalDate?,
+
   @Schema(description = "Generert Id til husstanden")
   var husstandId: Int,
 
@@ -17,11 +23,11 @@ data class HusstandsmedlemBo(
   @Schema(description = "Navn på husstandsmedlemmet, format <Fornavn, mellomnavn, Etternavn")
   var navn: String?,
 
-  @Schema(description = "Husstandsmedlemmet bor i husstanden fra- og med måned")
-  val periodeFra: LocalDate,
+  @Schema(description = "Husstandsmedlemmets fødselsdag")
+  var foedselsdato: LocalDate?,
 
-  @Schema(description = "Husstandsmedlemmet bor i husstanden til- og med måned")
-  val periodeTil: LocalDate?,
+  @Schema(description = "Husstandsmedlemmets eventuelle dødsdato")
+  var doedsdato: LocalDate?,
 
   @Schema(description = "Manuelt opprettet av")
   val opprettetAv: String?,

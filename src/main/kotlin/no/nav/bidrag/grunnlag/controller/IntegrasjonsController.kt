@@ -10,7 +10,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
@@ -64,7 +64,7 @@ class IntegrasjonsController(
 
   @PostMapping(HENT_FOEDSEL_DOED)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL")
-  fun hentFoedselOgDoed(@RequestBody bidragPersonRequest: String): ResponseEntity<FoedselOgDoedResponseDto> {
+  fun hentFoedselOgDoed(@RequestBody bidragPersonRequest: String): ResponseEntity<NavnFoedselDoedResponseDto> {
     return handleRestResponse(bidragPersonConsumer.hentFoedselOgDoed(bidragPersonRequest))
   }
 

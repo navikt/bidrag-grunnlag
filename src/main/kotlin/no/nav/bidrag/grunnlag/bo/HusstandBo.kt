@@ -15,7 +15,7 @@ data class HusstandBo(
   val personId: String,
 
   @Schema(description = "Personen bor i husstanden fra om med periode")
-  val periodeFra: LocalDate,
+  val periodeFra: LocalDate?,
 
   @Schema(description = "Personen bor i husstanden til om med periode")
   val periodeTil: LocalDate?,
@@ -53,7 +53,7 @@ data class HusstandBo(
   @Schema(description = "Tidspunkt husstandsopplysningen ikke lenger er aktiv. Null betyr at husstandsopplysningen er aktiv")
   val brukTil: LocalDateTime? = null,
 
-  @Schema(description = "Angis hvis barnet er manuelt registrert")
+  @Schema(description = "Manuelt opprettet av")
   val opprettetAv: String?,
 
   @Schema(description = "Opprettet tidspunkt")

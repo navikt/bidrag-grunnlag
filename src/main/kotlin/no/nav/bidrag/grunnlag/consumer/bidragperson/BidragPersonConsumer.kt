@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.consumer.bidragperson
 import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
@@ -15,6 +15,7 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/foedselogdoed"
@@ -31,15 +32,15 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
   }
 
-  open fun hentFoedselOgDoed(request: String): RestResponse<FoedselOgDoedResponseDto> {
+  open fun hentFoedselOgDoed(request: String): RestResponse<NavnFoedselDoedResponseDto> {
     logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGPERSON_CONTEXT_FOEDSEL_DOED,
       HttpMethod.POST,
       initHttpEntity(request),
-      FoedselOgDoedResponseDto::class.java,
-      FoedselOgDoedResponseDto(null, 0, null)
+      NavnFoedselDoedResponseDto::class.java,
+      NavnFoedselDoedResponseDto(null, null,0, null)
     )
 
     logResponse(logger, restResponse)

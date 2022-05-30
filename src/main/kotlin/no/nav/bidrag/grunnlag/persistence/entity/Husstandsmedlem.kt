@@ -20,17 +20,23 @@ data class Husstandsmedlem(
   @Column(nullable = false, name = "husstand_id")
   val husstandId: Int = 0,
 
+  @Column(nullable = false, name = "periode_fra")
+  val periodeFra: LocalDate = LocalDate.now(),
+
+  @Column(nullable = true, name = "periode_til")
+  val periodeTil: LocalDate? = null,
+
   @Column(nullable = true, name = "person_id")
   val personId: String? = null,
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,
 
-  @Column(nullable = false, name = "periode_fra")
-  val periodeFra: LocalDate = LocalDate.now(),
+  @Column(nullable = true, name = "foedselsdato")
+  val foedselsdato: LocalDate? = null,
 
-  @Column(nullable = true, name = "periode_til")
-  val periodeTil: LocalDate? = null,
+  @Column(nullable = true, name = "doedsdato")
+  val doedsdato: LocalDate? = null,
 
   @Column(nullable = true, name = "opprettet_av")
   val opprettetAv: String? = null,

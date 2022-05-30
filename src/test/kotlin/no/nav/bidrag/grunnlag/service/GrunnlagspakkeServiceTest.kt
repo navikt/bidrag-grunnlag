@@ -300,10 +300,12 @@ class GrunnlagspakkeServiceTest {
     persistenceService.opprettHusstandsmedlem(
       HusstandsmedlemBo(
         husstandId = opprettetHusstand.husstandId ,
-        personId = "22334455",
-        navn = "navn navn navn",
         periodeFra = LocalDate.parse("2021-05-01"),
         periodeTil = LocalDate.parse("2021-06-01"),
+        personId = "22334455",
+        navn = "navn navn navn",
+        foedselsdato = LocalDate.now(),
+        doedsdato = null,
         opprettetAv = null,
         opprettetTidspunkt = LocalDateTime.now()
       )

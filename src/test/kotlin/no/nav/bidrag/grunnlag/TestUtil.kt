@@ -7,10 +7,8 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-<<<<<<< HEAD
+
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
-=======
->>>>>>> main
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
@@ -29,20 +27,13 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
-<<<<<<< HEAD
-import no.nav.bidrag.grunnlag.bo.AinntektBo
-import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+
 import no.nav.bidrag.grunnlag.bo.BarnBo
-import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
-import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
-import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
-import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.FoedselOgDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
@@ -52,8 +43,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerReques
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
-=======
->>>>>>> main
+
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
@@ -144,7 +134,6 @@ class TestUtil {
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
           type = GrunnlagRequestType.BARNETILLEGG,
-<<<<<<< HEAD
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-02-01")
@@ -189,8 +178,6 @@ class TestUtil {
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
           type = GrunnlagRequestType.PERSON,
-=======
->>>>>>> main
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -432,11 +419,13 @@ class TestUtil {
     )
 
     fun byggHusstandsmedlemBo() = HusstandsmedlemBo(
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
       husstandId = (1..100).random(),
       personId = "123",
       navn = "navn1",
-      periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
+      foedselsdato = LocalDate.parse("1997-05-23"),
+      doedsdato = null,
       opprettetAv = null,
       opprettetTidspunkt = LocalDateTime.now()
     )
@@ -444,9 +433,11 @@ class TestUtil {
     fun byggHusstandsmedlem() = Husstandsmedlem(
       husstandsmedlemId = (1..100).random(),
       husstandId = (1..100).random(),
-      navn = "navn1",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
+      navn = "navn1",
+      foedselsdato = LocalDate.parse("1997-05-23"),
+      doedsdato = null,
       opprettetAv = null,
       opprettetTidspunkt = LocalDateTime.now()
     )
@@ -675,7 +666,8 @@ class TestUtil {
     )
 
 
-    fun byggHentFoedselOgDoedResponse() = FoedselOgDoedResponseDto(
+    fun byggHentFoedselOgDoedResponse() = NavnFoedselDoedResponseDto(
+      navn = "Dunkel Sol",
       foedselsdato = LocalDate.parse("2017-04-17"),
       foedselsaar = 2017,
       doedsdato = null
@@ -735,20 +727,24 @@ class TestUtil {
           matrikkelId = 54321,
           immutableListOf(
             HusstandsmedlemmerResponse(
+              gyldigFraOgMed = LocalDate.parse("2017-01-01"),
+              gyldigTilOgMed = LocalDate.parse("2018-02-01"),
               personId = "987",
               fornavn = "fornavn1bosted2",
               mellomnavn = "mellomnavn1bosted2",
               etternavn = "etternavn1bosted2",
-              gyldigFraOgMed = LocalDate.parse("2017-01-01"),
-              gyldigTilOgMed = LocalDate.parse("2018-02-01")
+              foedselsdato = LocalDate.parse("2002-03-17"),
+              doedsdato = null
             ),
             HusstandsmedlemmerResponse(
+              gyldigFraOgMed = LocalDate.parse("2020-01-01"),
+              gyldigTilOgMed = null,
               personId = "234",
               fornavn = "fornavn2bosted2",
               mellomnavn = "mellomnavn2bosted2",
               etternavn = "etternavn2bosted2",
-              gyldigFraOgMed = LocalDate.parse("2020-01-01"),
-              gyldigTilOgMed = null
+              foedselsdato = LocalDate.parse("2013-07-17"),
+              doedsdato = null
             )
           )
         )

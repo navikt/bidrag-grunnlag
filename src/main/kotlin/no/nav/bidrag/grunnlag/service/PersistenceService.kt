@@ -582,10 +582,12 @@ class PersistenceService(
             ) {
               voksneHusstandsmedlemmerListe.add(
                 HusstandsmedlemDto(
-                  personId = husstandsmedlem.personId,
-                  navn = husstandsmedlem.navn,
                   periodeFra = husstandsmedlem.periodeFra,
                   periodeTil = husstandsmedlem.periodeTil,
+                  personId = husstandsmedlem.personId,
+                  navn = husstandsmedlem.navn,
+                  foedselsdato = husstandsmedlem.foedselsdato,
+                  doedsdato = husstandsmedlem.doedsdato,
                   opprettetAv = husstandsmedlem.opprettetAv,
                   opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
                 )
