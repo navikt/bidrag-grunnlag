@@ -8,4 +8,6 @@ azure:
   bidraggcpproxy_scope: dev-fss.bidrag.bidrag-gcp-proxy-feature
   bidraggcpproxy_app: bidrag-gcp-proxy-feature
   bidraggcpproxy_cluster: dev-fss
+  kontantstotte_url: familie-ba-sak.dev.intern.nav.no
+  kontantstotte_scope: dev-gcp.teamfamilie.familie-ba-sak
 dbname: bidrag-grunnlag-feature
