@@ -639,42 +639,42 @@ class GrunnlagspakkeService(
       )
 
       when (val restResponseKontantstotte =
-        konfamilieBaSakConsumer.hentFamilieBaSak(kontantstotteRequest)) {
+        kontantstotteConsumer.hentKontantstotte(kontantstotteRequest)) {
         is RestResponse.Success -> {
-          val familieBaSakResponse = restResponseFamilieBaSak.body
-          LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
+          val kontantstotteResponse = restResponseKontantstotte.body
+          LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
 
-          if (familieBaSakResponse.perioder.isNotEmpty()) {
-            persistenceService.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+          if (kontantstotteResponse.data.isNotEmpty()) {
+/*            persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
               grunnlagspakkeId,
               personIdOgPeriode.personId,
               timestampOppdatering
-            )
-            familieBaSakResponse.perioder.forEach { ubst ->
-              if (LocalDate.parse(ubst.fomMåned.toString() + "-01").isBefore(personIdOgPeriode.periodeTil)) {
+            )*/
+/*            kontantstotteResponse.data.forEach { ks ->
+              if (LocalDate.parse(ks.utbetalinger.toString() + "-01").isBefore(personIdOgPeriode.periodeTil)) {
                 antallPerioderFunnet++
                 persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
                   UtvidetBarnetrygdOgSmaabarnstilleggBo(
                     grunnlagspakkeId = grunnlagspakkeId,
                     personId = personIdOgPeriode.personId,
-                    type = ubst.stønadstype.toString(),
-                    periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
+                    type = ks.stønadstype.toString(),
+                    periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
                     // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-                    periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
+                    periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01")
                       .plusMonths(1) else null,
                     brukFra = timestampOppdatering,
-                    belop = BigDecimal.valueOf(ubst.beløp),
-                    manueltBeregnet = ubst.manueltBeregnet,
-                    deltBosted = ubst.deltBosted,
+                    belop = BigDecimal.valueOf(ks.beløp),
+                    manueltBeregnet = ks.manueltBeregnet,
+                    deltBosted = ks.deltBosted,
                     hentetTidspunkt = timestampOppdatering
                   )
                 )
               }
-            }
+            }*/
           }
           oppdaterGrunnlagDtoListe.add(
             OppdaterGrunnlagDto(
-              GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+              GrunnlagRequestType.KONTANTSTOTTE,
               personIdOgPeriode.personId,
               GrunnlagsRequestStatus.HENTET,
               "Antall perioder funnet: $antallPerioderFunnet"
@@ -686,9 +686,9 @@ class GrunnlagspakkeService(
         }
         is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
           OppdaterGrunnlagDto(
-            GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+            GrunnlagRequestType.KONTANTSTOTTE,
             personIdOgPeriode.personId,
-            if (restResponseFamilieBaSak.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+            if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
             "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
           )
         )

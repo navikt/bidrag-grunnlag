@@ -1,5 +1,6 @@
 FAMILIEBASAK_URL: http://localhost:${wiremock.server.port}/familiebasak
 BIDRAGGCPPROXY_URL: http://localhost:${wiremock.server.port}/bidraggcpproxy
+KONTANTSTOTTE_URL: http://localhost:${wiremock.server.port}/kontantstotte
 spring:
   config.activate.on-profile: test, local
   flyway.enabled: false
