@@ -201,15 +201,15 @@ class GrunnlagspakkeService(
       )
     )
 
-//    // Oppdaterer grunnlag for husstandsmedlemmer
-//    oppdaterGrunnlagDtoListe.addAll(
-//      oppdaterHusstandsmedlemmer(
-//        grunnlagspakkeId,
-//        husstandsmedlemmerRequestListe,
-//        timestampOppdatering,
-//        forekomsterFunnet
-//      )
-//    )
+    // Oppdaterer grunnlag for husstandsmedlemmer
+    oppdaterGrunnlagDtoListe.addAll(
+      oppdaterHusstandsmedlemmer(
+        grunnlagspakkeId,
+        husstandsmedlemmerRequestListe,
+        timestampOppdatering,
+        forekomsterFunnet
+      )
+    )
 
     // Oppdaterer grunnlag med sivilstand
     oppdaterGrunnlagDtoListe.addAll(
