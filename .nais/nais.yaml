@@ -61,7 +61,7 @@ spec:
     - name: KONTANTSTOTTE_URL
       value: https://{{ azure.kontantstotte_url }}
     - name: KONTANTSTOTTE_SCOPE
-      value: { { azure.kontantstotte_scope } }
+      value: { { azure.kontantstotte_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}
