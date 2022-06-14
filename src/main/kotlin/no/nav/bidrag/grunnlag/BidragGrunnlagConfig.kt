@@ -97,7 +97,7 @@ class BidragGrunnlagConfig {
   ): KontantstotteConsumer {
     LOGGER.info("Url satt i config: $url")
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("kontantstotte"))
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("infotrygdkontantstottev2"))
     return KontantstotteConsumer(restTemplate)
   }
 }
