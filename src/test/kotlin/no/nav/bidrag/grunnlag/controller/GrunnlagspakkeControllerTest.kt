@@ -21,6 +21,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnl
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -111,13 +112,18 @@ class GrunnlagspakkeControllerTest(
         ResponseEntity(FamilieBaSakResponse(emptyList()), HttpStatus.OK)
       )
 
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+      .thenReturn(
+        ResponseEntity(InnsynResponse(emptyList()), HttpStatus.OK)
+      )
+
     val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
       grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
       OppdaterGrunnlagspakkeDto::class.java
     ) { isOk() }
 
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(5)
 
     oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
@@ -125,7 +131,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
+  fun `skal oppdatere grunnlagspakke og håndtere rest-kall-feil`() {
 
     val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
@@ -147,6 +153,11 @@ class GrunnlagspakkeControllerTest(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
 
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+      .thenThrow(
+        HttpClientErrorException(HttpStatus.NOT_FOUND)
+      )
+
     val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
       grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
@@ -154,7 +165,7 @@ class GrunnlagspakkeControllerTest(
     ) { isOk() }
 
     assertThat(oppdaterGrunnlagspakkeDto).isNotNull
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(5)
 
     oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)
@@ -179,7 +190,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal fange opp og håndtere Hibernate feil`() {
+  fun `skal fange opp og håndtere Hibernate-feil`() {
     val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
@@ -235,7 +246,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved opprett grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved opprett grunnlagspakke-kall`() {
 
     var errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke1.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_NY)
 
@@ -265,7 +276,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved oppdater grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved oppdater grunnlagspakke-kall`() {
 
     var errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", "/grunnlagspakke/null/oppdater")
 
@@ -354,7 +365,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved lukk grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved lukk grunnlagspakke-kall`() {
 
     val errorResult = performExpectedFailingRequest(null, "/grunnlagspakke/null/lukk")
 
@@ -379,7 +390,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke kall`() {
+  fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke-kall`() {
     val errorResult = TestUtil.performRequest(
       mockMvc,
       HttpMethod.GET,

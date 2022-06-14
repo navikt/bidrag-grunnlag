@@ -18,7 +18,8 @@ data class StonadDto(
 
 data class UtbetalingDto(
   val fom: YearMonth?,
-  val tom: YearMonth?
+  val tom: YearMonth?,
+  val belop: Int
 )
 
 data class BarnDto(
