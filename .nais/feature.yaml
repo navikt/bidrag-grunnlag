@@ -8,7 +8,7 @@ azure:
   bidraggcpproxy_scope: dev-fss.bidrag.bidrag-gcp-proxy-feature
   bidraggcpproxy_app: bidrag-gcp-proxy-feature
   bidraggcpproxy_cluster: dev-fss
-  kontantstotte_url: infotrygd-kontantstotte-v2.dev.intern.nav.no
+  kontantstotte_url: infotrygd-kontantstotte-v2.dev-fss-pub.nais.io
   kontantstotte_scope: dev-fss.infotrygd.infotrygd-kontantstotte-v2
   kontantstotte_cluster: dev-fss
 dbname: bidrag-grunnlag-feature
