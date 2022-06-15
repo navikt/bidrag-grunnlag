@@ -21,7 +21,7 @@ open class KontantstotteConsumer(private val restTemplate: HttpHeaderRestTemplat
   }
 
   open fun hentKontantstotte(request: InnsynRequest): RestResponse<InnsynResponse> {
-    logger.info("Henter kontantstøtte fra saksbehandlingssystem")
+    logger.info("Henter kontantstøtte")
 
     val restResponse = restTemplate.tryExchange(
       KONTANTSTOTTE_CONTEXT,
