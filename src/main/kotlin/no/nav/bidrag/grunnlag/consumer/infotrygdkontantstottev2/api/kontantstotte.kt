@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api
 import java.time.YearMonth
 
 data class InnsynRequest(
-  val fnr: List<Foedselsnummer>
+  val fnr: List<String>
 )
 
 data class InnsynResponse(
