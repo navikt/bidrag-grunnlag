@@ -418,10 +418,7 @@ class TestUtil {
     )
 
     fun byggKontantstotteRequest() = InnsynRequest(
-      listOf(
-        Foedselsnummer(
-          fnr = "123"
-        )
+      listOf("123"
       )
     )
 

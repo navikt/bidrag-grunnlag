@@ -622,17 +622,17 @@ class GrunnlagspakkeService(
 
       // Input til tjeneste er en liste over alle personnr for en person,
       // kall PDL for å hente historikk på fnr?
-      val innsynRequestListe = mutableListOf<Foedselsnummer>()
+      val innsynRequestListe = mutableListOf<String>()
 
       innsynRequestListe.add(
-        Foedselsnummer(fnr = personIdOgPeriode.personId))
+        personIdOgPeriode.personId)
 
       val kontantstotteRequest = InnsynRequest(
         innsynRequestListe)
 
       LOGGER.info(
         "Kaller kontantstøtte med personIdent ********${
-          kontantstotteRequest.fnr[0].fnr.substring(
+          kontantstotteRequest.fnr[0].substring(
             IntRange(8, 10)
           )
         } "
