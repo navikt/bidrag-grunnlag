@@ -631,6 +631,11 @@ class GrunnlagspakkeService(
         innsynRequestListe)
 
       LOGGER.info(
+        "Kaller kontantstøtte med request: ${
+          kontantstotteRequest.fnr  } "
+      )
+
+      LOGGER.info(
         "Kaller kontantstøtte med personIdent ********${
           kontantstotteRequest.fnr[0].fnr.substring(
             IntRange(8, 10)
