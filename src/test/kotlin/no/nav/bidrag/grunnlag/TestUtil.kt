@@ -314,7 +314,7 @@ class TestUtil {
     fun byggKontantstotteResponse() = InnsynResponse(
       immutableListOf(
         StonadDto(
-          fnr = Foedselsnummer("12345678901"),
+          fnr = "12345678901",
           immutableListOf(
             UtbetalingDto(
               fom = YearMonth.parse("2022-01"),
@@ -324,8 +324,7 @@ class TestUtil {
           ),
           immutableListOf(
             no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto(
-              Foedselsnummer("11223344551")
-            )
+              "11223344551")
           )
         )
       )

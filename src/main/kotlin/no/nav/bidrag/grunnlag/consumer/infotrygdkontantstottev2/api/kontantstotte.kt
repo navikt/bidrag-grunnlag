@@ -11,7 +11,7 @@ data class InnsynResponse(
 )
 
 data class StonadDto(
-  val fnr: Foedselsnummer,
+  val fnr: String,
   val utbetalinger: List<UtbetalingDto>,
   val barn: List<BarnDto>
 )
@@ -23,7 +23,7 @@ data class UtbetalingDto(
 )
 
 data class BarnDto(
-  val fnr: Foedselsnummer
+  val fnr: String
 )
 
 data class Foedselsnummer(

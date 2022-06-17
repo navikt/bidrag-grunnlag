@@ -58,11 +58,11 @@ internal class KontantstotteConsumerTest {
         assertAll(
           Executable { assertThat(hentKontantstotteResponse).isNotNull },
           Executable { assertThat(hentKontantstotteResponse.data.size).isEqualTo(1) },
-          Executable { assertThat(hentKontantstotteResponse.data[0].fnr).isEqualTo(Foedselsnummer("12345678901"))},
+          Executable { assertThat(hentKontantstotteResponse.data[0].fnr).isEqualTo("12345678901")},
           Executable { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].fom).isEqualTo(YearMonth.parse("2022-01")) },
           Executable { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].tom).isEqualTo(YearMonth.parse("2022-07")) },
           Executable { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].belop).isEqualTo(17) },
-          Executable { assertThat(hentKontantstotteResponse.data[0].barn[0].fnr).isEqualTo(Foedselsnummer("11223344551")) }
+          Executable { assertThat(hentKontantstotteResponse.data[0].barn[0].fnr).isEqualTo("11223344551") }
         )
       }
       else -> {
