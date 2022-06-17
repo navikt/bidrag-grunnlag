@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
@@ -25,6 +26,11 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.Foedselsnummer
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.UtbetalingDto
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
@@ -79,13 +85,19 @@ class TestUtil {
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
-          type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
         ),
         GrunnlagRequestDto(
           type = GrunnlagRequestType.BARNETILLEGG,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        ),
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.KONTANTSTOTTE,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -96,7 +108,7 @@ class TestUtil {
     fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
-          type = GrunnlagRequestType.UTVIDETBARNETRYGDOGSMAABARNSTILLEGG,
+          type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
@@ -299,6 +311,25 @@ class TestUtil {
       )
     )
 
+    fun byggKontantstotteResponse() = InnsynResponse(
+      immutableListOf(
+        StonadDto(
+          fnr = "12345678901",
+          immutableListOf(
+            UtbetalingDto(
+              fom = YearMonth.parse("2022-01"),
+              tom = YearMonth.parse("2022-07"),
+              belop = 17
+            )
+          ),
+          immutableListOf(
+            no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto(
+              "11223344551")
+          )
+        )
+      )
+    )
+
     fun byggHentInntektRequest() = HentInntektRequest(
       ident = "ident",
       innsynHistoriskeInntekterDato = LocalDate.now(),
@@ -385,6 +416,11 @@ class TestUtil {
       fraDato = LocalDate.now()
     )
 
+    fun byggKontantstotteRequest() = InnsynRequest(
+      listOf("123"
+      )
+    )
+
     fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(
       mottaker = "personIdent",
       fom = LocalDate.now(),
@@ -441,7 +477,8 @@ class TestUtil {
 
       return when (responseType) {
         String::class.java -> mvcResult.response.contentAsString as Response
-        else -> ObjectMapper().findAndRegisterModules().readValue(mvcResult.response.contentAsString, responseType)
+        else -> ObjectMapper().findAndRegisterModules()
+          .readValue(mvcResult.response.contentAsString, responseType)
       }
     }
   }
