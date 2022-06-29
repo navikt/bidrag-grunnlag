@@ -17,7 +17,7 @@ interface BarnRepository : JpaRepository<Barn, Int?> {
   @Query(
     "update Barn ba " +
         "set ba.aktiv = false, ba.brukTil = :timestampOppdatering " +
-        "where ba.grunnlagspakkeId = :grunnlagspakkeId and ba.personIdBarn = :personId and ba.aktiv = true"
+        "where ba.grunnlagspakkeId = :grunnlagspakkeId and ba.personId = :personId and ba.aktiv = true"
   )
   fun oppdaterEksisterendeBarnTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
 

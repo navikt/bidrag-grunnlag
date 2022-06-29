@@ -9,9 +9,11 @@ import no.nav.bidrag.commons.CorrelationId
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.grunnlag.comparator.AbstractPeriodComparator.Companion.LOGGER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.service.SecurityTokenService
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.slf4j.LoggerFactory
@@ -100,5 +102,17 @@ class BidragGrunnlagConfig {
     return BidragPersonConsumer(restTemplate)
   }
 
+  @Bean
+  fun kontantstotteConsumer(
+    @Value("\${KONTANTSTOTTE_URL}") url: String,
+    restTemplate: HttpHeaderRestTemplate,
+    securityTokenService: SecurityTokenService,
+    exceptionLogger: ExceptionLogger
+  ): KontantstotteConsumer {
+    LOGGER.info("Url satt i config: $url")
+    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("kontantstotte"))
+    return KontantstotteConsumer(restTemplate)
+  }
 
 }

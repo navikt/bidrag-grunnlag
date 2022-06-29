@@ -45,6 +45,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
@@ -63,7 +65,8 @@ class GrunnlagspakkeService(
   private val persistenceService: PersistenceService,
   private val familieBaSakConsumer: FamilieBaSakConsumer,
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
-  private val bidragPersonConsumer: BidragPersonConsumer
+  private val bidragPersonConsumer: BidragPersonConsumer,
+  private val kontantstotteConsumer: KontantstotteConsumer
 ) {
 
   companion object {
@@ -104,6 +107,8 @@ class GrunnlagspakkeService(
     val personRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
     val egneBarnRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
 
+    val kontantstotteRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
+
     oppdaterGrunnlagspakkeRequestDto.grunnlagRequestDtoListe.forEach { grunnlagRequest ->
       when (grunnlagRequest.type) {
 
@@ -135,13 +140,13 @@ class GrunnlagspakkeService(
         GrunnlagRequestType.SIVILSTAND ->
           sivilstandRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
-        // Bygger opp liste over hvilke personer og perioder sivilstand skal hentes for
-        GrunnlagRequestType.PERSON ->
-          personRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
-
         // Bygger opp liste over hvilke personer og perioder egne barn skal hentes for
         GrunnlagRequestType.EGNE_BARN ->
           egneBarnRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
+
+        // Bygger opp liste over kontantstøtte
+        GrunnlagRequestType.KONTANTSTOTTE ->
+          kontantstotteRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         else -> {
           //Todo
@@ -196,6 +201,16 @@ class GrunnlagspakkeService(
       oppdaterEgneBarnIHusstanden(
         grunnlagspakkeId,
         egneBarnIHusstandenRequestListe,
+        timestampOppdatering,
+        forekomsterFunnet
+      )
+    )
+
+    // Oppdaterer grunnlag for kontantstøtte
+    oppdaterGrunnlagDtoListe.addAll(
+      oppdaterKontantstotte(
+        grunnlagspakkeId,
+        kontantstotteRequestListe,
         timestampOppdatering,
         forekomsterFunnet
       )
@@ -659,6 +674,97 @@ class GrunnlagspakkeService(
             personIdOgPeriode.personId,
             if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
             "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+          )
+        )
+      }
+    }
+    return oppdaterGrunnlagDtoListe
+  }
+
+
+  fun oppdaterKontantstotte(
+    grunnlagspakkeId: Int,
+    personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
+    timestampOppdatering: LocalDateTime,
+    forekomsterFunnet: Boolean
+  ): List<OppdaterGrunnlagDto> {
+
+    val oppdaterGrunnlagDtoListe = mutableListOf<OppdaterGrunnlagDto>()
+
+    personIdOgPeriodeListe.forEach { personIdOgPeriode ->
+
+      var antallPerioderFunnet = 0
+
+      // Input til tjeneste er en liste over alle personnr for en person,
+      // kall PDL for å hente historikk på fnr?
+      val innsynRequestListe = mutableListOf<String>()
+
+      innsynRequestListe.add(
+        personIdOgPeriode.personId)
+
+      val kontantstotteRequest = InnsynRequest(
+        innsynRequestListe)
+
+      LOGGER.info(
+        "Kaller kontantstøtte med personIdent ********${
+          kontantstotteRequest.fnr[0].substring(
+            IntRange(8, 10)
+          )
+        } "
+      )
+
+      when (val restResponseKontantstotte =
+        kontantstotteConsumer.hentKontantstotte(kontantstotteRequest)) {
+        is RestResponse.Success -> {
+          val kontantstotteResponse = restResponseKontantstotte.body
+          LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
+
+//          if (kontantstotteResponse.data.isNotEmpty()) {
+/*            persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
+              grunnlagspakkeId,
+              personIdOgPeriode.personId,
+              timestampOppdatering
+            )*/
+/*            kontantstotteResponse.data.forEach { ks ->
+              if (LocalDate.parse(ks.utbetalinger.toString() + "-01").isBefore(personIdOgPeriode.periodeTil)) {
+                antallPerioderFunnet++
+                persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+                  UtvidetBarnetrygdOgSmaabarnstilleggBo(
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    personId = personIdOgPeriode.personId,
+                    type = ks.stønadstype.toString(),
+                    periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
+                    // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+                    periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01")
+                      .plusMonths(1) else null,
+                    brukFra = timestampOppdatering,
+                    belop = BigDecimal.valueOf(ks.beløp),
+                    manueltBeregnet = ks.manueltBeregnet,
+                    deltBosted = ks.deltBosted,
+                    hentetTidspunkt = timestampOppdatering
+                  )
+                )
+              }
+            }*/
+//          }
+          oppdaterGrunnlagDtoListe.add(
+            OppdaterGrunnlagDto(
+              GrunnlagRequestType.KONTANTSTOTTE,
+              personIdOgPeriode.personId,
+              GrunnlagsRequestStatus.HENTET,
+              "Antall perioder funnet: $antallPerioderFunnet"
+            )
+          )
+          if (antallPerioderFunnet > 0) {
+            forekomsterFunnet
+          }
+        }
+        is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
+          OppdaterGrunnlagDto(
+            GrunnlagRequestType.KONTANTSTOTTE,
+            personIdOgPeriode.personId,
+            if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+            "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
           )
         )
       }

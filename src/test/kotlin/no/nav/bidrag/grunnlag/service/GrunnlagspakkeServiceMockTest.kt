@@ -51,6 +51,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
@@ -85,6 +86,9 @@ class GrunnlagspakkeServiceMockTest {
 
   @Mock
   private lateinit var bidragPersonConsumerMock: BidragPersonConsumer
+
+  @Mock
+  private lateinit var kontantstotteConsumerMock: KontantstotteConsumer
 
   @Captor
   private lateinit var opprettGrunnlagspakkeRequestDtoCaptor: ArgumentCaptor<OpprettGrunnlagspakkeRequestDto>

@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
@@ -44,6 +45,10 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRespon
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.UtbetalingDto
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
@@ -115,6 +120,12 @@ class TestUtil {
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
+        ),
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.KONTANTSTOTTE,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
         )
       )
     )
@@ -174,16 +185,16 @@ class TestUtil {
       )
     )
 
-    fun byggOppdaterGrunnlagspakkeRequestPerson() = OppdaterGrunnlagspakkeRequestDto(
-      grunnlagRequestDtoListe = listOf(
-        GrunnlagRequestDto(
-          type = GrunnlagRequestType.PERSON,
-          personId = "12345678910",
-          periodeFra = LocalDate.parse("2021-01-01"),
-          periodeTil = LocalDate.parse("2022-01-01")
-        )
-      )
-    )
+//    fun byggOppdaterGrunnlagspakkeRequestPerson() = OppdaterGrunnlagspakkeRequestDto(
+//      grunnlagRequestDtoListe = listOf(
+//        GrunnlagRequestDto(
+//          type = GrunnlagRequestType.PERSON,
+//          personId = "12345678910",
+//          periodeFra = LocalDate.parse("2021-01-01"),
+//          periodeTil = LocalDate.parse("2022-01-01")
+//        )
+//      )
+//    )
 
     fun byggGrunnlagspakke() = Grunnlagspakke(
       grunnlagspakkeId = (1..100).random(),
@@ -517,6 +528,25 @@ class TestUtil {
       )
     )
 
+    fun byggKontantstotteResponse() = InnsynResponse(
+      immutableListOf(
+        StonadDto(
+          fnr = "12345678901",
+          immutableListOf(
+            UtbetalingDto(
+              fom = YearMonth.parse("2022-01"),
+              tom = YearMonth.parse("2022-07"),
+              belop = 17
+            )
+          ),
+          immutableListOf(
+            no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto(
+              "11223344551")
+          )
+        )
+      )
+    )
+
     fun byggHentInntektRequest() = HentInntektRequest(
       ident = "ident",
       innsynHistoriskeInntekterDato = LocalDate.now(),
@@ -617,6 +647,11 @@ class TestUtil {
     fun byggSivilstandRequest() = SivilstandRequest(
       personId = "personIdent",
       periodeFra = LocalDate.now()
+    )
+
+    fun byggKontantstotteRequest() = InnsynRequest(
+      listOf("123"
+      )
     )
 
     fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(

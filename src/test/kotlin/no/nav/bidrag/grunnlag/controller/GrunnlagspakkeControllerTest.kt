@@ -21,6 +21,8 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnl
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -71,7 +73,8 @@ class GrunnlagspakkeControllerTest(
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
   private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
   private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
-  private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer)
+  private val kontantstotteConsumer: KontantstotteConsumer = KontantstotteConsumer(restTemplate)
+  private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer, kontantstotteConsumer)
   private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
   private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)
     .setControllerAdvice(RestExceptionHandler(exceptionLogger), CustomExceptionHandler(exceptionLogger), HibernateExceptionHandler(exceptionLogger))
@@ -111,13 +114,18 @@ class GrunnlagspakkeControllerTest(
         ResponseEntity(FamilieBaSakResponse(emptyList()), HttpStatus.OK)
       )
 
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+      .thenReturn(
+        ResponseEntity(InnsynResponse(emptyList()), HttpStatus.OK)
+      )
+
     val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
       grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
       OppdaterGrunnlagspakkeDto::class.java
     ) { isOk() }
 
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(5)
 
     oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
@@ -125,7 +133,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  fun `skal oppdatere grunnlagspakke og håndtere rest-kall feil`() {
+  fun `skal oppdatere grunnlagspakke og håndtere rest-kall-feil`() {
 
     val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
@@ -147,6 +155,11 @@ class GrunnlagspakkeControllerTest(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
 
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+      .thenThrow(
+        HttpClientErrorException(HttpStatus.NOT_FOUND)
+      )
+
     val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
       grunnlagspakkeIdOpprettet,
       TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
@@ -154,7 +167,7 @@ class GrunnlagspakkeControllerTest(
     ) { isOk() }
 
     assertThat(oppdaterGrunnlagspakkeDto).isNotNull
-    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(4)
+    assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(5)
 
     oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
       assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)

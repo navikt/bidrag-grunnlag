@@ -21,6 +21,7 @@ spec:
       external:
         - host: {{ azure.familiebasak_url }}
         - host: {{ azure.bidraggcpproxy_url }}
+#        - host: {{ azure.kontantstotte_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
@@ -57,6 +58,10 @@ spec:
       value: https://{{ azure.bidraggcpproxy_url }}
     - name: BIDRAGGCPPROXY_SCOPE
       value: {{ azure.bidraggcpproxy_scope }}
+    - name: KONTANTSTOTTE_URL
+      value: https://{{ azure.kontantstotte_url }}
+    - name: KONTANTSTOTTE_SCOPE
+      value: {{ azure.kontantstotte_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}
