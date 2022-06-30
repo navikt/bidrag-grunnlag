@@ -80,6 +80,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.math.abs
 
 @Service
 class PersistenceService(
@@ -255,12 +256,11 @@ class PersistenceService(
 
   // Returnerer lagret, komplett grunnlagspakke
   fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
-    var dummyliste1: List<BarnDto> = emptyList()
-    var dummyliste4: List<PersonDto> = emptyList()
+    val dummyliste4: List<PersonDto> = emptyList()
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      hentBarn(grunnlagspakkeId), hentHusstandsmedlemmer(grunnlagspakkeId),
+      hentEgneBarn(grunnlagspakkeId), hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
       hentSivilstand(grunnlagspakkeId),
       dummyliste4
     )
@@ -545,12 +545,12 @@ class PersistenceService(
     return barnetilleggDtoListe
   }
 
-  fun hentBarn(grunnlagspakkeId: Int): List<BarnDto> {
+  fun hentEgneBarn(grunnlagspakkeId: Int): List<BarnDto> {
     val barnDtoListe = mutableListOf<BarnDto>()
 
     val husstandsmedlemmer = mutableListOf<HusstandsmedlemDto>()
 
-    val husstandListe = hentHusstandsmedlemmer(grunnlagspakkeId)
+    val husstandListe = hentVoksneHusstandsmedlemmer(grunnlagspakkeId)
 
 
 
@@ -573,18 +573,20 @@ class PersistenceService(
     return barnDtoListe
   }
 
-  fun hentHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
+  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
     val husstandDtoListe = mutableListOf<HusstandDto>()
     husstandRepository.hentHusstand(grunnlagspakkeId)
       .forEach { husstand ->
         val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
-        val barnListe = barnRepository.hentBarn(grunnlagspakkeId)
+//        val barnListe = barnRepository.hentBarn(grunnlagspakkeId)
 //          .filter { barn -> barn.personIdVoksen == husstand.personId }
 
         husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
           .forEach { husstandsmedlem ->
-            if (husstandsmedlem.personId != null &&
-              sjekkOmHusstandsmedlemErPersonsBarn(husstandsmedlem.personId, barnListe)
+            if ((husstandsmedlem.personId != null &&
+              sjekkOmPersonHarFyllt18Aar(husstand.periodeFra, husstandsmedlem.foedselsdato)
+              || husstandsmedlem.foedselsdato == null)
+//              sjekkOmHusstandsmedlemErPersonsBarn(husstandsmedlem.personId, barnListe)
             ) {
               voksneHusstandsmedlemmerListe.add(
                 HusstandsmedlemDto(
@@ -624,6 +626,12 @@ class PersistenceService(
   fun sjekkOmHusstandsmedlemErPersonsBarn(personId: String, barnListe: List<Barn>): Boolean {
     val barnid = barnListe.filter { barn -> barn.personId == personId }
     return barnid.isNotEmpty()
+  }
+
+  fun sjekkOmPersonHarFyllt18Aar(dato: LocalDate, foedselsdato: LocalDate?): Boolean {
+    val aar = java.time.Period.between(dato, foedselsdato)
+    val alder = abs(aar.years)
+    return alder > 18
   }
 
 
