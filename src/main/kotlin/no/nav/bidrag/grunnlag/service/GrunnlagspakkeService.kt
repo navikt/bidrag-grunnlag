@@ -35,6 +35,8 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.bo.BarnBo
+import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
@@ -804,8 +806,35 @@ class GrunnlagspakkeService(
           LOGGER.info("Bidrag-person ga følgende respons på forelder-barn: $forelderBarnRelasjonResponse")
 
           if ((forelderBarnRelasjonResponse.forelderBarnRelasjonResponse != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNotEmpty())) {
+
+            // Henter og lagrer informasjon om forelder
+            val foedselOgDoedForelder = hentNavnFoedselDoed(personIdOgPeriode.personId)
+            LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for forelderen: $foedselOgDoedForelder")
+            // Sett eksisterende forekomst av Forelder til inaktiv
+            persistenceService.oppdaterEksisterendeForelderTilInaktiv(
+              grunnlagspakkeId,
+              personIdOgPeriode.personId,
+              timestampOppdatering
+            )
+
+            val opprettetForelder = persistenceService.opprettForelder(
+              ForelderBo(
+                grunnlagspakkeId = grunnlagspakkeId,
+                personId = personIdOgPeriode.personId,
+                navn = foedselOgDoedForelder?.navn,
+                foedselsdato = foedselOgDoedForelder?.foedselsdato,
+                doedsdato = foedselOgDoedForelder?.doedsdato,
+                aktiv = true,
+                brukFra = timestampOppdatering,
+                brukTil = null,
+                opprettetAv = null,
+                opprettetTidspunkt = timestampOppdatering
+              )
+            )
+
             forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.forEach { forelderBarnRelasjon ->
               if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
+                // Henter og lagrer informasjon om alle barn i responsen
                 antallBarnFunnet++
                 val foedselOgDoed = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
                 LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for barn: $foedselOgDoed")
@@ -813,11 +842,11 @@ class GrunnlagspakkeService(
                 // Sett eksisterende forekomst av Barn til inaktiv
                 persistenceService.oppdaterEksisterendeBarnTilInaktiv(
                   grunnlagspakkeId,
-                  personIdOgPeriode.personId,
+                  forelderBarnRelasjon.relatertPersonsIdent,
                   timestampOppdatering
                 )
 
-                persistenceService.opprettBarn(
+                val opprettetBarn = persistenceService.opprettBarn(
                   BarnBo(
                     grunnlagspakkeId = grunnlagspakkeId,
                     personId = forelderBarnRelasjon.relatertPersonsIdent,
@@ -832,6 +861,15 @@ class GrunnlagspakkeService(
                     opprettetTidspunkt = timestampOppdatering
                   )
                 )
+
+                // Lagrer relasjonen mellom forelder og barn
+                persistenceService.opprettForelderBarn(
+                  ForelderBarnBo(
+                    forelderId = opprettetForelder.forelderId,
+                    barnId = opprettetBarn.barnId
+                  )
+                )
+
               }
             }
             oppdaterGrunnlagDtoListe.add(
@@ -847,7 +885,6 @@ class GrunnlagspakkeService(
             }
           }
         }
-
 
         is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
           OppdaterGrunnlagDto(
@@ -865,7 +902,7 @@ class GrunnlagspakkeService(
 
 
   fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
-    //hent navn, fødselsdato og eventuell dødsdato for barn fra bidrag-person
+    //hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
     when (val restResponseFoedselOgDoed =
       bidragPersonConsumer.hentFoedselOgDoed(personId)) {
       is RestResponse.Success -> {

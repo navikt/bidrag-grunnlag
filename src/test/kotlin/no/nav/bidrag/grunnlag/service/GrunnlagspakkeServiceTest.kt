@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
@@ -201,7 +202,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // Test på inntekt fra Skatt
+    // Legger inn inntekt fra Skatt
     val skattegrunnlagBo = SkattegrunnlagBo(
       grunnlagspakkeId = grunnlagspakkeIdOpprettet,
       personId = "345678",
@@ -224,7 +225,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // Test på utvidet barnetrygd og småbarnstillegg
+    // Legger inn utvidet barnetrygd og småbarnstillegg
     persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
       UtvidetBarnetrygdOgSmaabarnstilleggBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
@@ -242,7 +243,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // Test på barnetillegg
+    // Legger inn barnetillegg
     persistenceService.opprettBarnetillegg(
       BarnetilleggBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
@@ -255,8 +256,24 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // Test på barn
-    persistenceService.opprettBarn(
+    // Legger inn forelder
+    val opprettetForelder = persistenceService.opprettForelder(
+      ForelderBo(
+        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
+        personId = "44448888",
+        navn = "Sliten Kartong",
+        foedselsdato = LocalDate.parse("1990-04-04"),
+        doedsdato = LocalDate.parse("2021-07-01"),
+        aktiv = true,
+        brukFra = LocalDateTime.now(),
+        brukTil = null,
+        opprettetAv = null,
+        opprettetTidspunkt = LocalDateTime.now()
+      )
+    )
+
+    // Legger inn barn
+    val opprettetBarn = persistenceService.opprettBarn(
       BarnBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
         personId = "22233344455",
@@ -272,8 +289,15 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
+    // Legger inn forelder-barn-relasjon
+    persistenceService.opprettForelderBarn (
+      ForelderBarnBo(
+        forelderId = opprettetForelder.forelderId,
+        barnId = opprettetBarn.barnId
+      )
+    )
 
-    // Test på husstand
+    // Legger inn husstand
     val opprettetHusstand = persistenceService.opprettHusstand(
       HusstandBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
@@ -296,7 +320,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // Test på husstandsmedlem
+    // Legger innhusstandsmedlem
     persistenceService.opprettHusstandsmedlem(
       HusstandsmedlemBo(
         husstandId = opprettetHusstand.husstandId ,
@@ -311,7 +335,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // Test på husstandsmedlem
+    // Legger inn husstandsmedlem
     persistenceService.opprettHusstandsmedlem(
       HusstandsmedlemBo(
         husstandId = opprettetHusstand.husstandId ,
@@ -326,7 +350,7 @@ class GrunnlagspakkeServiceTest {
       )
     )
 
-    // Test på sivilstand
+    // Legger inn sivilstand
     persistenceService.opprettSivilstand(
       SivilstandBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
@@ -334,22 +358,6 @@ class GrunnlagspakkeServiceTest {
         periodeFra = LocalDate.parse("2021-05-01"),
         periodeTil = LocalDate.parse("2021-06-01"),
         sivilstand = "ENSLIG",
-        aktiv = true,
-        brukFra = LocalDateTime.now(),
-        brukTil = null,
-        opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
-      )
-    )
-
-    // Test på person
-    persistenceService.opprettForelder(
-      ForelderBo(
-        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
-        personId = "44448888",
-        navn = "Sliten Kartong",
-        foedselsdato = LocalDate.parse("1990-04-04"),
-        doedsdato = LocalDate.parse("2021-07-01"),
         aktiv = true,
         brukFra = LocalDateTime.now(),
         brukTil = null,
@@ -410,11 +418,7 @@ class GrunnlagspakkeServiceTest {
 
       Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe.size).isEqualTo(1) },
       Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].personId).isEqualTo("345678") },
-      Executable {
-        assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].skattegrunnlagType).isEqualTo(
-          SkattegrunnlagType.ORDINAER.toString()
-        )
-      },
+      Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].skattegrunnlagType).isEqualTo(SkattegrunnlagType.ORDINAER.toString())},
       Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].inntektType).isEqualTo("Loenn") },
       Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].aktiv).isEqualTo(true) },
       Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].brukTil).isNull() },

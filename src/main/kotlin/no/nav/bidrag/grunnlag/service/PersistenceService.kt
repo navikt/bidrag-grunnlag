@@ -32,6 +32,7 @@ import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.bo.toBarnEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
+import no.nav.bidrag.grunnlag.bo.toForelderBarnEntity
 import no.nav.bidrag.grunnlag.bo.toHusstandEntity
 import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemEntity
 import no.nav.bidrag.grunnlag.bo.toPersonEntity
@@ -191,7 +192,7 @@ class PersistenceService(
     )
   }
 
-  fun oppdaterEksisterendePersonTilInaktiv(
+  fun oppdaterEksisterendeForelderTilInaktiv(
     grunnlagspakkeId: Int,
     partPersonId: String,
     timestampOppdatering: LocalDateTime
@@ -208,9 +209,19 @@ class PersistenceService(
     return barnetilleggRepository.save(nyBarnetillegg)
   }
 
+  fun opprettForelder(forelderBo: ForelderBo): Forelder {
+    val nyPerson = forelderBo.toPersonEntity()
+    return forelderRepository.save(nyPerson)
+  }
+
   fun opprettBarn(barnBo: BarnBo): Barn {
     val nyttBarn = barnBo.toBarnEntity()
     return barnRepository.save(nyttBarn)
+  }
+
+  fun opprettForelderBarn(forelderBarnBo: ForelderBarnBo): ForelderBarn {
+    val nyForelderBarn = forelderBarnBo.toForelderBarnEntity()
+    return forelderBarnRepository.save(nyForelderBarn)
   }
 
   fun opprettHusstand(husstandBo: HusstandBo): Husstand {
@@ -221,11 +232,6 @@ class PersistenceService(
   fun opprettHusstandsmedlem(husstandsmedlemBo: HusstandsmedlemBo): Husstandsmedlem {
     val nyttHusstandsmedlem = husstandsmedlemBo.toHusstandsmedlemEntity()
     return husstandsmedlemRepository.save(nyttHusstandsmedlem)
-  }
-
-  fun opprettForelder(forelderBo: ForelderBo): Forelder {
-    val nyPerson = forelderBo.toPersonEntity()
-    return forelderRepository.save(nyPerson)
   }
 
   fun opprettPeriodeGrunnlag(forelderBarnBo: ForelderBarnBo): ForelderBarn {
