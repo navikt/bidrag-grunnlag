@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.consumer.bidragperson
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.PersonDto
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
@@ -15,7 +14,6 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/foedselogdoed"
@@ -95,22 +93,4 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
 
     return restResponse
   }
-
-  open fun hentPerson(request: String): RestResponse<PersonDto> {
-    logger.info("Kaller bidrag-person som igjen kaller PDL for å finne informasjon om en person")
-
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGPERSON_CONTEXT_PERSON,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      PersonDto::class.java,
-      PersonDto("0",null, null, null, null, LocalDateTime.now())
-    )
-
-    logResponse(logger, restResponse)
-
-    return restResponse
-  }
-
-
 }

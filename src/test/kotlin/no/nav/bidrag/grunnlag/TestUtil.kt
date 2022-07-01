@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.EgneBarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto

@@ -13,6 +13,12 @@ interface HusstandRepository : JpaRepository<Husstand, Int?> {
   )
   fun hentHusstand(grunnlagspakkeId: Int): List<Husstand>
 
+
+  @Query(
+    "select hu from Husstand hu where hu.grunnlagspakkeId = :grunnlagspakkeId and hu.personId = :personId and hu.aktiv = true"
+  )
+  fun hentHusstand(grunnlagspakkeId: Int, personId: String): List<Husstand>
+
   @Modifying
   @Query(
     "update Husstand hu " +
