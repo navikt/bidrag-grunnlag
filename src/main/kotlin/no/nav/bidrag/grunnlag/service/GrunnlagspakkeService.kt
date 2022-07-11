@@ -1144,7 +1144,22 @@ fun lagreSivilstand(
 fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
   // Validerer at grunnlagspakke eksisterer
   persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
-  return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
+//  return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
+  return HentGrunnlagspakkeDto(
+    grunnlagspakkeId,
+    persistenceService.hentAinntekt(grunnlagspakkeId),
+    persistenceService.hentSkattegrunnlag(grunnlagspakkeId),
+    persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
+    persistenceService.hentBarnetillegg(grunnlagspakkeId),
+    persistenceService.hentEgneBarn(grunnlagspakkeId),
+    persistenceService.hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
+    persistenceService.hentSivilstand(grunnlagspakkeId)
+  )
+}
+
+fun hentEgneBarnIHustanden(grunnlagspakkeId: Int){
+
+
 }
 
 fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {

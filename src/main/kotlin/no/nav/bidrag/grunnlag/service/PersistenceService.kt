@@ -254,14 +254,14 @@ class PersistenceService(
   }
 
   // Returnerer lagret, komplett grunnlagspakke
-  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
-    return HentGrunnlagspakkeDto(
-      grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
-      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      hentEgneBarn(grunnlagspakkeId), hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
-      hentSivilstand(grunnlagspakkeId)
-    )
-  }
+//  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
+//    return HentGrunnlagspakkeDto(
+//      grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
+//      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
+//      hentEgneBarn(grunnlagspakkeId), hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
+//      hentSivilstand(grunnlagspakkeId)
+//    )
+//  }
 
   // Returnerer formaal som er angitt for grunnlagspakken
   fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String {
