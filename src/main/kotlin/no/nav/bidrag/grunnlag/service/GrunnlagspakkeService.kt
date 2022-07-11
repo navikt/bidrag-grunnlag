@@ -109,7 +109,6 @@ class GrunnlagspakkeService(
     val egneBarnIHusstandenRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
     val husstandsmedlemmerRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
     val sivilstandRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
-    val personRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
     val egneBarnRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
 
     val kontantstotteRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
@@ -1157,7 +1156,7 @@ class GrunnlagspakkeService(
       persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
       persistenceService.hentBarnetillegg(grunnlagspakkeId),
       hentEgneBarn(grunnlagspakkeId),
-      hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
+      hentHusstandsmedlemmer(grunnlagspakkeId),
       persistenceService.hentSivilstand(grunnlagspakkeId)
     )
   }
@@ -1167,31 +1166,30 @@ class GrunnlagspakkeService(
     val egneBarnDtoListe = mutableListOf<EgneBarnDto>()
 
     persistenceService.hentForeldre(grunnlagspakkeId).forEach { forelder ->
-      var husstandListe: List<HusstandDto>? = null
+      var husstandListe: List<HusstandDto>?
       if (forelder.personId != null) {
-        husstandListe = persistenceService.hentHusstandsinfoForPerson(grunnlagspakkeId, forelder.personId)
+        husstandListe = persistenceService.hentHusstandsmedlemmerUnder18ForPerson(grunnlagspakkeId, forelder.personId)
 
         persistenceService.hentAlleBarnForForelder(forelder.forelderId).forEach { barn ->
-          egneBarnDtoListe.add(
-            EgneBarnDto(
-              personIdForelder = forelder.personId,
-              personIdBarn = barn.personId,
-              navn = barn.navn,
-              foedselsdato = barn.foedselsdato,
-              foedselsaar = barn.foedselsaar,
-              doedsdato = barn.doedsdato,
-              opprettetAv = barn.opprettetAv,
-              opprettetTidspunkt = barn.opprettetTidspunkt,
-              byggBorISammeHusstandDtoListe(husstandListe, barn.personId)
+          if (!persistenceService.sjekkOmPersonHarFyllt18Aar(LocalDate.now(), barn.foedselsdato))
+            egneBarnDtoListe.add(
+              EgneBarnDto(
+                personIdForelder = forelder.personId,
+                personIdBarn = barn.personId,
+                navn = barn.navn,
+                foedselsdato = barn.foedselsdato,
+                foedselsaar = barn.foedselsaar,
+                doedsdato = barn.doedsdato,
+                opprettetAv = barn.opprettetAv,
+                opprettetTidspunkt = barn.opprettetTidspunkt,
+                byggBorISammeHusstandDtoListe(husstandListe, barn.personId)
             )
           )
         }
       } else
         return emptyList()
     }
-
     return egneBarnDtoListe
-
   }
 
 
@@ -1223,13 +1221,10 @@ class GrunnlagspakkeService(
   }
 
 
-  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
+  fun hentHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
 
-    val husstandListe = mutableListOf<HusstandDto>()
-    persistenceService.hentHusstandsinfo(grunnlagspakkeId)
+    return persistenceService.hentAlleHusstandsmedlemmer(grunnlagspakkeId)
 
-
-    return emptyList()
 
   }
 
