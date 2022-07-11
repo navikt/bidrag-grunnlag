@@ -11,7 +11,7 @@ interface ForelderRepository : JpaRepository<Forelder, Int?> {
   @Query(
     "select fo from Forelder fo where fo.grunnlagspakkeId = :grunnlagspakkeId and fo.aktiv = true"
   )
-  fun hentForelder(grunnlagspakkeId: Int): List<Forelder>
+  fun hentForeldre(grunnlagspakkeId: Int): List<Forelder>
 
   @Modifying
   @Query(

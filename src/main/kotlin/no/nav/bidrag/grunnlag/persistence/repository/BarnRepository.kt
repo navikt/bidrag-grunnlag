@@ -9,9 +9,9 @@ import java.time.LocalDateTime
 interface BarnRepository : JpaRepository<Barn, Int?> {
 
   @Query(
-    "select ba from Barn ba where ba.grunnlagspakkeId = :grunnlagspakkeId and ba.aktiv = true"
+    "select ba from Barn ba where ba.barnId = :barnId"
   )
-  fun hentBarn(grunnlagspakkeId: Int): List<Barn>
+  fun hentBarn(barnId: Int): Barn
 
   @Modifying
   @Query(

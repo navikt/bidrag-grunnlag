@@ -1,7 +1,10 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.EgneBarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
@@ -702,10 +705,12 @@ class GrunnlagspakkeService(
       val innsynRequestListe = mutableListOf<String>()
 
       innsynRequestListe.add(
-        personIdOgPeriode.personId)
+        personIdOgPeriode.personId
+      )
 
       val kontantstotteRequest = InnsynRequest(
-        innsynRequestListe)
+        innsynRequestListe
+      )
 
       LOGGER.info(
         "Kaller kontantstøtte med personIdent ********${
@@ -991,8 +996,8 @@ class GrunnlagspakkeService(
                     husstandId = opprettetHusstand.husstandId,
                     personId = husstandsmedlem.personId,
                     navn = husstandsmedlem.fornavn + " " +
-                          husstandsmedlem.mellomnavn + " " +
-                          husstandsmedlem.etternavn,
+                        husstandsmedlem.mellomnavn + " " +
+                        husstandsmedlem.etternavn,
                     foedselsdato = husstandsmedlem.foedselsdato,
                     doedsdato = husstandsmedlem.doedsdato,
                     opprettetAv = null,
@@ -1019,209 +1024,275 @@ class GrunnlagspakkeService(
         }
 
 
-      is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
-      OppdaterGrunnlagDto(
-        GrunnlagRequestType.HUSSTANDSMEDLEMMER,
-        personIdOgPeriode.personId,
-        if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-        "Feil ved henting av husstandsmedlemmer for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
-      )
-      )
-    }
-  }
-  return oppdaterGrunnlagDtoListe
-
-}
-
-
-fun oppdaterSivilstand(
-  grunnlagspakkeId: Int,
-  personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
-  timestampOppdatering: LocalDateTime,
-  forekomsterFunnet: Boolean
-): List<OppdaterGrunnlagDto> {
-
-  val oppdaterGrunnlagDtoListe = mutableListOf<OppdaterGrunnlagDto>()
-
-  personIdOgPeriodeListe.forEach { personIdOgPeriode ->
-
-    var antallPerioderFunnet = 0
-
-    val hentSivilstandRequest = SivilstandRequest(
-      personId = personIdOgPeriode.personId,
-      periodeFra = personIdOgPeriode.periodeFra,
-    )
-
-    LOGGER.info(
-      "Kaller bidrag-person og henter sivilstand for personIdent ********${
-        hentSivilstandRequest.personId.substring(
-          IntRange(8, 10)
-        )
-      } " +
-          ", fraDato " + "${hentSivilstandRequest.periodeFra}"
-    )
-
-    when (val restResponseSivilstand =
-      bidragPersonConsumer.hentSivilstand(hentSivilstandRequest)) {
-      is RestResponse.Success -> {
-        val sivilstandResponse = restResponseSivilstand.body
-        LOGGER.info("Kall til vbidrag-person for å hente sivilstand følgende respons: $sivilstandResponse")
-
-        if ((sivilstandResponse.sivilstand != null) && (sivilstandResponse.sivilstand.isNotEmpty())) {
-          persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
-            grunnlagspakkeId,
+        is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
+          OppdaterGrunnlagDto(
+            GrunnlagRequestType.HUSSTANDSMEDLEMMER,
             personIdOgPeriode.personId,
-            timestampOppdatering
+            if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+            "Feil ved henting av husstandsmedlemmer for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
           )
-          sivilstandResponse.sivilstand.forEach { si ->
-            // Pga vekslende datakvalitet fra PDL må det taes høyde for at begge disse datoene kan være null.
-            // Hvis de er det så kan ikke periodekontroll gjøres og sivilstanden må lagres uten fra-dato
-            val dato = si.gyldigFraOgMed ?: si.bekreftelsesdato
-            if ((dato != null && dato.isBefore(personIdOgPeriode.periodeTil)) || (dato == null)) {
-              antallPerioderFunnet++
-              lagreSivilstand(
-                si,
-                grunnlagspakkeId,
-                timestampOppdatering,
-                personIdOgPeriode.personId
-              )
+        )
+      }
+    }
+    return oppdaterGrunnlagDtoListe
 
+  }
+
+
+  fun oppdaterSivilstand(
+    grunnlagspakkeId: Int,
+    personIdOgPeriodeListe: List<PersonIdOgPeriodeRequest>,
+    timestampOppdatering: LocalDateTime,
+    forekomsterFunnet: Boolean
+  ): List<OppdaterGrunnlagDto> {
+
+    val oppdaterGrunnlagDtoListe = mutableListOf<OppdaterGrunnlagDto>()
+
+    personIdOgPeriodeListe.forEach { personIdOgPeriode ->
+
+      var antallPerioderFunnet = 0
+
+      val hentSivilstandRequest = SivilstandRequest(
+        personId = personIdOgPeriode.personId,
+        periodeFra = personIdOgPeriode.periodeFra,
+      )
+
+      LOGGER.info(
+        "Kaller bidrag-person og henter sivilstand for personIdent ********${
+          hentSivilstandRequest.personId.substring(
+            IntRange(8, 10)
+          )
+        } " +
+            ", fraDato " + "${hentSivilstandRequest.periodeFra}"
+      )
+
+      when (val restResponseSivilstand =
+        bidragPersonConsumer.hentSivilstand(hentSivilstandRequest)) {
+        is RestResponse.Success -> {
+          val sivilstandResponse = restResponseSivilstand.body
+          LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
+
+          if ((sivilstandResponse.sivilstand != null) && (sivilstandResponse.sivilstand.isNotEmpty())) {
+            persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
+              grunnlagspakkeId,
+              personIdOgPeriode.personId,
+              timestampOppdatering
+            )
+            sivilstandResponse.sivilstand.forEach { sivilstand ->
+              // Pga vekslende datakvalitet fra PDL må det taes høyde for at begge disse datoene kan være null.
+              // Hvis de er det så kan ikke periodekontroll gjøres og sivilstanden må lagres uten fra-dato
+              val dato = sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato
+              if ((dato != null && dato.isBefore(personIdOgPeriode.periodeTil)) || (dato == null)) {
+                antallPerioderFunnet++
+                lagreSivilstand(
+                  sivilstand,
+                  grunnlagspakkeId,
+                  timestampOppdatering,
+                  personIdOgPeriode.personId
+                )
+
+              }
             }
           }
+          oppdaterGrunnlagDtoListe.add(
+            OppdaterGrunnlagDto(
+              GrunnlagRequestType.SIVILSTAND,
+              personIdOgPeriode.personId,
+              GrunnlagsRequestStatus.HENTET,
+              "Antall perioder funnet: $antallPerioderFunnet"
+            )
+          )
+          if (antallPerioderFunnet > 0) {
+            forekomsterFunnet
+          }
         }
-        oppdaterGrunnlagDtoListe.add(
+        is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
           OppdaterGrunnlagDto(
             GrunnlagRequestType.SIVILSTAND,
             personIdOgPeriode.personId,
-            GrunnlagsRequestStatus.HENTET,
-            "Antall perioder funnet: $antallPerioderFunnet"
+            if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+            "Feil ved henting av sivilstand fra bidrag-person/PDL for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
           )
         )
-        if (antallPerioderFunnet > 0) {
-          forekomsterFunnet
+      }
+    }
+    return oppdaterGrunnlagDtoListe
+  }
+
+  fun lagreSivilstand(
+    sivilstand: SivilstandResponse,
+    grunnlagspakkeId: Int,
+    timestampOppdatering: LocalDateTime,
+    personId: String
+  ) {
+    persistenceService.opprettSivilstand(
+      SivilstandBo(
+        grunnlagspakkeId = grunnlagspakkeId,
+        personId = personId,
+        periodeFra = sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato,
+        // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+//        periodeTil = if (sivilstand.tom != null) si.tom.plusMonths(1)
+//          .withDayOfMonth(1) else null,
+        periodeTil = null,
+        sivilstand = sivilstand.type,
+        aktiv = true,
+        brukFra = timestampOppdatering,
+        brukTil = null,
+        opprettetAv = null,
+        opprettetTidspunkt = timestampOppdatering
+      )
+    )
+
+
+  }
+
+  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
+    // Validerer at grunnlagspakke eksisterer
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
+//  return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
+    return HentGrunnlagspakkeDto(
+      grunnlagspakkeId,
+      persistenceService.hentAinntekt(grunnlagspakkeId),
+      persistenceService.hentSkattegrunnlag(grunnlagspakkeId),
+      persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
+      persistenceService.hentBarnetillegg(grunnlagspakkeId),
+      hentEgneBarn(grunnlagspakkeId),
+      hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
+      persistenceService.hentSivilstand(grunnlagspakkeId)
+    )
+  }
+
+
+  fun hentEgneBarn(grunnlagspakkeId: Int): List<EgneBarnDto> {
+    val egneBarnDtoListe = mutableListOf<EgneBarnDto>()
+
+    persistenceService.hentForeldre(grunnlagspakkeId).forEach { forelder ->
+      var husstandListe: List<HusstandDto>? = null
+      if (forelder.personId != null) {
+        husstandListe = persistenceService.hentHusstandsinfoForPerson(grunnlagspakkeId, forelder.personId)
+
+        persistenceService.hentAlleBarnForForelder(forelder.forelderId).forEach { barn ->
+          egneBarnDtoListe.add(
+            EgneBarnDto(
+              personIdForelder = forelder.personId,
+              personIdBarn = barn.personId,
+              navn = barn.navn,
+              foedselsdato = barn.foedselsdato,
+              foedselsaar = barn.foedselsaar,
+              doedsdato = barn.doedsdato,
+              opprettetAv = barn.opprettetAv,
+              opprettetTidspunkt = barn.opprettetTidspunkt,
+              byggBorISammeHusstandDtoListe(husstandListe, barn.personId)
+            )
+          )
+        }
+      } else
+        return emptyList()
+    }
+
+    return egneBarnDtoListe
+
+  }
+
+
+// Mottar liste over alle husstander og tilhørende husstandsmedlemmer for en person og sjekker om mottatt barn finnes
+// bland husstandsmedlemmene. Hvis så så skal BorISammeHusstandDto returneres med korrekt periode. Hvilken husstand
+// det gjelder er ikke relevant.
+  fun byggBorISammeHusstandDtoListe(
+    husstandDtoListe: List<HusstandDto>?,
+    personIdBarn: String?
+  ): List<BorISammeHusstandDto>? {
+    val borISammeHusstandDtoListe = mutableListOf<BorISammeHusstandDto>()
+
+    if (husstandDtoListe == null || personIdBarn == null) return null
+    else
+      husstandDtoListe.forEach() { husstandDto ->
+        husstandDto.husstandsmedlemmerListe?.forEach() { husstandsmedlem ->
+          if (husstandsmedlem.personId == personIdBarn)
+            borISammeHusstandDtoListe.add(
+              BorISammeHusstandDto(
+                periodeFra = husstandsmedlem.periodeFra,
+                periodeTil = husstandsmedlem.periodeTil,
+                opprettetAv = husstandsmedlem.opprettetAv,
+                opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt
+              )
+            )
         }
       }
-      is RestResponse.Failure -> oppdaterGrunnlagDtoListe.add(
-        OppdaterGrunnlagDto(
-          GrunnlagRequestType.SIVILSTAND,
-          personIdOgPeriode.personId,
-          if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-          "Feil ved henting av sivilstand fra bidrag-person/PDL for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+    return borISammeHusstandDtoListe
+  }
+
+
+  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
+
+    val husstandListe = mutableListOf<HusstandDto>()
+    persistenceService.hentHusstandsinfo(grunnlagspakkeId)
+
+
+    return emptyList()
+
+  }
+
+  fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
+    // Validerer at grunnlagspakke eksisterer
+    persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
+    return persistenceService.lukkGrunnlagspakke(grunnlagspakkeId)
+  }
+
+  fun finnFilter(formaal: String): String {
+    return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
+  }
+
+  fun finnFormaal(formaal: String): String {
+    return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
+  }
+
+  fun mapResponsTilInternStruktur(eksternRespons: HentInntektListeResponse): HentInntektListeResponseIntern {
+
+    val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
+
+    eksternRespons.arbeidsInntektMaaned?.forEach() { arbeidsInntektMaaned ->
+      val inntektInternListe = mutableListOf<InntektIntern>()
+      arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach() { inntekt ->
+        val inntektIntern = InntektIntern(
+          inntektType = inntekt.inntektType.toString(),
+          beloep = inntekt.beloep,
+          fordel = inntekt.fordel,
+          inntektsperiodetype = inntekt.inntektsperiodetype,
+          opptjeningsperiodeFom = inntekt.opptjeningsperiodeFom,
+          opptjeningsperiodeTom = inntekt.opptjeningsperiodeTom,
+          utbetaltIMaaned = inntekt.utbetaltIMaaned?.toString(),
+          opplysningspliktig = OpplysningspliktigIntern(
+            inntekt.opplysningspliktig.identifikator,
+            inntekt.opplysningspliktig.aktoerType.toString()
+          ),
+          virksomhet = VirksomhetIntern(
+            inntekt.virksomhet.identifikator,
+            inntekt.virksomhet.aktoerType.toString()
+          ),
+          tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE)
+            TilleggsinformasjonIntern(
+              inntekt.tilleggsinformasjon.kategori,
+              TilleggsinformasjonDetaljerIntern(
+                (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
+                (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
+                  1
+                ),
+              )
+            ) else null,
+          beskrivelse = inntekt.beskrivelse
+        )
+        inntektInternListe.add(inntektIntern)
+      }
+      arbeidsInntektMaanedListe.add(
+        ArbeidsInntektMaanedIntern(
+          arbeidsInntektMaaned.aarMaaned.toString(),
+          ArbeidsInntektInformasjonIntern(inntektInternListe)
         )
       )
     }
+    return HentInntektListeResponseIntern(arbeidsInntektMaanedListe)
   }
-  return oppdaterGrunnlagDtoListe
-}
-
-fun lagreSivilstand(
-  sivilstand: SivilstandResponse,
-  grunnlagspakkeId: Int,
-  timestampOppdatering: LocalDateTime,
-  personId: String
-) {
-  persistenceService.opprettSivilstand(
-    SivilstandBo(
-      grunnlagspakkeId = grunnlagspakkeId,
-      personId = personId,
-      periodeFra = sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato,
-      // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-//        periodeTil = if (sivilstand.tom != null) si.tom.plusMonths(1)
-//          .withDayOfMonth(1) else null,
-      periodeTil = null,
-      sivilstand = sivilstand.type,
-      aktiv = true,
-      brukFra = timestampOppdatering,
-      brukTil = null,
-      opprettetAv = null,
-      opprettetTidspunkt = timestampOppdatering
-    )
-  )
-
-
-}
-
-fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
-  // Validerer at grunnlagspakke eksisterer
-  persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
-//  return persistenceService.hentGrunnlagspakke(grunnlagspakkeId)
-  return HentGrunnlagspakkeDto(
-    grunnlagspakkeId,
-    persistenceService.hentAinntekt(grunnlagspakkeId),
-    persistenceService.hentSkattegrunnlag(grunnlagspakkeId),
-    persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
-    persistenceService.hentBarnetillegg(grunnlagspakkeId),
-    persistenceService.hentEgneBarn(grunnlagspakkeId),
-    persistenceService.hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
-    persistenceService.hentSivilstand(grunnlagspakkeId)
-  )
-}
-
-fun hentEgneBarnIHustanden(grunnlagspakkeId: Int){
-
-
-}
-
-fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
-  // Validerer at grunnlagspakke eksisterer
-  persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
-  return persistenceService.lukkGrunnlagspakke(grunnlagspakkeId)
-}
-
-fun finnFilter(formaal: String): String {
-  return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
-}
-
-fun finnFormaal(formaal: String): String {
-  return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
-}
-
-fun mapResponsTilInternStruktur(eksternRespons: HentInntektListeResponse): HentInntektListeResponseIntern {
-
-  val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
-
-  eksternRespons.arbeidsInntektMaaned?.forEach() { arbeidsInntektMaaned ->
-    val inntektInternListe = mutableListOf<InntektIntern>()
-    arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach() { inntekt ->
-      val inntektIntern = InntektIntern(
-        inntektType = inntekt.inntektType.toString(),
-        beloep = inntekt.beloep,
-        fordel = inntekt.fordel,
-        inntektsperiodetype = inntekt.inntektsperiodetype,
-        opptjeningsperiodeFom = inntekt.opptjeningsperiodeFom,
-        opptjeningsperiodeTom = inntekt.opptjeningsperiodeTom,
-        utbetaltIMaaned = inntekt.utbetaltIMaaned?.toString(),
-        opplysningspliktig = OpplysningspliktigIntern(
-          inntekt.opplysningspliktig.identifikator,
-          inntekt.opplysningspliktig.aktoerType.toString()
-        ),
-        virksomhet = VirksomhetIntern(
-          inntekt.virksomhet.identifikator,
-          inntekt.virksomhet.aktoerType.toString()
-        ),
-        tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE)
-          TilleggsinformasjonIntern(
-            inntekt.tilleggsinformasjon.kategori,
-            TilleggsinformasjonDetaljerIntern(
-              (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
-              (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
-                1
-              ),
-            )
-          ) else null,
-        beskrivelse = inntekt.beskrivelse
-      )
-      inntektInternListe.add(inntektIntern)
-    }
-    arbeidsInntektMaanedListe.add(
-      ArbeidsInntektMaanedIntern(
-        arbeidsInntektMaaned.aarMaaned.toString(),
-        ArbeidsInntektInformasjonIntern(inntektInternListe)
-      )
-    )
-  }
-  return HentInntektListeResponseIntern(arbeidsInntektMaanedListe)
-}
 }
 
 data class PersonIdOgPeriodeRequest(

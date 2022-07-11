@@ -3,9 +3,6 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.EgneBarnDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandsmedlemDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
@@ -244,9 +241,6 @@ class PersistenceService(
     return forelderBarnRepository.save(nyForelderBarn)
   }
 
-  fun hentAlleBarnForForelder(forelderId: Int): List<ForelderBarn> {
-    return forelderBarnRepository.hentAlleBarnForForelder(forelderId)
-  }
 
   fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
     val nySivilstand = sivilstandBo.toSivilstandEntity()
@@ -542,47 +536,20 @@ class PersistenceService(
     return barnetilleggDtoListe
   }
 
-  fun hentEgneBarn(grunnlagspakkeId: Int): List<EgneBarnDto> {
-    val egneBarnDtoListe = mutableListOf<EgneBarnDto>()
+  fun hentForeldre(grunnlagspakkeId: Int): List<Forelder> {
+    return forelderRepository.hentForeldre(grunnlagspakkeId)
+  }
 
-    val husstandsmedlemmer = mutableListOf<HusstandsmedlemDto>()
+  fun hentAlleBarnForForelder(forelderId: Int): List<Barn> {
+    return forelderBarnRepository.hentAlleBarnForForelder(forelderId)
+  }
 
-    val foreldreListe = forelderRepository.hentForelder(grunnlagspakkeId)
-    foreldreListe.forEach { forelder ->
-      if (forelder.personId != null) {
-        val husstandListe = hentHusstandsmedlemmer(grunnlagspakkeId, forelder.personId)
-        val barnListe = forelderBarnRepository.hentAlleBarnForForelder(forelder.forelderId)
-
-
-//    val husstandListe = hentVoksneHusstandsmedlemmer(grunnlagspakkeId)
-
-
-        barnRepository.hentBarn(grunnlagspakkeId)
-          .forEach { barn ->
-            val borISammeHusstandDtoListe = mutableListOf<BorISammeHusstandDto>()
-            egneBarnDtoListe.add(
-              EgneBarnDto(
-                personIdForelder = forelder.personId,
-                personIdBarn = barn.personId,
-                navn = barn.navn,
-                foedselsdato = barn.foedselsdato,
-                foedselsaar = barn.foedselsaar,
-                doedsdato = barn.doedsdato,
-                opprettetAv = barn.opprettetAv,
-                opprettetTidspunkt = barn.opprettetTidspunkt,
-                borISammeHusstandDtoListe = borISammeHusstandDtoListe
-              )
-            )
-          }
-      }
-    }
-    return egneBarnDtoListe
+  fun hentBarn(barnId: Int): Barn {
+    return barnRepository.hentBarn(barnId)
   }
 
 
-
-
-  fun hentHusstandsmedlemmer(grunnlagspakkeId: Int, personId: String): List<HusstandDto> {
+  fun hentHusstandsinfoForPerson(grunnlagspakkeId: Int, personId: String): List<HusstandDto> {
     val husstandDtoListe = mutableListOf<HusstandDto>()
     husstandRepository.hentHusstand(grunnlagspakkeId, personId)
       .forEach { husstand ->
@@ -592,8 +559,60 @@ class PersistenceService(
 
         husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
           .forEach { husstandsmedlem ->
+//            if ((husstandsmedlem.personId != null &&
+//                  sjekkOmPersonHarFyllt18Aar(husstandsmedlem.periodeFra, husstandsmedlem.foedselsdato)
+//                  || husstandsmedlem.foedselsdato == null)
+//            ) {
+              voksneHusstandsmedlemmerListe.add(
+                HusstandsmedlemDto(
+                  periodeFra = husstandsmedlem.periodeFra,
+                  periodeTil = husstandsmedlem.periodeTil,
+                  personId = husstandsmedlem.personId,
+                  navn = husstandsmedlem.navn,
+                  foedselsdato = husstandsmedlem.foedselsdato,
+                  doedsdato = husstandsmedlem.doedsdato,
+                  opprettetAv = husstandsmedlem.opprettetAv,
+                  opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
+                )
+              )
+//            }
+          }
+        husstandDtoListe.add(
+          HusstandDto(
+            personId = husstand.personId,
+            periodeFra = husstand.periodeFra,
+            periodeTil = husstand.periodeTil,
+            adressenavn = husstand.adressenavn,
+            husnummer = husstand.husnummer,
+            husbokstav = husstand.husbokstav,
+            bruksenhetsnummer = husstand.bruksenhetsnummer,
+            postnummer = husstand.postnummer,
+            bydelsnummer = husstand.bydelsnummer,
+            kommunenummer = husstand.kommunenummer,
+            matrikkelId = husstand.matrikkelId,
+            landkode = husstand.landkode,
+            opprettetAv = husstand.opprettetAv,
+            opprettetTidspunkt = husstand.opprettetTidspunkt,
+            husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
+          )
+        )
+      }
+    return husstandDtoListe
+  }
+
+  fun hentHusstandsinfo(grunnlagspakkeId: Int): List<HusstandDto> {
+    val husstandDtoListe = mutableListOf<HusstandDto>()
+    husstandRepository.hentHusstand(grunnlagspakkeId)
+      .forEach { husstand ->
+        val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
+
+        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
+          .forEach { husstandsmedlem ->
             if ((husstandsmedlem.personId != null &&
-                  sjekkOmPersonHarFyllt18Aar(husstandsmedlem.periodeFra, husstandsmedlem.foedselsdato)
+                  sjekkOmPersonHarFyllt18Aar(
+                    husstandsmedlem.periodeFra,
+                    husstandsmedlem.foedselsdato
+                  )
                   || husstandsmedlem.foedselsdato == null)
             ) {
               voksneHusstandsmedlemmerListe.add(
@@ -608,82 +627,43 @@ class PersistenceService(
                   opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
                 )
               )
+//            }
             }
+            husstandDtoListe.add(
+              HusstandDto(
+                personId = husstand.personId,
+                periodeFra = husstand.periodeFra,
+                periodeTil = husstand.periodeTil,
+                adressenavn = husstand.adressenavn,
+                husnummer = husstand.husnummer,
+                husbokstav = husstand.husbokstav,
+                bruksenhetsnummer = husstand.bruksenhetsnummer,
+                postnummer = husstand.postnummer,
+                bydelsnummer = husstand.bydelsnummer,
+                kommunenummer = husstand.kommunenummer,
+                matrikkelId = husstand.matrikkelId,
+                landkode = husstand.landkode,
+                opprettetAv = husstand.opprettetAv,
+                opprettetTidspunkt = husstand.opprettetTidspunkt,
+                husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
+              )
+            )
           }
-        husstandDtoListe.add(
-          HusstandDto(
-            personId = husstand.personId,
-            periodeFra = husstand.periodeFra,
-            periodeTil = husstand.periodeTil,
-            adressenavn = husstand.adressenavn,
-            husnummer = husstand.husnummer,
-            husbokstav = husstand.husbokstav,
-            bruksenhetsnummer = husstand.bruksenhetsnummer,
-            postnummer = husstand.postnummer,
-            bydelsnummer = husstand.bydelsnummer,
-            kommunenummer = husstand.kommunenummer,
-            matrikkelId = husstand.matrikkelId,
-            opprettetAv = husstand.opprettetAv,
-            opprettetTidspunkt = husstand.opprettetTidspunkt,
-            voksneHusstandsmedlemmerListe = voksneHusstandsmedlemmerListe
-          )
-        )
       }
     return husstandDtoListe
   }
 
-  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
-    val husstandDtoListe = mutableListOf<HusstandDto>()
-    husstandRepository.hentHusstand(grunnlagspakkeId)
-      .forEach { husstand ->
-        val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
-//        val barnListe = barnRepository.hentBarn(grunnlagspakkeId)
-//          .filter { barn -> barn.personIdVoksen == husstand.personId }
+/*
 
-        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
-          .forEach { husstandsmedlem ->
-            // Filterer foreløpig vekk husstandsmedlemmer som ikke har fyllt 18 når personen blir husstandsmedlem
+
+            // Filter vekk husstandsmedlemmer som ikke har fyllt 18 når personen blir husstandsmedlem
             // Endringer gjelder alltid fra neste måned. 01.07 -> 01.08
             // Alle husstandsmedlemmer skal returneres for manuell vurdering. For egne barn i egen husstand skal bare < 18 returneres
-            if ((husstandsmedlem.personId != null &&
-              sjekkOmPersonHarFyllt18Aar(husstandsmedlem.periodeFra, husstandsmedlem.foedselsdato)
-              || husstandsmedlem.foedselsdato == null)
-            ) {
-              voksneHusstandsmedlemmerListe.add(
-                HusstandsmedlemDto(
-                  periodeFra = husstandsmedlem.periodeFra,
-                  periodeTil = husstandsmedlem.periodeTil,
-                  personId = husstandsmedlem.personId,
-                  navn = husstandsmedlem.navn,
-                  foedselsdato = husstandsmedlem.foedselsdato,
-                  doedsdato = husstandsmedlem.doedsdato,
-                  opprettetAv = husstandsmedlem.opprettetAv,
-                  opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
-                )
-              )
-            }
-          }
-        husstandDtoListe.add(
-          HusstandDto(
-            personId = husstand.personId,
-            periodeFra = husstand.periodeFra,
-            periodeTil = husstand.periodeTil,
-            adressenavn = husstand.adressenavn,
-            husnummer = husstand.husnummer,
-            husbokstav = husstand.husbokstav,
-            bruksenhetsnummer = husstand.bruksenhetsnummer,
-            postnummer = husstand.postnummer,
-            bydelsnummer = husstand.bydelsnummer,
-            kommunenummer = husstand.kommunenummer,
-            matrikkelId = husstand.matrikkelId,
-            opprettetAv = husstand.opprettetAv,
-            opprettetTidspunkt = husstand.opprettetTidspunkt,
-            voksneHusstandsmedlemmerListe = voksneHusstandsmedlemmerListe
-          )
-        )
-      }
-    return husstandDtoListe
-  }
+
+
+
+
+  }*/
 
   fun sjekkOmHusstandsmedlemErPersonsBarn(personId: String, barnListe: List<Barn>): Boolean {
     val barnid = barnListe.filter { barn -> barn.personId == personId }

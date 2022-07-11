@@ -53,6 +53,9 @@ data class Husstand(
   @Column(nullable = true, name = "matrikkelId")
   val matrikkelId: Long? = null,
 
+  @Column(nullable = true, name = "landkode")
+  val landkode: String? = null,
+
   @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,
 

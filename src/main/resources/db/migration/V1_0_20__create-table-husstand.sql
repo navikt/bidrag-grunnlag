@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS husstand
     bydelsnummer varchar(255),
     kommunenummer varchar(255),
     matrikkelId bigint,
+    landkode varchar(50),
     aktiv boolean DEFAULT true NOT NULL,
     bruk_fra timestamp DEFAULT now() NOT NULL,
     bruk_til timestamp,
