@@ -13,10 +13,11 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: {{ name }}
-        - application: {{ azure.bidraggcpproxy_app }}
-          cluster: {{ azure.bidraggcpproxy_cluster }}
-          namespace: bidrag
+      {{#each azureAccessInbound}}
+          - application: {{this.application}}
+            namespace: {{this.namespace}}
+            cluster: {{this.cluster}}
+      {{/each}}
     outbound:
       external:
         - host: {{ azure.familiebasak_url }}
