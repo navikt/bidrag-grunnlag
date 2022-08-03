@@ -14,3 +14,6 @@ azureAccessInbound:
   - application: bidrag-gcp-proxy
     namespace: bidrag
     cluster: prod-fss
+  - application: bisys
+    namespace: bidrag
+    cluster: prod-fss
