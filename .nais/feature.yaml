@@ -6,9 +6,14 @@ azure:
   familiebasak_scope: dev-gcp.teamfamilie.familie-ba-sak
   bidraggcpproxy_url: bidrag-gcp-proxy-feature.dev-fss-pub.nais.io
   bidraggcpproxy_scope: dev-fss.bidrag.bidrag-gcp-proxy-feature
-  bidraggcpproxy_app: bidrag-gcp-proxy-feature
-  bidraggcpproxy_cluster: dev-fss
   kontantstotte_url: infotrygd-kontantstotte-v2.dev-fss-pub.nais.io
   kontantstotte_scope: dev-fss.infotrygd.infotrygd-kontantstotte-v2
   kontantstotte_cluster: dev-fss
 dbname: bidrag-grunnlag-feature
+azureAccessInbound:
+  - application: bidrag-gcp-proxy-feature
+    namespace: bidrag
+    cluster: dev-fss
+  - application: bisys
+    namespace: bidrag
+    cluster: dev-fss
