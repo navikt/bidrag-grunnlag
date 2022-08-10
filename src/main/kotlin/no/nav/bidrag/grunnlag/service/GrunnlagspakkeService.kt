@@ -145,8 +145,8 @@ class GrunnlagspakkeService(
           sivilstandRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         // Bygger opp liste over hvilke personer og perioder egne barn skal hentes for
-        GrunnlagRequestType.EGNE_BARN ->
-          egneBarnRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
+//        GrunnlagRequestType.EGNE_BARN ->
+//          egneBarnRequestListe.add(nyPersonIdOgPeriode(grunnlagRequest))
 
         // Bygger opp liste over kontantstøtte
         GrunnlagRequestType.KONTANTSTOTTE ->
@@ -200,7 +200,7 @@ class GrunnlagspakkeService(
       )
     )
 
-    // Oppdaterer grunnlag for egne barn i husstanden
+    // Oppdaterer grunnlag egne barn, henter også inn husstandsinfo i tillegg
     oppdaterGrunnlagDtoListe.addAll(
       oppdaterEgneBarnIHusstanden(
         grunnlagspakkeId,
@@ -209,6 +209,16 @@ class GrunnlagspakkeService(
         forekomsterFunnet
       )
     )
+    // Henter også inn husstandsinformasjon for å finne egne barn i husstanden
+    oppdaterGrunnlagDtoListe.addAll(
+      oppdaterHusstandsmedlemmer(
+        grunnlagspakkeId,
+        egneBarnIHusstandenRequestListe,
+        timestampOppdatering,
+        forekomsterFunnet
+      )
+    )
+
 
     // Oppdaterer grunnlag for kontantstøtte
     oppdaterGrunnlagDtoListe.addAll(
@@ -840,8 +850,8 @@ class GrunnlagspakkeService(
               if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
                 // Henter og lagrer informasjon om alle barn i responsen
                 antallBarnFunnet++
-                val foedselOgDoed = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
-                LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for barn: $foedselOgDoed")
+                val navnFoedselOgDoed = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
+                LOGGER.info("Bidrag-person ga følgende respons på hent navn, fødselsinfo og evt dødsfall for barn: $navnFoedselOgDoed")
 
                 // Sett eksisterende forekomst av Barn til inaktiv
                 persistenceService.oppdaterEksisterendeBarnTilInaktiv(
@@ -854,10 +864,10 @@ class GrunnlagspakkeService(
                   BarnBo(
                     grunnlagspakkeId = grunnlagspakkeId,
                     personId = forelderBarnRelasjon.relatertPersonsIdent,
-                    navn = foedselOgDoed?.navn,
-                    foedselsdato = foedselOgDoed?.foedselsdato,
-                    foedselsaar = foedselOgDoed?.foedselsaar,
-                    doedsdato = foedselOgDoed?.doedsdato,
+                    navn = navnFoedselOgDoed?.navn,
+                    foedselsdato = navnFoedselOgDoed?.foedselsdato,
+                    foedselsaar = navnFoedselOgDoed?.foedselsaar,
+                    doedsdato = navnFoedselOgDoed?.doedsdato,
                     aktiv = true,
                     brukFra = timestampOppdatering,
                     brukTil = null,
@@ -908,7 +918,7 @@ class GrunnlagspakkeService(
   fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
     //hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
     when (val restResponseFoedselOgDoed =
-      bidragPersonConsumer.hentFoedselOgDoed(personId)) {
+      bidragPersonConsumer.hentNavnFoedselOgDoed(personId)) {
       is RestResponse.Success -> {
         val foedselOgDoedResponse = restResponseFoedselOgDoed.body
         return NavnFoedselDoedResponseDto(
@@ -1155,23 +1165,22 @@ class GrunnlagspakkeService(
       persistenceService.hentSkattegrunnlag(grunnlagspakkeId),
       persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
       persistenceService.hentBarnetillegg(grunnlagspakkeId),
-      hentEgneBarn(grunnlagspakkeId),
+      hentEgneBarnIHusstanden(grunnlagspakkeId),
       hentHusstandsmedlemmer(grunnlagspakkeId),
       persistenceService.hentSivilstand(grunnlagspakkeId)
     )
   }
 
 
-  fun hentEgneBarn(grunnlagspakkeId: Int): List<EgneBarnDto> {
+  fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<EgneBarnDto> {
     val egneBarnDtoListe = mutableListOf<EgneBarnDto>()
 
     persistenceService.hentForeldre(grunnlagspakkeId).forEach { forelder ->
-      var husstandListe: List<HusstandDto>?
       if (forelder.personId != null) {
-        husstandListe = persistenceService.hentHusstandsmedlemmerUnder18ForPerson(grunnlagspakkeId, forelder.personId)
+        val husstandListe = persistenceService.hentHusstandsmedlemmerUnder18Aar(grunnlagspakkeId, forelder.personId)
 
         persistenceService.hentAlleBarnForForelder(forelder.forelderId).forEach { barn ->
-          if (!persistenceService.sjekkOmPersonHarFyllt18Aar(LocalDate.now(), barn.foedselsdato))
+          if (!persistenceService.personHarFyllt18Aar(LocalDate.now(), barn.foedselsdato))
             egneBarnDtoListe.add(
               EgneBarnDto(
                 personIdForelder = forelder.personId,
@@ -1193,7 +1202,7 @@ class GrunnlagspakkeService(
   }
 
 
-// Mottar liste over alle husstander og tilhørende husstandsmedlemmer for en person og sjekker om mottatt barn finnes
+// Mottar liste over alle husstander og tilhørende husstandsmedlemmer under 18 år for en person og sjekker om mottatt barn finnes
 // bland husstandsmedlemmene. Hvis så så skal BorISammeHusstandDto returneres med korrekt periode. Hvilken husstand
 // det gjelder er ikke relevant.
   fun byggBorISammeHusstandDtoListe(

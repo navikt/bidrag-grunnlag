@@ -14,7 +14,6 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
-import java.time.LocalDateTime
 
 private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/foedselogdoed"
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
@@ -30,7 +29,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
   }
 
-  open fun hentFoedselOgDoed(request: String): RestResponse<NavnFoedselDoedResponseDto> {
+  open fun hentNavnFoedselOgDoed(request: String): RestResponse<NavnFoedselDoedResponseDto> {
     logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
 
     val restResponse = restTemplate.tryExchange(

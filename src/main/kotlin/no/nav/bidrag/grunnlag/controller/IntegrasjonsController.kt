@@ -65,7 +65,7 @@ class IntegrasjonsController(
   @PostMapping(HENT_FOEDSEL_DOED)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL")
   fun hentFoedselOgDoed(@RequestBody bidragPersonRequest: String): ResponseEntity<NavnFoedselDoedResponseDto> {
-    return handleRestResponse(bidragPersonConsumer.hentFoedselOgDoed(bidragPersonRequest))
+    return handleRestResponse(bidragPersonConsumer.hentNavnFoedselOgDoed(bidragPersonRequest))
   }
 
   @PostMapping(HENT_FORELDER_BARN_RELASJON)

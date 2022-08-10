@@ -550,7 +550,7 @@ class PersistenceService(
   }
 
 
-  fun hentHusstandsmedlemmerUnder18ForPerson(grunnlagspakkeId: Int, personId: String): List<HusstandDto> {
+  fun hentHusstandsmedlemmerUnder18Aar(grunnlagspakkeId: Int, personId: String): List<HusstandDto> {
     val husstandDtoListe = mutableListOf<HusstandDto>()
     husstandRepository.hentHusstand(grunnlagspakkeId, personId)
       .forEach { husstand ->
@@ -561,7 +561,7 @@ class PersistenceService(
         husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
           .forEach { husstandsmedlem ->
             if ((husstandsmedlem.personId != null &&
-                  !sjekkOmPersonHarFyllt18Aar(
+                  !personHarFyllt18Aar(
                     husstandsmedlem.periodeFra.plusMonths(1),
                     husstandsmedlem.foedselsdato
                   )
@@ -627,7 +627,7 @@ class PersistenceService(
         husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
           .forEach { husstandsmedlem ->
             if ((husstandsmedlem.personId != null &&
-                  sjekkOmPersonHarFyllt18Aar(
+                  personHarFyllt18Aar(
                     husstandsmedlem.periodeFra,
                     husstandsmedlem.foedselsdato
                   )
@@ -673,7 +673,7 @@ class PersistenceService(
 
 
 
-  fun sjekkOmPersonHarFyllt18Aar(dato: LocalDate, foedselsdato: LocalDate?): Boolean {
+  fun personHarFyllt18Aar(dato: LocalDate, foedselsdato: LocalDate?): Boolean {
     val aar = java.time.Period.between(dato, foedselsdato)
     val alder = abs(aar.years)
     return alder > 18
