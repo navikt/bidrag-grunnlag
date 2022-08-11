@@ -21,16 +21,15 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnl
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
+import no.nav.bidrag.grunnlag.service.OppdaterGrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
-import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.hibernate.HibernateException
@@ -54,6 +53,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.StatusResultMatchersDsl
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.HttpClientErrorException
 import java.time.LocalDate
 
@@ -62,6 +62,7 @@ import java.time.LocalDate
 @SpringBootTest(classes = [BidragGrunnlagTest::class], webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
+@Transactional
 class GrunnlagspakkeControllerTest(
   @Autowired val grunnlagspakkeRepository: GrunnlagspakkeRepository,
   @Autowired val persistenceService: PersistenceService,
@@ -72,7 +73,8 @@ class GrunnlagspakkeControllerTest(
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
   private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
   private val kontantstotteConsumer: KontantstotteConsumer = KontantstotteConsumer(restTemplate)
-  private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, kontantstotteConsumer)
+  private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, kontantstotteConsumer)
+  private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
   private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
   private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)
     .setControllerAdvice(RestExceptionHandler(exceptionLogger), CustomExceptionHandler(exceptionLogger), HibernateExceptionHandler(exceptionLogger))
@@ -94,27 +96,27 @@ class GrunnlagspakkeControllerTest(
     val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
     Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenReturn(
-      ResponseEntity(HentInntektListeResponse(emptyList(), Aktoer("", AktoerType.NATURLIG_IDENT)), HttpStatus.OK)
+      ResponseEntity(TestUtil.byggHentInntektListeResponse(), HttpStatus.OK)
     )
 
     Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>()))
       .thenReturn(
-        ResponseEntity(HentSkattegrunnlagResponse(emptyList(), emptyList(), ""), HttpStatus.OK)
+        ResponseEntity(TestUtil.byggHentSkattegrunnlagResponse(), HttpStatus.OK)
       )
 
     Mockito.`when`(restTemplate.exchange(eq("/barnetillegg/pensjon/hent"), eq(HttpMethod.POST), any(), any<Class<HentBarnetilleggPensjonResponse>>()))
       .thenReturn(
-        ResponseEntity(HentBarnetilleggPensjonResponse(emptyList()), HttpStatus.OK)
+        ResponseEntity(TestUtil.byggHentBarnetilleggPensjonResponse(), HttpStatus.OK)
       )
 
     Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utvidet-barnetrygd"), eq(HttpMethod.POST), any(), any<Class<FamilieBaSakResponse>>()))
       .thenReturn(
-        ResponseEntity(FamilieBaSakResponse(emptyList()), HttpStatus.OK)
+        ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK)
       )
 
-    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<KontantstotteResponse>>()))
       .thenReturn(
-        ResponseEntity(InnsynResponse(emptyList()), HttpStatus.OK)
+        ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
       )
 
     val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
@@ -126,11 +128,12 @@ class GrunnlagspakkeControllerTest(
     assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(5)
 
     oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
-      assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.HENTET)
+      assertEquals(GrunnlagsRequestStatus.HENTET, grunnlagstypeResponse.status)
     }
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `skal oppdatere grunnlagspakke og håndtere rest-kall-feil`() {
 
     val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
@@ -153,7 +156,7 @@ class GrunnlagspakkeControllerTest(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
 
-    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<KontantstotteResponse>>()))
       .thenThrow(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
@@ -190,6 +193,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `skal fange opp og håndtere Hibernate-feil`() {
     val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
     val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
@@ -217,6 +221,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `skal fange opp og håndtere forespørsler på grunnlagspakker som ikke eksisterer`() {
 
     val oppdaterGrunnlagspakkeResponse =
@@ -246,6 +251,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `skal håndtere feil eller manglende felter i input ved opprett grunnlagspakke-kall`() {
 
     var errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke1.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_NY)
@@ -276,6 +282,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `skal håndtere feil eller manglende felter i input ved oppdater grunnlagspakke-kall`() {
 
     var errorResult = performExpectedFailingRequest("/requests/oppdaterGrunnlagspakke1.json", "/grunnlagspakke/null/oppdater")
@@ -365,6 +372,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `skal håndtere feil eller manglende felter i input ved lukk grunnlagspakke-kall`() {
 
     val errorResult = performExpectedFailingRequest(null, "/grunnlagspakke/null/lukk")
@@ -390,6 +398,7 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke-kall`() {
     val errorResult = TestUtil.performRequest(
       mockMvc,
@@ -414,10 +423,10 @@ class GrunnlagspakkeControllerTest(
           skattegrunnlagListe = emptyList(),
           ubstListe = emptyList(),
           barnetilleggListe = emptyList(),
-          barnListe = emptyList(),
+          kontantstotteListe = emptyList(),
+          egneBarnListe = emptyList(),
           husstandListe = emptyList(),
-          sivilstandListe = emptyList(),
-          personListe = emptyList()
+          sivilstandListe = emptyList()
         )
       )
 

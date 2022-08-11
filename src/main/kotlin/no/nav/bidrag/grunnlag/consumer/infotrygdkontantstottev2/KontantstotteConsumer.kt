@@ -2,8 +2,8 @@ package no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KonstantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
@@ -20,15 +20,15 @@ open class KontantstotteConsumer(private val restTemplate: HttpHeaderRestTemplat
     val logger: Logger = LoggerFactory.getLogger(KontantstotteConsumer::class.java)
   }
 
-  open fun hentKontantstotte(request: InnsynRequest): RestResponse<InnsynResponse> {
+  open fun hentKontantstotte(request: KonstantstotteRequest): RestResponse<KontantstotteResponse> {
     logger.info("Henter kontantstøtte")
 
     val restResponse = restTemplate.tryExchange(
       KONTANTSTOTTE_CONTEXT,
       HttpMethod.POST,
       initHttpEntity(request),
-      InnsynResponse::class.java,
-      InnsynResponse(emptyList())
+      KontantstotteResponse::class.java,
+      KontantstotteResponse(emptyList())
     )
 
     logResponse(logger, restResponse)

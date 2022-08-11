@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
@@ -12,6 +11,7 @@ import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -26,15 +26,15 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.Foedselsnummer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KonstantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.UtbetalingDto
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -123,6 +123,17 @@ class TestUtil {
           personId = "12345678910",
           periodeFra = LocalDate.parse("2021-01-01"),
           periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestKontantstotte() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.KONTANTSTOTTE,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2022-01-01"),
+          periodeTil = LocalDate.parse("2023-01-01")
         )
       )
     )
@@ -290,6 +301,33 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
+    fun byggKontantstotteBo() = KontantstotteBo(
+      grunnlagspakkeId = (1..100).random(),
+      partPersonId = "1234567",
+      barnPersonId = "0123456",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      belop = 7500,
+      hentetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggKontantstotte() = Kontantstotte(
+      kontantstotteId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      partPersonId = "1234567",
+      barnPersonId = "0123456",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      belop = 7500,
+      hentetTidspunkt = LocalDateTime.now()
+    )
+
     fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
       immutableListOf(
         UtvidetBarnetrygdPeriode(
@@ -311,10 +349,12 @@ class TestUtil {
       )
     )
 
-    fun byggKontantstotteResponse() = InnsynResponse(
+    fun byggKontantstotteResponse() = KontantstotteResponse(
       immutableListOf(
         StonadDto(
           fnr = "12345678901",
+          fom = YearMonth.parse("2022-01"),
+          tom = YearMonth.parse("2022-07"),
           immutableListOf(
             UtbetalingDto(
               fom = YearMonth.parse("2022-01"),
@@ -324,7 +364,8 @@ class TestUtil {
           ),
           immutableListOf(
             no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto(
-              "11223344551")
+              "11223344551"
+            )
           )
         )
       )
@@ -380,7 +421,7 @@ class TestUtil {
         null,
         null,
         null,
-        null,
+        Aktoer("Testaktor", AktoerType.NATURLIG_IDENT),
         null,
         null,
         false,
@@ -416,8 +457,9 @@ class TestUtil {
       fraDato = LocalDate.now()
     )
 
-    fun byggKontantstotteRequest() = InnsynRequest(
-      listOf("123"
+    fun byggKontantstotteRequest() = KonstantstotteRequest(
+      listOf(
+        "123"
       )
     )
 

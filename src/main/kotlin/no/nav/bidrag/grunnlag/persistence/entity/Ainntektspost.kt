@@ -21,7 +21,7 @@ data class Ainntektspost(
   @Column(nullable = false, name = "inntekt_id")
   val inntektId: Int = 0,
 
-  @Column(nullable = false, name = "utbetalingsperiode")
+  @Column(nullable = true, name = "utbetalingsperiode")
   val utbetalingsperiode: String? = "",
 
   @Column(nullable = true, name = "opptjeningsperiode_fra")
@@ -30,19 +30,19 @@ data class Ainntektspost(
   @Column(nullable = true, name = "opptjeningsperiode_til")
   val opptjeningsperiodeTil: LocalDate? = LocalDate.now(),
 
-  @Column(nullable = false, name = "opplysningspliktig_id")
+  @Column(nullable = true, name = "opplysningspliktig_id")
   val opplysningspliktigId: String? = "",
 
-  @Column(nullable = false, name = "virksomhet_id")
+  @Column(nullable = true, name = "virksomhet_id")
   val virksomhetId: String? = "",
 
   @Column(nullable = false, name = "inntekt_type")
   val inntektType: String = "",
 
-  @Column(nullable = false, name = "fordel_type")
+  @Column(nullable = true, name = "fordel_type")
   val fordelType: String? = "",
 
-  @Column(nullable = false, name = "beskrivelse")
+  @Column(nullable = true, name = "beskrivelse")
   val beskrivelse: String? = "",
 
   @Column(nullable = false, name = "belop")
