@@ -2,7 +2,7 @@ package no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api
 
 import java.time.YearMonth
 
-data class KonstantstotteRequest(
+data class KontantstotteRequest(
   val fnr: List<String>
 )
 

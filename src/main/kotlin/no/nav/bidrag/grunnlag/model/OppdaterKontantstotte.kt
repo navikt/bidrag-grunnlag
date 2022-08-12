@@ -4,7 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KonstantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
@@ -26,19 +26,12 @@ class OppdaterKontantstotte(
 
   fun oppdaterKontantstotte(kontantstotteRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterKontantstotte {
     kontantstotteRequestListe.forEach { personIdOgPeriode ->
-
       var antallPerioderFunnet = 0
 
       // Input til tjeneste er en liste over alle personnr for en person,
       // kall PDL for å hente historikk på fnr?
-      val kontantstotteRequestListe = mutableListOf<String>()
-
-      kontantstotteRequestListe.add(
-        personIdOgPeriode.personId
-      )
-
-      val kontantstotteRequest = KonstantstotteRequest(
-        kontantstotteRequestListe
+      val kontantstotteRequest = KontantstotteRequest(
+        listOf(personIdOgPeriode.personId)
       )
 
       LOGGER.info(

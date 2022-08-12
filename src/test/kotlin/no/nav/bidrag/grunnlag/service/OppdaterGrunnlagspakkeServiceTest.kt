@@ -13,7 +13,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KonstantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertAll
@@ -171,7 +171,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 //      TestUtil.byggKontantstotte()
 //    )
     Mockito.`when`(kontantstotteConsumerMock.hentKontantstotte(
-      GrunnlagspakkeServiceMockTest.MockitoHelper.any(KonstantstotteRequest::class.java)))
+      GrunnlagspakkeServiceMockTest.MockitoHelper.any(KontantstotteRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggKontantstotteResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId

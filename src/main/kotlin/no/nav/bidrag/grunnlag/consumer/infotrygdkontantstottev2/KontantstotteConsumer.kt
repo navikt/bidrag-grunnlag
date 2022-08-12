@@ -2,7 +2,7 @@ package no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KonstantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
@@ -20,7 +20,7 @@ open class KontantstotteConsumer(private val restTemplate: HttpHeaderRestTemplat
     val logger: Logger = LoggerFactory.getLogger(KontantstotteConsumer::class.java)
   }
 
-  open fun hentKontantstotte(request: KonstantstotteRequest): RestResponse<KontantstotteResponse> {
+  open fun hentKontantstotte(request: KontantstotteRequest): RestResponse<KontantstotteResponse> {
     logger.info("Henter kontantstøtte")
 
     val restResponse = restTemplate.tryExchange(

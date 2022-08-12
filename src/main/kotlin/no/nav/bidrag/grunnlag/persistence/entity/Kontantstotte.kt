@@ -29,8 +29,8 @@ data class Kontantstotte(
   @Column(nullable = false, name = "periode_fra")
   val periodeFra: LocalDate = LocalDate.now(),
 
-  @Column(nullable = false, name = "periode_til")
-  val periodeTil: LocalDate = LocalDate.now(),
+  @Column(nullable = true, name = "periode_til")
+  val periodeTil: LocalDate? = LocalDate.now(),
 
   @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,
