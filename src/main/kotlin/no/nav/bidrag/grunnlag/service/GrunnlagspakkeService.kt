@@ -1202,9 +1202,9 @@ class GrunnlagspakkeService(
   }
 
 
-// Mottar liste over alle husstander og tilhørende husstandsmedlemmer under 18 år for en person og sjekker om mottatt barn finnes
-// bland husstandsmedlemmene. Hvis så så skal BorISammeHusstandDto returneres med korrekt periode. Hvilken husstand
-// det gjelder er ikke relevant.
+// Mottar liste over alle husstander og tilhørende husstandsmedlemmer under 18 år for en person pluss personid for barn
+// og sjekker om mottatt barn finnes blandt husstandsmedlemmene. Hvis så så skal BorISammeHusstandDto returneres med korrekt periode.
+// Hvilken husstand det gjelder er ikke relevant for grunnlag Egne barn i husstanden.
   fun byggBorISammeHusstandDtoListe(
     husstandDtoListe: List<HusstandDto>?,
     personIdBarn: String?
@@ -1232,7 +1232,7 @@ class GrunnlagspakkeService(
 
   fun hentHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
 
-    return persistenceService.hentAlleHusstandsmedlemmer(grunnlagspakkeId)
+    return persistenceService.hentVoksneHusstandsmedlemmer(grunnlagspakkeId)
 
 
   }

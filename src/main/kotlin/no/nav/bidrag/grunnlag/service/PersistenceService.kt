@@ -28,7 +28,6 @@ import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.bo.toBarnEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
-import no.nav.bidrag.grunnlag.bo.toForelderBarnEntity
 import no.nav.bidrag.grunnlag.bo.toHusstandEntity
 import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemEntity
 import no.nav.bidrag.grunnlag.bo.toPersonEntity
@@ -217,7 +216,26 @@ class PersistenceService(
   }
 
   fun opprettForelderBarn(forelderBarnBo: ForelderBarnBo): ForelderBarn {
-    val nyForelderBarn = forelderBarnBo.toForelderBarnEntity()
+    val eksisterendeForelder = forelderRepository.findById(forelderBarnBo.forelderId)
+      .orElseThrow {
+        IllegalArgumentException(
+          String.format(
+            "Fant ikke forelder med id %d i databasen",
+            forelderBarnBo.forelderId
+          )
+        )
+      }
+    val eksisterendeBarn = barnRepository.findById(forelderBarnBo.barnId)
+      .orElseThrow {
+        IllegalArgumentException(
+          String.format(
+            "Fant ikke barn med id %d i databasen",
+            forelderBarnBo.barnId
+          )
+        )
+      }
+    val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
+    LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
     return forelderBarnRepository.save(nyForelderBarn)
   }
 
@@ -233,9 +251,23 @@ class PersistenceService(
 
   fun opprettPeriodeGrunnlag(forelderBarnBo: ForelderBarnBo): ForelderBarn {
     val eksisterendeForelder = forelderRepository.findById(forelderBarnBo.forelderId)
-      .orElseThrow { IllegalArgumentException(String.format("Fant ikke forelder med id %d i databasen", forelderBarnBo.forelderId)) }
+      .orElseThrow {
+        IllegalArgumentException(
+          String.format(
+            "Fant ikke forelder med id %d i databasen",
+            forelderBarnBo.forelderId
+          )
+        )
+      }
     val eksisterendeBarn = barnRepository.findById(forelderBarnBo.barnId)
-      .orElseThrow { IllegalArgumentException(String.format("Fant ikke barn med id %d i databasen", forelderBarnBo.barnId)) }
+      .orElseThrow {
+        IllegalArgumentException(
+          String.format(
+            "Fant ikke barn med id %d i databasen",
+            forelderBarnBo.barnId
+          )
+        )
+      }
     val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
     LOGGER.info("nyForelderBarn: $nyForelderBarn")
     return forelderBarnRepository.save(nyForelderBarn)
@@ -555,8 +587,6 @@ class PersistenceService(
     husstandRepository.hentHusstand(grunnlagspakkeId, personId)
       .forEach { husstand ->
         val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
-//        val barnListe = barnRepository.hentBarn(grunnlagspakkeId)
-//          .filter { barn -> barn.personIdVoksen == husstand.personId }
 
         husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
           .forEach { husstandsmedlem ->
@@ -579,28 +609,27 @@ class PersistenceService(
                   opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
                 )
               )
-//            }
             }
-            husstandDtoListe.add(
-              HusstandDto(
-                personId = husstand.personId,
-                periodeFra = husstand.periodeFra,
-                periodeTil = husstand.periodeTil,
-                adressenavn = husstand.adressenavn,
-                husnummer = husstand.husnummer,
-                husbokstav = husstand.husbokstav,
-                bruksenhetsnummer = husstand.bruksenhetsnummer,
-                postnummer = husstand.postnummer,
-                bydelsnummer = husstand.bydelsnummer,
-                kommunenummer = husstand.kommunenummer,
-                matrikkelId = husstand.matrikkelId,
-                landkode = husstand.landkode,
-                opprettetAv = husstand.opprettetAv,
-                opprettetTidspunkt = husstand.opprettetTidspunkt,
-                husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
-              )
-            )
           }
+        husstandDtoListe.add(
+          HusstandDto(
+            personId = husstand.personId,
+            periodeFra = husstand.periodeFra,
+            periodeTil = husstand.periodeTil,
+            adressenavn = husstand.adressenavn,
+            husnummer = husstand.husnummer,
+            husbokstav = husstand.husbokstav,
+            bruksenhetsnummer = husstand.bruksenhetsnummer,
+            postnummer = husstand.postnummer,
+            bydelsnummer = husstand.bydelsnummer,
+            kommunenummer = husstand.kommunenummer,
+            matrikkelId = husstand.matrikkelId,
+            landkode = husstand.landkode,
+            opprettetAv = husstand.opprettetAv,
+            opprettetTidspunkt = husstand.opprettetTidspunkt,
+            husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
+          )
+        )
       }
     return husstandDtoListe
   }
@@ -618,7 +647,7 @@ class PersistenceService(
   }*/
 
 
-  fun hentAlleHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
+  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
     val husstandDtoListe = mutableListOf<HusstandDto>()
     husstandRepository.hentHusstand(grunnlagspakkeId)
       .forEach { husstand ->
@@ -645,7 +674,7 @@ class PersistenceService(
                   opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
                 )
               )
-//            }
+            }
             }
             husstandDtoListe.add(
               HusstandDto(
@@ -666,11 +695,9 @@ class PersistenceService(
                 husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
               )
             )
-          }
       }
     return husstandDtoListe
   }
-
 
 
   fun personHarFyllt18Aar(dato: LocalDate, foedselsdato: LocalDate?): Boolean {
