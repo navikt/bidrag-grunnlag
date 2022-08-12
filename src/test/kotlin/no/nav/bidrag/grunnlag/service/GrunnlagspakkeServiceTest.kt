@@ -5,6 +5,7 @@ import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
+import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
@@ -70,8 +71,10 @@ class GrunnlagspakkeServiceTest {
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på å lukke en grunnlagspakke`() {
-    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
-    val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
+    val opprettGrunnlagspakkeRequestDto =
+      OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
+    val grunnlagspakkeIdOpprettet =
+      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
     val lukketGrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(grunnlagspakkeIdOpprettet)
 
     assertAll(
@@ -83,7 +86,8 @@ class GrunnlagspakkeServiceTest {
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på å hente grunnlagspakke med aktive og inaktive inntekter + andre grunnlag`() {
-    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
+    val opprettGrunnlagspakkeRequestDto =
+      OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
     val grunnlagspakkeIdOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
 
@@ -254,81 +258,299 @@ class GrunnlagspakkeServiceTest {
 
     assertAll(
       Executable { assertThat(komplettGrunnlagspakkeFunnet).isNotNull },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(
+          grunnlagspakkeIdOpprettet
+        )
+      },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe.size).isEqualTo(2) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].personId).isEqualTo("1234567") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-06-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].periodeFra).isEqualTo(
+          LocalDate.parse("2021-06-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].periodeTil).isEqualTo(
+          LocalDate.parse("2021-07-01")
+        )
+      },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].aktiv).isEqualTo(true) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].brukTil).isNull() },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].personId).isEqualTo("999999") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-07-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].periodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].periodeFra).isEqualTo(
+          LocalDate.parse("2021-07-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].periodeTil).isEqualTo(
+          LocalDate.parse("2021-08-01")
+        )
+      },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].aktiv).isEqualTo(true) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].brukTil).isNull() },
 
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe.size).isEqualTo(2) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].utbetalingsperiode).isEqualTo("202106") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opplysningspliktigId).isEqualTo("1234567890") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].virksomhetId).isEqualTo("222444666") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].inntektType).isEqualTo("Loenn") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].fordelType).isEqualTo("Kontantytelse") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].beskrivelse).isEqualTo("Loenn/fastloenn") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].belop).isEqualTo(BigDecimal.valueOf(17000.01)) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe.size).isEqualTo(
+          2
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].utbetalingsperiode).isEqualTo(
+          "202106"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opptjeningsperiodeFra).isEqualTo(
+          LocalDate.parse("2021-05-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opptjeningsperiodeTil).isEqualTo(
+          LocalDate.parse("2021-06-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opplysningspliktigId).isEqualTo(
+          "1234567890"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].virksomhetId).isEqualTo(
+          "222444666"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].inntektType).isEqualTo(
+          "Loenn"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].fordelType).isEqualTo(
+          "Kontantytelse"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].beskrivelse).isEqualTo(
+          "Loenn/fastloenn"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].belop).isEqualTo(
+          BigDecimal.valueOf(17000.01)
+        )
+      },
 
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].utbetalingsperiode).isEqualTo("202106") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2020-01-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-01-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opplysningspliktigId).isEqualTo("1234567890") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].virksomhetId).isEqualTo("222444666") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].inntektType).isEqualTo("Loenn") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].fordelType).isEqualTo("Kontantytelse") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].beskrivelse).isEqualTo("Loenn/ferieLoenn") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].belop).isEqualTo(BigDecimal.valueOf(50000.01)) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].utbetalingsperiode).isEqualTo(
+          "202106"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeFra).isEqualTo(
+          LocalDate.parse("2020-01-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opptjeningsperiodeTil).isEqualTo(
+          LocalDate.parse("2021-01-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opplysningspliktigId).isEqualTo(
+          "1234567890"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].virksomhetId).isEqualTo(
+          "222444666"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].inntektType).isEqualTo(
+          "Loenn"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].fordelType).isEqualTo(
+          "Kontantytelse"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].beskrivelse).isEqualTo(
+          "Loenn/ferieLoenn"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].belop).isEqualTo(
+          BigDecimal.valueOf(50000.01)
+        )
+      },
 
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe.size).isEqualTo(1) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].utbetalingsperiode).isEqualTo("202107") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opptjeningsperiodeFra).isEqualTo(LocalDate.parse("2021-06-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opptjeningsperiodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opplysningspliktigId).isEqualTo("9876543210") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].virksomhetId).isEqualTo("666444222") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].inntektType).isEqualTo("Loenn") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].fordelType).isEqualTo("Kontantytelse") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].beskrivelse).isEqualTo("Loenn/fastloenn") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].belop).isEqualTo(BigDecimal.valueOf(666000.01)) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe.size).isEqualTo(
+          1
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].utbetalingsperiode).isEqualTo(
+          "202107"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opptjeningsperiodeFra).isEqualTo(
+          LocalDate.parse("2021-06-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opptjeningsperiodeTil).isEqualTo(
+          LocalDate.parse("2021-07-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opplysningspliktigId).isEqualTo(
+          "9876543210"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].virksomhetId).isEqualTo(
+          "666444222"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].inntektType).isEqualTo(
+          "Loenn"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].fordelType).isEqualTo(
+          "Kontantytelse"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].beskrivelse).isEqualTo(
+          "Loenn/fastloenn"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].belop).isEqualTo(
+          BigDecimal.valueOf(666000.01)
+        )
+      },
 
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe.size).isEqualTo(1) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].personId).isEqualTo("345678") },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe.size).isEqualTo(
+          1
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].personId).isEqualTo(
+          "345678"
+        )
+      },
       Executable {
         assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].skattegrunnlagType).isEqualTo(
           SkattegrunnlagType.ORDINAER.toString()
         )
       },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].inntektType).isEqualTo("Loenn") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].aktiv).isEqualTo(true) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].inntektType).isEqualTo(
+          "Loenn"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].aktiv).isEqualTo(
+          true
+        )
+      },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].brukTil).isNull() },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].belop).isEqualTo(BigDecimal.valueOf(23456.01)) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].belop).isEqualTo(
+          BigDecimal.valueOf(23456.01)
+        )
+      },
 
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe.size).isEqualTo(1) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].personId).isEqualTo("22334455") },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].type).isEqualTo("Utvidet barnetrygd") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].periodeFra).isEqualTo(
+          LocalDate.parse("2021-05-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].periodeTil).isEqualTo(
+          LocalDate.parse("2021-06-01")
+        )
+      },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].aktiv).isEqualTo(true) },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].brukTil).isNull() },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].belop).isEqualTo(BigDecimal.valueOf(12468.01)) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.ubstListe[0].belop).isEqualTo(
+          BigDecimal.valueOf(
+            12468.01
+          )
+        )
+      },
 
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe.size).isEqualTo(1) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].partPersonId).isEqualTo("22334455") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo("1234567") },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo(BarnetilleggType.PENSJON.toString()) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].partPersonId).isEqualTo(
+          "22334455"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo(
+          "1234567"
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo(
+          BarnetilleggType.PENSJON.toString()
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeFra).isEqualTo(
+          LocalDate.parse("2021-05-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(
+          LocalDate.parse("2021-06-01")
+        )
+      },
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(
+          true
+        )
+      },
       Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].brukTil).isNull() },
-      Executable { assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) }
+      Executable {
+        assertThat(komplettGrunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(
+          BigDecimal.valueOf(1000.01)
+        )
+      }
+    )
+  }
+
+  @Test
+  @Suppress("NonAsciiCharacters")
+  fun `Test på å oppdatere en grunnlagspakke`() {
+    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(
+      Formaal.FORSKUDD, "X123456"
+    )
+
+    val grunnlagspakkeId =
+      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
+
+    val oppdatertGrunnlagspakke = grunnlagspakkeService.oppdaterGrunnlagspakke(
+      grunnlagspakkeId,
+      TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg()
+    )
+
+    assertAll(
+      { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeId) }
     )
   }
 }

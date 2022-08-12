@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import java.math.BigDecimal
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -12,11 +11,11 @@ import javax.persistence.Id
 import kotlin.reflect.full.memberProperties
 
 @Entity
-data class Barnetillegg(
+data class Kontantstotte(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "barnetillegg_id")
-  val barnetilleggId: Int = 0,
+  @Column(name = "kontantstotte_id")
+  val kontantstotteId: Int = 0,
 
   @Column(nullable = false, name = "grunnlagspakke_id")
   val grunnlagspakkeId: Int = 0,
@@ -26,9 +25,6 @@ data class Barnetillegg(
 
   @Column(nullable = false, name = "barn_person_id")
   val barnPersonId: String = "",
-
-  @Column(nullable = false, name = "barnetillegg_type")
-  val barnetilleggType: String = "",
 
   @Column(nullable = false, name = "periode_fra")
   val periodeFra: LocalDate = LocalDate.now(),
@@ -45,23 +41,18 @@ data class Barnetillegg(
   @Column(nullable = true, name = "bruk_til")
   val brukTil: LocalDateTime? = null,
 
-  @Column(nullable = false, name = "belop_brutto")
-  val belopBrutto: BigDecimal = BigDecimal.ZERO,
-
-  @Column(nullable = false, name = "barn_type")
-  val barnType: String = "",
+  @Column(nullable = false, name = "belop")
+  val belop: Int = 0,
 
   @Column(nullable = false, name = "hentet_tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
-fun Barnetillegg.toBarnetilleggBo() = with(::BarnetilleggBo) {
-  val propertiesByName = Barnetillegg::class.memberProperties.associateBy { it.name }
-  callBy(parameters.associateWith { parameter ->
-    when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggBo)
+fun Kontantstotte.toKontantstotteBo() = with(::KontantstotteBo) {
+  val propertiesByName = Kontantstotte::class.memberProperties.associateBy { it.name }
+  callBy(parameters.associateWith { parameters ->
+    when (parameters.name) {
+      else -> propertiesByName[parameters.name]?.get(this@toKontantstotteBo)
     }
   })
 }
-
-
