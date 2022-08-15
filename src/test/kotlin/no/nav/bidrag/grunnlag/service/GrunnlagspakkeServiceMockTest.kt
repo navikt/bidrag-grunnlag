@@ -17,6 +17,8 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstand
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandsmedlem
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandsmedlemBo
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotte
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotteBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelder
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBarn
@@ -34,6 +36,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
@@ -90,12 +93,12 @@ class GrunnlagspakkeServiceMockTest {
   private lateinit var forelderBarnBoCaptor: ArgumentCaptor<ForelderBarnBo>
   @Captor
   private lateinit var husstandBoCaptor: ArgumentCaptor<HusstandBo>
-
   @Captor
   private lateinit var husstandsmedlemBoCaptor: ArgumentCaptor<HusstandsmedlemBo>
-
   @Captor
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
+  @Captor
+  private lateinit var kontantstotteBoCaptor: ArgumentCaptor<KontantstotteBo>
 
   @Test
   fun `Skal opprette ny grunnlagspakke`() {
@@ -142,6 +145,8 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggHusstandsmedlem())
     Mockito.`when`(persistenceServiceMock.opprettSivilstand(MockitoHelper.capture(sivilstandBoCaptor)))
       .thenReturn(byggSivilstand())
+    Mockito.`when`(persistenceServiceMock.opprettKontantstotte(MockitoHelper.capture(kontantstotteBoCaptor)))
+      .thenReturn(byggKontantstotte())
 
     val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val nyAinntektOpprettet = persistenceServiceMock.opprettAinntekt(byggAinntektBo())
@@ -157,6 +162,8 @@ class GrunnlagspakkeServiceMockTest {
     val nyHusstandOpprettet = persistenceServiceMock.opprettHusstand(byggHusstandBo())
     val nyHusstandsmedlemOpprettet = persistenceServiceMock.opprettHusstandsmedlem(byggHusstandsmedlemBo())
     val nySivilstandOpprettet = persistenceServiceMock.opprettSivilstand(byggSivilstandBo())
+    val nyBarnetilleggOpprettet = persistenceServiceMock.opprettBarnetillegg(byggBarnetilleggBo())
+    val nyKontantstotteOpprettet = persistenceServiceMock.opprettKontantstotte(byggKontantstotteBo())
 
     val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
     val ainntektBoListe = ainntektBoCaptor.allValues
@@ -171,6 +178,13 @@ class GrunnlagspakkeServiceMockTest {
     val husstandBoListe = husstandBoCaptor.allValues
     val husstandsmedlemBoListe = husstandsmedlemBoCaptor.allValues
     val sivilstandBoListe = sivilstandBoCaptor.allValues
+    val ainntektDtoListe = ainntektBoCaptor.allValues
+    val ainntektspostDtoListe = ainntektspostBoCaptor.allValues
+    val skattegrunnlagDtoListe = skattegrunnlagBoCaptor.allValues
+    val skattegrunnlagspostDtoListe = skattegrunnlagspostBoCaptor.allValues
+    val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
+    val barnetilleggListe = barnetilleggBoCaptor.allValues
+    val kontantstotteListe = kontantstotteBoCaptor.allValues
 
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(MockitoHelper.any(AinntektBo::class.java))
@@ -186,6 +200,7 @@ class GrunnlagspakkeServiceMockTest {
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstand(MockitoHelper.any(HusstandBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstandsmedlem(MockitoHelper.any(HusstandsmedlemBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSivilstand(MockitoHelper.any(SivilstandBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettKontantstotte(MockitoHelper.any(KontantstotteBo::class.java))
 
     assertAll(
       { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
@@ -228,8 +243,11 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(nySivilstandOpprettet).isNotNull() },
       { assertThat(nySivilstandOpprettet.sivilstandId).isNotNull() },
 
-
       // sjekk GrunnlagspakkeBo
+      { assertThat(nyKontantstotteOpprettet).isNotNull() },
+      { assertThat(nyKontantstotteOpprettet.grunnlagspakkeId).isNotNull() },
+
+      // sjekk GrunnlagspakkeDto
       { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
       { assertThat(opprettGrunnlagspakkeRequestDto.opprettetAv).isNotNull() },
       { assertThat(opprettGrunnlagspakkeRequestDto.opprettetAv).isEqualTo("RTV9999") },
@@ -306,6 +324,21 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(barnBoListe[0].opprettetAv).isNull() },
       { assertThat(barnBoListe[0].hentetTidspunkt).isNotNull() },
 
+      // sjekk BarnetilleggDto
+      { assertThat(barnetilleggListe[0].partPersonId).isEqualTo("1234567") },
+      { assertThat(barnetilleggListe[0].barnPersonId).isEqualTo("0123456") },
+      { assertThat(barnetilleggListe[0].barnetilleggType).isEqualTo("Utvidet barnetrygd") },
+      { assertThat(barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+      { assertThat(barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
+      { assertThat(barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000)) },
+      { assertThat(barnetilleggListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) },
+
+    // sjekk KontantstotteDto
+      { assertThat(kontantstotteListe[0].partPersonId).isEqualTo("1234567") },
+      { assertThat(kontantstotteListe[0].barnPersonId).isEqualTo("0123456") },
+      { assertThat(kontantstotteListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+      { assertThat(kontantstotteListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
+      { assertThat(kontantstotteListe[0].belop).isEqualTo(7500) }
       // sjekk ForelderBarnBo
       { assertThat(forelderBarnBoListe).isNotNull()  },
 

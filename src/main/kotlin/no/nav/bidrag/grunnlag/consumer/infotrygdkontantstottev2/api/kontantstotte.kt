@@ -12,16 +12,10 @@ data class KontantstotteResponse(
 
 data class StonadDto(
   val fnr: String,
-  val fom: YearMonth?,
+  val fom: YearMonth,
   val tom: YearMonth?,
-  val utbetalinger: List<UtbetalingDto>,
+  val belop: Int,
   val barn: List<BarnDto>
-)
-
-data class UtbetalingDto(
-  val fom: YearMonth?,
-  val tom: YearMonth?,
-  val belop: Int
 )
 
 data class BarnDto(

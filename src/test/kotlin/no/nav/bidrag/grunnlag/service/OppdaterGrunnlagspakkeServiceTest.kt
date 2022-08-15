@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarn
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelder
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
@@ -77,8 +78,8 @@ class OppdaterGrunnlagspakkeServiceTest {
   private lateinit var husstandsmedlemBoCaptor: ArgumentCaptor<HusstandsmedlemBo>
   @Captor
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
-//  @Captor
-//  private lateinit var kontantstotteBoCaptor: ArgumentCaptor<KontantstotteBo>
+  @Captor
+  private lateinit var kontantstotteBoCaptor: ArgumentCaptor<KontantstotteBo>
 
   @Test
   fun `Skal oppdatere grunnlagspakke med utvidet barnetrygd`() {
@@ -443,10 +444,9 @@ class OppdaterGrunnlagspakkeServiceTest {
 
   @Test
   fun `skal oppdatere grunnlagspakke med kontantstotte`() {
-    //TODO
-//    Mockito.`when`(persistenceServiceMock.opprettKontantstotte(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(kontantstotteBoCaptor))).thenReturn(
-//      TestUtil.byggKontantstotte()
-//    )
+    Mockito.`when`(persistenceServiceMock.opprettKontantstotte(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(kontantstotteBoCaptor))).thenReturn(
+      TestUtil.byggKontantstotte()
+    )
     Mockito.`when`(kontantstotteConsumerMock.hentKontantstotte(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(KontantstotteRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggKontantstotteResponse()))
@@ -458,26 +458,27 @@ class OppdaterGrunnlagspakkeServiceTest {
       LocalDateTime.now()
     )
 
-//    val kontantstotteListe = kontantstotteBoCaptor.allValues
+    val kontantstotteListe = kontantstotteBoCaptor.allValues
 
-//    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettKontantstottre(
-//      Mockito.any(KontantstotteBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(2)).opprettKontantstotte(
+      GrunnlagspakkeServiceMockTest.MockitoHelper.any(KontantstotteBo::class.java))
 
     assertAll(
       { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
       { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
-      // sjekk BarnetilleggDto
-//      { Assertions.assertThat(barnetilleggListe).isNotNull() },
-//      { Assertions.assertThat(barnetilleggListe.size).isEqualTo(1) },
-//      { Assertions.assertThat(barnetilleggListe[0].partPersonId).isEqualTo("12345678910") },
-//      { Assertions.assertThat(barnetilleggListe[0].barnPersonId).isEqualTo("barnIdent") },
-//      { Assertions.assertThat(barnetilleggListe[0].barnetilleggType)
-//        .isEqualTo(BarnetilleggType.PENSJON.toString()) },
-//      { Assertions.assertThat(barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-//      { Assertions.assertThat(barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-01-01")) },
-//      { Assertions.assertThat(barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.11)) },
-//      { Assertions.assertThat(barnetilleggListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) },
+      // sjekk KontantstotteDto
+      { Assertions.assertThat(kontantstotteListe.size).isEqualTo(2) },
+      { Assertions.assertThat(kontantstotteListe[0].partPersonId).isEqualTo("12345678910") },
+      { Assertions.assertThat(kontantstotteListe[0].barnPersonId).isEqualTo("11223344551") },
+      { Assertions.assertThat(kontantstotteListe[0].periodeFra).isEqualTo(LocalDate.parse("2022-01-01")) },
+      { Assertions.assertThat(kontantstotteListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-08-01")) },
+      { Assertions.assertThat(kontantstotteListe[0].belop).isEqualTo(7500) },
+      { Assertions.assertThat(kontantstotteListe[1].partPersonId).isEqualTo("12345678910") },
+      { Assertions.assertThat(kontantstotteListe[1].barnPersonId).isEqualTo("15544332211") },
+      { Assertions.assertThat(kontantstotteListe[1].periodeFra).isEqualTo(LocalDate.parse("2022-01-01")) },
+      { Assertions.assertThat(kontantstotteListe[1].periodeTil).isEqualTo(LocalDate.parse("2022-08-01")) },
+      { Assertions.assertThat(kontantstotteListe[1].belop).isEqualTo(7501) },
 
       // sjekk oppdatertGrunnlagspakke
       { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
@@ -488,8 +489,8 @@ class OppdaterGrunnlagspakkeServiceTest {
         .isEqualTo("12345678910") },
       { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status)
         .isEqualTo(GrunnlagsRequestStatus.HENTET) },
-//      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
-//        .isEqualTo("Antall perioder funnet: 1") }
+      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
+        .isEqualTo("Antall perioder funnet: 1") }
     )
   }
 }

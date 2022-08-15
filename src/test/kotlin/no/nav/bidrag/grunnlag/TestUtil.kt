@@ -43,10 +43,10 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerReques
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.UtbetalingDto
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
@@ -571,19 +571,16 @@ class TestUtil {
     fun byggKontantstotteResponse() = KontantstotteResponse(
       immutableListOf(
         StonadDto(
-          fnr = "12345678901",
+          fnr = "12345678910",
           fom = YearMonth.parse("2022-01"),
           tom = YearMonth.parse("2022-07"),
+          belop = 15001,
           immutableListOf(
-            UtbetalingDto(
-              fom = YearMonth.parse("2022-01"),
-              tom = YearMonth.parse("2022-07"),
-              belop = 17
-            )
-          ),
-          immutableListOf(
-            no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto(
+            BarnDto(
               "11223344551"
+            ),
+            BarnDto(
+              "15544332211"
             )
           )
         )

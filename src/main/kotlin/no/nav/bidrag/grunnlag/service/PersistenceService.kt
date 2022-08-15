@@ -23,6 +23,7 @@ import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -34,6 +35,7 @@ import no.nav.bidrag.grunnlag.bo.toHusstandEntity
 import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemEntity
 import no.nav.bidrag.grunnlag.bo.toPersonEntity
 import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
+import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.bo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
@@ -47,6 +49,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.Husstand
 import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
 import no.nav.bidrag.grunnlag.persistence.entity.Forelder
@@ -66,6 +69,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.BarnRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
 import no.nav.bidrag.grunnlag.persistence.repository.ForelderBarnRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
+import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
 import no.nav.bidrag.grunnlag.persistence.repository.HusstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.HusstandsmedlemRepository
 import no.nav.bidrag.grunnlag.persistence.repository.ForelderRepository
@@ -93,7 +97,8 @@ class PersistenceService(
   val husstandsmedlemRepository: HusstandsmedlemRepository,
   val forelderRepository: ForelderRepository,
   val forelderBarnRepository: ForelderBarnRepository,
-  val sivilstandRepository: SivilstandRepository
+  val sivilstandRepository: SivilstandRepository,
+  val kontantstotteRepository: KontantstotteRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -261,7 +266,7 @@ class PersistenceService(
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      emptyList(), emptyList(), emptyList(), emptyList(), emptyList()
+      hentKontantstotte(grunnlagspakkeId), emptyList(), emptyList(), emptyList(), emptyList()
     )
   }
 
@@ -544,6 +549,44 @@ class PersistenceService(
     return barnetilleggDtoListe
   }
 
+  fun hentKontantstotte(grunnlagspakkeId: Int): List<KontantstotteDto> {
+    val kontantstotteDtoListe = mutableListOf<KontantstotteDto>()
+    kontantstotteRepository.hentKontantstotte(grunnlagspakkeId)
+      .forEach { kontantstotte ->
+        kontantstotteDtoListe.add(
+          KontantstotteDto(
+            partPersonId = kontantstotte.partPersonId,
+            barnPersonId = kontantstotte.barnPersonId,
+            periodeFra = kontantstotte.periodeFra,
+            periodeTil = kontantstotte.periodeTil,
+            aktiv = kontantstotte.aktiv,
+            brukFra = kontantstotte.brukFra,
+            brukTil = kontantstotte.brukTil,
+            belop = kontantstotte.belop,
+            hentetTidspunkt = kontantstotte.hentetTidspunkt
+          )
+        )
+      }
+    return kontantstotteDtoListe
+  }
+
+  fun opprettKontantstotte(kontantstotteBo: KontantstotteBo): Kontantstotte {
+    val nyKontantstotte = kontantstotteBo.toKontantstotteEntity()
+    return kontantstotteRepository.save(nyKontantstotte)
+  }
+
+  fun oppdaterEksisterendeKontantstotteTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
   fun hentForeldre(grunnlagspakkeId: Int): List<Forelder> {
     return forelderRepository.hentForeldre(grunnlagspakkeId)
   }
@@ -618,10 +661,7 @@ class PersistenceService(
  // Alle husstandsmedlemmer skal returneres for manuell vurdering. For egne barn i egen husstand skal bare < 18 returneres
 
 
-
-
   }*/
-
 
   fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
     val husstandDtoListe = mutableListOf<HusstandDto>()
@@ -675,13 +715,11 @@ class PersistenceService(
     return husstandDtoListe
   }
 
-
   fun personHarFyllt18Aar(dato: LocalDate, foedselsdato: LocalDate?): Boolean {
     val aar = java.time.Period.between(dato, foedselsdato)
     val alder = abs(aar.years)
     return alder > 18
   }
-
 
   fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
     val sivilstandDtoListe = mutableListOf<SivilstandDto>()
@@ -700,6 +738,4 @@ class PersistenceService(
       }
     return sivilstandDtoListe
   }
-
-
 }
