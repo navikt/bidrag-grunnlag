@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS forelder
     bruk_fra timestamp DEFAULT now() NOT NULL,
     bruk_til timestamp,
     opprettet_av varchar(255),
-    opprettet_tidspunkt timestamp DEFAULT now() NOT NULL,
+    hentet_tidspunkt timestamp DEFAULT now() NOT NULL,
     CONSTRAINT forelder_pkey PRIMARY KEY (forelder_id),
     CONSTRAINT grunnlagspakke_forelder_fkey FOREIGN KEY (grunnlagspakke_id)
         REFERENCES grunnlagspakke (grunnlagspakke_id) MATCH SIMPLE

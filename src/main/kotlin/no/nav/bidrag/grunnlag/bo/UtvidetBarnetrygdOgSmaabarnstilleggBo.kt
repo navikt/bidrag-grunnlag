@@ -44,7 +44,7 @@ data class UtvidetBarnetrygdOgSmaabarnstilleggBo(
   val deltBosted: Boolean,
 
   @Schema(description = "Hentet tidspunkt")
-  val opprettetTidspunkt: LocalDateTime
+  val hentetTidspunkt: LocalDateTime
 )
 
 fun UtvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity() = with(::UtvidetBarnetrygdOgSmaabarnstillegg) {

@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -44,7 +43,7 @@ data class BarnetilleggBo(
   val barnType: String = "",
 
   @Schema(description = "Hentet tidspunkt")
-  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun BarnetilleggBo.toBarnetilleggEntity() = with(::Barnetillegg) {

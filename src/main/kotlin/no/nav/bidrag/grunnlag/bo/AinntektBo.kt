@@ -32,7 +32,7 @@ data class AinntektBo(
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Hentet tidspunkt")
-  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 
 ): IPeriod
 

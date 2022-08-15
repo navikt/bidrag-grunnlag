@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS husstandsmedlem
     periode_fra date,
     periode_til date,
     opprettet_av varchar(255),
-    opprettet_tidspunkt timestamp DEFAULT now() NOT NULL,
+    hentet_tidspunkt timestamp DEFAULT now() NOT NULL,
     CONSTRAINT husstandsmedlem_pkey PRIMARY KEY (husstandsmedlem_id),
     CONSTRAINT husstand_fkey FOREIGN KEY (husstand_id)
         REFERENCES husstand (person_db_id) MATCH SIMPLE

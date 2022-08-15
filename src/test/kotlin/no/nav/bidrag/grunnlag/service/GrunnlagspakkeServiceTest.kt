@@ -6,6 +6,7 @@ import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
+import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
@@ -77,8 +78,10 @@ class GrunnlagspakkeServiceTest {
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på å lukke en grunnlagspakke`() {
-    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
-    val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
+    val opprettGrunnlagspakkeRequestDto =
+      OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
+    val grunnlagspakkeIdOpprettet =
+      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
     val lukketGrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(grunnlagspakkeIdOpprettet)
 
     assertAll(
@@ -90,7 +93,8 @@ class GrunnlagspakkeServiceTest {
   @Test
   @Suppress("NonAsciiCharacters")
   fun `Test på å hente grunnlagspakke med aktive og inaktive inntekter + andre grunnlag`() {
-    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
+    val opprettGrunnlagspakkeRequestDto =
+      OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
     val grunnlagspakkeIdOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
 
@@ -102,7 +106,7 @@ class GrunnlagspakkeServiceTest {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     val opprettetAinntekt = persistenceService.opprettAinntekt(ainntektBo)
@@ -147,7 +151,7 @@ class GrunnlagspakkeServiceTest {
       periodeFra = LocalDate.parse("2020-06-01"),
       periodeTil = LocalDate.parse("2020-07-01"),
       aktiv = false,
-      opprettetTidspunkt = LocalDateTime.now(),
+      hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
       brukTil = null
     )
@@ -178,7 +182,7 @@ class GrunnlagspakkeServiceTest {
       periodeFra = LocalDate.parse("2021-07-01"),
       periodeTil = LocalDate.parse("2021-08-01"),
       aktiv = true,
-      opprettetTidspunkt = LocalDateTime.now(),
+      hentetTidspunkt = LocalDateTime.now(),
       brukFra = LocalDateTime.now(),
       brukTil = null
     )
@@ -211,7 +215,7 @@ class GrunnlagspakkeServiceTest {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(skattegrunnlagBo)
@@ -239,7 +243,7 @@ class GrunnlagspakkeServiceTest {
         belop = BigDecimal.valueOf(12468.01),
         manueltBeregnet = false,
         deltBosted = false,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 
@@ -332,6 +336,27 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },
       Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].brukTil).isNull() },
       Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) }
+
+    )
+  }
+
+  @Test
+  @Suppress("NonAsciiCharacters")
+  fun `Test på å oppdatere en grunnlagspakke`() {
+    val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(
+      Formaal.FORSKUDD, "X123456"
+    )
+
+    val grunnlagspakkeId =
+      grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
+
+    val oppdatertGrunnlagspakke = grunnlagspakkeService.oppdaterGrunnlagspakke(
+      grunnlagspakkeId,
+      TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg()
+    )
+
+    assertAll(
+      { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeId) }
     )
   }
 
@@ -354,7 +379,7 @@ class GrunnlagspakkeServiceTest {
         brukFra = LocalDateTime.now(),
         brukTil = null,
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 
@@ -371,7 +396,7 @@ class GrunnlagspakkeServiceTest {
         brukFra = LocalDateTime.now(),
         brukTil = null,
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
     val opprettetBarnOver18 = persistenceService.opprettBarn(
@@ -386,7 +411,7 @@ class GrunnlagspakkeServiceTest {
         brukFra = LocalDateTime.now(),
         brukTil = null,
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 
@@ -423,7 +448,7 @@ class GrunnlagspakkeServiceTest {
         brukFra = LocalDateTime.now(),
         brukTil = null,
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 
@@ -438,7 +463,7 @@ class GrunnlagspakkeServiceTest {
         foedselsdato = LocalDate.parse("2017-05-17"),
         doedsdato = LocalDate.parse("2021-06-23"),
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
     persistenceService.opprettHusstandsmedlem(
@@ -451,7 +476,7 @@ class GrunnlagspakkeServiceTest {
         foedselsdato = LocalDate.parse("2000-12-02"),
         doedsdato = null,
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 
@@ -466,7 +491,7 @@ class GrunnlagspakkeServiceTest {
         foedselsdato = LocalDate.parse("1997-02-12"),
         doedsdato = null,
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 
@@ -482,7 +507,7 @@ class GrunnlagspakkeServiceTest {
         brukFra = LocalDateTime.now(),
         brukTil = null,
         opprettetAv = null,
-        opprettetTidspunkt = LocalDateTime.now()
+        hentetTidspunkt = LocalDateTime.now()
       )
     )
 
@@ -499,11 +524,11 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].foedselsaar).isEqualTo(2017) },
       Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].doedsdato).isEqualTo(LocalDate.parse("2021-06-23"))},
       Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].opprettetTidspunkt).isNotNull() },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].hentetTidspunkt).isNotNull() },
       Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
       Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
       Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.opprettetTidspunkt).isNotNull() },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.hentetTidspunkt).isNotNull() },
 
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe.size).isEqualTo(1) },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2001-05-01")) },
@@ -517,7 +542,7 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].kommunenummer).isEqualTo("kommunenummer1") },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].matrikkelId).isEqualTo(12345) },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].opprettetTidspunkt).isNotNull() },
+      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].hentetTidspunkt).isNotNull() },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.size).isEqualTo(1) },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.periodeFra).isEqualTo(LocalDate.parse("2020-02-01")) },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.periodeTil).isEqualTo(LocalDate.parse("2020-09-01")) },
@@ -526,7 +551,7 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.foedselsdato).isEqualTo(LocalDate.parse("1997-02-12")) },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.doedsdato).isNull() },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.opprettetTidspunkt).isNotNull() },
+      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.hentetTidspunkt).isNotNull() },
       Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.size).isEqualTo(1) },
 
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe.size).isEqualTo(1) },
@@ -534,7 +559,7 @@ class GrunnlagspakkeServiceTest {
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].sivilstand).isEqualTo(SivilstandKode.ENSLIG) },
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].opprettetTidspunkt).isNotNull() },
+      Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].hentetTidspunkt).isNotNull() },
 
       )
   }

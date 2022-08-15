@@ -1,19 +1,18 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.behandling.felles.dto.grunnlag.EgneBarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -28,7 +27,6 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
-
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
@@ -44,9 +42,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerReques
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
-
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.UtbetalingDto
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
@@ -58,6 +55,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Husstand
 import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
 import no.nav.bidrag.grunnlag.persistence.entity.Forelder
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
+import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -174,6 +172,17 @@ class TestUtil {
       )
     )
 
+    fun byggOppdaterGrunnlagspakkeRequestKontantstotte() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.KONTANTSTOTTE,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2022-01-01"),
+          periodeTil = LocalDate.parse("2023-01-01")
+        )
+      )
+    )
+
     fun byggOppdaterGrunnlagspakkeRequestSivilstand() = OppdaterGrunnlagspakkeRequestDto(
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
@@ -184,17 +193,6 @@ class TestUtil {
         )
       )
     )
-
-//    fun byggOppdaterGrunnlagspakkeRequestPerson() = OppdaterGrunnlagspakkeRequestDto(
-//      grunnlagRequestDtoListe = listOf(
-//        GrunnlagRequestDto(
-//          type = GrunnlagRequestType.PERSON,
-//          personId = "12345678910",
-//          periodeFra = LocalDate.parse("2021-01-01"),
-//          periodeTil = LocalDate.parse("2022-01-01")
-//        )
-//      )
-//    )
 
     fun byggGrunnlagspakke() = Grunnlagspakke(
       grunnlagspakkeId = (1..100).random(),
@@ -213,7 +211,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggAinntekt() = Ainntekt(
@@ -225,7 +223,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggAinntektspostBo() = AinntektspostBo(
@@ -267,7 +265,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggSkattegrunnlagSkatt() = no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
@@ -279,7 +277,7 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggSkattegrunnlagspostBo() = SkattegrunnlagspostBo(
@@ -309,7 +307,7 @@ class TestUtil {
       belop = BigDecimal.valueOf(12468.01),
       manueltBeregnet = false,
       deltBosted = false,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggUtvidetBarnetrygdOgSmaabarnstillegg() = UtvidetBarnetrygdOgSmaabarnstillegg(
@@ -325,7 +323,7 @@ class TestUtil {
       belop = BigDecimal.valueOf(12468.01),
       manueltBeregnet = false,
       deltBosted = false,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggBarnetilleggBo() = BarnetilleggBo(
@@ -340,7 +338,7 @@ class TestUtil {
       brukTil = null,
       belopBrutto = BigDecimal.valueOf(1000),
       barnType = BarnType.FELLES.toString(),
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggBarnetillegg() = Barnetillegg(
@@ -356,7 +354,35 @@ class TestUtil {
       brukTil = null,
       belopBrutto = BigDecimal.valueOf(1000),
       barnType = BarnType.FELLES.toString(),
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
+    )
+
+    // PDL-data
+    fun byggForelderBo() = ForelderBo(
+      grunnlagspakkeId = (1..100).random(),
+      personId = "4321",
+      navn = "navn1",
+      foedselsdato = LocalDate.parse("2011-01-01"),
+      doedsdato = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      hentetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggForelder() = Forelder(
+      forelderId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      personId = "",
+      navn = "",
+      foedselsdato = LocalDate.parse("2011-01-01"),
+      doedsdato = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      opprettetAv = null,
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggBarnBo() = BarnBo(
@@ -370,7 +396,7 @@ class TestUtil {
       brukFra = LocalDateTime.now(),
       brukTil = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggBarn() = Barn(
@@ -385,7 +411,7 @@ class TestUtil {
       brukFra = LocalDateTime.now(),
       brukTil = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggHusstandBo() = HusstandBo(
@@ -405,7 +431,7 @@ class TestUtil {
       brukFra = LocalDateTime.now(),
       brukTil = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggHusstand() = Husstand(
@@ -426,7 +452,7 @@ class TestUtil {
       brukFra = LocalDateTime.now(),
       brukTil = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggHusstandsmedlemBo() = HusstandsmedlemBo(
@@ -438,7 +464,7 @@ class TestUtil {
       foedselsdato = LocalDate.parse("1997-05-23"),
       doedsdato = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggHusstandsmedlem() = Husstandsmedlem(
@@ -450,7 +476,7 @@ class TestUtil {
       foedselsdato = LocalDate.parse("1997-05-23"),
       doedsdato = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggSivilstandBo() = SivilstandBo(
@@ -463,7 +489,7 @@ class TestUtil {
       brukFra = LocalDateTime.now(),
       brukTil = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggSivilstand() = Sivilstand(
@@ -477,34 +503,35 @@ class TestUtil {
       brukFra = LocalDateTime.now(),
       brukTil = null,
       opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggForelderBo() = ForelderBo(
+
+    fun byggKontantstotteBo() = KontantstotteBo(
       grunnlagspakkeId = (1..100).random(),
-      personId = "4321",
-      navn = "navn1",
-      foedselsdato = LocalDate.parse("2011-01-01"),
-      doedsdato = LocalDate.parse("2021-07-01"),
+      partPersonId = "1234567",
+      barnPersonId = "0123456",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      belop = 7500,
+      hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggForelder() = Forelder(
-      forelderId = (1..100).random(),
+    fun byggKontantstotte() = Kontantstotte(
+      kontantstotteId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
-      personId = "",
-      navn = "",
-      foedselsdato = LocalDate.parse("2011-01-01"),
-      doedsdato = LocalDate.parse("2021-07-01"),
+      partPersonId = "1234567",
+      barnPersonId = "0123456",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetAv = null,
-      opprettetTidspunkt = LocalDateTime.now()
+      belop = 7500,
+      hentetTidspunkt = LocalDateTime.now()
     )
 
     fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
@@ -528,10 +555,12 @@ class TestUtil {
       )
     )
 
-    fun byggKontantstotteResponse() = InnsynResponse(
+    fun byggKontantstotteResponse() = KontantstotteResponse(
       immutableListOf(
         StonadDto(
           fnr = "12345678901",
+          fom = YearMonth.parse("2022-01"),
+          tom = YearMonth.parse("2022-07"),
           immutableListOf(
             UtbetalingDto(
               fom = YearMonth.parse("2022-01"),
@@ -541,7 +570,8 @@ class TestUtil {
           ),
           immutableListOf(
             no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto(
-              "11223344551")
+              "11223344551"
+            )
           )
         )
       )
@@ -597,7 +627,7 @@ class TestUtil {
         null,
         null,
         null,
-        null,
+        Aktoer("Testaktor", AktoerType.NATURLIG_IDENT),
         null,
         null,
         false,
@@ -649,8 +679,9 @@ class TestUtil {
       periodeFra = LocalDate.now()
     )
 
-    fun byggKontantstotteRequest() = InnsynRequest(
-      listOf("123"
+    fun byggKontantstotteRequest() = KontantstotteRequest(
+      listOf(
+        "123"
       )
     )
 

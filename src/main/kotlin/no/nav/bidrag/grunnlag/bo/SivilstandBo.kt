@@ -36,7 +36,7 @@ data class SivilstandBo(
   val opprettetAv: String?,
 
   @Schema(description = "Opprettet tidspunkt")
-  val opprettetTidspunkt: LocalDateTime
+  val hentetTidspunkt: LocalDateTime
 
 )
 

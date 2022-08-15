@@ -3,6 +3,7 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandsmedlemDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
@@ -280,14 +281,13 @@ class PersistenceService(
   }
 
   // Returnerer lagret, komplett grunnlagspakke
-//  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
-//    return HentGrunnlagspakkeDto(
-//      grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
-//      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-//      hentEgneBarn(grunnlagspakkeId), hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
-//      hentSivilstand(grunnlagspakkeId)
-//    )
-//  }
+  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
+    return HentGrunnlagspakkeDto(
+      grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
+      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
+      emptyList(), emptyList(), emptyList(), emptyList()
+    )
+  }
 
   // Returnerer formaal som er angitt for grunnlagspakken
   fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String {
@@ -343,7 +343,7 @@ class PersistenceService(
     LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
       val unchangedAinntekt =
-        equalEntity.periodEntity.copy(opprettetTidspunkt = timestampOppdatering).toAinntektEntity()
+        equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
       ainntektRepository.save(unchangedAinntekt)
     }
     // Lagrer nye Ainntekter og Ainntektsposter.
@@ -390,7 +390,7 @@ class PersistenceService(
     LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
       val unchangedSkattegrunnlag =
-        equalEntity.periodEntity.copy(opprettetTidspunkt = timestampOppdatering)
+        equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering)
           .toSkattegrunnlagEntity()
       skattegrunnlagRepository.save(unchangedSkattegrunnlag)
     }
@@ -439,7 +439,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            opprettetTidspunkt = inntekt.opprettetTidspunkt,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
             ainntektspostListe = hentAinntektspostListe
           )
         )
@@ -512,7 +512,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            opprettetTidspunkt = inntekt.opprettetTidspunkt,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
             hentSkattegrunnlagspostListe
           )
         )
@@ -538,7 +538,7 @@ class PersistenceService(
             brukTil = ubst.brukTil,
             belop = ubst.belop,
             manueltBeregnet = ubst.manueltBeregnet,
-            opprettetTidspunkt = ubst.opprettetTidspunkt
+            hentetTidspunkt = ubst.hentetTidspunkt
           )
         )
       }
@@ -561,7 +561,7 @@ class PersistenceService(
             brukTil = barnetillegg.brukTil,
             belopBrutto = barnetillegg.belopBrutto,
             barnType = barnetillegg.barnType,
-            opprettetTidspunkt = barnetillegg.opprettetTidspunkt
+            hentetTidspunkt = barnetillegg.hentetTidspunkt
           )
         )
       }
@@ -606,7 +606,7 @@ class PersistenceService(
                   foedselsdato = husstandsmedlem.foedselsdato,
                   doedsdato = husstandsmedlem.doedsdato,
                   opprettetAv = husstandsmedlem.opprettetAv,
-                  opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
+                  hentetTidspunkt = husstandsmedlem.hentetTidspunkt,
                 )
               )
             }
@@ -626,7 +626,7 @@ class PersistenceService(
             matrikkelId = husstand.matrikkelId,
             landkode = husstand.landkode,
             opprettetAv = husstand.opprettetAv,
-            opprettetTidspunkt = husstand.opprettetTidspunkt,
+            hentetTidspunkt = husstand.hentetTidspunkt,
             husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
           )
         )
@@ -671,7 +671,7 @@ class PersistenceService(
                   foedselsdato = husstandsmedlem.foedselsdato,
                   doedsdato = husstandsmedlem.doedsdato,
                   opprettetAv = husstandsmedlem.opprettetAv,
-                  opprettetTidspunkt = husstandsmedlem.opprettetTidspunkt,
+                  hentetTidspunkt = husstandsmedlem.hentetTidspunkt,
                 )
               )
             }
@@ -691,7 +691,7 @@ class PersistenceService(
                 matrikkelId = husstand.matrikkelId,
                 landkode = husstand.landkode,
                 opprettetAv = husstand.opprettetAv,
-                opprettetTidspunkt = husstand.opprettetTidspunkt,
+                hentetTidspunkt = husstand.hentetTidspunkt,
                 husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
               )
             )
@@ -718,7 +718,7 @@ class PersistenceService(
             periodeTil = sivilstand.periodeTil,
             sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
             opprettetAv = sivilstand.opprettetAv,
-            opprettetTidspunkt = sivilstand.opprettetTidspunkt
+            hentetTidspunkt = sivilstand.hentetTidspunkt
           )
         )
       }

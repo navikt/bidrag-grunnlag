@@ -22,7 +22,7 @@ data class Ainntektspost(
   val inntektId: Int = 0,
 
   @Column(nullable = true, name = "utbetalingsperiode")
-  val utbetalingsperiode: String? = null,
+  val utbetalingsperiode: String? = "",
 
   @Column(nullable = true, name = "opptjeningsperiode_fra")
   val opptjeningsperiodeFra: LocalDate? = LocalDate.now(),
@@ -34,16 +34,16 @@ data class Ainntektspost(
   val opplysningspliktigId: String? = "",
 
   @Column(nullable = true, name = "virksomhet_id")
-  val virksomhetId: String? = null,
+  val virksomhetId: String? = "",
 
   @Column(nullable = false, name = "inntekt_type")
   val inntektType: String = "",
 
   @Column(nullable = true, name = "fordel_type")
-  val fordelType: String? = null,
+  val fordelType: String? = "",
 
   @Column(nullable = true, name = "beskrivelse")
-  val beskrivelse: String? = null,
+  val beskrivelse: String? = "",
 
   @Column(nullable = false, name = "belop")
   val belop: BigDecimal = BigDecimal.ZERO,

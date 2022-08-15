@@ -44,8 +44,8 @@ data class Forelder(
   @Column(nullable = true, name = "opprettet_av")
   val opprettetAv: String? = null,
 
-  @Column(nullable = false, name = "opprettet_tidspunkt")
-  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
+  @Column(nullable = false, name = "hentet_tidspunkt")
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun Forelder.toPersonBo() = with(::ForelderBo) {

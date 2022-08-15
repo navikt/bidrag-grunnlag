@@ -52,7 +52,7 @@ data class UtvidetBarnetrygdOgSmaabarnstillegg(
   val deltBosted: Boolean = false,
 
   @Column(nullable = false, name = "hentet_tidspunkt")
-  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun UtvidetBarnetrygdOgSmaabarnstillegg.toUtvidetBarnetrygdOgSmaabarnstilleggBo() = with(::UtvidetBarnetrygdOgSmaabarnstilleggBo) {

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS husstand
     bruk_fra timestamp DEFAULT now() NOT NULL,
     bruk_til timestamp,
     opprettet_av varchar(255),
-    opprettet_tidspunkt timestamp DEFAULT now() NOT NULL,
+    hentet_tidspunkt timestamp DEFAULT now() NOT NULL,
     CONSTRAINT husstand_pkey PRIMARY KEY (husstand_id),
     CONSTRAINT grunnlagspakke_husstand_fkey FOREIGN KEY (grunnlagspakke_id)
         REFERENCES grunnlagspakke (grunnlagspakke_id) MATCH SIMPLE

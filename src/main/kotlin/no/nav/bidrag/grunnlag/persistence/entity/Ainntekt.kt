@@ -39,7 +39,7 @@ data class Ainntekt(
   val brukTil: LocalDateTime? = null,
 
   @Column(nullable = false, name = "hentet_tidspunkt")
-  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
 fun Ainntekt.toAinntektBo() = with(::AinntektBo) {

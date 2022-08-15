@@ -33,7 +33,7 @@ data class HusstandsmedlemBo(
   val opprettetAv: String?,
 
   @Schema(description = "Opprettet tidspunkt")
-  val opprettetTidspunkt: LocalDateTime
+  val hentetTidspunkt: LocalDateTime
 )
 
 fun HusstandsmedlemBo.toHusstandsmedlemEntity() = with(::Husstandsmedlem) {

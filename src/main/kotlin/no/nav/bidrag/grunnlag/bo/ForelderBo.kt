@@ -36,7 +36,7 @@ data class ForelderBo(
   val opprettetAv: String?,
 
   @Schema(description = "Opprettet tidspunkt")
-  val opprettetTidspunkt: LocalDateTime = LocalDateTime.now()
+  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 
 )
 

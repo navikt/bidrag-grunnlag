@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS barn
     bruk_fra timestamp DEFAULT now() NOT NULL,
     bruk_til timestamp,
     opprettet_av varchar(255),
-    opprettet_tidspunkt timestamp DEFAULT now() NOT NULL,
+    hentet_tidspunkt timestamp DEFAULT now() NOT NULL,
     CONSTRAINT barn_pkey PRIMARY KEY (barn_id),
     CONSTRAINT grunnlagspakke_barn_fkey FOREIGN KEY (grunnlagspakke_id)
         REFERENCES grunnlagspakke (grunnlagspakke_id) MATCH SIMPLE
