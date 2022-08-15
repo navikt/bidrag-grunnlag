@@ -243,7 +243,7 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(nySivilstandOpprettet).isNotNull() },
       { assertThat(nySivilstandOpprettet.sivilstandId).isNotNull() },
 
-      // sjekk GrunnlagspakkeBo
+      // sjekk KontantstotteDto
       { assertThat(nyKontantstotteOpprettet).isNotNull() },
       { assertThat(nyKontantstotteOpprettet.grunnlagspakkeId).isNotNull() },
 
