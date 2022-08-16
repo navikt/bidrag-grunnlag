@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS husstandsmedlem
     hentet_tidspunkt timestamp DEFAULT now() NOT NULL,
     CONSTRAINT husstandsmedlem_pkey PRIMARY KEY (husstandsmedlem_id),
     CONSTRAINT husstand_fkey FOREIGN KEY (husstand_id)
-        REFERENCES husstand (person_db_id) MATCH SIMPLE
+        REFERENCES husstand (husstand_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     UNIQUE (husstandsmedlem_id, husstand_id)
