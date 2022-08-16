@@ -37,6 +37,7 @@ class OppdaterKontantstotte(
       // kall PDL for å hente historikk på fnr?
       val kontantstotteRequest = KontantstotteRequest(
         listOf(personIdOgPeriode.personId)
+      //TODO: Må legge til periode til her..
       )
 
       SECURE_LOGGER.info("Kaller kontantstøtte med request: $kontantstotteRequest")
