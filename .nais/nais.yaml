@@ -67,7 +67,7 @@ spec:
     - name: BIDRAGPERSON_URL
       value: https://{{ azure.bidragperson_url }}
     - name: BIDRAGPERSON_SCOPE
-      value: { { azure.bidragperson_scope }}
+      value: {{ azure.bidragperson_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}
