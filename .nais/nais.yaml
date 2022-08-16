@@ -22,8 +22,8 @@ spec:
       external:
         - host: {{ azure.familiebasak_url }}
         - host: {{ azure.bidraggcpproxy_url }}
-#        - host: {{ azure.kontantstotte_url }}
         - host: {{ azure.bidragperson_url }}
+#        - host: {{ azure.kontantstotte_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
