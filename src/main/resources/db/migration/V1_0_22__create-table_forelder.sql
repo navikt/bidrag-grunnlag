@@ -1,6 +1,6 @@
--- Table: person
+-- Table: forelder
 
--- DROP TABLE person;
+-- DROP TABLE forelder;
 
 CREATE TABLE IF NOT EXISTS forelder
 (
