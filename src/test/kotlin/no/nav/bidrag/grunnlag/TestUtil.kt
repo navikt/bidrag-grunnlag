@@ -28,6 +28,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.bo.BarnBo
+import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
@@ -71,6 +72,7 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
+import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -362,7 +364,7 @@ class TestUtil {
       grunnlagspakkeId = (1..100).random(),
       personId = "4321",
       navn = "navn1",
-      foedselsdato = LocalDate.parse("2011-01-01"),
+      foedselsdato = LocalDate.parse("2001-11-12"),
       doedsdato = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
@@ -374,9 +376,9 @@ class TestUtil {
     fun byggForelder() = Forelder(
       forelderId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
-      personId = "",
-      navn = "",
-      foedselsdato = LocalDate.parse("2011-01-01"),
+      personId = "4321",
+      navn = "navn1",
+      foedselsdato = LocalDate.parse("2001-11-12"),
       doedsdato = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
@@ -414,11 +416,21 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
+    fun byggForelderBarnBo() = ForelderBarnBo(
+      forelderId = byggForelder().forelderId,
+      barnId = byggBarn().barnId
+    )
+
+    fun byggForelderBarn() = ForelderBarn(
+      forelder = Forelder(),
+      barn = Barn()
+    )
+
     fun byggHusstandBo() = HusstandBo(
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
       periodeFra = LocalDate.parse("2011-01-01"),
-      periodeTil = LocalDate.parse("2011-02-01"),
+      periodeTil = LocalDate.parse("2022-02-01"),
       adressenavn = "adressenavn1",
       husnummer = "husnummer1",
       husbokstav = "husbokstav1",
@@ -439,7 +451,7 @@ class TestUtil {
       grunnlagspakkeId = (1..100).random(),
       personId = "1234567",
       periodeFra = LocalDate.parse("2011-01-01"),
-      periodeTil = LocalDate.parse("2011-02-01"),
+      periodeTil = LocalDate.parse("2022-02-01"),
       adressenavn = "adressenavn1",
       husnummer = "husnummer1",
       husbokstav = "husbokstav1",
@@ -470,6 +482,7 @@ class TestUtil {
     fun byggHusstandsmedlem() = Husstandsmedlem(
       husstandsmedlemId = (1..100).random(),
       husstandId = (1..100).random(),
+      personId = "123",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
       navn = "navn1",
@@ -484,7 +497,7 @@ class TestUtil {
       personId = "1234",
       periodeFra = LocalDate.parse("2021-01-01"),
       periodeTil = LocalDate.parse("2021-07-01"),
-      sivilstand = "Samboer",
+      sivilstand = SivilstandKode.SAMBOER.toString(),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -732,10 +745,10 @@ class TestUtil {
     )
 
 
-    fun byggHentFoedselOgDoedResponse() = NavnFoedselDoedResponseDto(
+    fun byggHentNavnFoedselOgDoedResponse() = NavnFoedselDoedResponseDto(
       navn = "Dunkel Sol",
-      foedselsdato = LocalDate.parse("2017-04-17"),
-      foedselsaar = 2017,
+      foedselsdato = LocalDate.parse("2001-04-17"),
+      foedselsaar = 2001,
       doedsdato = null
     )
 

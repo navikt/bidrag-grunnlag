@@ -19,7 +19,6 @@ private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/foedselogd
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
 private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER = "/bidrag-person/husstandsmedlemmer"
 private const val BIDRAGPERSON_CONTEXT_SIVILSTAND = "/bidrag-person/sivilstand"
-private const val BIDRAGPERSON_CONTEXT_PERSON = "/bidrag-person/informasjon"
 
 open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate) :
   GrunnlagsConsumer() {

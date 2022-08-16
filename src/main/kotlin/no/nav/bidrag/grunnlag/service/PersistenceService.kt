@@ -250,31 +250,6 @@ class PersistenceService(
     return husstandsmedlemRepository.save(nyttHusstandsmedlem)
   }
 
-  fun opprettPeriodeGrunnlag(forelderBarnBo: ForelderBarnBo): ForelderBarn {
-    val eksisterendeForelder = forelderRepository.findById(forelderBarnBo.forelderId)
-      .orElseThrow {
-        IllegalArgumentException(
-          String.format(
-            "Fant ikke forelder med id %d i databasen",
-            forelderBarnBo.forelderId
-          )
-        )
-      }
-    val eksisterendeBarn = barnRepository.findById(forelderBarnBo.barnId)
-      .orElseThrow {
-        IllegalArgumentException(
-          String.format(
-            "Fant ikke barn med id %d i databasen",
-            forelderBarnBo.barnId
-          )
-        )
-      }
-    val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
-    LOGGER.info("nyForelderBarn: $nyForelderBarn")
-    return forelderBarnRepository.save(nyForelderBarn)
-  }
-
-
   fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
     val nySivilstand = sivilstandBo.toSivilstandEntity()
     return sivilstandRepository.save(nySivilstand)

@@ -67,9 +67,6 @@ class OppdaterGrunnlagspakkeService(
       .oppdaterEgneBarnIHusstanden(
         hentRequestListeFor(EGNE_BARN_I_HUSSTANDEN, oppdaterGrunnlagspakkeRequestDto)
       )
-      .oppdaterEgneBarnIHusstanden(
-        hentRequestListeFor(EGNE_BARN_I_HUSSTANDEN, oppdaterGrunnlagspakkeRequestDto)
-      )
       .oppdaterHusstandsmedlemmer(
         hentRequestListeFor(HUSSTANDSMEDLEMMER, oppdaterGrunnlagspakkeRequestDto)
       )

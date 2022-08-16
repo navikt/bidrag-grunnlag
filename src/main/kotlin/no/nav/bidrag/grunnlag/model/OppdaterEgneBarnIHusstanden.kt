@@ -1,18 +1,11 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
-import no.nav.bidrag.behandling.felles.enums.BarnType
-import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.bo.BarnBo
-import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
