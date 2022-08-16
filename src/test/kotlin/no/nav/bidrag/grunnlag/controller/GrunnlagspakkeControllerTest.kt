@@ -18,6 +18,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
@@ -72,8 +73,9 @@ class GrunnlagspakkeControllerTest(
   private val restTemplate: HttpHeaderRestTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
   private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
+  private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
   private val kontantstotteConsumer: KontantstotteConsumer = KontantstotteConsumer(restTemplate)
-  private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, kontantstotteConsumer)
+  private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer, kontantstotteConsumer)
   private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
   private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
   private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)
@@ -344,19 +346,18 @@ class GrunnlagspakkeControllerTest(
         )
       )
     )
-      .thenReturn(
-        OppdaterGrunnlagspakkeDto(
-          grunnlagspakkeId = 1,
-          grunnlagTypeResponsListe =
-          listOf(
-            OppdaterGrunnlagDto(
-              type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
-              personId = "12345678901",
-              status = GrunnlagsRequestStatus.HENTET,
-              statusMelding = "Ok"
-            )
+      .thenReturn(OppdaterGrunnlagspakkeDto(
+        grunnlagspakkeId = 1
+        , grunnlagTypeResponsListe =
+        listOf(
+          OppdaterGrunnlagDto(
+            type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+            personId = "12345678901",
+            status = GrunnlagsRequestStatus.HENTET,
+            statusMelding = "Ok"
           )
         )
+      )
       )
 
     val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")

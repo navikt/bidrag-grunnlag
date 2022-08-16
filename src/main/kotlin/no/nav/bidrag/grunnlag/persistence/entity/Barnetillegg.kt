@@ -34,7 +34,7 @@ data class Barnetillegg(
   val periodeFra: LocalDate = LocalDate.now(),
 
   @Column(nullable = true, name = "periode_til")
-  val periodeTil: LocalDate? = LocalDate.now(),
+  val periodeTil: LocalDate? = null,
 
   @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,

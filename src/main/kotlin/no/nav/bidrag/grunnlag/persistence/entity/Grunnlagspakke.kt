@@ -31,7 +31,7 @@ data class Grunnlagspakke(
   val gyldigTil: LocalDate? = null,
 
   @Column(nullable = true, name = "formaal")
-  val formaal: String = ""
+  val formaal: String? = null
 )
 
 fun Grunnlagspakke.toGrunnlagspakkeBo() = with(::GrunnlagspakkeBo) {

@@ -44,7 +44,7 @@ internal class BidragGcpProxyConsumerTest {
   private val restTemplateMock: HttpHeaderRestTemplate? = null
 
   @Test
-  fun `Sjekk at ok respons fra BidragGcpProxy inntekt endepunkt mappes korrekt`() {
+  fun `Sjekk at ok respons fra BidragGcpProxy inntekt- endepunkt mappes korrekt`() {
     val request = TestUtil.byggHentInntektRequest()
 
     Mockito.`when`(
@@ -83,7 +83,7 @@ internal class BidragGcpProxyConsumerTest {
   }
 
   @Test
-  fun `Sjekk at exception fra BidragGcpProxy inntekt endepunkt håndteres korrekt`() {
+  fun `Sjekk at exception fra BidragGcpProxy inntekt-endepunkt håndteres korrekt`() {
     val request = TestUtil.byggHentInntektRequest()
 
     Mockito.`when`(
@@ -110,7 +110,7 @@ internal class BidragGcpProxyConsumerTest {
   }
 
   @Test
-  fun `Sjekk at ok respons fra BidragGcpProxy skattegrunnlag endepunkt mappes korrekt`() {
+  fun `Sjekk at ok respons fra BidragGcpProxy skattegrunnlag-endepunkt mappes korrekt`() {
     val request = TestUtil.byggHentSkattegrunnlagRequest()
 
     Mockito.`when`(
@@ -144,7 +144,7 @@ internal class BidragGcpProxyConsumerTest {
   }
 
   @Test
-  fun `Sjekk at exception fra BidragGcpProxy skattegrunnlag endepunkt håndteres korrekt`() {
+  fun `Sjekk at exception fra BidragGcpProxy skattegrunnlag-endepunkt håndteres korrekt`() {
     val request = TestUtil.byggHentSkattegrunnlagRequest()
 
     Mockito.`when`(
@@ -171,7 +171,7 @@ internal class BidragGcpProxyConsumerTest {
   }
 
   @Test
-  fun `Sjekk at ok respons fra BidragGcpProxy barnetillegg pensjon endepunkt mappes korrekt`() {
+  fun `Sjekk at ok respons fra BidragGcpProxy barnetillegg-pensjon-endepunkt mappes korrekt`() {
     val request = TestUtil.byggHentBarnetilleggPensjonRequest()
 
     Mockito.`when`(
@@ -203,7 +203,7 @@ internal class BidragGcpProxyConsumerTest {
   }
 
   @Test
-  fun `Sjekk at exception fra BidragGcpProxy barnetillegg pensjon endepunkt håndteres korrekt`() {
+  fun `Sjekk at exception fra BidragGcpProxy barnetillegg-pensjon-endepunkt håndteres korrekt`() {
     val request = TestUtil.byggHentBarnetilleggPensjonRequest()
 
     Mockito.`when`(

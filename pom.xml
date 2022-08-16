@@ -32,7 +32,7 @@
     <com.squareup.okhttp3.version>4.9.2</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <bidrag-behandling-felles.version>0.0.37</bidrag-behandling-felles.version>
-    <bidrag-behandling-felles-dto.version>0.0.32</bidrag-behandling-felles-dto.version>
+    <bidrag-behandling-felles-dto.version>0.0.34</bidrag-behandling-felles-dto.version>
   </properties>
 
   <dependencies>
@@ -266,21 +266,6 @@
     </plugins>
   </build>
   <repositories>
-    <!-- Det generelle interne Nexus-repoet til NAV (brukes kun internt) -->
-    <repository>
-      <id>nexus-internal-release</id>
-      <url>https://repo.adeo.no/repository/maven-release</url>
-    </repository>
-    <!-- Mirror foran Maven Central NAV (brukes kun internt) -->
-    <repository>
-      <id>nexus-internal-mirror</id>
-      <url>https://repo.adeo.no/repository/maven-public</url>
-    </repository>
-    <!-- Skal brukes hvis bygget kjører internt (f.eks. Jenkins, fra utviklerimage, eller via ScaleFT) -->
-    <repository>
-      <id>internal-mirror-github-navikt</id>
-      <url>https://repo.adeo.no/repository/github-package-registry-navikt/</url>
-    </repository>
     <!-- Skal brukes hvis bygget kjøres fra en Github Action -->
     <repository>
       <id>github-package-registry-navikt</id>

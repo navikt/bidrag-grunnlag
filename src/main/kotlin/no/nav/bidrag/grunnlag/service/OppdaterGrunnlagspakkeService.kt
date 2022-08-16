@@ -7,15 +7,22 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeReques
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.AINNTEKT
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILLEGG
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.KONTANTSTOTTE
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SIVILSTAND
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SKATTEGRUNNLAG
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
+import no.nav.bidrag.grunnlag.model.OppdaterEgneBarnIHusstanden
+import no.nav.bidrag.grunnlag.model.OppdaterHusstandsmedlemmer
 import no.nav.bidrag.grunnlag.model.OppdaterKontantstotte
+import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
 import no.nav.bidrag.grunnlag.model.OppdaterSkattegrunnlag
 import no.nav.bidrag.grunnlag.model.OppdaterUtvidetBarnetrygdOgSmaabarnstillegg
 import org.springframework.stereotype.Service
@@ -26,6 +33,7 @@ class OppdaterGrunnlagspakkeService(
   private val persistenceService: PersistenceService,
   private val familieBaSakConsumer: FamilieBaSakConsumer,
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
+  private val bidragPersonConsumer: BidragPersonConsumer,
   private val kontantstotteConsumer: KontantstotteConsumer
 ) {
   fun oppdaterGrunnlagspakke(
@@ -55,6 +63,15 @@ class OppdaterGrunnlagspakkeService(
       )
       .oppdaterKontantstotte(
         hentRequestListeFor(KONTANTSTOTTE, oppdaterGrunnlagspakkeRequestDto)
+      )
+      .oppdaterEgneBarnIHusstanden(
+        hentRequestListeFor(EGNE_BARN_I_HUSSTANDEN, oppdaterGrunnlagspakkeRequestDto)
+      )
+      .oppdaterHusstandsmedlemmer(
+        hentRequestListeFor(HUSSTANDSMEDLEMMER, oppdaterGrunnlagspakkeRequestDto)
+      )
+      .oppdaterSivilstand(
+        hentRequestListeFor(SIVILSTAND, oppdaterGrunnlagspakkeRequestDto)
       )
 
     return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
@@ -151,5 +168,45 @@ class OppdaterGrunnlagspakkeService(
       )
       return this
     }
+
+    fun oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+      this.addAll(
+        OppdaterEgneBarnIHusstanden(
+          grunnlagspakkeId,
+          timestampOppdatering,
+          persistenceService,
+          bidragPersonConsumer
+        )
+          .oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe)
+      )
+      return this
+    }
+
+    fun oppdaterHusstandsmedlemmer(husstandsmedlemmerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+      this.addAll(
+        OppdaterHusstandsmedlemmer(
+          grunnlagspakkeId,
+          timestampOppdatering,
+          persistenceService,
+          bidragPersonConsumer
+        )
+          .oppdaterHusstandsmedlemmer(husstandsmedlemmerRequestListe)
+      )
+      return this
+    }
+
+    fun oppdaterSivilstand(sivilstandRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+      this.addAll(
+        OppdaterSivilstand(
+          grunnlagspakkeId,
+          timestampOppdatering,
+          persistenceService,
+          bidragPersonConsumer
+        )
+          .oppdaterSivilstand(sivilstandRequestListe)
+      )
+      return this
+    }
+
   }
 }

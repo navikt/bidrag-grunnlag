@@ -22,6 +22,7 @@ spec:
       external:
         - host: {{ azure.familiebasak_url }}
         - host: {{ azure.bidraggcpproxy_url }}
+        - host: {{ azure.bidragperson_url }}
 #        - host: {{ azure.kontantstotte_url }}
   image: {{ image }}
   liveness:
@@ -63,6 +64,10 @@ spec:
       value: https://{{ azure.kontantstotte_url }}
     - name: KONTANTSTOTTE_SCOPE
       value: {{ azure.kontantstotte_scope }}
+    - name: BIDRAGPERSON_URL
+      value: https://{{ azure.bidragperson_url }}
+    - name: BIDRAGPERSON_SCOPE
+      value: {{ azure.bidragperson_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}

@@ -11,6 +11,7 @@ import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.comparator.AbstractPeriodComparator.Companion.LOGGER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.service.SecurityTokenService
@@ -89,6 +90,19 @@ class BidragGrunnlagConfig {
   }
 
   @Bean
+  fun bidragPersonConsumer(
+    @Value("\${BIDRAGPERSON_URL}") url: String,
+    restTemplate: HttpHeaderRestTemplate,
+    securityTokenService: SecurityTokenService,
+    exceptionLogger: ExceptionLogger
+  ): BidragPersonConsumer {
+    LOGGER.info("Url satt i config: $url")
+    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidragperson"))
+    return BidragPersonConsumer(restTemplate)
+  }
+
+  @Bean
   fun kontantstotteConsumer(
     @Value("\${KONTANTSTOTTE_URL}") url: String,
     restTemplate: HttpHeaderRestTemplate,
@@ -100,4 +114,5 @@ class BidragGrunnlagConfig {
     restTemplate.interceptors.add(securityTokenService.generateBearerToken("kontantstotte"))
     return KontantstotteConsumer(restTemplate)
   }
+
 }
