@@ -43,7 +43,6 @@ class GrunnlagspakkeService(
 
     )
 
-
     // Oppdaterer endret_timestamp på grunnlagspakke
     if (harOppdatertGrunnlag(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe)) {
       persistenceService.oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
@@ -72,7 +71,7 @@ class GrunnlagspakkeService(
       hentEgneBarnIHusstanden(grunnlagspakkeId),
       hentHusstandsmedlemmer(grunnlagspakkeId),
       persistenceService.hentSivilstand(grunnlagspakkeId),
-      emptyList()
+      persistenceService.hentBarnetilsyn(grunnlagspakkeId)
     )
   }
 

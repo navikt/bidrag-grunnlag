@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilsynDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandsmedlemDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.KontantstotteDto
@@ -19,12 +19,13 @@ import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
-import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -32,11 +33,12 @@ import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.bo.toBarnEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
+import no.nav.bidrag.grunnlag.bo.toBarnetilsynEntity
 import no.nav.bidrag.grunnlag.bo.toHusstandEntity
 import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemEntity
+import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
 import no.nav.bidrag.grunnlag.bo.toPersonEntity
 import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
-import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.bo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
@@ -49,12 +51,13 @@ import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
-import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
-import no.nav.bidrag.grunnlag.persistence.entity.Husstand
-import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
+import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Forelder
 import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
+import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import no.nav.bidrag.grunnlag.persistence.entity.Husstand
+import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
+import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
@@ -68,12 +71,13 @@ import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
+import no.nav.bidrag.grunnlag.persistence.repository.BarnetilsynRepository
 import no.nav.bidrag.grunnlag.persistence.repository.ForelderBarnRepository
+import no.nav.bidrag.grunnlag.persistence.repository.ForelderRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
 import no.nav.bidrag.grunnlag.persistence.repository.HusstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.HusstandsmedlemRepository
-import no.nav.bidrag.grunnlag.persistence.repository.ForelderRepository
+import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
@@ -99,7 +103,8 @@ class PersistenceService(
   val forelderRepository: ForelderRepository,
   val forelderBarnRepository: ForelderBarnRepository,
   val sivilstandRepository: SivilstandRepository,
-  val kontantstotteRepository: KontantstotteRepository
+  val kontantstotteRepository: KontantstotteRepository,
+  val barnetilsynRepository: BarnetilsynRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -692,26 +697,26 @@ class PersistenceService(
                 )
               )
             }
-            }
-            husstandDtoListe.add(
-              HusstandDto(
-                personId = husstand.personId,
-                periodeFra = husstand.periodeFra,
-                periodeTil = husstand.periodeTil,
-                adressenavn = husstand.adressenavn,
-                husnummer = husstand.husnummer,
-                husbokstav = husstand.husbokstav,
-                bruksenhetsnummer = husstand.bruksenhetsnummer,
-                postnummer = husstand.postnummer,
-                bydelsnummer = husstand.bydelsnummer,
-                kommunenummer = husstand.kommunenummer,
-                matrikkelId = husstand.matrikkelId,
-                landkode = husstand.landkode,
-                opprettetAv = husstand.opprettetAv,
-                hentetTidspunkt = husstand.hentetTidspunkt,
-                husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
-              )
-            )
+          }
+        husstandDtoListe.add(
+          HusstandDto(
+            personId = husstand.personId,
+            periodeFra = husstand.periodeFra,
+            periodeTil = husstand.periodeTil,
+            adressenavn = husstand.adressenavn,
+            husnummer = husstand.husnummer,
+            husbokstav = husstand.husbokstav,
+            bruksenhetsnummer = husstand.bruksenhetsnummer,
+            postnummer = husstand.postnummer,
+            bydelsnummer = husstand.bydelsnummer,
+            kommunenummer = husstand.kommunenummer,
+            matrikkelId = husstand.matrikkelId,
+            landkode = husstand.landkode,
+            opprettetAv = husstand.opprettetAv,
+            hentetTidspunkt = husstand.hentetTidspunkt,
+            husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
+          )
+        )
       }
     return husstandDtoListe
   }
@@ -738,5 +743,46 @@ class PersistenceService(
         )
       }
     return sivilstandDtoListe
+  }
+
+  fun opprettBarnetilsyn(barnetilsynBo: BarnetilsynBo): Barnetilsyn {
+    val nyBarnetilsyn = barnetilsynBo.toBarnetilsynEntity()
+    return barnetilsynRepository.save(nyBarnetilsyn)
+  }
+
+  fun hentBarnetilsyn(grunnlagspakkeId: Int): List<BarnetilsynDto> {
+    val barnetilsynDtoListe = mutableListOf<BarnetilsynDto>()
+    barnetilsynRepository.hentBarnetilsyn(grunnlagspakkeId)
+      .forEach { barnetilsyn ->
+        barnetilsynDtoListe.add(
+          BarnetilsynDto(
+            partPersonId = barnetilsyn.partPersonId,
+            barnPersonId = barnetilsyn.barnPersonId,
+            periodeFra = barnetilsyn.periodeFra,
+            periodeTil = barnetilsyn.periodeTil,
+            aktiv = barnetilsyn.aktiv,
+            brukFra = barnetilsyn.brukFra,
+            brukTil = barnetilsyn.brukTil,
+            belop = barnetilsyn.belop,
+            tilsynstype = barnetilsyn.tilsynstype,
+            skolealder = barnetilsyn.skolealder,
+            hentetTidspunkt = barnetilsyn.hentetTidspunkt
+          )
+        )
+      }
+    return barnetilsynDtoListe
+  }
+
+
+  fun oppdaterEksisterendeBarnetilsynTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
   }
 }

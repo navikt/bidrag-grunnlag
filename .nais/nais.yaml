@@ -21,6 +21,7 @@ spec:
     outbound:
       external:
         - host: {{ azure.familiebasak_url }}
+        - host: {{ azure.familieefsak_url }}
         - host: {{ azure.bidraggcpproxy_url }}
         - host: {{ azure.bidragperson_url }}
         - host: {{ azure.kontantstotte_url }}
@@ -56,6 +57,8 @@ spec:
   env:
     - name: FAMILIEBASAK_URL
       value: https://{{ azure.familiebasak_url }}
+    - name: FAMILIEEFSAK_URL
+      value: https://{{ azure.familieefsak_url }}
     - name: FAMILIEBASAK_SCOPE
       value: {{ azure.familiebasak_scope }}
     - name: BIDRAGGCPPROXY_URL

@@ -57,7 +57,6 @@ class OppdaterKontantstotte(
           kontantstotteResponse.data.forEach { ks ->
             if (ks.fom.isBefore(YearMonth.from(personIdOgPeriode.periodeTil))) {
               antallPerioderFunnet++
-              //Hører første innslag i UtbetalingDto til første barn? Hvordan henger dette sammen?
               for (i in ks.barn.indices) {
                 persistenceService.opprettKontantstotte(
                   KontantstotteBo(

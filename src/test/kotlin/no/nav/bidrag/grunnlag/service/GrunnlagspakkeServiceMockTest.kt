@@ -12,6 +12,12 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarn
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetillegg
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetilleggBo
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetilsyn
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetilsynBo
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelder
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBarn
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBarnBo
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggGrunnlagspakke
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstand
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandBo
@@ -20,10 +26,6 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandsmedlemBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotte
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotteBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelder
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBarn
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBarnBo
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstand
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstandBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSkattegrunnlagSkatt
@@ -36,11 +38,12 @@ import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -99,6 +102,8 @@ class GrunnlagspakkeServiceMockTest {
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
   @Captor
   private lateinit var kontantstotteBoCaptor: ArgumentCaptor<KontantstotteBo>
+  @Captor
+  private lateinit var barnetilsynBoCaptor: ArgumentCaptor<BarnetilsynBo>
 
   @Test
   fun `Skal opprette ny grunnlagspakke`() {
@@ -147,6 +152,8 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggSivilstand())
     Mockito.`when`(persistenceServiceMock.opprettKontantstotte(MockitoHelper.capture(kontantstotteBoCaptor)))
       .thenReturn(byggKontantstotte())
+    Mockito.`when`(persistenceServiceMock.opprettBarnetilsyn(MockitoHelper.capture(barnetilsynBoCaptor)))
+      .thenReturn(byggBarnetilsyn())
 
     val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
     val nyAinntektOpprettet = persistenceServiceMock.opprettAinntekt(byggAinntektBo())
@@ -163,6 +170,7 @@ class GrunnlagspakkeServiceMockTest {
     val nyHusstandsmedlemOpprettet = persistenceServiceMock.opprettHusstandsmedlem(byggHusstandsmedlemBo())
     val nySivilstandOpprettet = persistenceServiceMock.opprettSivilstand(byggSivilstandBo())
     val nyKontantstotteOpprettet = persistenceServiceMock.opprettKontantstotte(byggKontantstotteBo())
+    val nyBarnetilsynOpprettet = persistenceServiceMock.opprettBarnetilsyn(byggBarnetilsynBo())
 
     val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
     val ainntektBoListe = ainntektBoCaptor.allValues
@@ -179,6 +187,7 @@ class GrunnlagspakkeServiceMockTest {
     val sivilstandBoListe = sivilstandBoCaptor.allValues
     val barnetilleggListe = barnetilleggBoCaptor.allValues
     val kontantstotteListe = kontantstotteBoCaptor.allValues
+    val barnetilsynListe = barnetilsynBoCaptor.allValues
 
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(MockitoHelper.any(AinntektBo::class.java))
@@ -237,9 +246,11 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(nySivilstandOpprettet).isNotNull() },
       { assertThat(nySivilstandOpprettet.sivilstandId).isNotNull() },
 
-      // sjekk KontantstotteDto
       { assertThat(nyKontantstotteOpprettet).isNotNull() },
       { assertThat(nyKontantstotteOpprettet.grunnlagspakkeId).isNotNull() },
+
+      { assertThat(nyBarnetilsynOpprettet).isNotNull() },
+      { assertThat(nyBarnetilsynOpprettet.grunnlagspakkeId).isNotNull() },
 
       // sjekk GrunnlagspakkeDto
       { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
@@ -333,6 +344,13 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(kontantstotteListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
       { assertThat(kontantstotteListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
       { assertThat(kontantstotteListe[0].belop).isEqualTo(7500) },
+
+    // sjekk BarnetilsynDto
+      { assertThat(barnetilsynListe[0].partPersonId).isEqualTo("1234567") },
+      { assertThat(barnetilsynListe[0].barnPersonId).isEqualTo("0123456") },
+      { assertThat(barnetilsynListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+      { assertThat(barnetilsynListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
+      { assertThat(barnetilsynListe[0].belop).isEqualTo(7500) },
 
       // sjekk ForelderBarnBo
       { assertThat(forelderBarnBoListe).isNotNull()  },
