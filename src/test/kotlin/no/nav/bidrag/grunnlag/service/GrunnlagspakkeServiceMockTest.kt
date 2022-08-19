@@ -162,7 +162,6 @@ class GrunnlagspakkeServiceMockTest {
     val nyHusstandOpprettet = persistenceServiceMock.opprettHusstand(byggHusstandBo())
     val nyHusstandsmedlemOpprettet = persistenceServiceMock.opprettHusstandsmedlem(byggHusstandsmedlemBo())
     val nySivilstandOpprettet = persistenceServiceMock.opprettSivilstand(byggSivilstandBo())
-    val nyBarnetilleggOpprettet = persistenceServiceMock.opprettBarnetillegg(byggBarnetilleggBo())
     val nyKontantstotteOpprettet = persistenceServiceMock.opprettKontantstotte(byggKontantstotteBo())
 
     val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
@@ -178,11 +177,6 @@ class GrunnlagspakkeServiceMockTest {
     val husstandBoListe = husstandBoCaptor.allValues
     val husstandsmedlemBoListe = husstandsmedlemBoCaptor.allValues
     val sivilstandBoListe = sivilstandBoCaptor.allValues
-    val ainntektDtoListe = ainntektBoCaptor.allValues
-    val ainntektspostDtoListe = ainntektspostBoCaptor.allValues
-    val skattegrunnlagDtoListe = skattegrunnlagBoCaptor.allValues
-    val skattegrunnlagspostDtoListe = skattegrunnlagspostBoCaptor.allValues
-    val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
     val barnetilleggListe = barnetilleggBoCaptor.allValues
     val kontantstotteListe = kontantstotteBoCaptor.allValues
 
@@ -338,7 +332,8 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(kontantstotteListe[0].barnPersonId).isEqualTo("0123456") },
       { assertThat(kontantstotteListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
       { assertThat(kontantstotteListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-      { assertThat(kontantstotteListe[0].belop).isEqualTo(7500) }
+      { assertThat(kontantstotteListe[0].belop).isEqualTo(7500) },
+
       // sjekk ForelderBarnBo
       { assertThat(forelderBarnBoListe).isNotNull()  },
 
