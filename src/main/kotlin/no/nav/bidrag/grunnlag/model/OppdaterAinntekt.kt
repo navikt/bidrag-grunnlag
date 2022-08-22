@@ -74,7 +74,7 @@ class OppdaterAinntekt(
       when (val restResponseInntekt = bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest)) {
         is RestResponse.Success -> {
           val hentInntektListeResponse = mapResponsTilInternStruktur(restResponseInntekt.body)
-          LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
+//          LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
           val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()

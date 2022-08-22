@@ -51,7 +51,7 @@ class OppdaterBarnetillegg(
         bidragGcpProxyConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)) {
         is RestResponse.Success -> {
           val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
-          LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
+//          LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
 
           persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
             grunnlagspakkeId,

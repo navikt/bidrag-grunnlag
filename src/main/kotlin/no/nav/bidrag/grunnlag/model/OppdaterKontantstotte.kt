@@ -46,7 +46,7 @@ class OppdaterKontantstotte(
         kontantstotteConsumer.hentKontantstotte(kontantstotteRequest)) {
         is RestResponse.Success -> {
           val kontantstotteResponse = restResponseKontantstotte.body
-          LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
+//          LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
 
 //          if (kontantstotteResponse.data.isNotEmpty()) {
           /*            persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(

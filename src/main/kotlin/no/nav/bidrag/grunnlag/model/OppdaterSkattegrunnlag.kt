@@ -64,7 +64,7 @@ class OppdaterSkattegrunnlag(
           is RestResponse.Success -> {
             var antallSkattegrunnlagsposter = 0
             val skattegrunnlagResponse = restResponseSkattegrunnlag.body
-            LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
+//            LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
 
             val skattegrunnlagsPosterOrdinaer = mutableListOf<Skattegrunnlag>()
             val skattegrunnlagsPosterSvalbard = mutableListOf<Skattegrunnlag>()

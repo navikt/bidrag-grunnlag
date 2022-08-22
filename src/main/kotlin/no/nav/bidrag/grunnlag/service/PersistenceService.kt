@@ -236,7 +236,7 @@ class PersistenceService(
         )
       }
     val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
-    LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
+//    LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
     return forelderBarnRepository.save(nyForelderBarn)
   }
 

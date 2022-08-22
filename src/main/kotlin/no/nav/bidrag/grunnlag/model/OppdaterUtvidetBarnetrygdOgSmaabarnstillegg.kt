@@ -50,7 +50,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)) {
         is RestResponse.Success -> {
           val familieBaSakResponse = restResponseFamilieBaSak.body
-          LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
+//          LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
           persistenceService.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
             grunnlagspakkeId,
             personIdOgPeriode.personId,
