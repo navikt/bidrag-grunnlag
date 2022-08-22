@@ -79,7 +79,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
 
   fun hentGrunnlagspakke(@PathVariable @NotNull grunnlagspakkeId: Int): ResponseEntity<HentGrunnlagspakkeDto>? {
     val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeId)
-    LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
+//    LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
     return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
 
   }

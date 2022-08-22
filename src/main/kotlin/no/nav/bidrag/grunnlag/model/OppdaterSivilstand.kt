@@ -66,7 +66,7 @@ class OppdaterSivilstand(
         bidragPersonConsumer.hentSivilstand(hentSivilstandRequest)) {
         is RestResponse.Success -> {
           val sivilstandResponse = restResponseSivilstand.body
-          LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
+//          LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
 
           if ((sivilstandResponse.sivilstand != null) && (sivilstandResponse.sivilstand.isNotEmpty())) {
             persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(

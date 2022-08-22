@@ -61,7 +61,7 @@ class OppdaterHusstandsmedlemmer(
         bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {
         is RestResponse.Success -> {
           val husstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
-          LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer: $husstandsmedlemmerResponse")
+//          LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer: $husstandsmedlemmerResponse")
 
           if ((husstandsmedlemmerResponse.husstandResponseListe != null) && (husstandsmedlemmerResponse.husstandResponseListe.isNotEmpty())) {
             husstandsmedlemmerResponse.husstandResponseListe.forEach { husstand ->

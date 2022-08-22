@@ -54,13 +54,13 @@ class OppdaterEgneBarnIHusstanden(
         bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)) {
         is RestResponse.Success -> {
           val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
-          LOGGER.info("Bidrag-person ga følgende respons på forelder-barn: $forelderBarnRelasjonResponse")
+//          LOGGER.info("Bidrag-person ga følgende respons på forelder-barn: $forelderBarnRelasjonResponse")
 
           if ((forelderBarnRelasjonResponse.forelderBarnRelasjonResponse != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNotEmpty())) {
 
             // Henter og lagrer informasjon om forelder
             val foedselOgDoedForelder = hentNavnFoedselDoed(personIdOgPeriode.personId)
-            LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for forelderen: $foedselOgDoedForelder")
+//            LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for forelderen: $foedselOgDoedForelder")
             // Sett eksisterende forekomst av Forelder til inaktiv
             persistenceService.oppdaterEksisterendeForelderTilInaktiv(
               grunnlagspakkeId,
@@ -88,7 +88,7 @@ class OppdaterEgneBarnIHusstanden(
                 // Henter og lagrer informasjon om alle barn i responsen
                 antallBarnFunnet++
                 val navnFoedselOgDoed = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
-                LOGGER.info("Bidrag-person ga følgende respons på hent navn, fødselsinfo og evt dødsfall for barn: $navnFoedselOgDoed")
+//                LOGGER.info("Bidrag-person ga følgende respons på hent navn, fødselsinfo og evt dødsfall for barn: $navnFoedselOgDoed")
 
                 // Sett eksisterende forekomst av Barn til inaktiv
                 persistenceService.oppdaterEksisterendeBarnTilInaktiv(
