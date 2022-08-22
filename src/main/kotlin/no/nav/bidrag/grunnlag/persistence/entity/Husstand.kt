@@ -50,7 +50,7 @@ data class Husstand(
   @Column(nullable = true, name = "kommunenummer")
   val kommunenummer: String? = null,
 
-  @Column(nullable = true, name = "matrikkelId")
+  @Column(nullable = true, name = "matrikkelid")
   val matrikkelId: Long? = null,
 
   @Column(nullable = true, name = "landkode")
