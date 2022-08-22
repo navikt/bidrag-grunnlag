@@ -6,9 +6,9 @@ azure:
   familiebasak_scope: prod-gcp.teamfamilie.familie-ba-sak
   bidraggcpproxy_url: bidrag-gcp-proxy.prod-fss-pub.nais.io
   bidraggcpproxy_scope: prod-fss.bidrag.bidrag-gcp-proxy
-  kontantstotte_scope: prod-fss.infotrygd.infotrygd-kontantstotte-v2
-  kontantstotte_app: infotrygd-kontantstotte-v2
-  kontantstotte_cluster: prod-fss
+#  kontantstotte_scope: prod-fss.infotrygd.infotrygd-kontantstotte-v2
+#  kontantstotte_app: infotrygd-kontantstotte-v2
+#  kontantstotte_cluster: prod-fss
 dbname: bidrag-grunnlag-prod
 azureAccessInbound:
   - application: bidrag-gcp-proxy
