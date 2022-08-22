@@ -102,17 +102,17 @@ class BidragGrunnlagConfig {
     return BidragPersonConsumer(restTemplate)
   }
 
-//  @Bean
-//  fun kontantstotteConsumer(
-//    @Value("\${KONTANTSTOTTE_URL}") url: String,
-//    restTemplate: HttpHeaderRestTemplate,
-//    securityTokenService: SecurityTokenService,
-//    exceptionLogger: ExceptionLogger
-//  ): KontantstotteConsumer {
-//    LOGGER.info("Url satt i config: $url")
-//    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-//    restTemplate.interceptors.add(securityTokenService.generateBearerToken("kontantstotte"))
-//    return KontantstotteConsumer(restTemplate)
-//  }
+  @Bean
+  fun kontantstotteConsumer(
+    @Value("\${KONTANTSTOTTE_URL}") url: String,
+    restTemplate: HttpHeaderRestTemplate,
+    securityTokenService: SecurityTokenService,
+    exceptionLogger: ExceptionLogger
+  ): KontantstotteConsumer {
+    LOGGER.info("Url satt i config: $url")
+    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("kontantstotte"))
+    return KontantstotteConsumer(restTemplate)
+  }
 
 }
