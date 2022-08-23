@@ -3,6 +3,7 @@ package no.nav.bidrag.grunnlag.model
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -37,7 +38,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         fraDato = personIdOgPeriode.periodeFra
       )
 
-      LOGGER.info(
+      SECURE_LOGGER.info(
         "Kaller familie-ba-sak med personIdent ********${
           familieBaSakRequest.personIdent.substring(
             IntRange(8, 10)
@@ -50,7 +51,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest)) {
         is RestResponse.Success -> {
           val familieBaSakResponse = restResponseFamilieBaSak.body
-//          LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
+          SECURE_LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
           persistenceService.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
             grunnlagspakkeId,
             personIdOgPeriode.personId,

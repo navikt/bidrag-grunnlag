@@ -5,6 +5,7 @@ import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
@@ -50,7 +51,7 @@ class OppdaterHusstandsmedlemmer(
         periodeFra = personIdOgPeriode.periodeFra,
       )
 
-      LOGGER.info(
+      SECURE_LOGGER.info(
         "Kaller bidrag-person Husstandsmedlemmer med personIdent ********${
           husstandsmedlemmerRequest.personId.substring(IntRange(8, 10))
         } " +
@@ -61,7 +62,7 @@ class OppdaterHusstandsmedlemmer(
         bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {
         is RestResponse.Success -> {
           val husstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
-//          LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer: $husstandsmedlemmerResponse")
+          SECURE_LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer: $husstandsmedlemmerResponse")
 
           if ((husstandsmedlemmerResponse.husstandResponseListe != null) && (husstandsmedlemmerResponse.husstandResponseListe.isNotEmpty())) {
             husstandsmedlemmerResponse.husstandResponseListe.forEach { husstand ->

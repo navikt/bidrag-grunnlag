@@ -7,6 +7,7 @@ import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
@@ -53,7 +54,7 @@ class OppdaterSivilstand(
         periodeFra = personIdOgPeriode.periodeFra,
       )
 
-      LOGGER.info(
+      SECURE_LOGGER.info(
         "Kaller bidrag-person og henter sivilstand for personIdent ********${
           hentSivilstandRequest.personId.substring(
             IntRange(8, 10)
@@ -66,7 +67,7 @@ class OppdaterSivilstand(
         bidragPersonConsumer.hentSivilstand(hentSivilstandRequest)) {
         is RestResponse.Success -> {
           val sivilstandResponse = restResponseSivilstand.body
-//          LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
+          SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
 
           if ((sivilstandResponse.sivilstand != null) && (sivilstandResponse.sivilstand.isNotEmpty())) {
             persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(

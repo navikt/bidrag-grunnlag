@@ -3,6 +3,7 @@ package no.nav.bidrag.grunnlag.model
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -34,7 +35,7 @@ class OppdaterKontantstotte(
         listOf(personIdOgPeriode.personId)
       )
 
-      LOGGER.info(
+      SECURE_LOGGER.info(
         "Kaller kontantstøtte med personIdent ********${
           kontantstotteRequest.fnr[0].substring(
             IntRange(8, 10)
@@ -46,7 +47,7 @@ class OppdaterKontantstotte(
         kontantstotteConsumer.hentKontantstotte(kontantstotteRequest)) {
         is RestResponse.Success -> {
           val kontantstotteResponse = restResponseKontantstotte.body
-//          LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
+          SECURE_LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
 
 //          if (kontantstotteResponse.data.isNotEmpty()) {
           /*            persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(

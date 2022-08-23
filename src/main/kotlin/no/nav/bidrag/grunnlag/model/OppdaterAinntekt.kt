@@ -4,6 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
@@ -59,7 +60,7 @@ class OppdaterAinntekt(
         ainntektsfilter = finnFilter(formaal),
         formaal = finnFormaal(formaal)
       )
-      LOGGER.info(
+      SECURE_LOGGER.info(
         "Kaller bidrag-gcp-proxy (Inntektskomponenten) med ident = ********${
           hentAinntektRequest.ident.substring(
             IntRange(8, 10)
@@ -74,7 +75,7 @@ class OppdaterAinntekt(
       when (val restResponseInntekt = bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest)) {
         is RestResponse.Success -> {
           val hentInntektListeResponse = mapResponsTilInternStruktur(restResponseInntekt.body)
-//          LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
+//          SECURE_LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
           var antallPerioderFunnet = 0
           val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()

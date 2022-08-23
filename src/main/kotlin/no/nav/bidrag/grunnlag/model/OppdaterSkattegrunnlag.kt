@@ -4,6 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
@@ -50,7 +51,7 @@ class OppdaterSkattegrunnlag(
           "SummertSkattegrunnlagBidrag",
           personIdOgPeriode.personId
         )
-        LOGGER.info(
+        SECURE_LOGGER.info(
           "Kaller bidrag-gcp-proxy (Sigrun) med ident = ********${
             skattegrunnlagRequest.personId.substring(
               IntRange(8, 10)
@@ -64,7 +65,7 @@ class OppdaterSkattegrunnlag(
           is RestResponse.Success -> {
             var antallSkattegrunnlagsposter = 0
             val skattegrunnlagResponse = restResponseSkattegrunnlag.body
-//            LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
+            SECURE_LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
 
             val skattegrunnlagsPosterOrdinaer = mutableListOf<Skattegrunnlag>()
             val skattegrunnlagsPosterSvalbard = mutableListOf<Skattegrunnlag>()

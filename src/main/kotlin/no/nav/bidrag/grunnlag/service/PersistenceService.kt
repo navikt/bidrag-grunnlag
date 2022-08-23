@@ -13,6 +13,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
@@ -236,7 +237,7 @@ class PersistenceService(
         )
       }
     val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
-//    LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
+    SECURE_LOGGER .info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
     return forelderBarnRepository.save(nyForelderBarn)
   }
 
