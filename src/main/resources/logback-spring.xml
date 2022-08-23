@@ -61,4 +61,4 @@
     <logger name="secureLogger" level="INFO" additivity="false" >
         <appender-ref ref="secureLog" />
     </logger>
-</configuration
+</configuration>
