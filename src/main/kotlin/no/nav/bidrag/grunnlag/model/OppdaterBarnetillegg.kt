@@ -38,15 +38,7 @@ class OppdaterBarnetillegg(
         tom = personIdOgPeriode.periodeTil.minusDays(1)
       )
 
-      SECURE_LOGGER.info(
-        "Kaller barnetillegg pensjon med personIdent ********${
-          hentBarnetilleggPensjonRequest.mottaker.substring(
-            IntRange(8, 10)
-          )
-        } " +
-            ", fraDato " + "${hentBarnetilleggPensjonRequest.fom}" +
-            ", og tilDato " + "${hentBarnetilleggPensjonRequest.tom}"
-      )
+      SECURE_LOGGER.info("Kaller barnetillegg pensjon med request: $hentBarnetilleggPensjonRequest")
 
       when (val restResponseBarnetilleggPensjon =
         bidragGcpProxyConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)) {

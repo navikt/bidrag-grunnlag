@@ -51,14 +51,7 @@ class OppdaterSkattegrunnlag(
           "SummertSkattegrunnlagBidrag",
           personIdOgPeriode.personId
         )
-        SECURE_LOGGER.info(
-          "Kaller bidrag-gcp-proxy (Sigrun) med ident = ********${
-            skattegrunnlagRequest.personId.substring(
-              IntRange(8, 10)
-            )
-          }, " +
-              "inntektsAar = ${skattegrunnlagRequest.inntektsAar} inntektsFilter = ${skattegrunnlagRequest.inntektsFilter}"
-        )
+        SECURE_LOGGER.info("Kaller bidrag-gcp-proxy (Sigrun) med request: $skattegrunnlagRequest")
 
         when (val restResponseSkattegrunnlag =
           bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest)) {

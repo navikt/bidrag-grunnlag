@@ -51,12 +51,7 @@ class OppdaterHusstandsmedlemmer(
         periodeFra = personIdOgPeriode.periodeFra,
       )
 
-      SECURE_LOGGER.info(
-        "Kaller bidrag-person Husstandsmedlemmer med personIdent ********${
-          husstandsmedlemmerRequest.personId.substring(IntRange(8, 10))
-        } " +
-            ", fraDato " + "${husstandsmedlemmerRequest.periodeFra}"
-      )
+      SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: $husstandsmedlemmerRequest")
 
       when (val restResponseHusstandsmedlemmer =
         bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {

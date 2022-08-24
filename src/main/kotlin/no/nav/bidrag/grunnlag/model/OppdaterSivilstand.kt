@@ -54,14 +54,7 @@ class OppdaterSivilstand(
         periodeFra = personIdOgPeriode.periodeFra,
       )
 
-      SECURE_LOGGER.info(
-        "Kaller bidrag-person og henter sivilstand for personIdent ********${
-          hentSivilstandRequest.personId.substring(
-            IntRange(8, 10)
-          )
-        } " +
-            ", fraDato " + "${hentSivilstandRequest.periodeFra}"
-      )
+      SECURE_LOGGER.info("Kaller bidrag-person og henter sivilstand med request: $hentSivilstandRequest")
 
       when (val restResponseSivilstand =
         bidragPersonConsumer.hentSivilstand(hentSivilstandRequest)) {

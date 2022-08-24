@@ -44,18 +44,13 @@ class OppdaterEgneBarnIHusstanden(
         periodeFra = personIdOgPeriode.periodeFra,
       )
 
-      SECURE_LOGGER.info(
-        "Kaller bidrag-person Forelder-barn-relasjon med personIdent ********${
-          forelderBarnRequest.personId.substring(IntRange(8, 10))
-        } " +
-            ", fraDato " + "${forelderBarnRequest.periodeFra}"
-      )
+      SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
 
       when (val restResponseForelderBarnRelasjon =
         bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)) {
         is RestResponse.Success -> {
           val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
-          SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn: $forelderBarnRelasjonResponse")
+          SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
           if ((forelderBarnRelasjonResponse.forelderBarnRelasjonResponse != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNotEmpty())) {
 

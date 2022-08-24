@@ -35,13 +35,7 @@ class OppdaterKontantstotte(
         listOf(personIdOgPeriode.personId)
       )
 
-      SECURE_LOGGER.info(
-        "Kaller kontantstøtte med personIdent ********${
-          kontantstotteRequest.fnr[0].substring(
-            IntRange(8, 10)
-          )
-        } "
-      )
+      SECURE_LOGGER.info("Kaller kontantstøtte med request: $kontantstotteRequest")
 
       when (val restResponseKontantstotte =
         kontantstotteConsumer.hentKontantstotte(kontantstotteRequest)) {
