@@ -5,6 +5,7 @@ import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
@@ -37,21 +38,14 @@ class OppdaterBarnetillegg(
         tom = personIdOgPeriode.periodeTil.minusDays(1)
       )
 
-      LOGGER.info(
-        "Kaller barnetillegg pensjon med personIdent ********${
-          hentBarnetilleggPensjonRequest.mottaker.substring(
-            IntRange(8, 10)
-          )
-        } " +
-            ", fraDato " + "${hentBarnetilleggPensjonRequest.fom}" +
-            ", og tilDato " + "${hentBarnetilleggPensjonRequest.tom}"
-      )
+      SECURE_LOGGER.info("Kaller barnetillegg pensjon med request: $hentBarnetilleggPensjonRequest")
 
       when (val restResponseBarnetilleggPensjon =
         bidragGcpProxyConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)) {
         is RestResponse.Success -> {
           val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
-//          LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
+// !!
+          SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
 
           persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
             grunnlagspakkeId,

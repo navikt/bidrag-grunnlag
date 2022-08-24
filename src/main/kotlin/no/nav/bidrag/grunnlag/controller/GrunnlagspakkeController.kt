@@ -9,6 +9,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.ISSUER
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
@@ -79,7 +80,7 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
 
   fun hentGrunnlagspakke(@PathVariable @NotNull grunnlagspakkeId: Int): ResponseEntity<HentGrunnlagspakkeDto>? {
     val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeId)
-//    LOGGER.info("Følgende grunnlagspakke ble funnet: $grunnlagspakkeFunnet")
+    LOGGER.info("Følgende grunnlagspakke ble hentet: ${grunnlagspakkeFunnet.grunnlagspakkeId}")
     return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
 
   }

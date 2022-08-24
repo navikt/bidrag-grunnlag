@@ -3,6 +3,7 @@ package no.nav.bidrag.grunnlag.model
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
@@ -43,24 +44,19 @@ class OppdaterEgneBarnIHusstanden(
         periodeFra = personIdOgPeriode.periodeFra,
       )
 
-      LOGGER.info(
-        "Kaller bidrag-person Forelder-barn-relasjon med personIdent ********${
-          forelderBarnRequest.personId.substring(IntRange(8, 10))
-        } " +
-            ", fraDato " + "${forelderBarnRequest.periodeFra}"
-      )
+      SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
 
       when (val restResponseForelderBarnRelasjon =
         bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)) {
         is RestResponse.Success -> {
           val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
-//          LOGGER.info("Bidrag-person ga følgende respons på forelder-barn: $forelderBarnRelasjonResponse")
+          SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
           if ((forelderBarnRelasjonResponse.forelderBarnRelasjonResponse != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNotEmpty())) {
 
             // Henter og lagrer informasjon om forelder
             val foedselOgDoedForelder = hentNavnFoedselDoed(personIdOgPeriode.personId)
-//            LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for forelderen: $foedselOgDoedForelder")
+            SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for forelderen: $foedselOgDoedForelder")
             // Sett eksisterende forekomst av Forelder til inaktiv
             persistenceService.oppdaterEksisterendeForelderTilInaktiv(
               grunnlagspakkeId,
@@ -88,7 +84,7 @@ class OppdaterEgneBarnIHusstanden(
                 // Henter og lagrer informasjon om alle barn i responsen
                 antallBarnFunnet++
                 val navnFoedselOgDoed = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
-//                LOGGER.info("Bidrag-person ga følgende respons på hent navn, fødselsinfo og evt dødsfall for barn: $navnFoedselOgDoed")
+                SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn, fødselsinfo og evt dødsfall for barn: $navnFoedselOgDoed")
 
                 // Sett eksisterende forekomst av Barn til inaktiv
                 persistenceService.oppdaterEksisterendeBarnTilInaktiv(

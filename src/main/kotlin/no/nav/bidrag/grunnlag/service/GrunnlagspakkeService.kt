@@ -73,7 +73,8 @@ class GrunnlagspakkeService(
       emptyList(),
       hentEgneBarnIHusstanden(grunnlagspakkeId),
       hentHusstandsmedlemmer(grunnlagspakkeId),
-      persistenceService.hentSivilstand(grunnlagspakkeId)
+      persistenceService.hentSivilstand(grunnlagspakkeId),
+      emptyList()
     )
   }
 
