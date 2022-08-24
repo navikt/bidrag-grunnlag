@@ -261,7 +261,7 @@ class PersistenceService(
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      emptyList(), emptyList(), emptyList(), emptyList()
+      emptyList(), emptyList(), emptyList(), emptyList(), emptyList()
     )
   }
 
