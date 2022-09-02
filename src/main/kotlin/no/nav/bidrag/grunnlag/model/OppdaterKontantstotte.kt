@@ -3,16 +3,14 @@ package no.nav.bidrag.grunnlag.model
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -24,10 +22,6 @@ class OppdaterKontantstotte(
   private val persistenceService: PersistenceService,
   private val kontantstotteConsumer: KontantstotteConsumer
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
-  companion object {
-    @JvmStatic
-    private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterKontantstotte::class.java)
-  }
 
   fun oppdaterKontantstotte(kontantstotteRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterKontantstotte {
     kontantstotteRequestListe.forEach { personIdOgPeriode ->
@@ -37,7 +31,7 @@ class OppdaterKontantstotte(
       // kall PDL for å hente historikk på fnr?
       val kontantstotteRequest = KontantstotteRequest(
         listOf(personIdOgPeriode.personId)
-      //TODO: Må legge til periode til her..
+      //TODO: Må legge til periode til her nå kontantstøtte er klare med ny versjon
       )
 
       SECURE_LOGGER.info("Kaller kontantstøtte med request: $kontantstotteRequest")

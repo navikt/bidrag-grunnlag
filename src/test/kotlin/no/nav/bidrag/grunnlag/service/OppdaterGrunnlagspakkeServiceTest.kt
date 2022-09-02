@@ -205,7 +205,6 @@ class OppdaterGrunnlagspakkeServiceTest {
   }
 
   @Test
-  @Suppress("NonAsciiCharacters")
   fun `Skal oppdatere grunnlagspakke med egne barn i husstanden fra PDL via bidrag-person`() {
 
     Mockito.`when`(persistenceServiceMock.opprettForelder(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(forelderBoCaptor)))
@@ -299,7 +298,6 @@ class OppdaterGrunnlagspakkeServiceTest {
 
 
   @Test
-  @Suppress("NonAsciiCharacters")
   fun `Skal oppdatere grunnlagspakke med husstand og husstandsmedlemmer fra PDL via bidrag-person`() {
 
     Mockito.`when`(persistenceServiceMock.opprettHusstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandBoCaptor)))
@@ -385,7 +383,6 @@ class OppdaterGrunnlagspakkeServiceTest {
   }
 
   @Test
-  @Suppress("NonAsciiCharacters")
   fun `Skal oppdatere grunnlagspakke med sivilstand fra PDL via bidrag-person`() {
 
     Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
@@ -530,12 +527,12 @@ class OppdaterGrunnlagspakkeServiceTest {
       { Assertions.assertThat(barnetilsynListe[0].barnPersonId).isEqualTo("01012212345") },
       { Assertions.assertThat(barnetilsynListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
       { Assertions.assertThat(barnetilsynListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-31")) },
-      { Assertions.assertThat(barnetilsynListe[0].belop).isEqualTo(0) },
+      { Assertions.assertThat(barnetilsynListe[0].belop).isNull() },
       { Assertions.assertThat(barnetilsynListe[1].partPersonId).isEqualTo("12345678910") },
       { Assertions.assertThat(barnetilsynListe[1].barnPersonId).isEqualTo("01011034543") },
       { Assertions.assertThat(barnetilsynListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
       { Assertions.assertThat(barnetilsynListe[1].periodeTil).isEqualTo(LocalDate.parse("2021-07-31")) },
-      { Assertions.assertThat(barnetilsynListe[1].belop).isEqualTo(0) },
+      { Assertions.assertThat(barnetilsynListe[1].belop).isNull() },
 
       // sjekk oppdatertGrunnlagspakke
       { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },

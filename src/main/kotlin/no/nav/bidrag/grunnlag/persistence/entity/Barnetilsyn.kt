@@ -42,14 +42,14 @@ data class Barnetilsyn(
   @Column(nullable = true, name = "bruk_til")
   val brukTil: LocalDateTime? = null,
 
-  @Column(nullable = false, name = "belop")
-  val belop: Int = 0,
+  @Column(nullable = true, name = "belop")
+  val belop: Int? = null,
 
-  @Column(nullable = true, name = "tilsynstype")
+  @Column(nullable = true, name = "tilsyntype")
   val tilsynstype: Tilsyntype?,
 
-  @Column(nullable = false, name = "skolealder")
-  val skolealder: Skolealder,
+  @Column(nullable = true, name = "skolealder")
+  val skolealder: Skolealder?,
 
   @Column(nullable = false, name = "hentet_tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()

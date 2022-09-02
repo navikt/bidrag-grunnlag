@@ -35,8 +35,7 @@ class OppdaterBarnetilsyn(
       var antallPerioderFunnet = 0
 
       val barnetilsynRequest = BarnetilsynRequest(
-        personIdOgPeriode.personId,
-        personIdOgPeriode.periodeFra
+        personIdOgPeriode.personId, personIdOgPeriode.periodeFra
       )
 
       LOGGER.info(
@@ -54,9 +53,7 @@ class OppdaterBarnetilsyn(
           LOGGER.info("Barnetilsyn ga følgende respons: $barnetilsynResponse")
 
           persistenceService.oppdaterEksisterendeBarnetilsynTilInaktiv(
-            grunnlagspakkeId,
-            personIdOgPeriode.personId,
-            timestampOppdatering
+            grunnlagspakkeId, personIdOgPeriode.personId, timestampOppdatering
           )
 
           barnetilsynResponse.barnetilsynBisysPerioder.forEach { bts ->
@@ -73,9 +70,9 @@ class OppdaterBarnetilsyn(
                     aktiv = true,
                     brukFra = timestampOppdatering,
                     brukTil = null,
-                    belop = 0, //TODO: Hente sjablong beløp
-                    tilsynstype = null, //TODO: Skal denne bort?
-                    skolealder = beregnSkolealder(barnIdent, bts.periode.fom),
+                    belop = null,
+                    tilsynstype = null,
+                    skolealder = null,
                     hentetTidspunkt = timestampOppdatering
                   )
                 )
@@ -105,21 +102,23 @@ class OppdaterBarnetilsyn(
     return this
   }
 
+
+  // TODO: Vurdere om beregning av skolealder er noe som kan skje automatisk, eller om saksbehandler må ta stilling til dette
   fun beregnSkolealder(barnIdent: String, fom: LocalDate): Skolealder {
     val dateFormatter = DateTimeFormatter.ofPattern("ddMMyy")
     val fodselsdato = LocalDate.parse(barnIdent.substring(IntRange(0, 5)), dateFormatter)
 
-    if (alderErOver7Ar(fodselsdato) ||
-      (alderEr6Ar(fodselsdato) ||
-          (alderEr5Ar(fodselsdato) && fodtEtterForsteAugust(fodselsdato)))
-      && barnetilsynGjelderFraFomForsteAugust(fom)
+    if (alderErOver7Ar(fodselsdato) || (alderEr6Ar(fodselsdato) || (alderEr5Ar(fodselsdato) && fodtEtterForsteAugust(
+        fodselsdato
+      ))) && barnetilsynGjelderFraFomForsteAugust(fom)
     ) {
       return Skolealder.OVER
     }
     return Skolealder.UNDER
   }
 
-  private fun barnetilsynGjelderFraFomForsteAugust(fom: LocalDate) = fom.isAfter(LocalDate.of(fom.year, Month.JULY, 31))
+  private fun barnetilsynGjelderFraFomForsteAugust(fom: LocalDate) =
+    fom.isAfter(LocalDate.of(fom.year, Month.JULY, 31))
 
   private fun fodtEtterForsteAugust(fodselsdato: LocalDate) =
     fodselsdato.isAfter(LocalDate.of(fodselsdato.year, Month.AUGUST, 1))

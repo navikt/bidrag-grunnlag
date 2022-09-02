@@ -35,13 +35,13 @@ data class BarnetilsynBo(
   val brukTil: LocalDateTime? = null,
 
   @Schema(description = "Beløpet barnetilsynet er på")
-  val belop: Int,
+  val belop: Int? = null,
 
   @Schema(description = "Angir om barnetilsynet er heltid eller deltid")
   val tilsynstype: Tilsyntype?,
 
   @Schema(description = "Angir om barnet er over eller under skolealder")
-  val skolealder: Skolealder,
+  val skolealder: Skolealder?,
 
   @Schema(description = "Hentet tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
