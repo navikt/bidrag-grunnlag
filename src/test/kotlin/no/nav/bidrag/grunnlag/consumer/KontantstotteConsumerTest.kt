@@ -56,13 +56,12 @@ internal class KontantstotteConsumerTest {
         assertAll(
           { assertThat(hentKontantstotteResponse).isNotNull },
           { assertThat(hentKontantstotteResponse.data.size).isEqualTo(1) },
-          { assertThat(hentKontantstotteResponse.data[0].fnr).isEqualTo("12345678901")},
+          { assertThat(hentKontantstotteResponse.data[0].fnr).isEqualTo("12345678910")},
           { assertThat(hentKontantstotteResponse.data[0].fom).isEqualTo(YearMonth.parse("2022-01"))},
           { assertThat(hentKontantstotteResponse.data[0].tom).isEqualTo(YearMonth.parse("2022-07"))},
-          { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].fom).isEqualTo(YearMonth.parse("2022-01")) },
-          { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].tom).isEqualTo(YearMonth.parse("2022-07")) },
-          { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].belop).isEqualTo(17) },
-          { assertThat(hentKontantstotteResponse.data[0].barn[0].fnr).isEqualTo("11223344551") }
+          { assertThat(hentKontantstotteResponse.data[0].belop).isEqualTo(15001) },
+          { assertThat(hentKontantstotteResponse.data[0].barn[0].fnr).isEqualTo("11223344551") },
+          { assertThat(hentKontantstotteResponse.data[0].barn[1].fnr).isEqualTo("15544332211") }
         )
       }
       else -> {

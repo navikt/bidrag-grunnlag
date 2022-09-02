@@ -9,6 +9,7 @@ import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
+import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
@@ -28,6 +29,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.bo.BarnBo
+import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
@@ -43,10 +45,10 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerReques
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.UtbetalingDto
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
@@ -72,6 +74,12 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Datakilde
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode
+import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpMethod
@@ -178,6 +186,17 @@ class TestUtil {
       grunnlagRequestDtoListe = listOf(
         GrunnlagRequestDto(
           type = GrunnlagRequestType.KONTANTSTOTTE,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2022-01-01"),
+          periodeTil = LocalDate.parse("2023-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestBarnetilsyn() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.BARNETILSYN,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2022-01-01"),
           periodeTil = LocalDate.parse("2023-01-01")
@@ -547,6 +566,37 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
+    fun byggBarnetilsynBo() = BarnetilsynBo(
+      grunnlagspakkeId = (1..100).random(),
+      partPersonId = "1234567",
+      barnPersonId = "0123456",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      belop = 7500,
+      tilsynstype = null,
+      skolealder = Skolealder.UNDER,
+      hentetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggBarnetilsyn() = Barnetilsyn(
+      barnetilsynId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      partPersonId = "1234567",
+      barnPersonId = "0123456",
+      periodeFra = LocalDate.parse("2021-01-01"),
+      periodeTil = LocalDate.parse("2021-07-01"),
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      belop = 7500,
+      hentetTidspunkt = LocalDateTime.now(),
+      tilsynstype = null,
+      skolealder = Skolealder.UNDER
+    )
+
     fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
       immutableListOf(
         UtvidetBarnetrygdPeriode(
@@ -571,21 +621,32 @@ class TestUtil {
     fun byggKontantstotteResponse() = KontantstotteResponse(
       immutableListOf(
         StonadDto(
-          fnr = "12345678901",
+          fnr = "12345678910",
           fom = YearMonth.parse("2022-01"),
           tom = YearMonth.parse("2022-07"),
+          belop = 15001,
           immutableListOf(
-            UtbetalingDto(
-              fom = YearMonth.parse("2022-01"),
-              tom = YearMonth.parse("2022-07"),
-              belop = 17
-            )
-          ),
-          immutableListOf(
-            no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto(
+            BarnDto(
               "11223344551"
+            ),
+            BarnDto(
+              "15544332211"
             )
           )
+        )
+      )
+    )
+
+    fun byggBarnetilsynResponse() = BarnetilsynResponse(
+      immutableListOf(
+        BarnetilsynBisysPerioder(
+          periode = Periode(
+            fom = LocalDate.parse("2021-01-01"),
+            tom = LocalDate.parse("2021-07-31"),
+          ),
+          barnIdenter = immutableListOf("01012212345", "01011034543"),
+          manedsbeløp = 3500,
+          datakilde = Datakilde.EF
         )
       )
     )
@@ -696,6 +757,11 @@ class TestUtil {
       listOf(
         "123"
       )
+    )
+
+    fun byggBarnetilsynRequest() = BarnetilsynRequest(
+      "123",
+      LocalDate.now()
     )
 
     fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(

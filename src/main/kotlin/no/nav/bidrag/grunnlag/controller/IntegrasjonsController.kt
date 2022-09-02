@@ -20,6 +20,12 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
@@ -35,7 +41,9 @@ import org.springframework.web.server.ResponseStatusException
 class IntegrasjonsController(
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
   private val familieBaSakConsumer: FamilieBaSakConsumer,
-  private val bidragPersonConsumer: BidragPersonConsumer) {
+  private val bidragPersonConsumer: BidragPersonConsumer,
+  private val kontantstotteConsumer: KontantstotteConsumer,
+  private val familieEfSakConsumer: FamilieEfSakConsumer) {
 
 
   @PostMapping(HENT_AINNTEKT)
@@ -86,9 +94,17 @@ class IntegrasjonsController(
     return handleRestResponse(bidragPersonConsumer.hentSivilstand(sivilstandRequest))
   }
 
+  @PostMapping(HENT_KONTANTSTOTTE)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller infotrygd/kontantstotte-v2 for å hente kontantstotte")
+  fun hentKontantstotte(@RequestBody kontantstotteRequest: KontantstotteRequest) : ResponseEntity<KontantstotteResponse> {
+    return handleRestResponse(kontantstotteConsumer.hentKontantstotte(kontantstotteRequest))
+  }
 
-
-
+  @PostMapping(HENT_BARNETILSYN)
+  @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller familie-ef-sak/hentPerioderBarnetilsyn for å hente barnetilsyn")
+  fun hentBarnetilsyn(@RequestBody barnetilsynRequest: BarnetilsynRequest) : ResponseEntity<BarnetilsynResponse> {
+    return handleRestResponse(familieEfSakConsumer.hentBarnetilsyn(barnetilsynRequest))
+  }
 
   private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {
     return when (restResponse) {
@@ -106,5 +122,7 @@ class IntegrasjonsController(
     const val HENT_FOEDSEL_DOED = "/integrasjoner/forelderbarnrelasjon"
     const val HENT_HUSSTANDSMEDLEMMER = "/integrasjoner/husstandsmedlemmer"
     const val HENT_SIVILSTAND = "/integrasjoner/sivilstand"
+    const val HENT_KONTANTSTOTTE = "/integrasjoner/kontantstotte"
+    const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"
   }
 }

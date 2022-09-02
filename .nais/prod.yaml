@@ -4,6 +4,8 @@ azure:
   tenant: nav.no
   familiebasak_url: familie-ba-sak.intern.nav.no
   familiebasak_scope: prod-gcp.teamfamilie.familie-ba-sak
+  familieefsak_url: familie-ef-sak.intern.nav.no
+  familieefsak_scope: prod-gcp.teamfamilie.familie-ef-sak
   bidraggcpproxy_url: bidrag-gcp-proxy.prod-fss-pub.nais.io
   bidraggcpproxy_scope: prod-fss.bidrag.bidrag-gcp-proxy
   bidragperson_scope: prod-fss.bidrag.bidrag-person
