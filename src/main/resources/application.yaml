@@ -54,6 +54,12 @@ spring:
             client-secret: ${AZURE_APP_CLIENT_SECRET}
             authorization-grant-type: client_credentials
             scope: api://${FAMILIEBASAK_SCOPE}/.default
+          familieefsak:
+            provider: aad
+            client-id: ${AZURE_APP_CLIENT_ID}
+            client-secret: ${AZURE_APP_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            scope: api://${FAMILIEEFSAK_SCOPE}/.default
           bidraggcpproxy:
             provider: aad
             client-id: ${AZURE_APP_CLIENT_ID}

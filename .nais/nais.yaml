@@ -57,10 +57,12 @@ spec:
   env:
     - name: FAMILIEBASAK_URL
       value: https://{{ azure.familiebasak_url }}
-    - name: FAMILIEEFSAK_URL
-      value: https://{{ azure.familieefsak_url }}
     - name: FAMILIEBASAK_SCOPE
       value: {{ azure.familiebasak_scope }}
+    - name: FAMILIEEFSAK_URL
+      value: https://{{ azure.familieefsak_url }}
+    - name: FAMILIEEFSAK_SCOPE
+      value: {{ azure.familieefsak_scope }}
     - name: BIDRAGGCPPROXY_URL
       value: https://{{ azure.bidraggcpproxy_url }}
     - name: BIDRAGGCPPROXY_SCOPE
