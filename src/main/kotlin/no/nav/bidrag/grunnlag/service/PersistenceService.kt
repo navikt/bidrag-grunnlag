@@ -249,7 +249,7 @@ class PersistenceService(
         )
       }
     val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
-    SECURE_LOGGER .info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
+    SECURE_LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
     return forelderBarnRepository.save(nyForelderBarn)
   }
 
@@ -332,6 +332,7 @@ class PersistenceService(
     comparatorResult.equalEntities.forEach() { equalEntity ->
       val unchangedAinntekt =
         equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
+      LOGGER.debug("Oppdaterer for inntektId = ${unchangedAinntekt.inntektId}")
       ainntektRepository.save(unchangedAinntekt)
     }
     // Lagrer nye Ainntekter og Ainntektsposter.
@@ -444,10 +445,13 @@ class PersistenceService(
     val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
     ainntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
+        LOGGER.debug("Hentet eksisterende ainntekter med id ${inntekt.inntektId}")
         if (inntekt.personId == personId) {
           val ainntektspostListe = mutableListOf<AinntektspostBo>()
           ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
-            .forEach() { ainntektspost -> ainntektspostListe.add(ainntektspost.toAinntektspostBo()) }
+            .forEach() { ainntektspost ->
+              ainntektspostListe.add(ainntektspost.toAinntektspostBo())
+            }
           ainntektForPersonIdListe.add(
             PeriodComparable(inntekt.toAinntektBo(), ainntektspostListe)
           )
