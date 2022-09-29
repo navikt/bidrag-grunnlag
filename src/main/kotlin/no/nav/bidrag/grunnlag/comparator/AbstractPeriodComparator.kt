@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.comparator
 
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.util.toJsonString
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,8 +28,8 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
     val equalEntities = mutableListOf<T>()
 
     val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, newEntities, requestedPeriod, expiredEntities)
-    LOGGER.debug("${existingEntitiesWithinRequestedPeriod.size} eksisterende entiteter innenfor forespurt periode (${requestedPeriod.periodeFra} - ${requestedPeriod.periodeTil}).")
-    LOGGER.debug("${expiredEntities.size} utløpte entiteter før sammenligning.")
+    SECURE_LOGGER.debug("${existingEntitiesWithinRequestedPeriod.size} eksisterende entiteter innenfor forespurt periode (${requestedPeriod.periodeFra} - ${requestedPeriod.periodeTil}).")
+    SECURE_LOGGER.debug("${expiredEntities.size} utløpte entiteter før sammenligning.")
 
     newEntities.forEach() { newEntity ->
       val existingEntityWithEqualPeriod = findEntityWithEqualPeriod(newEntity, existingEntitiesWithinRequestedPeriod)
@@ -36,7 +37,7 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
         if (isEntitiesEqual(newEntity, existingEntityWithEqualPeriod)) {
           equalEntities.add(existingEntityWithEqualPeriod)
         } else {
-          LOGGER.debug(
+          SECURE_LOGGER.debug(
             "Ny og eksisterende entitet er ulike. Ny: ${
               toJsonString(newEntity)
             }, Eksisterende: ${toJsonString(existingEntityWithEqualPeriod)}."
@@ -45,7 +46,7 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
           updatedEntities.add(newEntity)
         }
       } else {
-        LOGGER.debug("Kunne ikke finne eksisterede entitet for perioden (${newEntity.periodEntity.periodeFra} - ${newEntity.periodEntity.periodeTil}).")
+        SECURE_LOGGER.debug("Kunne ikke finne eksisterede entitet for perioden (${newEntity.periodEntity.periodeFra} - ${newEntity.periodEntity.periodeTil}).")
         updatedEntities.add(newEntity)
       }
     }

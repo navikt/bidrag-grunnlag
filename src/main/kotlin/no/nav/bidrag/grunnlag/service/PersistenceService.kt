@@ -320,7 +320,7 @@ class PersistenceService(
       )
 
     // Setter utløpte Ainntekter til utløpt.
-    LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
+    SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
     comparatorResult.expiredEntities.forEach() { expiredEntity ->
       val expiredAinntekt =
         expiredEntity.periodEntity.copy(brukTil = timestampOppdatering, aktiv = false)
@@ -328,15 +328,15 @@ class PersistenceService(
       ainntektRepository.save(expiredAinntekt)
     }
     // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
-    LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
+    SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
       val unchangedAinntekt =
         equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
-      LOGGER.debug("Oppdaterer for inntektId = ${unchangedAinntekt.inntektId}")
+      SECURE_LOGGER.debug("Oppdaterer for inntektId = ${unchangedAinntekt.inntektId}")
       ainntektRepository.save(unchangedAinntekt)
     }
     // Lagrer nye Ainntekter og Ainntektsposter.
-    LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
+    SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
     comparatorResult.updatedEntities.forEach() { updatedEntity ->
       val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
       updatedEntity.children?.forEach() { ainntektspostDto ->
@@ -368,7 +368,7 @@ class PersistenceService(
       )
 
     // Setter utløpte skattegrunnlag til utløpt.
-    LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende skattegrunnlag til utløpt.")
+    SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende skattegrunnlag til utløpt.")
     comparatorResult.expiredEntities.forEach() { expiredEntity ->
       val expiredSkattegrunnlag =
         expiredEntity.periodEntity.copy(aktiv = false, brukTil = timestampOppdatering)
@@ -376,7 +376,7 @@ class PersistenceService(
       skattegrunnlagRepository.save(expiredSkattegrunnlag)
     }
     // Oppdaterer hentet tidspunkt for uendrede skattegrunnlag.
-    LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
+    SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
       val unchangedSkattegrunnlag =
         equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering)
@@ -384,7 +384,7 @@ class PersistenceService(
       skattegrunnlagRepository.save(unchangedSkattegrunnlag)
     }
     // Lagrer nye skattegrunnlag og skattegrunnlagsposter.
-    LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye skattegrunnlag med underliggende skattegrunnlagsposter")
+    SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye skattegrunnlag med underliggende skattegrunnlagsposter")
     comparatorResult.updatedEntities.forEach() { updatedEntity ->
       val updatedSkattegrunnlag =
         skattegrunnlagRepository.save(updatedEntity.periodEntity.toSkattegrunnlagEntity())
@@ -445,7 +445,7 @@ class PersistenceService(
     val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
     ainntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
-        LOGGER.debug("Hentet eksisterende ainntekter med id ${inntekt.inntektId}")
+        SECURE_LOGGER.debug("Hentet eksisterende ainntekter med id ${inntekt.inntektId}")
         if (inntekt.personId == personId) {
           val ainntektspostListe = mutableListOf<AinntektspostBo>()
           ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
