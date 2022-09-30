@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.comparator
 
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.util.toJsonString
@@ -29,12 +30,13 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<Ainnt
       differences.putAll(compareFields(newAinntektsposter[i].etterbetalingsperiodeTil, existingAinntektsposter[i].etterbetalingsperiodeTil, "etterbetalingsperiodeTom"))
     }
     if (differences.isNotEmpty()) {
-      LOGGER.debug(toJsonString(differences))
+      SECURE_LOGGER.debug(toJsonString(differences))
     }
     return differences.isEmpty()
   }
 
   private fun sortAinntektsposter(ainntektsposter: List<AinntektspostBo>): List<AinntektspostBo> {
-    return ainntektsposter.sortedWith(compareBy({it.utbetalingsperiode}, {it.virksomhetId}, {it.opplysningspliktigId}, { it.inntektType }, { it.fordelType }, {it.beskrivelse}))
+    return ainntektsposter.sortedWith(compareBy({it.utbetalingsperiode}, {it.opptjeningsperiodeFra}, {it.opptjeningsperiodeTil}, {it.opplysningspliktigId}, {it.virksomhetId},
+      {it.inntektType }, { it.fordelType }, {it.beskrivelse}, {it.belop}, {it.etterbetalingsperiodeFra}, {it.etterbetalingsperiodeTil}))
   }
 }
