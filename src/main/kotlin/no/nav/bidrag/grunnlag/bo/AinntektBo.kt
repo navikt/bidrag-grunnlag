@@ -10,6 +10,9 @@ import kotlin.reflect.full.memberProperties
 
 data class AinntektBo(
 
+  @Schema(description = "Inntekt-id")
+  val inntektId: Int = 0,
+
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
 
@@ -40,7 +43,6 @@ fun AinntektBo.toAinntektEntity() = with(::Ainntekt) {
   val propertiesByName = AinntektBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      Ainntekt::inntektId.name -> 0
       else -> propertiesByName[parameter.name]?.get(this@toAinntektEntity)
     }
   })
