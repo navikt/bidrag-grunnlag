@@ -9,9 +9,10 @@ import no.nav.bidrag.commons.CorrelationId
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.comparator.AbstractPeriodComparator.Companion.LOGGER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.service.SecurityTokenService
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
@@ -76,6 +77,19 @@ class BidragGrunnlagConfig {
   }
 
   @Bean
+  fun familieEfSakConsumer(
+    @Value("\${FAMILIEEFSAK_URL}") url: String,
+    restTemplate: HttpHeaderRestTemplate,
+    securityTokenService: SecurityTokenService,
+    exceptionLogger: ExceptionLogger
+  ): FamilieEfSakConsumer {
+    LOGGER.info("Url satt i config: $url")
+    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("familieefsak"))
+    return FamilieEfSakConsumer(restTemplate)
+  }
+
+  @Bean
   fun bidragGcpProxyConsumer(
     @Value("\${BIDRAGGCPPROXY_URL}") url: String,
     restTemplate: HttpHeaderRestTemplate,
@@ -86,6 +100,19 @@ class BidragGrunnlagConfig {
     restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
     restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidraggcpproxy"))
     return BidragGcpProxyConsumer(restTemplate)
+  }
+
+  @Bean
+  fun bidragPersonConsumer(
+    @Value("\${BIDRAGPERSON_URL}") url: String,
+    restTemplate: HttpHeaderRestTemplate,
+    securityTokenService: SecurityTokenService,
+    exceptionLogger: ExceptionLogger
+  ): BidragPersonConsumer {
+    LOGGER.info("Url satt i config: $url")
+    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+    restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidragperson"))
+    return BidragPersonConsumer(restTemplate)
   }
 
   @Bean

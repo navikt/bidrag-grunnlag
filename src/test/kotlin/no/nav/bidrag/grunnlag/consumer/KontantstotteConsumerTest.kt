@@ -3,8 +3,7 @@ package no.nav.bidrag.grunnlag.consumer
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.Foedselsnummer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.function.Executable
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -47,7 +45,7 @@ internal class KontantstotteConsumerTest {
         eq(KONTANTSTOTTE_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<InnsynResponse>>()
+        any<Class<KontantstotteResponse>>()
       )
     )
       .thenReturn(ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK))
@@ -56,13 +54,14 @@ internal class KontantstotteConsumerTest {
       is RestResponse.Success -> {
         val hentKontantstotteResponse = restResponseKontantstotte.body
         assertAll(
-          Executable { assertThat(hentKontantstotteResponse).isNotNull },
-          Executable { assertThat(hentKontantstotteResponse.data.size).isEqualTo(1) },
-          Executable { assertThat(hentKontantstotteResponse.data[0].fnr).isEqualTo("12345678901")},
-          Executable { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].fom).isEqualTo(YearMonth.parse("2022-01")) },
-          Executable { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].tom).isEqualTo(YearMonth.parse("2022-07")) },
-          Executable { assertThat(hentKontantstotteResponse.data[0].utbetalinger[0].belop).isEqualTo(17) },
-          Executable { assertThat(hentKontantstotteResponse.data[0].barn[0].fnr).isEqualTo("11223344551") }
+          { assertThat(hentKontantstotteResponse).isNotNull },
+          { assertThat(hentKontantstotteResponse.data.size).isEqualTo(1) },
+          { assertThat(hentKontantstotteResponse.data[0].fnr).isEqualTo("12345678910")},
+          { assertThat(hentKontantstotteResponse.data[0].fom).isEqualTo(YearMonth.parse("2022-01"))},
+          { assertThat(hentKontantstotteResponse.data[0].tom).isEqualTo(YearMonth.parse("2022-07"))},
+          { assertThat(hentKontantstotteResponse.data[0].belop).isEqualTo(15001) },
+          { assertThat(hentKontantstotteResponse.data[0].barn[0].fnr).isEqualTo("11223344551") },
+          { assertThat(hentKontantstotteResponse.data[0].barn[1].fnr).isEqualTo("15544332211") }
         )
       }
       else -> {
@@ -72,6 +71,7 @@ internal class KontantstotteConsumerTest {
   }
 
   @Test
+  @Suppress("NonAsciiCharacters")
   fun `Sjekk at exception fra Kontantstotte-endepunkt håndteres korrekt`() {
     val request = TestUtil.byggKontantstotteRequest()
 
@@ -80,7 +80,7 @@ internal class KontantstotteConsumerTest {
         eq(KONTANTSTOTTE_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<InnsynResponse>>()
+        any<Class<KontantstotteResponse>>()
       )
     )
       .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
@@ -88,8 +88,8 @@ internal class KontantstotteConsumerTest {
     when (val restResponseKontantstotte = kontantstotteConsumer!!.hentKontantstotte(request)) {
       is RestResponse.Failure -> {
         assertAll(
-          Executable { assertThat(restResponseKontantstotte.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-          Executable { assertThat(restResponseKontantstotte.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+          { assertThat(restResponseKontantstotte.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
+          { assertThat(restResponseKontantstotte.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
         )
       }
       else -> {

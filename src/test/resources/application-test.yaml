@@ -1,5 +1,7 @@
 FAMILIEBASAK_URL: http://localhost:${wiremock.server.port}/familiebasak
+FAMILIEEFSAK_URL: http://localhost:${wiremock.server.port}/familieefsak
 BIDRAGGCPPROXY_URL: http://localhost:${wiremock.server.port}/bidraggcpproxy
+BIDRAGPERSON_URL: http://localhost:${wiremock.server.port}/bidragperson
 KONTANTSTOTTE_URL: http://localhost:${wiremock.server.port}/kontantstotte
 spring:
   config.activate.on-profile: test, local

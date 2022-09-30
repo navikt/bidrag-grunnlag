@@ -13,15 +13,18 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: {{ name }}
-        - application: {{ azure.bidraggcpproxy_app }}
-          cluster: {{ azure.bidraggcpproxy_cluster }}
-          namespace: bidrag
+      {{#each azureAccessInbound}}
+          - application: {{this.application}}
+            namespace: {{this.namespace}}
+            cluster: {{this.cluster}}
+      {{/each}}
     outbound:
       external:
         - host: {{ azure.familiebasak_url }}
+        - host: {{ azure.familieefsak_url }}
         - host: {{ azure.bidraggcpproxy_url }}
-#        - host: {{ azure.kontantstotte_url }}
+        - host: {{ azure.bidragperson_url }}
+        - host: {{ azure.kontantstotte_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
@@ -36,6 +39,8 @@ spec:
   prometheus:
     enabled: true
     path: /actuator/prometheus
+  secureLogs:
+    enabled: true
   resources:
     limits:
       cpu: 1000m
@@ -54,6 +59,10 @@ spec:
       value: https://{{ azure.familiebasak_url }}
     - name: FAMILIEBASAK_SCOPE
       value: {{ azure.familiebasak_scope }}
+    - name: FAMILIEEFSAK_URL
+      value: https://{{ azure.familieefsak_url }}
+    - name: FAMILIEEFSAK_SCOPE
+      value: {{ azure.familieefsak_scope }}
     - name: BIDRAGGCPPROXY_URL
       value: https://{{ azure.bidraggcpproxy_url }}
     - name: BIDRAGGCPPROXY_SCOPE
@@ -62,6 +71,10 @@ spec:
       value: https://{{ azure.kontantstotte_url }}
     - name: KONTANTSTOTTE_SCOPE
       value: {{ azure.kontantstotte_scope }}
+    - name: BIDRAGPERSON_URL
+      value: https://{{ azure.bidragperson_url }}
+    - name: BIDRAGPERSON_SCOPE
+      value: {{ azure.bidragperson_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}

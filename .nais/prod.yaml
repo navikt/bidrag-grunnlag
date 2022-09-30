@@ -4,11 +4,23 @@ azure:
   tenant: nav.no
   familiebasak_url: familie-ba-sak.intern.nav.no
   familiebasak_scope: prod-gcp.teamfamilie.familie-ba-sak
+  familieefsak_url: familie-ef-sak.intern.nav.no
+  familieefsak_scope: prod-gcp.teamfamilie.familie-ef-sak
   bidraggcpproxy_url: bidrag-gcp-proxy.prod-fss-pub.nais.io
   bidraggcpproxy_scope: prod-fss.bidrag.bidrag-gcp-proxy
-  bidraggcpproxy_app: bidrag-gcp-proxy
-  bidraggcpproxy_cluster: prod-fss
+  bidragperson_scope: prod-fss.bidrag.bidrag-person
+  bidragperson_url: bidrag-person.prod-fss-pub.nais.io
+  bidragperson_app: bidrag-person
+  bidragperson_cluster: prod-fss
   kontantstotte_scope: prod-fss.infotrygd.infotrygd-kontantstotte-v2
+  kontantstotte_url: infotrygd-kontantstotte-v2.prod-fss-pub.nais.io
   kontantstotte_app: infotrygd-kontantstotte-v2
   kontantstotte_cluster: prod-fss
 dbname: bidrag-grunnlag-prod
+azureAccessInbound:
+  - application: bidrag-gcp-proxy
+    namespace: bidrag
+    cluster: prod-fss
+  - application: bisys
+    namespace: bidrag
+    cluster: prod-fss

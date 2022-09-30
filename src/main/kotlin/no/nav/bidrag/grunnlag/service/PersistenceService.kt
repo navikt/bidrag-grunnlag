@@ -3,50 +3,83 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilsynDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandsmedlemDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.KontantstotteDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
-import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
-import no.nav.bidrag.grunnlag.comparator.Period
-import no.nav.bidrag.grunnlag.comparator.PeriodComparable
-import no.nav.bidrag.grunnlag.comparator.SkattegrunnlagPeriodComparator
+import no.nav.bidrag.behandling.felles.enums.SivilstandKode
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.GrunnlagspakkeBo
+import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
+import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
+import no.nav.bidrag.grunnlag.bo.HusstandBo
+import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
+import no.nav.bidrag.grunnlag.bo.toBarnEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
-import no.nav.bidrag.grunnlag.bo.toGrunnlagspakkeEntity
+import no.nav.bidrag.grunnlag.bo.toBarnetilsynEntity
+import no.nav.bidrag.grunnlag.bo.toHusstandEntity
+import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemEntity
+import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
+import no.nav.bidrag.grunnlag.bo.toPersonEntity
+import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
 import no.nav.bidrag.grunnlag.bo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity
+import no.nav.bidrag.grunnlag.comparator.AinntektPeriodComparator
+import no.nav.bidrag.grunnlag.comparator.Period
+import no.nav.bidrag.grunnlag.comparator.PeriodComparable
+import no.nav.bidrag.grunnlag.comparator.SkattegrunnlagPeriodComparator
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
+import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
+import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
+import no.nav.bidrag.grunnlag.persistence.entity.Forelder
+import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
+import no.nav.bidrag.grunnlag.persistence.entity.Husstand
+import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
+import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
+import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektBo
 import no.nav.bidrag.grunnlag.persistence.entity.toAinntektspostBo
-import no.nav.bidrag.grunnlag.persistence.entity.toBarnetilleggBo
-import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeBo
 import no.nav.bidrag.grunnlag.persistence.entity.toGrunnlagspakkeEntity
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagBo
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostBo
-import no.nav.bidrag.grunnlag.persistence.entity.toUtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
+import no.nav.bidrag.grunnlag.persistence.repository.BarnRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
+import no.nav.bidrag.grunnlag.persistence.repository.BarnetilsynRepository
+import no.nav.bidrag.grunnlag.persistence.repository.ForelderBarnRepository
+import no.nav.bidrag.grunnlag.persistence.repository.ForelderRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
+import no.nav.bidrag.grunnlag.persistence.repository.HusstandRepository
+import no.nav.bidrag.grunnlag.persistence.repository.HusstandsmedlemRepository
+import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
+import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
@@ -54,6 +87,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.math.abs
 
 @Service
 class PersistenceService(
@@ -63,7 +97,15 @@ class PersistenceService(
   val skattegrunnlagRepository: SkattegrunnlagRepository,
   val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
   val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository,
-  val barnetilleggRepository: BarnetilleggRepository
+  val barnetilleggRepository: BarnetilleggRepository,
+  val barnRepository: BarnRepository,
+  val husstandRepository: HusstandRepository,
+  val husstandsmedlemRepository: HusstandsmedlemRepository,
+  val forelderRepository: ForelderRepository,
+  val forelderBarnRepository: ForelderBarnRepository,
+  val sivilstandRepository: SivilstandRepository,
+  val kontantstotteRepository: KontantstotteRepository,
+  val barnetilsynRepository: BarnetilsynRepository
 ) {
 
   private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -93,7 +135,11 @@ class PersistenceService(
     return skattegrunnlagspostRepository.save(nyInntektspost)
   }
 
-  fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime) {
+  fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+    grunnlagspakkeId: Int,
+    personId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
     utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
       grunnlagspakkeId,
       personId,
@@ -102,12 +148,16 @@ class PersistenceService(
   }
 
   fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo)
-  : UtvidetBarnetrygdOgSmaabarnstillegg {
+      : UtvidetBarnetrygdOgSmaabarnstillegg {
     val nyUbst = utvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
     return utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
   }
 
-  fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+  fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
     barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
       grunnlagspakkeId,
       partPersonId,
@@ -116,9 +166,106 @@ class PersistenceService(
     )
   }
 
+  fun oppdaterEksisterendeBarnTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    barnRepository.oppdaterEksisterendeBarnTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
+  fun oppdaterEksisterendeHusstandTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    husstandRepository.oppdaterEksisterendeHusstandTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
+  fun oppdaterEksisterendeSivilstandTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
+  fun oppdaterEksisterendeForelderTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    forelderRepository.oppdaterEksisterendeForelderTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
   fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
     val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
     return barnetilleggRepository.save(nyBarnetillegg)
+  }
+
+  fun opprettForelder(forelderBo: ForelderBo): Forelder {
+    val nyPerson = forelderBo.toPersonEntity()
+    return forelderRepository.save(nyPerson)
+  }
+
+  fun opprettBarn(barnBo: BarnBo): Barn {
+    val nyttBarn = barnBo.toBarnEntity()
+    return barnRepository.save(nyttBarn)
+  }
+
+  fun opprettForelderBarn(forelderBarnBo: ForelderBarnBo): ForelderBarn {
+    val eksisterendeForelder = forelderRepository.findById(forelderBarnBo.forelderId)
+      .orElseThrow {
+        IllegalArgumentException(
+          String.format(
+            "Fant ikke forelder med id %d i databasen",
+            forelderBarnBo.forelderId
+          )
+        )
+      }
+    val eksisterendeBarn = barnRepository.findById(forelderBarnBo.barnId)
+      .orElseThrow {
+        IllegalArgumentException(
+          String.format(
+            "Fant ikke barn med id %d i databasen",
+            forelderBarnBo.barnId
+          )
+        )
+      }
+    val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
+    SECURE_LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
+    return forelderBarnRepository.save(nyForelderBarn)
+  }
+
+  fun opprettHusstand(husstandBo: HusstandBo): Husstand {
+    val nyHusstand = husstandBo.toHusstandEntity()
+    return husstandRepository.save(nyHusstand)
+  }
+
+  fun opprettHusstandsmedlem(husstandsmedlemBo: HusstandsmedlemBo): Husstandsmedlem {
+    val nyttHusstandsmedlem = husstandsmedlemBo.toHusstandsmedlemEntity()
+    return husstandsmedlemRepository.save(nyttHusstandsmedlem)
+  }
+
+  fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
+    val nySivilstand = sivilstandBo.toSivilstandEntity()
+    return sivilstandRepository.save(nySivilstand)
   }
 
   // Returnerer lagret, komplett grunnlagspakke
@@ -126,7 +273,7 @@ class PersistenceService(
     return HentGrunnlagspakkeDto(
       grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
       hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      emptyList(), emptyList(), emptyList(), emptyList()
+      hentKontantstotte(grunnlagspakkeId), emptyList(), emptyList(), emptyList(), emptyList()
     )
   }
 
@@ -166,26 +313,35 @@ class PersistenceService(
 
     // Finner ut hvilke inntekter som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
     val comparatorResult =
-      ainntektPeriodComparator.comparePeriodEntities(Period(periodeFra, periodeTil), newAinntektForPersonId, existingAinntektForPersonId)
+      ainntektPeriodComparator.comparePeriodEntities(
+        Period(periodeFra, periodeTil),
+        newAinntektForPersonId,
+        existingAinntektForPersonId
+      )
 
     // Setter utløpte Ainntekter til utløpt.
-    LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
+    SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
     comparatorResult.expiredEntities.forEach() { expiredEntity ->
-      val expiredAinntekt = expiredEntity.periodEntity.copy(brukTil = timestampOppdatering, aktiv = false).toAinntektEntity()
+      val expiredAinntekt =
+        expiredEntity.periodEntity.copy(brukTil = timestampOppdatering, aktiv = false)
+          .toAinntektEntity()
       ainntektRepository.save(expiredAinntekt)
     }
     // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
-    LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
+    SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
-      val unchangedAinntekt = equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
+      val unchangedAinntekt =
+        equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
+      SECURE_LOGGER.debug("Oppdaterer for inntektId = ${unchangedAinntekt.inntektId}")
       ainntektRepository.save(unchangedAinntekt)
     }
     // Lagrer nye Ainntekter og Ainntektsposter.
-    LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
+    SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
     comparatorResult.updatedEntities.forEach() { updatedEntity ->
       val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
       updatedEntity.children?.forEach() { ainntektspostDto ->
-        val updatedAinntekt = ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
+        val updatedAinntekt =
+          ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
         ainntektspostRepository.save(updatedAinntekt)
       }
     }
@@ -199,31 +355,43 @@ class PersistenceService(
     personId: String,
     timestampOppdatering: LocalDateTime
   ) {
-    val existingAinntektForPersonId = hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
+    val existingAinntektForPersonId =
+      hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
     val ainntektPeriodComparator = SkattegrunnlagPeriodComparator()
 
     // Finner ut hvilke skattegrunnlag som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
     val comparatorResult =
-      ainntektPeriodComparator.comparePeriodEntities(Period(periodeFra, periodeTil), newSkattegrunnlagForPersonId, existingAinntektForPersonId)
+      ainntektPeriodComparator.comparePeriodEntities(
+        Period(periodeFra, periodeTil),
+        newSkattegrunnlagForPersonId,
+        existingAinntektForPersonId
+      )
 
     // Setter utløpte skattegrunnlag til utløpt.
-    LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende skattegrunnlag til utløpt.")
+    SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende skattegrunnlag til utløpt.")
     comparatorResult.expiredEntities.forEach() { expiredEntity ->
-      val expiredSkattegrunnlag = expiredEntity.periodEntity.copy(aktiv = false, brukTil = timestampOppdatering).toSkattegrunnlagEntity()
+      val expiredSkattegrunnlag =
+        expiredEntity.periodEntity.copy(aktiv = false, brukTil = timestampOppdatering)
+          .toSkattegrunnlagEntity()
       skattegrunnlagRepository.save(expiredSkattegrunnlag)
     }
     // Oppdaterer hentet tidspunkt for uendrede skattegrunnlag.
-    LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
+    SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
     comparatorResult.equalEntities.forEach() { equalEntity ->
-      val unchangedSkattegrunnlag = equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toSkattegrunnlagEntity()
+      val unchangedSkattegrunnlag =
+        equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering)
+          .toSkattegrunnlagEntity()
       skattegrunnlagRepository.save(unchangedSkattegrunnlag)
     }
     // Lagrer nye skattegrunnlag og skattegrunnlagsposter.
-    LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye skattegrunnlag med underliggende skattegrunnlagsposter")
+    SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye skattegrunnlag med underliggende skattegrunnlagsposter")
     comparatorResult.updatedEntities.forEach() { updatedEntity ->
-      val updatedSkattegrunnlag = skattegrunnlagRepository.save(updatedEntity.periodEntity.toSkattegrunnlagEntity())
+      val updatedSkattegrunnlag =
+        skattegrunnlagRepository.save(updatedEntity.periodEntity.toSkattegrunnlagEntity())
       updatedEntity.children?.forEach() { ainntektspostDto ->
-        val skattegrunnlagspost = ainntektspostDto.copy(skattegrunnlagId = updatedSkattegrunnlag.skattegrunnlagId).toSkattegrunnlagspostEntity()
+        val skattegrunnlagspost =
+          ainntektspostDto.copy(skattegrunnlagId = updatedSkattegrunnlag.skattegrunnlagId)
+            .toSkattegrunnlagspostEntity()
         skattegrunnlagspostRepository.save(skattegrunnlagspost)
       }
     }
@@ -260,7 +428,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            opprettetTidspunkt = inntekt.hentetTidspunkt,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
             ainntektspostListe = hentAinntektspostListe
           )
         )
@@ -270,14 +438,20 @@ class PersistenceService(
 
   }
 
-  fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personId: String): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
+  fun hentAinntektForPersonIdToCompare(
+    grunnlagspakkeId: Int,
+    personId: String
+  ): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
     val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
     ainntektRepository.hentAinntekter(grunnlagspakkeId)
       .forEach { inntekt ->
+        SECURE_LOGGER.debug("Hentet eksisterende ainntekter med id ${inntekt.inntektId}")
         if (inntekt.personId == personId) {
           val ainntektspostListe = mutableListOf<AinntektspostBo>()
           ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
-            .forEach() { ainntektspost -> ainntektspostListe.add(ainntektspost.toAinntektspostBo()) }
+            .forEach() { ainntektspost ->
+              ainntektspostListe.add(ainntektspost.toAinntektspostBo())
+            }
           ainntektForPersonIdListe.add(
             PeriodComparable(inntekt.toAinntektBo(), ainntektspostListe)
           )
@@ -291,7 +465,8 @@ class PersistenceService(
     grunnlagspakkeId: Int,
     personId: String
   ): List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>> {
-    val skattegrunnlagForPersonIdListe = mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
+    val skattegrunnlagForPersonIdListe =
+      mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
     skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
       .forEach { skattegrunnlag ->
         if (skattegrunnlag.personId == personId) {
@@ -329,7 +504,7 @@ class PersistenceService(
             aktiv = inntekt.aktiv,
             brukFra = inntekt.brukFra,
             brukTil = inntekt.brukTil,
-            opprettetTidspunkt = inntekt.hentetTidspunkt,
+            hentetTidspunkt = inntekt.hentetTidspunkt,
             hentSkattegrunnlagspostListe
           )
         )
@@ -340,7 +515,8 @@ class PersistenceService(
   }
 
   fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
-    val utvidetBarnetrygdOgSmaabarnstilleggDtoListe = mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
+    val utvidetBarnetrygdOgSmaabarnstilleggDtoListe =
+      mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
     utvidetBarnetrygdOgSmaabarnstilleggRepository.hentUbst(grunnlagspakkeId)
       .forEach { ubst ->
         utvidetBarnetrygdOgSmaabarnstilleggDtoListe.add(
@@ -354,7 +530,7 @@ class PersistenceService(
             brukTil = ubst.brukTil,
             belop = ubst.belop,
             manueltBeregnet = ubst.manueltBeregnet,
-            opprettetTidspunkt = ubst.hentetTidspunkt
+            hentetTidspunkt = ubst.hentetTidspunkt
           )
         )
       }
@@ -377,10 +553,241 @@ class PersistenceService(
             brukTil = barnetillegg.brukTil,
             belopBrutto = barnetillegg.belopBrutto,
             barnType = barnetillegg.barnType,
-            opprettetTidspunkt = barnetillegg.hentetTidspunkt
+            hentetTidspunkt = barnetillegg.hentetTidspunkt
           )
         )
       }
     return barnetilleggDtoListe
+  }
+
+  fun hentKontantstotte(grunnlagspakkeId: Int): List<KontantstotteDto> {
+    val kontantstotteDtoListe = mutableListOf<KontantstotteDto>()
+    kontantstotteRepository.hentKontantstotte(grunnlagspakkeId)
+      .forEach { kontantstotte ->
+        kontantstotteDtoListe.add(
+          KontantstotteDto(
+            partPersonId = kontantstotte.partPersonId,
+            barnPersonId = kontantstotte.barnPersonId,
+            periodeFra = kontantstotte.periodeFra,
+            periodeTil = kontantstotte.periodeTil,
+            aktiv = kontantstotte.aktiv,
+            brukFra = kontantstotte.brukFra,
+            brukTil = kontantstotte.brukTil,
+            belop = kontantstotte.belop,
+            hentetTidspunkt = kontantstotte.hentetTidspunkt
+          )
+        )
+      }
+    return kontantstotteDtoListe
+  }
+
+  fun opprettKontantstotte(kontantstotteBo: KontantstotteBo): Kontantstotte {
+    val nyKontantstotte = kontantstotteBo.toKontantstotteEntity()
+    return kontantstotteRepository.save(nyKontantstotte)
+  }
+
+  fun oppdaterEksisterendeKontantstotteTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
+  }
+
+  fun hentForeldre(grunnlagspakkeId: Int): List<Forelder> {
+    return forelderRepository.hentForeldre(grunnlagspakkeId)
+  }
+
+  // bruker generert id for å kunne hente barn til manuelt innlagte foreldre uten personId
+  fun hentAlleBarnForForelder(forelderId: Int): List<Barn> {
+    return forelderBarnRepository.hentAlleBarnForForelder(forelderId)
+  }
+
+  fun hentBarn(barnId: Int): Barn {
+    return barnRepository.hentBarn(barnId)
+  }
+
+
+  fun hentHusstandsmedlemmerUnder18Aar(grunnlagspakkeId: Int, personId: String): List<HusstandDto> {
+    val husstandDtoListe = mutableListOf<HusstandDto>()
+    husstandRepository.hentHusstand(grunnlagspakkeId, personId)
+      .forEach { husstand ->
+        val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
+
+        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
+          .forEach { husstandsmedlem ->
+            if ((husstandsmedlem.personId != null &&
+                  !personHarFyllt18Aar(
+                    husstandsmedlem.periodeFra.plusMonths(1),
+                    husstandsmedlem.foedselsdato
+                  )
+                  || husstandsmedlem.foedselsdato == null)
+            ) {
+              voksneHusstandsmedlemmerListe.add(
+                HusstandsmedlemDto(
+                  periodeFra = husstandsmedlem.periodeFra,
+                  periodeTil = husstandsmedlem.periodeTil,
+                  personId = husstandsmedlem.personId,
+                  navn = husstandsmedlem.navn,
+                  foedselsdato = husstandsmedlem.foedselsdato,
+                  doedsdato = husstandsmedlem.doedsdato,
+                  opprettetAv = husstandsmedlem.opprettetAv,
+                  hentetTidspunkt = husstandsmedlem.hentetTidspunkt,
+                )
+              )
+            }
+          }
+        husstandDtoListe.add(
+          HusstandDto(
+            personId = husstand.personId,
+            periodeFra = husstand.periodeFra,
+            periodeTil = husstand.periodeTil,
+            adressenavn = husstand.adressenavn,
+            husnummer = husstand.husnummer,
+            husbokstav = husstand.husbokstav,
+            bruksenhetsnummer = husstand.bruksenhetsnummer,
+            postnummer = husstand.postnummer,
+            bydelsnummer = husstand.bydelsnummer,
+            kommunenummer = husstand.kommunenummer,
+            matrikkelId = husstand.matrikkelId,
+            landkode = husstand.landkode,
+            opprettetAv = husstand.opprettetAv,
+            hentetTidspunkt = husstand.hentetTidspunkt,
+            husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
+          )
+        )
+      }
+    return husstandDtoListe
+  }
+
+  /*
+
+
+ // Filter vekk husstandsmedlemmer som ikke har fyllt 18 når personen blir husstandsmedlem
+ // Endringer gjelder alltid fra neste måned. 01.07 -> 01.08
+ // Alle husstandsmedlemmer skal returneres for manuell vurdering. For egne barn i egen husstand skal bare < 18 returneres
+
+
+  }*/
+
+  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
+    val husstandDtoListe = mutableListOf<HusstandDto>()
+    husstandRepository.hentHusstand(grunnlagspakkeId)
+      .forEach { husstand ->
+        val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
+
+        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
+          .forEach { husstandsmedlem ->
+            if ((husstandsmedlem.personId != null &&
+                  personHarFyllt18Aar(
+                    husstandsmedlem.periodeFra,
+                    husstandsmedlem.foedselsdato
+                  )
+                  || husstandsmedlem.foedselsdato == null)
+            ) {
+              voksneHusstandsmedlemmerListe.add(
+                HusstandsmedlemDto(
+                  periodeFra = husstandsmedlem.periodeFra,
+                  periodeTil = husstandsmedlem.periodeTil,
+                  personId = husstandsmedlem.personId,
+                  navn = husstandsmedlem.navn,
+                  foedselsdato = husstandsmedlem.foedselsdato,
+                  doedsdato = husstandsmedlem.doedsdato,
+                  opprettetAv = husstandsmedlem.opprettetAv,
+                  hentetTidspunkt = husstandsmedlem.hentetTidspunkt,
+                )
+              )
+            }
+          }
+        husstandDtoListe.add(
+          HusstandDto(
+            personId = husstand.personId,
+            periodeFra = husstand.periodeFra,
+            periodeTil = husstand.periodeTil,
+            adressenavn = husstand.adressenavn,
+            husnummer = husstand.husnummer,
+            husbokstav = husstand.husbokstav,
+            bruksenhetsnummer = husstand.bruksenhetsnummer,
+            postnummer = husstand.postnummer,
+            bydelsnummer = husstand.bydelsnummer,
+            kommunenummer = husstand.kommunenummer,
+            matrikkelId = husstand.matrikkelId,
+            landkode = husstand.landkode,
+            opprettetAv = husstand.opprettetAv,
+            hentetTidspunkt = husstand.hentetTidspunkt,
+            husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
+          )
+        )
+      }
+    return husstandDtoListe
+  }
+
+  fun personHarFyllt18Aar(dato: LocalDate, foedselsdato: LocalDate?): Boolean {
+    val aar = java.time.Period.between(dato, foedselsdato)
+    val alder = abs(aar.years)
+    return alder > 18
+  }
+
+  fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
+    val sivilstandDtoListe = mutableListOf<SivilstandDto>()
+    sivilstandRepository.hentSivilstand(grunnlagspakkeId)
+      .forEach { sivilstand ->
+        sivilstandDtoListe.add(
+          SivilstandDto(
+            personId = sivilstand.personId,
+            periodeFra = sivilstand.periodeFra,
+            periodeTil = sivilstand.periodeTil,
+            sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
+            opprettetAv = sivilstand.opprettetAv,
+            hentetTidspunkt = sivilstand.hentetTidspunkt
+          )
+        )
+      }
+    return sivilstandDtoListe
+  }
+
+  fun opprettBarnetilsyn(barnetilsynBo: BarnetilsynBo): Barnetilsyn {
+    val nyBarnetilsyn = barnetilsynBo.toBarnetilsynEntity()
+    return barnetilsynRepository.save(nyBarnetilsyn)
+  }
+
+  fun hentBarnetilsyn(grunnlagspakkeId: Int): List<BarnetilsynDto> {
+    val barnetilsynDtoListe = mutableListOf<BarnetilsynDto>()
+    barnetilsynRepository.hentBarnetilsyn(grunnlagspakkeId)
+      .forEach { barnetilsyn ->
+        barnetilsynDtoListe.add(
+          BarnetilsynDto(
+            partPersonId = barnetilsyn.partPersonId,
+            barnPersonId = barnetilsyn.barnPersonId,
+            periodeFra = barnetilsyn.periodeFra,
+            periodeTil = barnetilsyn.periodeTil,
+            aktiv = barnetilsyn.aktiv,
+            brukFra = barnetilsyn.brukFra,
+            brukTil = barnetilsyn.brukTil,
+            belop = barnetilsyn.belop,
+            tilsynstype = barnetilsyn.tilsynstype,
+            skolealder = barnetilsyn.skolealder,
+            hentetTidspunkt = barnetilsyn.hentetTidspunkt
+          )
+        )
+      }
+    return barnetilsynDtoListe
+  }
+
+
+  fun oppdaterEksisterendeBarnetilsynTilInaktiv(
+    grunnlagspakkeId: Int,
+    partPersonId: String,
+    timestampOppdatering: LocalDateTime
+  ) {
+    barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
+      grunnlagspakkeId,
+      partPersonId,
+      timestampOppdatering
+    )
   }
 }
