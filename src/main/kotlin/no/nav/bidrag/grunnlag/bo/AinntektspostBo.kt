@@ -12,7 +12,7 @@ data class AinntektspostBo(
   @Schema(description = "Inntekt-id")
   val inntektId: Int = 0,
 
-  @Schema(description = "Perioden inntektsposten er utbetalt YYYYMM")
+  @Schema(description = "Perioden inntektsposten er utbetalt YYYY-MM")
   val utbetalingsperiode: String?,
 
   @Schema(description = "Fra-dato for opptjening")
@@ -37,7 +37,7 @@ data class AinntektspostBo(
   val beskrivelse: String?,
 
   @Schema(description = "Belop")
-  val belop: java.math.BigDecimal,
+  val belop: BigDecimal,
 
   @Schema(description = "Fra-dato etterbetaling")
   val etterbetalingsperiodeFra: LocalDate?,
