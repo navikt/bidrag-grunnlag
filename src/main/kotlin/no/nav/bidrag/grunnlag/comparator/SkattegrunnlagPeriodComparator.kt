@@ -31,6 +31,6 @@ class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable
   }
 
   private fun sortSkattegrunnlagsposter(ainntektsposter: List<SkattegrunnlagspostBo>): List<SkattegrunnlagspostBo> {
-    return ainntektsposter.sortedWith(compareBy({ it.inntektType }, { it.skattegrunnlagType }))
+    return ainntektsposter.sortedWith(compareBy({ it.inntektType }, { it.skattegrunnlagType }, { it.belop}))
   }
 }
