@@ -51,6 +51,8 @@ class OppdaterSkattegrunnlag(
           "SummertSkattegrunnlagBidrag",
           personIdOgPeriode.personId
         )
+
+        LOGGER.info("Kaller bidrag-gcp-proxy (Sigrun)")
         SECURE_LOGGER.info("Kaller bidrag-gcp-proxy (Sigrun) med request: $skattegrunnlagRequest")
 
         when (val restResponseSkattegrunnlag =

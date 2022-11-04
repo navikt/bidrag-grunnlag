@@ -38,6 +38,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         fraDato = personIdOgPeriode.periodeFra
       )
 
+      LOGGER.info("Kaller familie-ba-sak")
       SECURE_LOGGER.info("Kaller familie-ba-sak med request: $familieBaSakRequest")
 
       when (val restResponseFamilieBaSak =

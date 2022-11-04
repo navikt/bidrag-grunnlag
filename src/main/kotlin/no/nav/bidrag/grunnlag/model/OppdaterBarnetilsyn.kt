@@ -4,6 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
@@ -38,19 +39,15 @@ class OppdaterBarnetilsyn(
         personIdOgPeriode.personId, personIdOgPeriode.periodeFra
       )
 
-      LOGGER.info(
-        "Kaller barnetilsyn med personIdent ********${
-          barnetilsynRequest.ident.substring(
-            IntRange(8, 10)
-          )
-        } "
-      )
+      LOGGER.info("Henter barnetilsyn for enslig forsørger")
+      SECURE_LOGGER.info("Kaller barnetilsyn enslig forsørger med request: $barnetilsynRequest")
+
 
       when (val restResponseBarnetilsyn =
         familieEfSakConsumer.hentBarnetilsyn(barnetilsynRequest)) {
         is RestResponse.Success -> {
           val barnetilsynResponse = restResponseBarnetilsyn.body
-          LOGGER.info("Barnetilsyn ga følgende respons: $barnetilsynResponse")
+          SECURE_LOGGER.info("Barnetilsyn ga følgende respons: $barnetilsynResponse")
 
           persistenceService.oppdaterEksisterendeBarnetilsynTilInaktiv(
             grunnlagspakkeId, personIdOgPeriode.personId, timestampOppdatering

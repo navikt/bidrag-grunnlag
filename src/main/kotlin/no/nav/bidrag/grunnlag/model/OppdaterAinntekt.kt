@@ -61,9 +61,8 @@ class OppdaterAinntekt(
         ainntektsfilter = finnFilter(formaal),
         formaal = finnFormaal(formaal)
       )
-      SECURE_LOGGER.info(
-        "Kaller bidrag-gcp-proxy (Inntektskomponenten) med request: $hentAinntektRequest"
-      )
+      LOGGER.info("Kaller bidrag-gcp-proxy (Inntektskomponenten)")
+      SECURE_LOGGER.info("Kaller bidrag-gcp-proxy (Inntektskomponenten) med request: $hentAinntektRequest")
 
       when (val restResponseInntekt = bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest)) {
         is RestResponse.Success -> {

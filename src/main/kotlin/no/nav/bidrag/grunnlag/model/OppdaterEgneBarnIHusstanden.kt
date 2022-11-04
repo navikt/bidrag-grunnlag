@@ -44,6 +44,7 @@ class OppdaterEgneBarnIHusstanden(
         periodeFra = personIdOgPeriode.periodeFra,
       )
 
+      LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
       SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
 
       when (val restResponseForelderBarnRelasjon =
