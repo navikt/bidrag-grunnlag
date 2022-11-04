@@ -107,6 +107,7 @@ class OppdaterAinntekt(
                   grunnlagspakkeId = grunnlagspakkeId,
                   personId = personIdOgPeriode.personId,
                   periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
                   periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
                   aktiv = true,
                   brukFra = timestampOppdatering,

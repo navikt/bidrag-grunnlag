@@ -63,7 +63,7 @@ class OppdaterBarnetillegg(
                   barnPersonId = bt.barn,
                   barnetilleggType = BarnetilleggType.PENSJON.toString(),
                   periodeFra = bt.fom,
-                  // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
+                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
                   periodeTil = bt.tom?.plusMonths(1)?.withDayOfMonth(1),
                   aktiv = true,
                   brukFra = timestampOppdatering,
