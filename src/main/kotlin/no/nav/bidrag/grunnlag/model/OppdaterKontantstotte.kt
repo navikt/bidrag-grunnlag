@@ -66,9 +66,8 @@ class OppdaterKontantstotte(
                     partPersonId = personIdOgPeriode.personId,
                     barnPersonId = ks.barn[i].fnr,
                     periodeFra = LocalDate.parse(ks.fom.toString() + "-01"),
-                    // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-                    periodeTil = if (ks.tom != null) LocalDate.parse(ks.tom.toString() + "-01")
-                      .plusMonths(1) else null,
+                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                    periodeTil = if (ks.tom != null) LocalDate.parse(ks.tom.toString() + "-01").plusMonths(1) else null,
                     aktiv = true,
                     brukFra = timestampOppdatering,
                     belop = beregnBelopForGjeldendeBarn(ks, i),

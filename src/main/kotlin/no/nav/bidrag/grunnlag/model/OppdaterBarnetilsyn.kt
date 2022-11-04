@@ -63,7 +63,8 @@ class OppdaterBarnetilsyn(
                     partPersonId = personIdOgPeriode.personId,
                     barnPersonId = barnIdent,
                     periodeFra = bts.periode.fom,
-                    periodeTil = bts.periode.tom,
+                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                    periodeTil = bts.periode.tom.plusMonths(1).withDayOfMonth(1),
                     aktiv = true,
                     brukFra = timestampOppdatering,
                     brukTil = null,
