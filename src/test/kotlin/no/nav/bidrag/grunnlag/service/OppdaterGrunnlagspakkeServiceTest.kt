@@ -526,12 +526,12 @@ class OppdaterGrunnlagspakkeServiceTest {
       { Assertions.assertThat(barnetilsynListe[0].partPersonId).isEqualTo("12345678910") },
       { Assertions.assertThat(barnetilsynListe[0].barnPersonId).isEqualTo("01012212345") },
       { Assertions.assertThat(barnetilsynListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-      { Assertions.assertThat(barnetilsynListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-31")) },
+      { Assertions.assertThat(barnetilsynListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
       { Assertions.assertThat(barnetilsynListe[0].belop).isNull() },
       { Assertions.assertThat(barnetilsynListe[1].partPersonId).isEqualTo("12345678910") },
       { Assertions.assertThat(barnetilsynListe[1].barnPersonId).isEqualTo("01011034543") },
       { Assertions.assertThat(barnetilsynListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-      { Assertions.assertThat(barnetilsynListe[1].periodeTil).isEqualTo(LocalDate.parse("2021-07-31")) },
+      { Assertions.assertThat(barnetilsynListe[1].periodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
       { Assertions.assertThat(barnetilsynListe[1].belop).isNull() },
 
       // sjekk oppdatertGrunnlagspakke
