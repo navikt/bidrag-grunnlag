@@ -15,6 +15,8 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.UtvidetBarnetrygdOgSmaabarnstilleggDto
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
+import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Tilsyntype
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
@@ -769,8 +771,8 @@ class PersistenceService(
             brukFra = barnetilsyn.brukFra,
             brukTil = barnetilsyn.brukTil,
             belop = barnetilsyn.belop,
-            tilsynstype = barnetilsyn.tilsynstype,
-            skolealder = barnetilsyn.skolealder,
+            tilsynstype = barnetilsyn.tilsynstype?: Tilsyntype.IKKE_ANGITT,
+            skolealder = barnetilsyn.skolealder?: Skolealder.IKKE_ANGITT,
             hentetTidspunkt = barnetilsyn.hentetTidspunkt
           )
         )
