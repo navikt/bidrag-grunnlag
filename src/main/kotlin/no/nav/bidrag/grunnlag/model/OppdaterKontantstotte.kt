@@ -11,6 +11,8 @@ import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,6 +25,11 @@ class OppdaterKontantstotte(
   private val kontantstotteConsumer: KontantstotteConsumer
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
+  companion object {
+    @JvmStatic
+    private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterBarnetillegg::class.java)
+  }
+
   fun oppdaterKontantstotte(kontantstotteRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterKontantstotte {
     kontantstotteRequestListe.forEach { personIdOgPeriode ->
       var antallPerioderFunnet = 0
@@ -34,6 +41,7 @@ class OppdaterKontantstotte(
       //TODO: Må legge til periode til her nå kontantstøtte er klare med ny versjon
       )
 
+      LOGGER.info("Kaller kontantstøtte")
       SECURE_LOGGER.info("Kaller kontantstøtte med request: $kontantstotteRequest")
 
       when (val restResponseKontantstotte =

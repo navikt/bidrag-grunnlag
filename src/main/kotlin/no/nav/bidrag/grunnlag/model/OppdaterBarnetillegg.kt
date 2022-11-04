@@ -38,13 +38,14 @@ class OppdaterBarnetillegg(
         tom = personIdOgPeriode.periodeTil.minusDays(1)
       )
 
+      LOGGER.info("Kaller barnetillegg pensjon")
       SECURE_LOGGER.info("Kaller barnetillegg pensjon med request: $hentBarnetilleggPensjonRequest")
 
       when (val restResponseBarnetilleggPensjon =
         bidragGcpProxyConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)) {
         is RestResponse.Success -> {
           val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
-// !!
+
           SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
 
           persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
