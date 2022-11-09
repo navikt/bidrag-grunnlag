@@ -32,6 +32,7 @@ import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.Kontantstott
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -497,6 +498,7 @@ class OppdaterGrunnlagspakkeServiceTest {
   }
 
   @Test
+  @Disabled
   fun `skal oppdatere grunnlagspakke med barnetilsyn`() {
     Mockito.`when`(persistenceServiceMock.opprettBarnetilsyn(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(barnetilsynBoCaptor))).thenReturn(
       TestUtil.byggBarnetilsyn()

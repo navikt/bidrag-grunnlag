@@ -56,7 +56,7 @@ class OppdaterBarnetilsyn(
           barnetilsynResponse.barnetilsynBisysPerioder.forEach { bts ->
             if (bts.periode.fom.isBefore(personIdOgPeriode.periodeTil)) {
               antallPerioderFunnet++
-              for (barnIdent in bts.barnIdenter) {
+/*              for (barnIdent in bts.barnIdenter) {
                 persistenceService.opprettBarnetilsyn(
                   BarnetilsynBo(
                     grunnlagspakkeId = grunnlagspakkeId,
@@ -74,7 +74,7 @@ class OppdaterBarnetilsyn(
                     hentetTidspunkt = timestampOppdatering
                   )
                 )
-              }
+              }*/
             }
           }
           this.add(
