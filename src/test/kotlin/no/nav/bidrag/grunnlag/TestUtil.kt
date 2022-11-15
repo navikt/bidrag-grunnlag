@@ -667,7 +667,7 @@ class TestUtil {
             tom = LocalDate.parse("2021-07-31"),
           ),
           barnIdenter = immutableListOf("01012212345", "01011034543"),
-          manedsbeløp = 3500,
+          månedsbeløp = 3500,
           datakilde = Datakilde.EF
         )
       )
