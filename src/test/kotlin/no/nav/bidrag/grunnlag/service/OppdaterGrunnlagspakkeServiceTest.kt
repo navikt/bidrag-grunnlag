@@ -6,6 +6,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.grunnlag.TestUtil
+import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
@@ -17,6 +18,7 @@ import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
@@ -64,7 +66,7 @@ class OppdaterGrunnlagspakkeServiceTest {
   @Mock
   private lateinit var kontantstotteConsumerMock: KontantstotteConsumer
   @Mock
-  private lateinit var familieEfSakConsumer: FamilieEfSakConsumer
+  private lateinit var familieEfSakConsumerMock: FamilieEfSakConsumer
 
   @Captor
   private lateinit var utvidetBarnetrygdOgSmaabarnstilleggBoCaptor: ArgumentCaptor<UtvidetBarnetrygdOgSmaabarnstilleggBo>
@@ -86,6 +88,8 @@ class OppdaterGrunnlagspakkeServiceTest {
   private lateinit var kontantstotteBoCaptor: ArgumentCaptor<KontantstotteBo>
   @Captor
   private lateinit var barnetilsynBoCaptor: ArgumentCaptor<BarnetilsynBo>
+  @Captor
+  private lateinit var ainntektBoCaptor: ArgumentCaptor<AinntektBo>
 
   @Test
   fun `Skal oppdatere grunnlagspakke med utvidet barnetrygd`() {
@@ -468,7 +472,6 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     assertAll(
       { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
-      { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       // sjekk KontantstotteDto
       { Assertions.assertThat(kontantstotteListe.size).isEqualTo(2) },
@@ -503,7 +506,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     Mockito.`when`(persistenceServiceMock.opprettBarnetilsyn(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(barnetilsynBoCaptor))).thenReturn(
       TestUtil.byggBarnetilsyn()
     )
-    Mockito.`when`(familieEfSakConsumer.hentBarnetilsyn(
+    Mockito.`when`(familieEfSakConsumerMock.hentBarnetilsyn(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilsynRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggBarnetilsynResponse()))
 
@@ -520,7 +523,6 @@ class OppdaterGrunnlagspakkeServiceTest {
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilsynBo::class.java))
 
     assertAll(
-      { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
       { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
 
       // sjekk BarnetilsynDto
@@ -549,4 +551,49 @@ class OppdaterGrunnlagspakkeServiceTest {
         .isEqualTo("Antall perioder funnet: 1") }
     )
   }
+
+/*  @Test
+  @Suppress("NonAsciiCharacters")
+  fun `skal overstyre periodeFra ved innhenting av ainntekter før 2015`() {
+    Mockito.`when`(persistenceServiceMock.opprettAinntekt(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(ainntektBoCaptor))).thenReturn(
+      TestUtil.byggAinntekt()
+    )
+    Mockito.`when`(bidragGcpProxyConsumerMock.hentAinntekt(
+      GrunnlagspakkeServiceMockTest.MockitoHelper.any(HentInntektRequest::class.java)))
+      .thenReturn(RestResponse.Success(TestUtil.byggHentInntektListeResponse()))
+
+    val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
+    val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+      grunnlagspakkeIdOpprettet,
+      TestUtil.byggOppdaterGrunnlagspakkeRequestAinntektTidligereEnn2015(),
+      LocalDateTime.now()
+    )
+
+    val ainntektListe = ainntektBoCaptor.allValues
+
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(
+      GrunnlagspakkeServiceMockTest.MockitoHelper.any(AinntektBo::class.java))
+
+    assertAll(
+      { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
+
+      // sjekk AinntektBo
+      { Assertions.assertThat(ainntektListe.size).isEqualTo(2) },
+      { Assertions.assertThat(ainntektListe[0].personId).isEqualTo("1234567") },
+      { Assertions.assertThat(ainntektListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-07-01")) },
+      { Assertions.assertThat(ainntektListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
+
+      // sjekk oppdatertGrunnlagspakke
+      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
+      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
+      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type)
+        .isEqualTo(GrunnlagRequestType.AINNTEKT) },
+      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId)
+        .isEqualTo("12345678910") },
+      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status)
+        .isEqualTo(GrunnlagsRequestStatus.HENTET) },
+      { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
+        .isEqualTo("Antall perioder funnet: 1") }
+    )
+  }*/
 }
