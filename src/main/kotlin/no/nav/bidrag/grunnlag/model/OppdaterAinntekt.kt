@@ -62,7 +62,7 @@ class OppdaterAinntekt(
         personIdOgPeriode.periodeFra.toString().substring(0, 7)
       }
 
-      val periodeTil = if (personIdOgPeriode.periodeTil.isBefore(LocalDate.parse("2015-01-01"))) {
+      val periodeTil = if (personIdOgPeriode.periodeTil.isBefore(LocalDate.parse("2015-02-01"))) {
         "2015-01"
       } else {
         personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7)
