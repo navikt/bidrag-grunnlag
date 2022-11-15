@@ -14,7 +14,7 @@ data class BarnetilsynResponse(
 data class BarnetilsynBisysPerioder (
   val periode: Periode,
   val barnIdenter: List<String>,
-  val manedsbeløp: Int,
+  val månedsbeløp: Int,
   val datakilde: Datakilde
 )
 
