@@ -59,8 +59,8 @@ class OppdaterAinntekt(
       // 2015.01 hvis periodeFra er tidligere enn det. Hvis periodeTil er før januar 2015 så gjøres det ikke et kall.
       //
       if (personIdOgPeriode.periodeTil.isBefore(LocalDate.of(2015, 1, 1))) {
-        LOGGER.info("Ugyldig periode angitt i HentAinntektRequest (Inntektskomponenten). PeriodeTil må være lik eller etter januar 2015")
-        SECURE_LOGGER.info("Ugyldig periode angitt i HentAinntektRequest (Inntektskomponenten). PeriodeTil må være lik eller etter januar 2015: $personIdOgPeriode")
+        LOGGER.info("Ugyldig periode angitt i HentAinntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere")
+        SECURE_LOGGER.info("Ugyldig periode angitt i HentAinntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere: $personIdOgPeriode")
       } else {
         val periodeFra: String
         if (personIdOgPeriode.periodeFra.isBefore(LocalDate.parse("2015-01-01"))) {
