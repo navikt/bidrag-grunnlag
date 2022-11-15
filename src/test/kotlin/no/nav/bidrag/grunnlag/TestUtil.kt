@@ -215,6 +215,28 @@ class TestUtil {
       )
     )
 
+    fun byggOppdaterGrunnlagspakkeRequestAinntekt() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.AINNTEKT,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2021-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
+    fun byggOppdaterGrunnlagspakkeRequestAinntektTidligereEnn2015() = OppdaterGrunnlagspakkeRequestDto(
+      grunnlagRequestDtoListe = listOf(
+        GrunnlagRequestDto(
+          type = GrunnlagRequestType.AINNTEKT,
+          personId = "12345678910",
+          periodeFra = LocalDate.parse("2011-01-01"),
+          periodeTil = LocalDate.parse("2022-01-01")
+        )
+      )
+    )
+
     fun byggGrunnlagspakke() = Grunnlagspakke(
       grunnlagspakkeId = (1..100).random(),
       opprettetAv = "RTV9999",
@@ -645,7 +667,7 @@ class TestUtil {
             tom = LocalDate.parse("2021-07-31"),
           ),
           barnIdenter = immutableListOf("01012212345", "01011034543"),
-          manedsbeløp = 3500,
+          månedsbeløp = 3500,
           datakilde = Datakilde.EF
         )
       )
