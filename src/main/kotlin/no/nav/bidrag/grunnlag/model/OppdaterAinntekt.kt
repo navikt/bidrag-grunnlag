@@ -8,6 +8,7 @@ import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
+import no.nav.bidrag.grunnlag.comparator.isAfterOrEqual
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektInformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.ArbeidsInntektMaanedIntern
@@ -29,7 +30,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.chrono.ChronoLocalDate
 
 class OppdaterAinntekt(
   private val grunnlagspakkeId: Int,
@@ -47,7 +47,7 @@ class OppdaterAinntekt(
     const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
     const val BIDRAG_FORMAAL = "Bidrag"
     const val FORSKUDD_FORMAAL = "Bidragsforskudd"
-    const val januar2015 = "2015-01"
+    const val JANUAR2015 = "2015-01"
   }
 
   fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterAinntekt {
@@ -55,116 +55,54 @@ class OppdaterAinntekt(
 
     ainntektRequestListe.forEach { personIdOgPeriode ->
 
-      // Inntektskomponenten returner Bad request ved spørring på inntekter tidligere enn 2015, overstyrer derfor til
-      // 2015.01 hvis periodeFra er tidligere enn det.
-      val periodeFra = if (personIdOgPeriode.periodeFra.isBefore(LocalDate.parse("2015-01-01"))) {
-        januar2015
+      // Inntektskomponenten returner Bad request ved spørring på inntekter tidligere enn 2015, overstyrer derfor periodeFra til
+      // 2015.01 hvis periodeFra er tidligere enn det. Hvis periodeTil er før januar 2015 så gjøres det ikke et kall.
+      //
+      if (personIdOgPeriode.periodeTil.isBefore(LocalDate.of(2015, 1, 1))) {
+        LOGGER.info("Ugyldig periode angitt i HentAinntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere")
+        SECURE_LOGGER.info("Ugyldig periode angitt i HentAinntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere: $personIdOgPeriode")
       } else {
-        personIdOgPeriode.periodeFra.toString().substring(0, 7)
-      }
+        val periodeFra: String
+        if (personIdOgPeriode.periodeFra.isBefore(LocalDate.parse("2015-01-01"))) {
+          periodeFra = JANUAR2015
+          LOGGER.info("For gammel periodeFra angitt i HentAinntektRequest (Inntektskomponenten), overstyres til januar 2015")
+          SECURE_LOGGER.info("For gammel periodeFra angitt i HentAinntektRequest (Inntektskomponenten), overstyres til januar 2015: $personIdOgPeriode")
+        } else {
+          periodeFra = personIdOgPeriode.periodeFra.toString().substring(0, 7)
+        }
 
-      val periodeTil = if (personIdOgPeriode.periodeTil.isBefore(LocalDate.parse("2015-02-01"))) {
-        januar2015
-      } else {
-        personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7)
-      }
+        val hentAinntektRequest = HentInntektRequest(
+          ident = personIdOgPeriode.personId,
+          innsynHistoriskeInntekterDato = null,
+          maanedFom = periodeFra,
+          maanedTom = personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7),
+          ainntektsfilter = finnFilter(formaal),
+          formaal = finnFormaal(formaal)
+        )
+        LOGGER.info("Kaller bidrag-gcp-proxy (Inntektskomponenten)")
+        SECURE_LOGGER.info("Kaller bidrag-gcp-proxy (Inntektskomponenten) med request: $hentAinntektRequest")
 
-      val hentAinntektRequest = HentInntektRequest(
-        ident = personIdOgPeriode.personId,
-        innsynHistoriskeInntekterDato = null,
-        maanedFom = periodeFra,
-        maanedTom = periodeTil,
-        ainntektsfilter = finnFilter(formaal),
-        formaal = finnFormaal(formaal)
-      )
-      LOGGER.info("Kaller bidrag-gcp-proxy (Inntektskomponenten)")
-      SECURE_LOGGER.info("Kaller bidrag-gcp-proxy (Inntektskomponenten) med request: $hentAinntektRequest")
+        when (val restResponseInntekt = bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest)) {
+          is RestResponse.Success -> {
+            val hentInntektListeResponse = mapResponsTilInternStruktur(restResponseInntekt.body)
+            SECURE_LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
 
-      when (val restResponseInntekt = bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest)) {
-        is RestResponse.Success -> {
-          val hentInntektListeResponse = mapResponsTilInternStruktur(restResponseInntekt.body)
-          SECURE_LOGGER.info("bidrag-gcp-proxy (Inntektskomponenten) ga følgende respons: $hentInntektListeResponse")
+            var antallPerioderFunnet = 0
+            val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
 
-          var antallPerioderFunnet = 0
-          val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
-
-          // Hvis det ikke finnes noen perioder i responsen:
-          // - evt. eksisterende ainntekter settes til aktiv=false (i oppdaterAinntektForGrunnlagspakke)
-          // - ingen nye ainntekter opprettes
-          if (hentInntektListeResponse.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
-            persistenceService.oppdaterAinntektForGrunnlagspakke(
-              grunnlagspakkeId,
-              nyeAinntekter,
-              personIdOgPeriode.periodeFra,
-              personIdOgPeriode.periodeTil,
-              personIdOgPeriode.personId,
-              timestampOppdatering
-            )
-
-            this.add(
-              OppdaterGrunnlagDto(
-                GrunnlagRequestType.AINNTEKT,
+            // Hvis det ikke finnes noen perioder i responsen:
+            // - evt. eksisterende ainntekter settes til aktiv=false (i oppdaterAinntektForGrunnlagspakke)
+            // - ingen nye ainntekter opprettes
+            if (hentInntektListeResponse.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
+              persistenceService.oppdaterAinntektForGrunnlagspakke(
+                grunnlagspakkeId,
+                nyeAinntekter,
+                personIdOgPeriode.periodeFra,
+                personIdOgPeriode.periodeTil,
                 personIdOgPeriode.personId,
-                GrunnlagsRequestStatus.HENTET,
-                "Ingen inntekter funnet. Evt. eksisterende perioder vi bli satt til inaktive."
+                timestampOppdatering
               )
-            )
 
-            // Hvis det finnes perioder i responsen:
-            // - hvis InntektIntern ikke er tom, legg til data for den aktuelle perioden
-            // - i oppdaterAinntektForGrunnlagspakke vil evt. nye perioder opprettes og eksisterende perioder som ikke finnes i den nye responsen
-            //   vil bli satt til aktiv=false
-          } else {
-            hentInntektListeResponse.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
-
-              if (!inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
-                antallPerioderFunnet++
-                val inntekt = AinntektBo(
-                  grunnlagspakkeId = grunnlagspakkeId,
-                  personId = personIdOgPeriode.personId,
-                  periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                  periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                  aktiv = true,
-                  brukFra = timestampOppdatering,
-                  brukTil = null,
-                  hentetTidspunkt = timestampOppdatering
-                )
-
-                val inntektsposter = mutableListOf<AinntektspostBo>()
-                inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern?.forEach { inntektspost ->
-                  inntektsposter.add(
-                    AinntektspostBo(
-                      utbetalingsperiode = inntektspost.utbetaltIMaaned,
-                      opptjeningsperiodeFra =
-                      if (inntektspost.opptjeningsperiodeFom != null) inntektspost.opptjeningsperiodeFom else null,
-                      opptjeningsperiodeTil =
-                      if (inntektspost.opptjeningsperiodeTom != null) inntektspost.opptjeningsperiodeTom
-                        .plusMonths(1) else null,
-                      opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
-                      virksomhetId = inntektspost.virksomhet?.identifikator,
-                      inntektType = inntektspost.inntektType,
-                      fordelType = inntektspost.fordel,
-                      beskrivelse = inntektspost.beskrivelse,
-                      belop = inntektspost.beloep,
-                      etterbetalingsperiodeFra = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
-                      etterbetalingsperiodeTil = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom
-
-                    )
-                  )
-                }
-                nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
-              }
-            }
-            persistenceService.oppdaterAinntektForGrunnlagspakke(
-              grunnlagspakkeId,
-              nyeAinntekter,
-              personIdOgPeriode.periodeFra,
-              personIdOgPeriode.periodeTil,
-              personIdOgPeriode.personId,
-              timestampOppdatering
-            )
-            if (antallPerioderFunnet.equals(0)) {
               this.add(
                 OppdaterGrunnlagDto(
                   GrunnlagRequestType.AINNTEKT,
@@ -173,28 +111,93 @@ class OppdaterAinntekt(
                   "Ingen inntekter funnet. Evt. eksisterende perioder vi bli satt til inaktive."
                 )
               )
+
+              // Hvis det finnes perioder i responsen:
+              // - hvis InntektIntern ikke er tom, legg til data for den aktuelle perioden
+              // - i oppdaterAinntektForGrunnlagspakke vil evt. nye perioder opprettes og eksisterende perioder som ikke finnes i den nye responsen
+              //   vil bli satt til aktiv=false
             } else {
-              this.add(
-                OppdaterGrunnlagDto(
-                  GrunnlagRequestType.AINNTEKT,
-                  personIdOgPeriode.personId,
-                  GrunnlagsRequestStatus.HENTET,
-                  "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet",
-                )
+              hentInntektListeResponse.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
+
+                if (!inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
+                  antallPerioderFunnet++
+                  val inntekt = AinntektBo(
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    personId = personIdOgPeriode.personId,
+                    periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                    periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                    aktiv = true,
+                    brukFra = timestampOppdatering,
+                    brukTil = null,
+                    hentetTidspunkt = timestampOppdatering
+                  )
+
+                  val inntektsposter = mutableListOf<AinntektspostBo>()
+                  inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern?.forEach { inntektspost ->
+                    inntektsposter.add(
+                      AinntektspostBo(
+                        utbetalingsperiode = inntektspost.utbetaltIMaaned,
+                        opptjeningsperiodeFra =
+                        if (inntektspost.opptjeningsperiodeFom != null) inntektspost.opptjeningsperiodeFom else null,
+                        opptjeningsperiodeTil =
+                        if (inntektspost.opptjeningsperiodeTom != null) inntektspost.opptjeningsperiodeTom
+                          .plusMonths(1) else null,
+                        opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
+                        virksomhetId = inntektspost.virksomhet?.identifikator,
+                        inntektType = inntektspost.inntektType,
+                        fordelType = inntektspost.fordel,
+                        beskrivelse = inntektspost.beskrivelse,
+                        belop = inntektspost.beloep,
+                        etterbetalingsperiodeFra = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
+                        etterbetalingsperiodeTil = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom
+
+                      )
+                    )
+                  }
+                  nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
+                }
+              }
+              persistenceService.oppdaterAinntektForGrunnlagspakke(
+                grunnlagspakkeId,
+                nyeAinntekter,
+                personIdOgPeriode.periodeFra,
+                personIdOgPeriode.periodeTil,
+                personIdOgPeriode.personId,
+                timestampOppdatering
               )
+              if (antallPerioderFunnet.equals(0)) {
+                this.add(
+                  OppdaterGrunnlagDto(
+                    GrunnlagRequestType.AINNTEKT,
+                    personIdOgPeriode.personId,
+                    GrunnlagsRequestStatus.HENTET,
+                    "Ingen inntekter funnet. Evt. eksisterende perioder vi bli satt til inaktive."
+                  )
+                )
+              } else {
+                this.add(
+                  OppdaterGrunnlagDto(
+                    GrunnlagRequestType.AINNTEKT,
+                    personIdOgPeriode.personId,
+                    GrunnlagsRequestStatus.HENTET,
+                    "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet",
+                  )
+                )
+              }
             }
           }
-        }
 
-        is RestResponse.Failure -> {
-          this.add(
-            OppdaterGrunnlagDto(
-              GrunnlagRequestType.AINNTEKT,
-              personIdOgPeriode.personId,
-              if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-              "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+          is RestResponse.Failure -> {
+            this.add(
+              OppdaterGrunnlagDto(
+                GrunnlagRequestType.AINNTEKT,
+                personIdOgPeriode.personId,
+                if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+                "Feil ved henting av inntekt for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+              )
             )
-          )
+          }
         }
       }
     }
