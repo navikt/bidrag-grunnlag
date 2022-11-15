@@ -47,6 +47,7 @@ class OppdaterAinntekt(
     const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
     const val BIDRAG_FORMAAL = "Bidrag"
     const val FORSKUDD_FORMAAL = "Bidragsforskudd"
+    const val januar2015 = "2015-01"
   }
 
   fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterAinntekt {
@@ -57,13 +58,13 @@ class OppdaterAinntekt(
       // Inntektskomponenten returner Bad request ved spørring på inntekter tidligere enn 2015, overstyrer derfor til
       // 2015.01 hvis periodeFra er tidligere enn det.
       val periodeFra = if (personIdOgPeriode.periodeFra.isBefore(LocalDate.parse("2015-01-01"))) {
-        "2015-01"
+        januar2015
       } else {
         personIdOgPeriode.periodeFra.toString().substring(0, 7)
       }
 
       val periodeTil = if (personIdOgPeriode.periodeTil.isBefore(LocalDate.parse("2015-02-01"))) {
-        "2015-01"
+        januar2015
       } else {
         personIdOgPeriode.periodeTil.minusMonths(1).toString().substring(0, 7)
       }
