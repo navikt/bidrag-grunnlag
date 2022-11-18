@@ -77,7 +77,6 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Datakilde
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
@@ -666,8 +665,7 @@ class TestUtil {
             fom = LocalDate.parse("2021-01-01"),
             tom = LocalDate.parse("2021-07-31"),
           ),
-          barnIdenter = immutableListOf("01012212345", "01011034543"),
-          datakilde = Datakilde.EF
+          barnIdenter = immutableListOf("01012212345", "01011034543")
         )
       )
     )
