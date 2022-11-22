@@ -11,19 +11,12 @@ data class BarnetilsynResponse(
   val barnetilsynBisysPerioder: List<BarnetilsynBisysPerioder>
 )
 
-data class BarnetilsynBisysPerioder (
+data class BarnetilsynBisysPerioder(
   val periode: Periode,
-  val barnIdenter: List<String>,
-  val månedsbeløp: Int,
-  val datakilde: Datakilde
+  val barnIdenter: List<String>
 )
 
 data class Periode(
   val fom: LocalDate,
   val tom: LocalDate
 )
-
-enum class Datakilde {
-  EF,
-  INFOTRYGD
-}
