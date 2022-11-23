@@ -18,7 +18,6 @@ import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
@@ -30,7 +29,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertAll
@@ -443,11 +442,8 @@ class OppdaterGrunnlagspakkeServiceTest {
       { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
       { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
       { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 3") }
-
-
     )
   }
-
 
   @Test
   fun `skal oppdatere grunnlagspakke med kontantstotte`() {
@@ -455,7 +451,7 @@ class OppdaterGrunnlagspakkeServiceTest {
       TestUtil.byggKontantstotte()
     )
     Mockito.`when`(kontantstotteConsumerMock.hentKontantstotte(
-      GrunnlagspakkeServiceMockTest.MockitoHelper.any(KontantstotteRequest::class.java)))
+      GrunnlagspakkeServiceMockTest.MockitoHelper.any(InnsynRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggKontantstotteResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId

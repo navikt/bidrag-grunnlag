@@ -6,7 +6,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -36,16 +36,15 @@ class OppdaterKontantstotte(
 
       // Input til tjeneste er en liste over alle personnr for en person,
       // kall PDL for å hente historikk på fnr?
-      val kontantstotteRequest = KontantstotteRequest(
-        listOf(personIdOgPeriode.personId)
-      //TODO: Må legge til periode til her nå kontantstøtte er klare med ny versjon
+      val innsynRequest = InnsynRequest(
+        listOf(personIdOgPeriode.personId), personIdOgPeriode.periodeFra
       )
 
       LOGGER.info("Kaller kontantstøtte")
-      SECURE_LOGGER.info("Kaller kontantstøtte med request: $kontantstotteRequest")
+      SECURE_LOGGER.info("Kaller kontantstøtte med request: $innsynRequest")
 
       when (val restResponseKontantstotte =
-        kontantstotteConsumer.hentKontantstotte(kontantstotteRequest)) {
+        kontantstotteConsumer.hentKontantstotte(innsynRequest)) {
         is RestResponse.Success -> {
           val kontantstotteResponse = restResponseKontantstotte.body
           SECURE_LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
@@ -57,25 +56,23 @@ class OppdaterKontantstotte(
           )
 
           kontantstotteResponse.data.forEach { ks ->
-            if (ks.fom.isBefore(YearMonth.from(personIdOgPeriode.periodeTil))) {
-              antallPerioderFunnet++
-              for (i in ks.barn.indices) {
-                persistenceService.opprettKontantstotte(
-                  KontantstotteBo(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    partPersonId = personIdOgPeriode.personId,
-                    barnPersonId = ks.barn[i].fnr,
-                    periodeFra = LocalDate.parse(ks.fom.toString() + "-01"),
-                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                    periodeTil = if (ks.tom != null) LocalDate.parse(ks.tom.toString() + "-01").plusMonths(1) else null,
-                    aktiv = true,
-                    brukFra = timestampOppdatering,
-                    belop = beregnBelopForGjeldendeBarn(ks, i),
-                    brukTil = null,
-                    hentetTidspunkt = timestampOppdatering
-                  )
+            antallPerioderFunnet++
+            for (i in ks.barn.indices) {
+              persistenceService.opprettKontantstotte(
+                KontantstotteBo(
+                  grunnlagspakkeId = grunnlagspakkeId,
+                  partPersonId = personIdOgPeriode.personId,
+                  barnPersonId = ks.barn[i].fnr,
+                  periodeFra = LocalDate.parse(ks.fom.toString() + "-01"),
+                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                  periodeTil = if (ks.tom != null) LocalDate.parse(ks.tom.toString() + "-01").plusMonths(1) else null,
+                  aktiv = true,
+                  brukFra = timestampOppdatering,
+                  belop = beregnBelopForGjeldendeBarn(ks, i),
+                  brukTil = null,
+                  hentetTidspunkt = timestampOppdatering
                 )
-              }
+              )
             }
           }
           this.add(
@@ -87,6 +84,7 @@ class OppdaterKontantstotte(
             )
           )
         }
+
         is RestResponse.Failure -> this.add(
           OppdaterGrunnlagDto(
             GrunnlagRequestType.KONTANTSTOTTE,
@@ -103,10 +101,16 @@ class OppdaterKontantstotte(
   private fun beregnBelopForGjeldendeBarn(ks: StonadDto, index: Int): Int {
     val antallBarn = ks.barn.size
     val belop = ks.belop
-    val belopPerParn = belop/antallBarn.toDouble()
-
-    // Siden summen for alle barn er lagt sammen, og det kan være barn med forskjellige summer ved
-    // feks 60% kontantstøtte så må vi håndtere at det kan bli desimaltall ved deling på hvert barn.
-    return if (index != antallBarn-1) { Math.floor(belopPerParn).toInt() } else { Math.ceil(belopPerParn).toInt() }
+    if (belop != null) {
+      val belopPerParn = belop.div(antallBarn.toDouble())
+      // Siden summen for alle barn er lagt sammen, og det kan være barn med forskjellige summer ved
+      // feks 60% kontantstøtte så må vi håndtere at det kan bli desimaltall ved deling på hvert barn.
+      return if (index != antallBarn - 1) {
+        Math.floor(belopPerParn).toInt()
+      } else {
+        Math.ceil(belopPerParn).toInt()
+      }
+    } else
+      return 0
   }
 }

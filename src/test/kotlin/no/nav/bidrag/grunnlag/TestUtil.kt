@@ -46,8 +46,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRespon
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
@@ -639,7 +639,7 @@ class TestUtil {
       )
     )
 
-    fun byggKontantstotteResponse() = KontantstotteResponse(
+    fun byggKontantstotteResponse() = InnsynResponse(
       immutableListOf(
         StonadDto(
           fnr = "12345678910",
@@ -772,10 +772,11 @@ class TestUtil {
       periodeFra = LocalDate.now()
     )
 
-    fun byggKontantstotteRequest() = KontantstotteRequest(
+    fun byggKontantstotteRequest() = InnsynRequest(
       listOf(
         "123"
-      )
+      ),
+      LocalDate.now()
     )
 
     fun byggBarnetilsynRequest() = BarnetilsynRequest(

@@ -23,7 +23,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -118,7 +118,7 @@ class GrunnlagspakkeControllerTest(
         ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK)
       )
 
-    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<KontantstotteResponse>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
       .thenReturn(
         ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
       )
@@ -160,7 +160,7 @@ class GrunnlagspakkeControllerTest(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
 
-    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<KontantstotteResponse>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
       .thenThrow(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
