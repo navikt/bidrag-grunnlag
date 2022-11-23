@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.consumer
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.KontantstotteResponse
+import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -45,7 +45,7 @@ internal class KontantstotteConsumerTest {
         eq(KONTANTSTOTTE_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<KontantstotteResponse>>()
+        any<Class<InnsynResponse>>()
       )
     )
       .thenReturn(ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK))
@@ -80,7 +80,7 @@ internal class KontantstotteConsumerTest {
         eq(KONTANTSTOTTE_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<KontantstotteResponse>>()
+        any<Class<InnsynResponse>>()
       )
     )
       .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
