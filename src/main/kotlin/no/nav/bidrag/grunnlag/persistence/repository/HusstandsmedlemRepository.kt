@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 interface HusstandsmedlemRepository : JpaRepository<Husstandsmedlem, Int?> {
 
   @Query(
-    "select hum from Husstandsmedlem hum where hum.husstandId = :husstandId"
+    "select hum from Husstandsmedlem hum where hum.husstandId = :husstandId order by hum.periodeFra"
   )
   fun hentHusstandsmedlem(husstandId: Int): List<Husstandsmedlem>
 }
