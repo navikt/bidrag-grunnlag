@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 interface BarnetilleggRepository : JpaRepository<Barnetillegg, Int?> {
 
   @Query(
-    "select bt from Barnetillegg bt where bt.grunnlagspakkeId = :grunnlagspakkeId and bt.aktiv = true"
+    "select bt from Barnetillegg bt where bt.grunnlagspakkeId = :grunnlagspakkeId and bt.aktiv = true order by bt.partPersonId, bt.periodeFra, bt.barnPersonId"
   )
   fun hentBarnetillegg(grunnlagspakkeId: Int): List<Barnetillegg>
 

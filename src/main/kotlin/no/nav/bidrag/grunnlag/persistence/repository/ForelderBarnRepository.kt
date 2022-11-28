@@ -15,7 +15,7 @@ interface ForelderBarnRepository : CrudRepository<ForelderBarn, ForelderBarnPK?>
   fun hentForelderBarn(forelderId: Int, barnId: Int): ForelderBarn
 
   @Query(
-    "select fa.barn from ForelderBarn fa where fa.forelder.forelderId = :forelderId"
+    "select fa.barn from ForelderBarn fa where fa.forelder.forelderId = :forelderId order by fa.barn.personId"
   )
   fun hentAlleBarnForForelder(forelderId: Int): List<Barn>
 

@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 interface SivilstandRepository : JpaRepository<Sivilstand, Int?> {
 
   @Query(
-    "select si from Sivilstand si where si.grunnlagspakkeId = :grunnlagspakkeId and si.aktiv = true"
+    "select si from Sivilstand si where si.grunnlagspakkeId = :grunnlagspakkeId and si.aktiv = true order by si.personId, si.periodeFra"
   )
   fun hentSivilstand(grunnlagspakkeId: Int): List<Sivilstand>
 
