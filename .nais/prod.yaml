@@ -24,3 +24,6 @@ azureAccessInbound:
   - application: bisys
     namespace: bidrag
     cluster: prod-fss
+spec:
+  replicas:
+    min: 2
