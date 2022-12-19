@@ -48,10 +48,10 @@ spec:
     requests:
       cpu: 500m
       memory: 1024Mi
-  replicas:
-    cpuThresholdPercentage: 80
-    max: 4
-    min: {{ spec.replicas.min }}
+    replicas:
+      cpuThresholdPercentage: 80
+      max: 4
+      min: {{ spec.replicas.min }}
   ingresses:
     - {{ ingress }}
   env:
@@ -82,3 +82,4 @@ spec:
         databases:
           - name: {{ dbname }}
             envVarPrefix: DB
+        tier: {{ spec.gcp.sqlInstances.tier }}
