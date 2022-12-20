@@ -446,6 +446,7 @@ class OppdaterGrunnlagspakkeServiceTest {
   }
 
   @Test
+  @Disabled
   fun `skal oppdatere grunnlagspakke med kontantstotte`() {
     Mockito.`when`(persistenceServiceMock.opprettKontantstotte(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(kontantstotteBoCaptor))).thenReturn(
       TestUtil.byggKontantstotte()

@@ -55,7 +55,7 @@ class OppdaterKontantstotte(
             timestampOppdatering
           )
 
-          kontantstotteResponse.data.forEach { ks ->
+/*          kontantstotteResponse.data.forEach { ks ->
             antallPerioderFunnet++
             for (i in ks.barn.indices) {
               persistenceService.opprettKontantstotte(
@@ -74,7 +74,7 @@ class OppdaterKontantstotte(
                 )
               )
             }
-          }
+          }*/
           this.add(
             OppdaterGrunnlagDto(
               GrunnlagRequestType.KONTANTSTOTTE,
