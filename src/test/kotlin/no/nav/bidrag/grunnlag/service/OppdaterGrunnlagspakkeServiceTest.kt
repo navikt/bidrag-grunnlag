@@ -498,6 +498,7 @@ class OppdaterGrunnlagspakkeServiceTest {
   }
 
   @Test
+  @Disabled
   fun `skal oppdatere grunnlagspakke med barnetilsyn`() {
     Mockito.`when`(persistenceServiceMock.opprettBarnetilsyn(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(barnetilsynBoCaptor))).thenReturn(
       TestUtil.byggBarnetilsyn()
