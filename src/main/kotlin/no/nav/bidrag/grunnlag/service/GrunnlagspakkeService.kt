@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilsynDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.EgneBarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
@@ -71,7 +72,8 @@ class GrunnlagspakkeService(
       hentEgneBarnIHusstanden(grunnlagspakkeId),
       hentHusstandsmedlemmer(grunnlagspakkeId),
       persistenceService.hentSivilstand(grunnlagspakkeId),
-      persistenceService.hentBarnetilsyn(grunnlagspakkeId)
+      emptyList<BarnetilsynDto>()
+//      persistenceService.hentBarnetilsyn(grunnlagspakkeId)
     )
   }
 
