@@ -77,9 +77,9 @@ class OppdaterGrunnlagspakkeService(
       .oppdaterSivilstand(
         hentRequestListeFor(SIVILSTAND, oppdaterGrunnlagspakkeRequestDto)
       )
-      .oppdaterBarnetilsyn(
+/*      .oppdaterBarnetilsyn(
         hentRequestListeFor(BARNETILSYN, oppdaterGrunnlagspakkeRequestDto)
-      )
+      )*/
 
     return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
   }
