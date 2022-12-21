@@ -5,6 +5,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.EgneBarnDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.KontantstotteDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
@@ -68,7 +69,8 @@ class GrunnlagspakkeService(
       persistenceService.hentSkattegrunnlag(grunnlagspakkeId),
       persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
       persistenceService.hentBarnetillegg(grunnlagspakkeId),
-      persistenceService.hentKontantstotte(grunnlagspakkeId),
+      emptyList<KontantstotteDto>(),
+//      persistenceService.hentKontantstotte(grunnlagspakkeId),
       hentEgneBarnIHusstanden(grunnlagspakkeId),
       hentHusstandsmedlemmer(grunnlagspakkeId),
       persistenceService.hentSivilstand(grunnlagspakkeId),
