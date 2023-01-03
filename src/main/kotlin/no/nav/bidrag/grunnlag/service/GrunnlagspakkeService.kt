@@ -74,8 +74,7 @@ class GrunnlagspakkeService(
       hentEgneBarnIHusstanden(grunnlagspakkeId),
       hentHusstandsmedlemmer(grunnlagspakkeId),
       persistenceService.hentSivilstand(grunnlagspakkeId),
-      emptyList<BarnetilsynDto>()
-//      persistenceService.hentBarnetilsyn(grunnlagspakkeId)
+      persistenceService.hentBarnetilsyn(grunnlagspakkeId)
     )
   }
 
