@@ -12,9 +12,9 @@ azure:
   bidragperson_scope: dev-fss.bidrag.bidrag-person
   bidragperson_app: bidrag-person
   bidragperson_cluster: dev-fss
-  kontantstotte_url: familie-ks-sak.dev.intern.nav.no
-  kontantstotte_scope: dev-gcp.teamfamilie.familie-ks-sak
-  kontantstotte_cluster: dev-gcp
+  familiekssak_url: familie-ks-sak.dev.intern.nav.no
+  familiekssak_scope: dev-gcp.teamfamilie.familie-ks-sak
+  familiekssak_cluster: dev-gcp
 #  kontantstotte_url: infotrygd-kontantstotte-v2.dev-fss-pub.nais.io
 #  kontantstotte_scope: dev-fss.infotrygd.infotrygd-kontantstotte-v2
 #  kontantstotte_cluster: dev-fss
