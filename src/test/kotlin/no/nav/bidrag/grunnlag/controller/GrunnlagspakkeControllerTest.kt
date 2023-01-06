@@ -22,8 +22,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
-import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
+import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -76,9 +75,9 @@ class GrunnlagspakkeControllerTest(
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
   private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
   private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
-  private val kontantstotteConsumer: KontantstotteConsumer = KontantstotteConsumer(restTemplate)
+  private val familieKsSakConsumer: FamilieKsSakConsumer = FamilieKsSakConsumer(restTemplate)
   private val familieEfSakConsumer: FamilieEfSakConsumer = FamilieEfSakConsumer(restTemplate)
-  private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer, kontantstotteConsumer, familieEfSakConsumer)
+  private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer, familieKsSakConsumer, familieEfSakConsumer)
   private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
   private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
   private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)

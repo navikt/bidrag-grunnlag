@@ -4,7 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -18,7 +18,7 @@ class OppdaterKontantstotte(
   private val grunnlagspakkeId: Int,
   private val timestampOppdatering: LocalDateTime,
   private val persistenceService: PersistenceService,
-  private val kontantstotteConsumer: KontantstotteConsumer
+  private val familieKsSakConsumer: FamilieKsSakConsumer
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
   companion object {
@@ -41,7 +41,7 @@ class OppdaterKontantstotte(
       SECURE_LOGGER.info("Kaller kontantstøtte med request: $innsynRequest")
 
       when (val restResponseKontantstotte =
-        kontantstotteConsumer.hentKontantstotte(innsynRequest)) {
+        familieKsSakConsumer.hentKontantstotte(innsynRequest)) {
         is RestResponse.Success -> {
           val kontantstotteResponse = restResponseKontantstotte.body
           SECURE_LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")

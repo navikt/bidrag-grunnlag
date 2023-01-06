@@ -28,11 +28,10 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
-import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -62,7 +61,7 @@ class OppdaterGrunnlagspakkeServiceTest {
   @Mock
   private lateinit var bidragPersonConsumerMock: BidragPersonConsumer
   @Mock
-  private lateinit var kontantstotteConsumerMock: KontantstotteConsumer
+  private lateinit var familieKsSakConsumerMock: FamilieKsSakConsumer
   @Mock
   private lateinit var familieEfSakConsumerMock: FamilieEfSakConsumer
 

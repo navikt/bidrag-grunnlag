@@ -10,21 +10,21 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
-private const val KONTANTSTOTTE_CONTEXT = "/api/bisys"
+private const val FAMILIEKSSAK_CONTEXT = "/api/bisys"
 
-open class KontantstotteConsumer(private val restTemplate: HttpHeaderRestTemplate) :
+open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate) :
   GrunnlagsConsumer() {
 
   companion object {
     @JvmStatic
-    val logger: Logger = LoggerFactory.getLogger(KontantstotteConsumer::class.java)
+    val logger: Logger = LoggerFactory.getLogger(FamilieKsSakConsumer::class.java)
   }
 
   open fun hentKontantstotte(request: BisysDto): RestResponse<BisysResponsDto> {
     logger.info("Henter kontantstøtte")
 
     val restResponse = restTemplate.tryExchange(
-      KONTANTSTOTTE_CONTEXT,
+      FAMILIEKSSAK_CONTEXT,
       HttpMethod.POST,
       initHttpEntity(request),
       BisysResponsDto::class.java,
