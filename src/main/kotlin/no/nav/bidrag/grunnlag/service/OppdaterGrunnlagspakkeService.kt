@@ -18,7 +18,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
 import no.nav.bidrag.grunnlag.model.OppdaterEgneBarnIHusstanden

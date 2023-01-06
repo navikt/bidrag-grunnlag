@@ -1,3 +1,4 @@
+/*
 package no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api
 
 import java.time.LocalDate
@@ -22,4 +23,4 @@ data class StonadDto(
 
 data class BarnDto(
   val fnr: String
-)
+)*/

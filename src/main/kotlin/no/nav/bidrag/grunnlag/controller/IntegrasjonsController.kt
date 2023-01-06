@@ -23,9 +23,9 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
@@ -96,7 +96,7 @@ class IntegrasjonsController(
 
   @PostMapping(HENT_KONTANTSTOTTE)
   @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller infotrygd/kontantstotte-v2 for å hente kontantstotte")
-  fun hentKontantstotte(@RequestBody innsynRequest: InnsynRequest) : ResponseEntity<InnsynResponse> {
+  fun hentKontantstotte(@RequestBody innsynRequest: BisysDto) : ResponseEntity<BisysResponsDto> {
     return handleRestResponse(kontantstotteConsumer.hentKontantstotte(innsynRequest))
   }
 

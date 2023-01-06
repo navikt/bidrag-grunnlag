@@ -28,8 +28,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
+import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertAll
@@ -445,7 +444,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     )
   }
 
-  @Test
+/*  @Test
   @Disabled
   fun `skal oppdatere grunnlagspakke med kontantstotte`() {
     Mockito.`when`(persistenceServiceMock.opprettKontantstotte(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(kontantstotteBoCaptor))).thenReturn(
@@ -495,7 +494,7 @@ class OppdaterGrunnlagspakkeServiceTest {
       { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
         .isEqualTo("Antall perioder funnet: 1") }
     )
-  }
+  }*/
 
   @Test
   fun `skal oppdatere grunnlagspakke med barnetilsyn`() {

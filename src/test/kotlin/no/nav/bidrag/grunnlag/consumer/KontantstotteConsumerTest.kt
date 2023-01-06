@@ -1,9 +1,10 @@
+/*
 package no.nav.bidrag.grunnlag.consumer
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
+
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -107,4 +108,4 @@ internal class KontantstotteConsumerTest {
   companion object {
     private const val KONTANTSTOTTE_CONTEXT = "/hentPerioder"
   }
-}
+}*/

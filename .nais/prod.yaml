@@ -12,10 +12,14 @@ azure:
   bidragperson_url: bidrag-person.prod-fss-pub.nais.io
   bidragperson_app: bidrag-person
   bidragperson_cluster: prod-fss
-  kontantstotte_scope: prod-fss.infotrygd.infotrygd-kontantstotte-v2
-  kontantstotte_url: infotrygd-kontantstotte-v2.prod-fss-pub.nais.io
-  kontantstotte_app: infotrygd-kontantstotte-v2
-  kontantstotte_cluster: prod-fss
+  kontantstotte_scope: prod-gcp.teamfamilie.familie-ks-sak
+  kontantstotte_url: familie-ks-sak.intern.nav.no
+  kontantstotte_app: familie-ks-sak
+  kontantstotte_cluster: prod-gcp
+#  kontantstotte_scope: prod-fss.infotrygd.infotrygd-kontantstotte-v2
+#  kontantstotte_url: infotrygd-kontantstotte-v2.prod-fss-pub.nais.io
+#  kontantstotte_app: infotrygd-kontantstotte-v2
+#  kontantstotte_cluster: prod-fss
 dbname: bidrag-grunnlag-prod
 azureAccessInbound:
   - application: bidrag-gcp-proxy
