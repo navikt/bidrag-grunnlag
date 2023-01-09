@@ -15,7 +15,6 @@ azure:
   familiekssak_scope: prod-gcp.teamfamilie.familie-ks-sak
   familiekssak_url: familie-ks-sak.intern.nav.no
   familiekssak_app: familie-ks-sak
-  familiekssak_cluster: prod-gcp
 #  kontantstotte_scope: prod-fss.infotrygd.infotrygd-kontantstotte-v2
 #  kontantstotte_url: infotrygd-kontantstotte-v2.prod-fss-pub.nais.io
 #  kontantstotte_app: infotrygd-kontantstotte-v2
