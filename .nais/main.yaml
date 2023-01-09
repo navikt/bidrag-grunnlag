@@ -14,9 +14,6 @@ azure:
   bidragperson_cluster: dev-fss
   familiekssak_url: familie-kontantstotte-sak.dev.intern.nav.no
   familiekssak_scope: dev-gcp.teamfamilie.familie-ks-sak
-#  kontantstotte_url: infotrygd-kontantstotte-v2.dev-fss-pub.nais.io
-#  kontantstotte_scope: dev-fss.infotrygd.infotrygd-kontantstotte-v2
-#  kontantstotte_cluster: dev-fss
 dbname: bidrag-grunnlag-main
 azureAccessInbound:
   - application: bidrag-gcp-proxy
