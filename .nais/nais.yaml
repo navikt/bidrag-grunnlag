@@ -75,7 +75,6 @@ spec:
       value: https://{{ azure.familiekssak_url }}
     - name: FAMILIEKSSAK_SCOPE
       value: {{ azure.familiekssak_scope }}
-
   gcp:
     sqlInstances:
       - name: {{ dbname }}
