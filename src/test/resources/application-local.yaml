@@ -25,6 +25,12 @@ spring:
             client-secret: secret
             authorization-grant-type: client_credentials
             scope: api://familiebasak/.default
+          familieefsak:
+            provider: aad
+            client-id: someid
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope: api://familieefsak/.default
           familiekssak:
             provider: aad
             client-id: someid
