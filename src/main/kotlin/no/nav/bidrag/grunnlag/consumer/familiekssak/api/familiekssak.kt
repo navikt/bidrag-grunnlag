@@ -4,7 +4,7 @@ import java.time.YearMonth
 
 data class BisysDto(val identer: List<String>)
 
-data class BisysResponsDto(val infotrygdPerioder: List<InfotrygdPeriode>, val ksSakPerioder: List<KsSakPeriode>)
+data class BisysResponsDto(val infotrygdPerioder: List<InfotrygdPeriode>?, val ksSakPerioder: List<KsSakPeriode>?)
 data class InfotrygdPeriode(
   val fomMåned: YearMonth,
   val tomMåned: YearMonth?,

@@ -57,7 +57,7 @@ class OppdaterKontantstotte(
           )
 
           // Kontantstøtte fra Infotrygd
-          kontantstotteResponse.infotrygdPerioder.forEach { ks ->
+          kontantstotteResponse.infotrygdPerioder?.forEach { ks ->
             if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
               val belopPerParn = ks.beløp.div(ks.barna.size.toInt())
               ks.barna.forEach { barnPersonId ->
@@ -82,7 +82,7 @@ class OppdaterKontantstotte(
           }
 
           // Kontantstøtte fra ks-sak
-          kontantstotteResponse.ksSakPerioder.forEach { ks ->
+          kontantstotteResponse.ksSakPerioder?.forEach { ks ->
             if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
               antallPerioderFunnet++
               persistenceService.opprettKontantstotte(

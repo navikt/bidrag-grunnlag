@@ -21,8 +21,6 @@ open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate
   }
 
   open fun hentKontantstotte(request: BisysDto): RestResponse<BisysResponsDto> {
-    logger.info("Henter kontantstøtte")
-
     val restResponse = restTemplate.tryExchange(
       FAMILIEKSSAK_CONTEXT,
       HttpMethod.POST,
