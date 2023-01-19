@@ -23,6 +23,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -95,7 +96,6 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
   fun `skal oppdatere en grunnlagspakke`() {
 
     val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
@@ -119,10 +119,10 @@ class GrunnlagspakkeControllerTest(
         ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK)
       )
 
-/*    Mockito.`when`(restTemplate.exchange(eq("/api/bisys"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utbetalingsinfo"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
       .thenReturn(
         ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
-      )*/
+      )
 
     val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
       grunnlagspakkeIdOpprettet,
@@ -138,7 +138,6 @@ class GrunnlagspakkeControllerTest(
   }
 
   @Test
-  @Disabled
   @Suppress("NonAsciiCharacters")
   fun `skal oppdatere grunnlagspakke og håndtere rest-kall-feil`() {
 
@@ -162,10 +161,10 @@ class GrunnlagspakkeControllerTest(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
 
-/*    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utbetalingsinfo"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
       .thenThrow(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
-      )*/
+      )
 
     val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
       grunnlagspakkeIdOpprettet,

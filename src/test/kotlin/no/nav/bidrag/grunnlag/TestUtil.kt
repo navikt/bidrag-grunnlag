@@ -51,6 +51,10 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.InfotrygdPeriode
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.KsSakPeriode
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
@@ -183,7 +187,7 @@ class TestUtil {
           type = GrunnlagRequestType.KONTANTSTOTTE,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2022-01-01"),
-          periodeTil = LocalDate.parse("2023-01-01")
+          periodeTil = LocalDate.parse("2023-07-01")
         )
       )
     )
@@ -573,9 +577,9 @@ class TestUtil {
       kontantstotteId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       partPersonId = "1234567",
-      barnPersonId = "0123456",
-      periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
+      barnPersonId = "11223344551",
+      periodeFra = LocalDate.parse("2022-01-01"),
+      periodeTil = LocalDate.parse("2023-01-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -635,26 +639,30 @@ class TestUtil {
       )
     )
 
-/*
-    fun byggKontantstotteResponse() = InnsynResponse(
+
+    fun byggKontantstotteResponse() = BisysResponsDto(
       immutableListOf(
-        StonadDto(
-          fnr = "12345678910",
-          fom = YearMonth.parse("2022-01"),
-          tom = YearMonth.parse("2022-07"),
-          belop = 15001,
+        InfotrygdPeriode(
+          fomMåned = YearMonth.parse("2022-01"),
+          tomMåned = YearMonth.parse("2022-12"),
+          beløp = 15001,
           immutableListOf(
-            BarnDto(
-              "11223344551"
-            ),
-            BarnDto(
-              "15544332211"
-            )
+            "11223344551",
+            "15544332211"
+          )
+        )
+      ),
+      immutableListOf(
+        KsSakPeriode(
+          fomMåned = YearMonth.parse("2023-01"),
+          tomMåned = YearMonth.parse("2023-06"),
+          no.nav.bidrag.grunnlag.consumer.familiekssak.api.Barn(
+            5000, "11223344551"
           )
         )
       )
     )
-*/
+
 
     fun byggBarnetilsynResponse() = BarnetilsynResponse(
       immutableListOf(
@@ -770,12 +778,12 @@ class TestUtil {
       periodeFra = LocalDate.now()
     )
 
-/*    fun byggKontantstotteRequest() = InnsynRequest(
+    fun byggKontantstotteRequest() = BisysDto(
       listOf(
         "123"
       ),
-      LocalDate.now()
-    )*/
+//      LocalDate.now()
+    )
 
     fun byggBarnetilsynRequest() = BarnetilsynRequest(
       "123",

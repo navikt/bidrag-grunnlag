@@ -1,9 +1,9 @@
-/*
 package no.nav.bidrag.grunnlag.consumer
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.familiekssak.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions.assertThat
@@ -28,11 +28,11 @@ import org.springframework.web.client.HttpClientErrorException
 import java.time.YearMonth
 
 @ExtendWith(MockitoExtension::class)
-@DisplayName("KontantstotteConsumerTest")
-internal class KontantstotteConsumerTest {
+@DisplayName("FamilieKsSakConsumerTest")
+internal class FamilieKsSakConsumerTest {
 
   @InjectMocks
-  private val kontantstotteConsumer: KontantstotteConsumer? = null
+  private val familieKsConsumer: FamilieKsSakConsumer? = null
 
   @Mock
   private val restTemplateMock: HttpHeaderRestTemplate? = null
@@ -43,26 +43,32 @@ internal class KontantstotteConsumerTest {
 
     Mockito.`when`(
       restTemplateMock?.exchange(
-        eq(KONTANTSTOTTE_CONTEXT),
+        eq(FAMILIEKSSAK_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<InnsynResponse>>()
+        any<Class<BisysResponsDto>>()
       )
     )
       .thenReturn(ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK))
 
-    when (val restResponseKontantstotte = kontantstotteConsumer!!.hentKontantstotte(request)) {
+    when (val restResponseKontantstotte = familieKsConsumer!!.hentKontantstotte(request)) {
       is RestResponse.Success -> {
         val hentKontantstotteResponse = restResponseKontantstotte.body
         assertAll(
           { assertThat(hentKontantstotteResponse).isNotNull },
-          { assertThat(hentKontantstotteResponse.data.size).isEqualTo(1) },
-          { assertThat(hentKontantstotteResponse.data[0].fnr).isEqualTo("12345678910")},
-          { assertThat(hentKontantstotteResponse.data[0].fom).isEqualTo(YearMonth.parse("2022-01"))},
-          { assertThat(hentKontantstotteResponse.data[0].tom).isEqualTo(YearMonth.parse("2022-07"))},
-          { assertThat(hentKontantstotteResponse.data[0].belop).isEqualTo(15001) },
-          { assertThat(hentKontantstotteResponse.data[0].barn[0].fnr).isEqualTo("11223344551") },
-          { assertThat(hentKontantstotteResponse.data[0].barn[1].fnr).isEqualTo("15544332211") }
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder.size).isEqualTo(1) },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder.size).isEqualTo(1)},
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].beløp).isEqualTo(15001) },
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].fomMåned).isEqualTo(YearMonth.parse("2022-01"))},
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].tomMåned).isEqualTo(YearMonth.parse("2022-12"))},
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].beløp).isEqualTo(15001) },
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].barna[0]).isEqualTo("11223344551") },
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].barna[1]).isEqualTo("15544332211") },
+
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].fomMåned).isEqualTo(YearMonth.parse("2023-01")) },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].tomMåned).isEqualTo(YearMonth.parse("2023-06")) },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].barn.ident).isEqualTo("11223344551") },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].barn.beløp).isEqualTo(5000) },
         )
       }
       else -> {
@@ -78,15 +84,15 @@ internal class KontantstotteConsumerTest {
 
     Mockito.`when`(
       restTemplateMock?.exchange(
-        eq(KONTANTSTOTTE_CONTEXT),
+        eq(FAMILIEKSSAK_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<InnsynResponse>>()
+        any<Class<BisysResponsDto>>()
       )
     )
       .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
-    when (val restResponseKontantstotte = kontantstotteConsumer!!.hentKontantstotte(request)) {
+    when (val restResponseKontantstotte = familieKsConsumer!!.hentKontantstotte(request)) {
       is RestResponse.Failure -> {
         assertAll(
           { assertThat(restResponseKontantstotte.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
@@ -106,6 +112,6 @@ internal class KontantstotteConsumerTest {
   }
 
   companion object {
-    private const val KONTANTSTOTTE_CONTEXT = "/hentPerioder"
+    private const val FAMILIEKSSAK_CONTEXT = "/api/bisys/hent-utbetalingsinfo"
   }
-}*/
+}

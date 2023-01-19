@@ -102,6 +102,7 @@ class OppdaterBarnetilsyn(
 
 
   // TODO: Vurdere om beregning av skolealder er noe som kan skje automatisk, eller om saksbehandler må ta stilling til dette
+  // MR: for barn med dnr så vil ikke denne logikken fungere. Hente fødselsdato fra Barn-tabellen i Grunnlag i stedet?
   fun beregnSkolealder(barnIdent: String, fom: LocalDate): Skolealder {
     val dateFormatter = DateTimeFormatter.ofPattern("ddMMyy")
     val fodselsdato = LocalDate.parse(barnIdent.substring(IntRange(0, 5)), dateFormatter)

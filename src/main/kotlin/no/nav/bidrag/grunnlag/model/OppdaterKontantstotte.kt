@@ -4,15 +4,19 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
+import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.InfotrygdPeriode
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 class OppdaterKontantstotte(
   private val grunnlagspakkeId: Int,
@@ -52,21 +56,46 @@ class OppdaterKontantstotte(
             timestampOppdatering
           )
 
-/*          kontantstotteResponse.utbetalingsinfo.get(0)
-            .values.forEach { ks ->
-            antallPerioderFunnet++
-            for (i in ks.indices) {
+          // Kontantstøtte fra Infotrygd
+          kontantstotteResponse.infotrygdPerioder.forEach { ks ->
+            if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
+              val belopPerParn = ks.beløp.div(ks.barna.size.toInt())
+              ks.barna.forEach { barnPersonId ->
+                antallPerioderFunnet++
+                persistenceService.opprettKontantstotte(
+                  KontantstotteBo(
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    partPersonId = personIdOgPeriode.personId,
+                    barnPersonId = barnPersonId,
+                    periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
+                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                    periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
+                    aktiv = true,
+                    brukFra = timestampOppdatering,
+                    belop = belopPerParn,
+                    brukTil = null,
+                    hentetTidspunkt = timestampOppdatering
+                  )
+                )
+              }
+            }
+          }
+
+          // Kontantstøtte fra ks-sak
+          kontantstotteResponse.ksSakPerioder.forEach { ks ->
+            if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
+              antallPerioderFunnet++
               persistenceService.opprettKontantstotte(
                 KontantstotteBo(
                   grunnlagspakkeId = grunnlagspakkeId,
                   partPersonId = personIdOgPeriode.personId,
-                  barnPersonId = kontantstotteResponse.utbetalingsinfo.keys.toString(),
-                  periodeFra = LocalDate.parse(ks.fom.toString() + "-01"),
+                  barnPersonId = ks.barn.ident,
+                  periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
                   // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                  periodeTil = if (ks.tom != null) LocalDate.parse(ks.tom.toString() + "-01").plusMonths(1) else null,
+                  periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
                   aktiv = true,
                   brukFra = timestampOppdatering,
-                  belop = beregnBelopForGjeldendeBarn(ks, i),
+                  belop = ks.barn.beløp,
                   brukTil = null,
                   hentetTidspunkt = timestampOppdatering
                 )
@@ -80,7 +109,7 @@ class OppdaterKontantstotte(
               GrunnlagsRequestStatus.HENTET,
               "Antall perioder funnet: $antallPerioderFunnet"
             )
-          )*/
+          )
         }
 
         is RestResponse.Failure -> this.add(
@@ -95,20 +124,4 @@ class OppdaterKontantstotte(
     }
     return this
   }
-
-/*  private fun beregnBelopForGjeldendeBarn(ks: StonadDto, index: Int): Int {
-    val antallBarn = ks.barn.size
-    val belop = ks.belop
-    if (belop != null) {
-      val belopPerParn = belop.div(antallBarn.toDouble())
-      // Siden summen for alle barn er lagt sammen, og det kan være barn med forskjellige summer ved
-      // feks 60% kontantstøtte så må vi håndtere at det kan bli desimaltall ved deling på hvert barn.
-      return if (index != antallBarn - 1) {
-        Math.floor(belopPerParn).toInt()
-      } else {
-        Math.ceil(belopPerParn).toInt()
-      }
-    } else
-      return 0
-  }*/
 }

@@ -10,7 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
-private const val FAMILIEKSSAK_CONTEXT = "/api/bisys"
+private const val FAMILIEKSSAK_CONTEXT = "/api/bisys/hent-utbetalingsinfo"
 
 open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate) :
   GrunnlagsConsumer() {
@@ -28,7 +28,7 @@ open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate
       HttpMethod.POST,
       initHttpEntity(request),
       BisysResponsDto::class.java,
-      BisysResponsDto(emptyMap())
+      BisysResponsDto(emptyList(), emptyList())
     )
 
     logResponse(logger, restResponse)
