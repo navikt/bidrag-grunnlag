@@ -2,7 +2,8 @@ FAMILIEBASAK_URL: http://localhost:${wiremock.server.https-port}/familiebasak
 FAMILIEEFSAK_URL: http://localhost:${wiremock.server.https-port}/familieefsak
 BIDRAGGCPPROXY_URL: http://localhost:${wiremock.server.https-port}/bidraggcpproxy
 BIDRAGPERSON_URL: http://localhost:${wiremock.server.https-port}/bidragperson
-KONTANTSTOTTE_URL: http://localhost:${wiremock.server.https-port}/kontantstotte
+#KONTANTSTOTTE_URL: http://localhost:${wiremock.server.https-port}/kontantstotte
+FAMILIEKSSAK_URL: http://localhost:${wiremock.server.https-port}/familiekssak
 spring:
   config.activate.on-profile: local
   flyway.enabled: false
@@ -24,6 +25,18 @@ spring:
             client-secret: secret
             authorization-grant-type: client_credentials
             scope: api://familiebasak/.default
+          familieefsak:
+            provider: aad
+            client-id: someid
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope: api://familieefsak/.default
+          familiekssak:
+            provider: aad
+            client-id: someid
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope: api://familiekssak/.default
           bidraggcpproxy:
             provider: aad
             client-id: someid
@@ -34,7 +47,6 @@ spring:
           aad:
             token-uri: http://localhost:${mock-oauth2-server.port}/azure/token
             jwk-set-uri: http://localhost:${mock-oauth2-server.port}/azure/jwks
-
 no.nav.security.jwt:
   issuer:
     aad:

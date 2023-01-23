@@ -22,8 +22,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
+import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -75,9 +76,9 @@ class GrunnlagspakkeControllerTest(
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
   private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
   private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
-  private val kontantstotteConsumer: KontantstotteConsumer = KontantstotteConsumer(restTemplate)
+  private val familieKsSakConsumer: FamilieKsSakConsumer = FamilieKsSakConsumer(restTemplate)
   private val familieEfSakConsumer: FamilieEfSakConsumer = FamilieEfSakConsumer(restTemplate)
-  private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer, kontantstotteConsumer, familieEfSakConsumer)
+  private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer, familieKsSakConsumer, familieEfSakConsumer)
   private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
   private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
   private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)
@@ -118,7 +119,7 @@ class GrunnlagspakkeControllerTest(
         ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK)
       )
 
-    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utbetalingsinfo"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
       .thenReturn(
         ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
       )
@@ -160,7 +161,7 @@ class GrunnlagspakkeControllerTest(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )
 
-    Mockito.`when`(restTemplate.exchange(eq("/hentPerioder"), eq(HttpMethod.POST), any(), any<Class<InnsynResponse>>()))
+    Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utbetalingsinfo"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
       .thenThrow(
         HttpClientErrorException(HttpStatus.NOT_FOUND)
       )

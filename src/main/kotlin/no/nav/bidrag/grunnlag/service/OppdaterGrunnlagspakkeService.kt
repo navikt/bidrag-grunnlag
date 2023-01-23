@@ -18,7 +18,7 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.KontantstotteConsumer
+import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
 import no.nav.bidrag.grunnlag.model.OppdaterEgneBarnIHusstanden
@@ -37,7 +37,7 @@ class OppdaterGrunnlagspakkeService(
   private val familieBaSakConsumer: FamilieBaSakConsumer,
   private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
   private val bidragPersonConsumer: BidragPersonConsumer,
-  private val kontantstotteConsumer: KontantstotteConsumer,
+  private val familieKsSakConsumer: FamilieKsSakConsumer,
   private val familieEfSakConsumer: FamilieEfSakConsumer
 ) {
   fun oppdaterGrunnlagspakke(
@@ -169,7 +169,7 @@ class OppdaterGrunnlagspakkeService(
           grunnlagspakkeId,
           timestampOppdatering,
           persistenceService,
-          kontantstotteConsumer
+          familieKsSakConsumer
         )
           .oppdaterKontantstotte(kontantstotteRequestListe)
       )

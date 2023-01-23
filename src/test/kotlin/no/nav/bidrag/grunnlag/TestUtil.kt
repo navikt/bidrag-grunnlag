@@ -12,8 +12,15 @@ import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
+import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
+import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
+import no.nav.bidrag.grunnlag.bo.ForelderBo
+import no.nav.bidrag.grunnlag.bo.HusstandBo
+import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -24,18 +31,6 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
-import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
-import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
-import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
-import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
-import no.nav.bidrag.grunnlag.bo.BarnBo
-import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
-import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
-import no.nav.bidrag.grunnlag.bo.SivilstandBo
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
@@ -44,21 +39,34 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.BarnDto
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynRequest
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.InnsynResponse
-import no.nav.bidrag.grunnlag.consumer.infotrygdkontantstottev2.api.StonadDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.InfotrygdPeriode
+import no.nav.bidrag.grunnlag.consumer.familiekssak.api.KsSakPeriode
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
+import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
+import no.nav.bidrag.grunnlag.persistence.entity.Forelder
+import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Husstand
 import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
-import no.nav.bidrag.grunnlag.persistence.entity.Forelder
-import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
+import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -72,14 +80,6 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.Fradrag
 import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.Inntekt
 import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode
-import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
-import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -187,7 +187,7 @@ class TestUtil {
           type = GrunnlagRequestType.KONTANTSTOTTE,
           personId = "12345678910",
           periodeFra = LocalDate.parse("2022-01-01"),
-          periodeTil = LocalDate.parse("2023-01-01")
+          periodeTil = LocalDate.parse("2023-07-01")
         )
       )
     )
@@ -577,9 +577,9 @@ class TestUtil {
       kontantstotteId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       partPersonId = "1234567",
-      barnPersonId = "0123456",
-      periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
+      barnPersonId = "11223344551",
+      periodeFra = LocalDate.parse("2022-01-01"),
+      periodeTil = LocalDate.parse("2023-01-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
@@ -639,24 +639,30 @@ class TestUtil {
       )
     )
 
-    fun byggKontantstotteResponse() = InnsynResponse(
+
+    fun byggKontantstotteResponse() = BisysResponsDto(
       immutableListOf(
-        StonadDto(
-          fnr = "12345678910",
-          fom = YearMonth.parse("2022-01"),
-          tom = YearMonth.parse("2022-07"),
-          belop = 15001,
+        InfotrygdPeriode(
+          fomMåned = YearMonth.parse("2022-01"),
+          tomMåned = YearMonth.parse("2022-12"),
+          beløp = 15001,
           immutableListOf(
-            BarnDto(
-              "11223344551"
-            ),
-            BarnDto(
-              "15544332211"
-            )
+            "11223344551",
+            "15544332211"
+          )
+        )
+      ),
+      immutableListOf(
+        KsSakPeriode(
+          fomMåned = YearMonth.parse("2023-01"),
+          tomMåned = YearMonth.parse("2023-06"),
+          no.nav.bidrag.grunnlag.consumer.familiekssak.api.Barn(
+            5000, "11223344551"
           )
         )
       )
     )
+
 
     fun byggBarnetilsynResponse() = BarnetilsynResponse(
       immutableListOf(
@@ -772,11 +778,11 @@ class TestUtil {
       periodeFra = LocalDate.now()
     )
 
-    fun byggKontantstotteRequest() = InnsynRequest(
+    fun byggKontantstotteRequest() = BisysDto(
+      LocalDate.now(),
       listOf(
         "123"
-      ),
-      LocalDate.now()
+      )
     )
 
     fun byggBarnetilsynRequest() = BarnetilsynRequest(
