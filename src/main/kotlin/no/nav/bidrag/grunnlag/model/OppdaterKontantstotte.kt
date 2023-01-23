@@ -111,14 +111,18 @@ class OppdaterKontantstotte(
           )
         }
 
-        is RestResponse.Failure -> this.add(
-          OppdaterGrunnlagDto(
-            GrunnlagRequestType.KONTANTSTOTTE,
-            personIdOgPeriode.personId,
-            if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-            "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+        is RestResponse.Failure -> {
+          this.add(
+            OppdaterGrunnlagDto(
+              GrunnlagRequestType.KONTANTSTOTTE,
+              personIdOgPeriode.personId,
+              if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+              "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+            )
           )
-        )
+          SECURE_LOGGER.info("kontantstøtte familie-ks-sak svarer med feil, respons: $restResponseKontantstotte")
+        }
+
       }
     }
     return this
