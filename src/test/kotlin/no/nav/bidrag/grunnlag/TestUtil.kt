@@ -779,10 +779,10 @@ class TestUtil {
     )
 
     fun byggKontantstotteRequest() = BisysDto(
+      LocalDate.now(),
       listOf(
         "123"
-      ),
-//      LocalDate.now()
+      )
     )
 
     fun byggBarnetilsynRequest() = BarnetilsynRequest(

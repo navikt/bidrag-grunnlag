@@ -37,8 +37,7 @@ class OppdaterKontantstotte(
       // Input til tjeneste er en liste over alle personnr for en person,
       // kall PDL for å hente historikk på fnr?
       val innsynRequest = BisysDto(
-        listOf(personIdOgPeriode.personId)
-//        , personIdOgPeriode.periodeFra
+        personIdOgPeriode.periodeFra, listOf(personIdOgPeriode.personId)
       )
 
       LOGGER.info("Kaller kontantstøtte")
