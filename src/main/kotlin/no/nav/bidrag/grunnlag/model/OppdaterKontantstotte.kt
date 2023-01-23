@@ -56,7 +56,7 @@ class OppdaterKontantstotte(
           )
 
           // Kontantstøtte fra Infotrygd
-          kontantstotteResponse.infotrygdPerioder?.forEach { ks ->
+          kontantstotteResponse.infotrygdPerioder.forEach { ks ->
             if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
               val belopPerParn = ks.beløp.div(ks.barna.size.toInt())
               ks.barna.forEach { barnPersonId ->
@@ -81,7 +81,7 @@ class OppdaterKontantstotte(
           }
 
           // Kontantstøtte fra ks-sak
-          kontantstotteResponse.ksSakPerioder?.forEach { ks ->
+          kontantstotteResponse.ksSakPerioder.forEach { ks ->
             if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
               antallPerioderFunnet++
               persistenceService.opprettKontantstotte(
@@ -111,14 +111,18 @@ class OppdaterKontantstotte(
           )
         }
 
-        is RestResponse.Failure -> this.add(
-          OppdaterGrunnlagDto(
-            GrunnlagRequestType.KONTANTSTOTTE,
-            personIdOgPeriode.personId,
-            if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-            "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+        is RestResponse.Failure -> {
+          this.add(
+            OppdaterGrunnlagDto(
+              GrunnlagRequestType.KONTANTSTOTTE,
+              personIdOgPeriode.personId,
+              if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+              "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+            )
           )
-        )
+          SECURE_LOGGER.info("kontantstøtte familie-ks-sak svarer med feil, respons: $restResponseKontantstotte")
+        }
+
       }
     }
     return this

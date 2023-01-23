@@ -56,19 +56,19 @@ internal class FamilieKsSakConsumerTest {
         val hentKontantstotteResponse = restResponseKontantstotte.body
         assertAll(
           { assertThat(hentKontantstotteResponse).isNotNull },
-          { assertThat(hentKontantstotteResponse.infotrygdPerioder!!.size).isEqualTo(1) },
-          { assertThat(hentKontantstotteResponse.ksSakPerioder!!.size).isEqualTo(1)},
-          { assertThat(hentKontantstotteResponse.infotrygdPerioder!![0].beløp).isEqualTo(15001) },
-          { assertThat(hentKontantstotteResponse.infotrygdPerioder!![0].fomMåned).isEqualTo(YearMonth.parse("2022-01"))},
-          { assertThat(hentKontantstotteResponse.infotrygdPerioder!![0].tomMåned).isEqualTo(YearMonth.parse("2022-12"))},
-          { assertThat(hentKontantstotteResponse.infotrygdPerioder!![0].beløp).isEqualTo(15001) },
-          { assertThat(hentKontantstotteResponse.infotrygdPerioder!![0].barna[0]).isEqualTo("11223344551") },
-          { assertThat(hentKontantstotteResponse.infotrygdPerioder!![0].barna[1]).isEqualTo("15544332211") },
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder.size).isEqualTo(1) },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder.size).isEqualTo(1)},
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].beløp).isEqualTo(15001) },
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].fomMåned).isEqualTo(YearMonth.parse("2022-01"))},
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].tomMåned).isEqualTo(YearMonth.parse("2022-12"))},
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].beløp).isEqualTo(15001) },
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].barna[0]).isEqualTo("11223344551") },
+          { assertThat(hentKontantstotteResponse.infotrygdPerioder[0].barna[1]).isEqualTo("15544332211") },
 
-          { assertThat(hentKontantstotteResponse.ksSakPerioder!![0].fomMåned).isEqualTo(YearMonth.parse("2023-01")) },
-          { assertThat(hentKontantstotteResponse.ksSakPerioder!![0].tomMåned).isEqualTo(YearMonth.parse("2023-06")) },
-          { assertThat(hentKontantstotteResponse.ksSakPerioder!![0].barn.ident).isEqualTo("11223344551") },
-          { assertThat(hentKontantstotteResponse.ksSakPerioder!![0].barn.beløp).isEqualTo(5000) },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].fomMåned).isEqualTo(YearMonth.parse("2023-01")) },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].tomMåned).isEqualTo(YearMonth.parse("2023-06")) },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].barn.ident).isEqualTo("11223344551") },
+          { assertThat(hentKontantstotteResponse.ksSakPerioder[0].barn.beløp).isEqualTo(5000) },
         )
       }
       else -> {
