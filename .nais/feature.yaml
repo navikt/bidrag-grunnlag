@@ -22,6 +22,9 @@ azureAccessInbound:
   - application: bisys
     namespace: bidrag
     cluster: dev-fss
+  - application: bidrag-cucumber-cloud-feature
+    namespace: bidrag
+    cluster: dev-gcp
 spec:
   replicas:
     min: 1
