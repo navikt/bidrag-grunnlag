@@ -47,7 +47,7 @@ class OppdaterKontantstotte(
         familieKsSakConsumer.hentKontantstotte(innsynRequest)) {
         is RestResponse.Success -> {
           val kontantstotteResponse = restResponseKontantstotte.body
-          SECURE_LOGGER.info("kontantstotte ga følgende respons: $kontantstotteResponse")
+          SECURE_LOGGER.info("kontantstøtte ga følgende respons: $kontantstotteResponse")
 
           persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
             grunnlagspakkeId,
