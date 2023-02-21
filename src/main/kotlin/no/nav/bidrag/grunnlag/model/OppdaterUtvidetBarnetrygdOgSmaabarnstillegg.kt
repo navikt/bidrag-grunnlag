@@ -52,9 +52,9 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
             timestampOppdatering
           )
           familieBaSakResponse.perioder.forEach { ubst ->
-            if (LocalDate.parse(ubst.fomMåned.toString() + "-01")
+/*            if (LocalDate.parse(ubst.fomMåned.toString() + "-01")
                 .isBefore(personIdOgPeriode.periodeTil)
-            ) {
+            ) {*/
               antallPerioderFunnet++
               persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
                 UtvidetBarnetrygdOgSmaabarnstilleggBo(
@@ -72,7 +72,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                   hentetTidspunkt = timestampOppdatering
                 )
               )
-            }
+//            }
           }
           this.add(
             OppdaterGrunnlagDto(
