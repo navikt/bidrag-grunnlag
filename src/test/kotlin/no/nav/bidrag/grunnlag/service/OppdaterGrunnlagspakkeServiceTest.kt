@@ -111,7 +111,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
 
-    Mockito.verify(persistenceServiceMock, Mockito.times(1))
+    Mockito.verify(persistenceServiceMock, Mockito.times(2))
       .opprettUtvidetBarnetrygdOgSmaabarnstillegg(
         GrunnlagspakkeServiceMockTest.MockitoHelper.any(
           UtvidetBarnetrygdOgSmaabarnstilleggBo::class.java))
@@ -122,7 +122,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
       // sjekk UtvidetBarnetrygdOgSmaabarnstilleggDto
        { Assertions.assertThat(ubstListe).isNotNull() },
-       { Assertions.assertThat(ubstListe.size).isEqualTo(1) },
+       { Assertions.assertThat(ubstListe.size).isEqualTo(2) },
        { Assertions.assertThat(ubstListe[0].personId).isEqualTo("12345678910") },
        { Assertions.assertThat(ubstListe[0].type).isEqualTo(BisysStønadstype.UTVIDET.toString()) },
        { Assertions.assertThat(ubstListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
@@ -142,7 +142,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         .isEqualTo(
         GrunnlagsRequestStatus.HENTET) },
        { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
-        .isEqualTo("Antall perioder funnet: 1") }
+        .isEqualTo("Antall perioder funnet: 2") }
     )
   }
 
