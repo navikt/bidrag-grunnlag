@@ -52,27 +52,23 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
             timestampOppdatering
           )
           familieBaSakResponse.perioder.forEach { ubst ->
-/*            if (LocalDate.parse(ubst.fomMåned.toString() + "-01")
-                .isBefore(personIdOgPeriode.periodeTil)
-            ) {*/
-              antallPerioderFunnet++
-              persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-                UtvidetBarnetrygdOgSmaabarnstilleggBo(
-                  grunnlagspakkeId = grunnlagspakkeId,
-                  personId = personIdOgPeriode.personId,
-                  type = ubst.stønadstype.toString(),
-                  periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
-                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                  periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
-                    .plusMonths(1) else null,
-                  brukFra = timestampOppdatering,
-                  belop = BigDecimal.valueOf(ubst.beløp),
-                  manueltBeregnet = ubst.manueltBeregnet,
-                  deltBosted = ubst.deltBosted,
-                  hentetTidspunkt = timestampOppdatering
-                )
+            antallPerioderFunnet++
+            persistenceService.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+              UtvidetBarnetrygdOgSmaabarnstilleggBo(
+                grunnlagspakkeId = grunnlagspakkeId,
+                personId = personIdOgPeriode.personId,
+                type = ubst.stønadstype.toString(),
+                periodeFra = LocalDate.parse(ubst.fomMåned.toString() + "-01"),
+                // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                periodeTil = if (ubst.tomMåned != null) LocalDate.parse(ubst.tomMåned.toString() + "-01")
+                  .plusMonths(1) else null,
+                brukFra = timestampOppdatering,
+                belop = BigDecimal.valueOf(ubst.beløp),
+                manueltBeregnet = ubst.manueltBeregnet,
+                deltBosted = ubst.deltBosted,
+                hentetTidspunkt = timestampOppdatering
               )
-//            }
+            )
           }
           this.add(
             OppdaterGrunnlagDto(
