@@ -54,27 +54,25 @@ class OppdaterBarnetilsyn(
           )
 
           barnetilsynResponse.barnetilsynBisysPerioder.forEach { bts ->
-            if (bts.periode.fom.isBefore(personIdOgPeriode.periodeTil)) {
-              antallPerioderFunnet++
-              for (barnIdent in bts.barnIdenter) {
-                persistenceService.opprettBarnetilsyn(
-                  BarnetilsynBo(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    partPersonId = personIdOgPeriode.personId,
-                    barnPersonId = barnIdent,
-                    periodeFra = bts.periode.fom,
-                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                    periodeTil = bts.periode.tom.plusMonths(1).withDayOfMonth(1),
-                    aktiv = true,
-                    brukFra = timestampOppdatering,
-                    brukTil = null,
-                    belop = null,
-                    tilsynstype = null,
-                    skolealder = null,
-                    hentetTidspunkt = timestampOppdatering
-                  )
+            antallPerioderFunnet++
+            for (barnIdent in bts.barnIdenter) {
+              persistenceService.opprettBarnetilsyn(
+                BarnetilsynBo(
+                  grunnlagspakkeId = grunnlagspakkeId,
+                  partPersonId = personIdOgPeriode.personId,
+                  barnPersonId = barnIdent,
+                  periodeFra = bts.periode.fom,
+                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                  periodeTil = bts.periode.tom.plusMonths(1).withDayOfMonth(1),
+                  aktiv = true,
+                  brukFra = timestampOppdatering,
+                  brukTil = null,
+                  belop = null,
+                  tilsynstype = null,
+                  skolealder = null,
+                  hentetTidspunkt = timestampOppdatering
                 )
-              }
+              )
             }
           }
           this.add(

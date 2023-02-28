@@ -54,26 +54,24 @@ class OppdaterBarnetillegg(
             timestampOppdatering
           )
           barnetilleggPensjonResponse.barnetilleggPensjonListe?.forEach { bt ->
-            if (bt.fom.isBefore(personIdOgPeriode.periodeTil)) {
-              antallPerioderFunnet++
-              persistenceService.opprettBarnetillegg(
-                BarnetilleggBo(
-                  grunnlagspakkeId = grunnlagspakkeId,
-                  partPersonId = personIdOgPeriode.personId,
-                  barnPersonId = bt.barn,
-                  barnetilleggType = BarnetilleggType.PENSJON.toString(),
-                  periodeFra = bt.fom,
-                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                  periodeTil = bt.tom?.plusMonths(1)?.withDayOfMonth(1),
-                  aktiv = true,
-                  brukFra = timestampOppdatering,
-                  brukTil = null,
-                  belopBrutto = bt.beloep,
-                  barnType = if (bt.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
-                  hentetTidspunkt = timestampOppdatering
-                )
+            antallPerioderFunnet++
+            persistenceService.opprettBarnetillegg(
+              BarnetilleggBo(
+                grunnlagspakkeId = grunnlagspakkeId,
+                partPersonId = personIdOgPeriode.personId,
+                barnPersonId = bt.barn,
+                barnetilleggType = BarnetilleggType.PENSJON.toString(),
+                periodeFra = bt.fom,
+                // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                periodeTil = bt.tom?.plusMonths(1)?.withDayOfMonth(1),
+                aktiv = true,
+                brukFra = timestampOppdatering,
+                brukTil = null,
+                belopBrutto = bt.beloep,
+                barnType = if (bt.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
+                hentetTidspunkt = timestampOppdatering
               )
-            }
+            )
           }
           this.add(
             OppdaterGrunnlagDto(
