@@ -54,6 +54,7 @@ spec:
       max: 4
       min: {{ spec.replicas.min }}
   ingresses:
+    - {{ ingressDeprecated }}
     - {{ ingress }}
   env:
     - name: FAMILIEBASAK_URL
