@@ -42,7 +42,6 @@ class GrunnlagspakkeService(
       grunnlagspakkeId,
       oppdaterGrunnlagspakkeRequestDto,
       timestampOppdatering
-
     )
 
     // Oppdaterer endret_timestamp på grunnlagspakke

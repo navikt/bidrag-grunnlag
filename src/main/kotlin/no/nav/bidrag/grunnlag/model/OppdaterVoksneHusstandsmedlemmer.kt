@@ -1,22 +1,12 @@
 package no.nav.bidrag.grunnlag.model
 
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
-import no.nav.bidrag.behandling.felles.enums.BarnType
-import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.bo.BarnBo
-import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -26,7 +16,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDateTime
 
-class OppdaterHusstandsmedlemmer(
+class OppdaterVoksneHusstandsmedlemmer(
   private val grunnlagspakkeId: Int,
   private val timestampOppdatering: LocalDateTime,
   private val persistenceService: PersistenceService,
@@ -36,11 +26,11 @@ class OppdaterHusstandsmedlemmer(
 
   companion object {
     @JvmStatic
-    private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterHusstandsmedlemmer::class.java)
+    private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterVoksneHusstandsmedlemmer::class.java)
   }
 
   // Henter og lagrer husstandsmedlemmer
-  fun oppdaterHusstandsmedlemmer(husstandsmedlemmerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterHusstandsmedlemmer {
+  fun oppdaterVoksneHusstandsmedlemmer(husstandsmedlemmerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterVoksneHusstandsmedlemmer {
 
     val oppdaterGrunnlagDtoListe = mutableListOf<OppdaterGrunnlagDto>()
 

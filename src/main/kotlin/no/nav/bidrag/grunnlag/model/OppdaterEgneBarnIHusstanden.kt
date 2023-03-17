@@ -7,9 +7,12 @@ import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
+import no.nav.bidrag.grunnlag.bo.HusstandBo
+import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -47,80 +50,114 @@ class OppdaterEgneBarnIHusstanden(
       LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
       SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
 
+      // Henter først en liste over BMs barn
       when (val restResponseForelderBarnRelasjon =
         bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)) {
         is RestResponse.Success -> {
           val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
-          SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
           if ((forelderBarnRelasjonResponse.forelderBarnRelasjonResponse != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNotEmpty())) {
-
-            // Henter og lagrer informasjon om forelder
-            val foedselOgDoedForelder = hentNavnFoedselDoed(personIdOgPeriode.personId)
-            SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsinfo for forelderen: $foedselOgDoedForelder")
-            // Sett eksisterende forekomst av Forelder til inaktiv
-            persistenceService.oppdaterEksisterendeForelderTilInaktiv(
-              grunnlagspakkeId,
-              personIdOgPeriode.personId,
-              timestampOppdatering
-            )
-
-            val opprettetForelder = persistenceService.opprettForelder(
-              ForelderBo(
-                grunnlagspakkeId = grunnlagspakkeId,
-                personId = personIdOgPeriode.personId,
-                navn = foedselOgDoedForelder?.navn,
-                foedselsdato = foedselOgDoedForelder?.foedselsdato,
-                doedsdato = foedselOgDoedForelder?.doedsdato,
-                aktiv = true,
-                brukFra = timestampOppdatering,
-                brukTil = null,
-                opprettetAv = null,
-                hentetTidspunkt = timestampOppdatering
-              )
-            )
+            val barnListe = mutableListOf<String>()
+            SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
             forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.forEach { forelderBarnRelasjon ->
               if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
                 // Henter og lagrer informasjon om alle barn i responsen
                 antallBarnFunnet++
-                val navnFoedselOgDoed = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
-                SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn, fødselsinfo og evt dødsfall for barn: $navnFoedselOgDoed")
-
-                // Sett eksisterende forekomst av Barn til inaktiv
-                persistenceService.oppdaterEksisterendeBarnTilInaktiv(
-                  grunnlagspakkeId,
-                  forelderBarnRelasjon.relatertPersonsIdent,
-                  timestampOppdatering
-                )
-
-                val opprettetBarn = persistenceService.opprettBarn(
-                  BarnBo(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    personId = forelderBarnRelasjon.relatertPersonsIdent,
-                    navn = navnFoedselOgDoed?.navn,
-                    foedselsdato = navnFoedselOgDoed?.foedselsdato,
-                    foedselsaar = navnFoedselOgDoed?.foedselsaar,
-                    doedsdato = navnFoedselOgDoed?.doedsdato,
-                    aktiv = true,
-                    brukFra = timestampOppdatering,
-                    brukTil = null,
-                    opprettetAv = null,
-                    hentetTidspunkt = timestampOppdatering
-                  )
-                )
-
-                // Lagrer relasjonen mellom forelder og barn
-                persistenceService.opprettForelderBarn(
-                  ForelderBarnBo(
-                    forelderId = opprettetForelder.forelderId,
-                    barnId = opprettetBarn.barnId
-                  )
-                )
-
+                barnListe.add(forelderBarnRelasjon.relatertPersonsIdent)
               }
             }
-            this.add(
+            val husstandsmedlemmerRequest = HusstandsmedlemmerRequest(
+              personId = personIdOgPeriode.personId,
+              periodeFra = personIdOgPeriode.periodeFra,
+            )
+
+            LOGGER.info("Kaller bidrag-person Husstandsmedlemmer")
+            SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: $husstandsmedlemmerRequest")
+            var antallHusstanderFunnet = 0
+
+            when (val restResponseHusstandsmedlemmer =
+              bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {
+              is RestResponse.Success -> {
+                val husstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
+                SECURE_LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer: $husstandsmedlemmerResponse")
+
+                if ((husstandsmedlemmerResponse.husstandResponseListe != null) && (husstandsmedlemmerResponse.husstandResponseListe.isNotEmpty())) {
+                  husstandsmedlemmerResponse.husstandResponseListe.forEach { husstand ->
+                    antallHusstanderFunnet++
+
+                    // Sett eksisterende forekomster av Husstandsmedlemmer til inaktiv
+                    persistenceService.oppdaterEksisterendeHusstandTilInaktiv(
+                      grunnlagspakkeId,
+                      personIdOgPeriode.personId,
+                      timestampOppdatering
+                    )
+
+                    val opprettetHusstand = persistenceService.opprettHusstand(
+                      HusstandBo(
+                        grunnlagspakkeId = grunnlagspakkeId,
+                        personId = personIdOgPeriode.personId,
+                        periodeFra = husstand.gyldigFraOgMed,
+                        periodeTil = husstand.gyldigTilOgMed,
+                        adressenavn = husstand.adressenavn,
+                        husnummer = husstand.husnummer,
+                        husbokstav = husstand.husbokstav,
+                        bruksenhetsnummer = husstand.bruksenhetsnummer,
+                        postnummer = husstand.postnummer,
+                        bydelsnummer = husstand.bydelsnummer,
+                        kommunenummer = husstand.kommunenummer,
+                        matrikkelId = husstand.matrikkelId,
+                        aktiv = true,
+                        brukFra = timestampOppdatering,
+                        brukTil = null,
+                        opprettetAv = null,
+                        hentetTidspunkt = timestampOppdatering
+                      )
+                    )
+
+                    husstand.husstandsmedlemmerResponseListe.forEach { husstandsmedlem ->
+                      persistenceService.opprettHusstandsmedlem(
+                        HusstandsmedlemBo(
+                          periodeFra = husstandsmedlem.gyldigFraOgMed,
+                          periodeTil = husstandsmedlem.gyldigTilOgMed,
+                          husstandId = opprettetHusstand.husstandId,
+                          personId = husstandsmedlem.personId,
+                          navn = husstandsmedlem.fornavn + " " +
+                            husstandsmedlem.mellomnavn + " " +
+                            husstandsmedlem.etternavn,
+                          foedselsdato = husstandsmedlem.foedselsdato,
+                          doedsdato = husstandsmedlem.doedsdato,
+                          opprettetAv = null,
+                          hentetTidspunkt = timestampOppdatering
+                        )
+                      )
+                    }
+                  }
+                }
+                this.add(
+                  OppdaterGrunnlagDto(
+                    GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+                    personIdOgPeriode.personId,
+                    GrunnlagsRequestStatus.HENTET,
+                    "Antall husstander funnet: $antallHusstanderFunnet"
+                  )
+                )
+              }
+
+              is RestResponse.Failure -> this.add(
+                OppdaterGrunnlagDto(
+                  GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+                  personIdOgPeriode.personId,
+                  if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+                  "Feil ved henting av husstandsmedlemmer for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+                )
+              )
+
+
+
+
+
+                this.add(
               OppdaterGrunnlagDto(
                 GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
                 personIdOgPeriode.personId,

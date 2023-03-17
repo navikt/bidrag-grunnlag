@@ -22,7 +22,7 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
 import no.nav.bidrag.grunnlag.model.OppdaterEgneBarnIHusstanden
-import no.nav.bidrag.grunnlag.model.OppdaterHusstandsmedlemmer
+import no.nav.bidrag.grunnlag.model.OppdaterVoksneHusstandsmedlemmer
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetilsyn
 import no.nav.bidrag.grunnlag.model.OppdaterKontantstotte
 import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
@@ -71,7 +71,7 @@ class OppdaterGrunnlagspakkeService(
       .oppdaterEgneBarnIHusstanden(
         hentRequestListeFor(EGNE_BARN_I_HUSSTANDEN, oppdaterGrunnlagspakkeRequestDto)
       )
-      .oppdaterHusstandsmedlemmer(
+      .oppdaterVoksneHusstandsmedlemmer(
         hentRequestListeFor(HUSSTANDSMEDLEMMER, oppdaterGrunnlagspakkeRequestDto)
       )
       .oppdaterSivilstand(
@@ -189,15 +189,15 @@ class OppdaterGrunnlagspakkeService(
       return this
     }
 
-    fun oppdaterHusstandsmedlemmer(husstandsmedlemmerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+    fun oppdaterVoksneHusstandsmedlemmer(husstandsmedlemmerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
       this.addAll(
-        OppdaterHusstandsmedlemmer(
+        OppdaterVoksneHusstandsmedlemmer(
           grunnlagspakkeId,
           timestampOppdatering,
           persistenceService,
           bidragPersonConsumer
         )
-          .oppdaterHusstandsmedlemmer(husstandsmedlemmerRequestListe)
+          .oppdaterVoksneHusstandsmedlemmer(husstandsmedlemmerRequestListe)
       )
       return this
     }
