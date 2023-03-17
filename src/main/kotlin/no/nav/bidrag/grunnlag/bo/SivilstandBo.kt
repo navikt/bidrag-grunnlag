@@ -32,9 +32,6 @@ data class SivilstandBo(
   @Schema(description = "Tidspunkt sivilstanden ikke lenger er aktiv. Null betyr at sivilstanden er aktiv")
   val brukTil: LocalDateTime? = null,
 
-  @Schema(description = "Manuelt opprettet av")
-  val opprettetAv: String?,
-
   @Schema(description = "Opprettet tidspunkt")
   val hentetTidspunkt: LocalDateTime
 

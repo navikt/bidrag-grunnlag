@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS husstandsmedlemskap
     grunnlagspakke_id integer NOT NULL,
     part_person_id varchar(50) NOT NULL,
     navn varchar(255),
-    foedselsdato date,
+    fodselsdato date,
     husstandsmedlem_person_id varchar(50),
     er_barn_av_bm_bp boolean,
     periode_fra date,

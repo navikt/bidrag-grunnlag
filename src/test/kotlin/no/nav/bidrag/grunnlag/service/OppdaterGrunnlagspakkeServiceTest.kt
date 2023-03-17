@@ -11,10 +11,9 @@ import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
+import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
@@ -79,7 +78,7 @@ class OppdaterGrunnlagspakkeServiceTest {
   @Captor
   private lateinit var husstandBoCaptor: ArgumentCaptor<HusstandBo>
   @Captor
-  private lateinit var husstandsmedlemBoCaptor: ArgumentCaptor<HusstandsmedlemBo>
+  private lateinit var husstandsmedlemskapBoCaptor: ArgumentCaptor<HusstandsmedlemskapBo>
   @Captor
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
   @Captor
@@ -306,7 +305,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     Mockito.`when`(persistenceServiceMock.opprettHusstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandBoCaptor)))
       .thenReturn(TestUtil.byggHusstand()
     )
-    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlem(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandsmedlemBoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlem(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandsmedlemskapBoCaptor)))
       .thenReturn(TestUtil.byggHusstandsmedlem()
     )
     Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(
@@ -323,7 +322,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
 //    val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
     val husstandListe = husstandBoCaptor.allValues
-    val husstandsmedlemListe = husstandsmedlemBoCaptor.allValues
+    val husstandsmedlemListe = husstandsmedlemskapBoCaptor.allValues
 
     assertAll(
       { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },

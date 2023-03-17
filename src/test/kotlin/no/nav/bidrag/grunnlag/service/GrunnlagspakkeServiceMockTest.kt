@@ -39,10 +39,9 @@ import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
+import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -97,7 +96,7 @@ class GrunnlagspakkeServiceMockTest {
   @Captor
   private lateinit var husstandBoCaptor: ArgumentCaptor<HusstandBo>
   @Captor
-  private lateinit var husstandsmedlemBoCaptor: ArgumentCaptor<HusstandsmedlemBo>
+  private lateinit var husstandsmedlemskapBoCaptor: ArgumentCaptor<HusstandsmedlemskapBo>
   @Captor
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
   @Captor
@@ -146,7 +145,7 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggForelderBarn())
     Mockito.`when`(persistenceServiceMock.opprettHusstand(MockitoHelper.capture(husstandBoCaptor)))
       .thenReturn(byggHusstand())
-    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlem(MockitoHelper.capture(husstandsmedlemBoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlem(MockitoHelper.capture(husstandsmedlemskapBoCaptor)))
       .thenReturn(byggHusstandsmedlem())
     Mockito.`when`(persistenceServiceMock.opprettSivilstand(MockitoHelper.capture(sivilstandBoCaptor)))
       .thenReturn(byggSivilstand())
@@ -183,7 +182,7 @@ class GrunnlagspakkeServiceMockTest {
     val barnBoListe = barnBoCaptor.allValues
     val forelderBarnBoListe = forelderBarnBoCaptor.allValues
     val husstandBoListe = husstandBoCaptor.allValues
-    val husstandsmedlemBoListe = husstandsmedlemBoCaptor.allValues
+    val husstandsmedlemBoListe = husstandsmedlemskapBoCaptor.allValues
     val sivilstandBoListe = sivilstandBoCaptor.allValues
     val barnetilleggListe = barnetilleggBoCaptor.allValues
     val kontantstotteListe = kontantstotteBoCaptor.allValues
@@ -201,7 +200,7 @@ class GrunnlagspakkeServiceMockTest {
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarn(MockitoHelper.any(BarnBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettForelderBarn(MockitoHelper.any(ForelderBarnBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstand(MockitoHelper.any(HusstandBo::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstandsmedlem(MockitoHelper.any(HusstandsmedlemBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstandsmedlem(MockitoHelper.any(HusstandsmedlemskapBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSivilstand(MockitoHelper.any(SivilstandBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettKontantstotte(MockitoHelper.any(KontantstotteBo::class.java))
 
@@ -241,7 +240,7 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(nyHusstandOpprettet.husstandId).isNotNull() },
 
       { assertThat(nyHusstandsmedlemOpprettet).isNotNull() },
-      { assertThat(nyHusstandsmedlemOpprettet.husstandsmedlemId).isNotNull() },
+      { assertThat(nyHusstandsmedlemOpprettet.husstandsmedlemskapId).isNotNull() },
 
       { assertThat(nySivilstandOpprettet).isNotNull() },
       { assertThat(nySivilstandOpprettet.sivilstandId).isNotNull() },

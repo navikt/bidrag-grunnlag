@@ -5,7 +5,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
+import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -85,7 +85,7 @@ class OppdaterVoksneHusstandsmedlemmer(
 
               husstand.husstandsmedlemmerResponseListe.forEach { husstandsmedlem ->
                 persistenceService.opprettHusstandsmedlem(
-                  HusstandsmedlemBo(
+                  HusstandsmedlemskapBo(
                     periodeFra = husstandsmedlem.gyldigFraOgMed,
                     periodeTil = husstandsmedlem.gyldigTilOgMed,
                     husstandId = opprettetHusstand.husstandId,
@@ -93,7 +93,7 @@ class OppdaterVoksneHusstandsmedlemmer(
                     navn = husstandsmedlem.fornavn + " " +
                         husstandsmedlem.mellomnavn + " " +
                         husstandsmedlem.etternavn,
-                    foedselsdato = husstandsmedlem.foedselsdato,
+                    fodselsdato = husstandsmedlem.foedselsdato,
                     doedsdato = husstandsmedlem.doedsdato,
                     opprettetAv = null,
                     hentetTidspunkt = timestampOppdatering
