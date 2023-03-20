@@ -17,17 +17,20 @@ data class Husstandsmedlemskap(
   @Column(name = "husstandsmedlemskap_id")
   val husstandsmedlemskapId: Int = 0,
 
-  @Column(nullable = true, name = "part_person_id")
-  val partPersonId: String? = null,
+  @Column(nullable = false, name = "grunnlagspakke_id")
+  val grunnlagspakkeId: Int = 0,
+
+  @Column(nullable = false, name = "part_person_id")
+  val partPersonId: String = "",
+
+  @Column(nullable = true, name = "husstandsmedlem_person_id")
+  val husstandsmedlemPersonId: String? = null,
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,
 
   @Column(nullable = true, name = "fodselsdato")
   val fodselsdato: LocalDate? = null,
-
-  @Column(nullable = true, name = "husstandsmedlem_person_id")
-  val husstandsmedlemPersonId: String? = null,
 
   @Column(nullable = false, name = "er_barn_av_bm_bp")
   val erBarnAvBmBp: Boolean = false,

@@ -4,7 +4,6 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
@@ -32,10 +31,9 @@ class OppdaterEgneBarnIHusstanden(
     private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterEgneBarnIHusstanden::class.java)
   }
 
-  // Henter og lagrer forelder-barn-relasjoner og navn og fødselsinfo om barn
+  // Henter og lagrer først husstandsmedlemmer for så å hente forelder-barn-relasjoner for å kunne returnere grunnlaget egneBarnIHusstanden
+  // Også barn som ikke bor i samme husstand som BM/BP skal være med i grunnlaget
   fun oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterEgneBarnIHusstanden {
-
-//    val oppdaterGrunnlagDtoListe = mutableListOf<OppdaterGrunnlagDto>()
 
     egneBarnIHusstandenRequestListe.forEach { personIdOgPeriode ->
       var antallBarnFunnet = 0
@@ -47,84 +45,67 @@ class OppdaterEgneBarnIHusstanden(
       LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
       SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
 
-      // Henter først en liste over BMs barn
+      // Henter først en liste over BMs/BPs barn
       when (val restResponseForelderBarnRelasjon =
         bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)) {
         is RestResponse.Success -> {
           val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
 
-          if ((forelderBarnRelasjonResponse.forelderBarnRelasjonResponse != null) && (forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNotEmpty())) {
+          if (!forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNullOrEmpty()) {
             val barnListe = mutableListOf<String>()
             SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
+
+
             forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.forEach { forelderBarnRelasjon ->
               if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
-                // Henter og lagrer informasjon om alle barn i responsen
+                // Lager en liste over fnr for alle barn som er funnet. Listen brukes under til å lagre om et husstandsmedlem er barn av BM/BP eller ikke
                 antallBarnFunnet++
                 barnListe.add(forelderBarnRelasjon.relatertPersonsIdent)
               }
             }
+
             val husstandsmedlemmerRequest = HusstandsmedlemmerRequest(
               personId = personIdOgPeriode.personId,
               periodeFra = personIdOgPeriode.periodeFra,
             )
 
-            LOGGER.info("Kaller bidrag-person Husstandsmedlemmer")
-            SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: $husstandsmedlemmerRequest")
+            LOGGER.info("Kaller bidrag-person Husstandsmedlemmer for grunnlag EgneBarnIHusstanden")
+            SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer for grunnlag EgneBarnIHusstanden med request: $husstandsmedlemmerRequest")
             var antallHusstanderFunnet = 0
 
             when (val restResponseHusstandsmedlemmer =
               bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {
               is RestResponse.Success -> {
                 val husstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
-                SECURE_LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer: $husstandsmedlemmerResponse")
+                SECURE_LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: $husstandsmedlemmerResponse")
 
-                if ((husstandsmedlemmerResponse.husstandResponseListe != null) && (husstandsmedlemmerResponse.husstandResponseListe.isNotEmpty())) {
+                if (!husstandsmedlemmerResponse.husstandResponseListe.isNullOrEmpty()) {
                   husstandsmedlemmerResponse.husstandResponseListe.forEach { husstand ->
                     antallHusstanderFunnet++
 
-                    // Sett eksisterende forekomster av Husstandsmedlemmer til inaktiv
-                    persistenceService.oppdaterEksisterendeHusstandTilInaktiv(
+                    // Sett eksisterende forekomster av Husstandsmedlemskap til inaktiv
+                    persistenceService.oppdaterEksisterendeHusstandsmedlemskapTilInaktiv(
                       grunnlagspakkeId,
                       personIdOgPeriode.personId,
                       timestampOppdatering
                     )
 
-                    val opprettetHusstand = persistenceService.opprettHusstand(
-                      HusstandBo(
-                        grunnlagspakkeId = grunnlagspakkeId,
-                        personId = personIdOgPeriode.personId,
-                        periodeFra = husstand.gyldigFraOgMed,
-                        periodeTil = husstand.gyldigTilOgMed,
-                        adressenavn = husstand.adressenavn,
-                        husnummer = husstand.husnummer,
-                        husbokstav = husstand.husbokstav,
-                        bruksenhetsnummer = husstand.bruksenhetsnummer,
-                        postnummer = husstand.postnummer,
-                        bydelsnummer = husstand.bydelsnummer,
-                        kommunenummer = husstand.kommunenummer,
-                        matrikkelId = husstand.matrikkelId,
-                        aktiv = true,
-                        brukFra = timestampOppdatering,
-                        brukTil = null,
-                        opprettetAv = null,
-                        hentetTidspunkt = timestampOppdatering
-                      )
-                    )
-
                     husstand.husstandsmedlemmerResponseListe.forEach { husstandsmedlem ->
-                      persistenceService.opprettHusstandsmedlem(
+                      persistenceService.opprettHusstandsmedlemskap(
                         HusstandsmedlemskapBo(
-                          periodeFra = husstandsmedlem.gyldigFraOgMed,
-                          periodeTil = husstandsmedlem.gyldigTilOgMed,
-                          husstandId = opprettetHusstand.husstandId,
-                          personId = husstandsmedlem.personId,
+                          partPersonId = personIdOgPeriode.personId,
+                          husstandsmedlemPersonId = husstandsmedlem.personId,
                           navn = husstandsmedlem.fornavn + " " +
                             husstandsmedlem.mellomnavn + " " +
                             husstandsmedlem.etternavn,
                           fodselsdato = husstandsmedlem.foedselsdato,
-                          doedsdato = husstandsmedlem.doedsdato,
-                          opprettetAv = null,
+                          erBarnAvBmBp = barnListe.any { it == husstandsmedlem.personId },
+                          periodeFra = husstandsmedlem.gyldigFraOgMed,
+                          periodeTil = husstandsmedlem.gyldigTilOgMed,
+                          aktiv = true,
+                          brukFra = timestampOppdatering,
+                          brukTil = null,
                           hentetTidspunkt = timestampOppdatering
                         )
                       )
@@ -149,19 +130,7 @@ class OppdaterEgneBarnIHusstanden(
                   "Feil ved henting av husstandsmedlemmer for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
                 )
               )
-
-
-
-
-
-                this.add(
-              OppdaterGrunnlagDto(
-                GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
-                personIdOgPeriode.personId,
-                GrunnlagsRequestStatus.HENTET,
-                "Antall barn funnet: $antallBarnFunnet"
-              )
-            )
+            }
           }
         }
 
@@ -178,7 +147,6 @@ class OppdaterEgneBarnIHusstanden(
     return this
 
   }
-
 
   fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
     //hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
@@ -197,6 +165,5 @@ class OppdaterEgneBarnIHusstanden(
         return null
     }
   }
-
 
 }

@@ -20,11 +20,8 @@ import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Tilsyntype
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
-import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
-import no.nav.bidrag.grunnlag.bo.HusstandBo
 import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
@@ -33,13 +30,10 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
-import no.nav.bidrag.grunnlag.bo.toBarnEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilsynEntity
-import no.nav.bidrag.grunnlag.bo.toHusstandEntity
-import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemEntity
+import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemskapEntity
 import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
-import no.nav.bidrag.grunnlag.bo.toPersonEntity
 import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
@@ -55,9 +49,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Forelder
-import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Husstand
 import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlemskap
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
@@ -71,14 +63,10 @@ import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagBo
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
-import no.nav.bidrag.grunnlag.persistence.repository.BarnRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilsynRepository
-import no.nav.bidrag.grunnlag.persistence.repository.ForelderBarnRepository
-import no.nav.bidrag.grunnlag.persistence.repository.ForelderRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.grunnlag.persistence.repository.HusstandRepository
-import no.nav.bidrag.grunnlag.persistence.repository.HusstandsmedlemRepository
+import no.nav.bidrag.grunnlag.persistence.repository.HusstandsmedlemskapRepository
 import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
@@ -101,7 +89,7 @@ class PersistenceService(
   val barnetilleggRepository: BarnetilleggRepository,
   val barnRepository: BarnRepository,
   val husstandRepository: HusstandRepository,
-  val husstandsmedlemRepository: HusstandsmedlemRepository,
+  val husstandsmedlemskapRepository: HusstandsmedlemskapRepository,
   val forelderRepository: ForelderRepository,
   val forelderBarnRepository: ForelderBarnRepository,
   val sivilstandRepository: SivilstandRepository,
@@ -179,7 +167,7 @@ class PersistenceService(
     )
   }
 
-  fun oppdaterEksisterendeHusstandTilInaktiv(
+  fun oppdaterEksisterendeHusstandsmedlemskapTilInaktiv(
     grunnlagspakkeId: Int,
     partPersonId: String,
     timestampOppdatering: LocalDateTime
@@ -220,48 +208,9 @@ class PersistenceService(
     return barnetilleggRepository.save(nyBarnetillegg)
   }
 
-  fun opprettForelder(forelderBo: ForelderBo): Forelder {
-    val nyPerson = forelderBo.toPersonEntity()
-    return forelderRepository.save(nyPerson)
-  }
-
-  fun opprettBarn(barnBo: BarnBo): Barn {
-    val nyttBarn = barnBo.toBarnEntity()
-    return barnRepository.save(nyttBarn)
-  }
-
-  fun opprettForelderBarn(forelderBarnBo: ForelderBarnBo): ForelderBarn {
-    val eksisterendeForelder = forelderRepository.findById(forelderBarnBo.forelderId)
-      .orElseThrow {
-        IllegalArgumentException(
-          String.format(
-            "Fant ikke forelder med id %d i databasen",
-            forelderBarnBo.forelderId
-          )
-        )
-      }
-    val eksisterendeBarn = barnRepository.findById(forelderBarnBo.barnId)
-      .orElseThrow {
-        IllegalArgumentException(
-          String.format(
-            "Fant ikke barn med id %d i databasen",
-            forelderBarnBo.barnId
-          )
-        )
-      }
-    val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
-    SECURE_LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
-    return forelderBarnRepository.save(nyForelderBarn)
-  }
-
-  fun opprettHusstand(husstandBo: HusstandBo): Husstand {
-    val nyHusstand = husstandBo.toHusstandEntity()
-    return husstandRepository.save(nyHusstand)
-  }
-
-  fun opprettHusstandsmedlem(husstandsmedlemskapBo: HusstandsmedlemskapBo): Husstandsmedlemskap {
-    val nyttHusstandsmedlem = husstandsmedlemskapBo.toHusstandsmedlemEntity()
-    return husstandsmedlemRepository.save(nyttHusstandsmedlem)
+  fun opprettHusstandsmedlemskap(husstandsmedlemskapBo: HusstandsmedlemskapBo): Husstandsmedlemskap {
+    val nyttHusstandsmedlemskap = husstandsmedlemskapBo.toHusstandsmedlemskapEntity()
+    return husstandsmedlemskapRepository.save(nyttHusstandsmedlemskap)
   }
 
   fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
@@ -619,7 +568,7 @@ class PersistenceService(
       .forEach { husstand ->
         val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
 
-        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
+        husstandsmedlemskapRepository.hentHusstandsmedlemskap(husstand.husstandId)
           .forEach { husstandsmedlem ->
             if ((husstandsmedlem.personId != null &&
                   !personHarFyllt18Aar(
@@ -681,7 +630,7 @@ class PersistenceService(
       .forEach { husstand ->
         val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
 
-        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
+        husstandsmedlemskapRepository.hentHusstandsmedlemskap(husstand.husstandId)
           .forEach { husstandsmedlem ->
             if ((husstandsmedlem.personId != null &&
                   personHarFyllt18Aar(

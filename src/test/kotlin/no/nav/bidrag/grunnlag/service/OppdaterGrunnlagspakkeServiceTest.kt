@@ -305,7 +305,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     Mockito.`when`(persistenceServiceMock.opprettHusstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandBoCaptor)))
       .thenReturn(TestUtil.byggHusstand()
     )
-    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlem(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandsmedlemskapBoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlemskap(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandsmedlemskapBoCaptor)))
       .thenReturn(TestUtil.byggHusstandsmedlem()
     )
     Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(

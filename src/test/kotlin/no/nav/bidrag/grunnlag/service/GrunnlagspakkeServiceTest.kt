@@ -458,7 +458,7 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Legger inn barna som husstandsmedlemmer
-    persistenceService.opprettHusstandsmedlem(
+    persistenceService.opprettHusstandsmedlemskap(
       HusstandsmedlemskapBo(
         husstandId = opprettetHusstand.husstandId ,
         periodeFra = LocalDate.parse("2021-05-01"),
@@ -471,7 +471,7 @@ class GrunnlagspakkeServiceTest {
         hentetTidspunkt = LocalDateTime.now()
       )
     )
-    persistenceService.opprettHusstandsmedlem(
+    persistenceService.opprettHusstandsmedlemskap(
       HusstandsmedlemskapBo(
         husstandId = opprettetHusstand.husstandId ,
         periodeFra = LocalDate.parse("2000-05-01"),
@@ -486,7 +486,7 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Legger inn voksent husstandsmedlem
-    persistenceService.opprettHusstandsmedlem(
+    persistenceService.opprettHusstandsmedlemskap(
       HusstandsmedlemskapBo(
         husstandId = opprettetHusstand.husstandId ,
         periodeFra = LocalDate.parse("2020-02-01"),

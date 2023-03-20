@@ -8,17 +8,20 @@ import kotlin.reflect.full.memberProperties
 
 data class HusstandsmedlemskapBo(
 
-  @Schema(description = "Identen til BM eller BP")
+  @Schema(description = "Grunnlagspakke-id")
+  val grunnlagspakkeId: Int = 0,
+
+  @Schema(description = "Personid til BM eller BP")
   var partPersonId: String?,
+
+  @Schema(description = "Identen til husstandsmedlemmet")
+  var husstandsmedlemPersonId: String?,
 
   @Schema(description = "Navn på husstandsmedlemmet, format <Fornavn, mellomnavn, Etternavn")
   var navn: String?,
 
   @Schema(description = "Husstandsmedlemmets fødselsdag")
   var fodselsdato: LocalDate?,
-
-  @Schema(description = "Identen til husstandsmedlemmet")
-  var husstandsmedlemPersonId: String?,
 
   @Schema(description = "Angir om husstandsmedlemmet er barn av BM eller BM, som dette grunnlaget er hentet for")
   var erBarnAvBmBp: Boolean,
@@ -42,12 +45,12 @@ data class HusstandsmedlemskapBo(
   val hentetTidspunkt: LocalDateTime
 )
 
-fun HusstandsmedlemskapBo.toHusstandsmedlemEntity() = with(::Husstandsmedlemskap) {
+fun HusstandsmedlemskapBo.toHusstandsmedlemskapEntity() = with(::Husstandsmedlemskap) {
   val propertiesByName = HusstandsmedlemskapBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
       Husstandsmedlemskap::husstandsmedlemskapId.name -> 0
-      else -> propertiesByName[parameter.name]?.get(this@toHusstandsmedlemEntity)
+      else -> propertiesByName[parameter.name]?.get(this@toHusstandsmedlemskapEntity)
     }
   })
 

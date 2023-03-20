@@ -55,7 +55,7 @@ class OppdaterVoksneHusstandsmedlemmer(
               antallHusstanderFunnet++
 
               // Sett eksisterende forekomst av Husstandsmedlemmer til inaktiv
-              persistenceService.oppdaterEksisterendeHusstandTilInaktiv(
+              persistenceService.oppdaterEksisterendeHusstandsmedlemskapTilInaktiv(
                 grunnlagspakkeId,
                 personIdOgPeriode.personId,
                 timestampOppdatering
@@ -84,7 +84,7 @@ class OppdaterVoksneHusstandsmedlemmer(
               )
 
               husstand.husstandsmedlemmerResponseListe.forEach { husstandsmedlem ->
-                persistenceService.opprettHusstandsmedlem(
+                persistenceService.opprettHusstandsmedlemskap(
                   HusstandsmedlemskapBo(
                     periodeFra = husstandsmedlem.gyldigFraOgMed,
                     periodeTil = husstandsmedlem.gyldigTilOgMed,
