@@ -17,7 +17,7 @@ import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -63,7 +63,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Forelder
 import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Husstand
-import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlemskap
+import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
@@ -506,9 +506,9 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggHusstandsmedlemBo() = HusstandsmedlemskapBo(
-      periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
+    fun byggHusstandsmedlemBo() = RelatertPersonBo(
+      husstandsmedlemPeriodeFra = LocalDate.parse("2021-01-01"),
+      husstandsmedlemPeriodeTil = LocalDate.parse("2021-07-01"),
       husstandId = (1..100).random(),
       personId = "123",
       navn = "navn1",
@@ -518,12 +518,12 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggHusstandsmedlem() = Husstandsmedlemskap(
-      husstandsmedlemskapId = (1..100).random(),
+    fun byggHusstandsmedlem() = RelatertPerson(
+      relatertPersonId = (1..100).random(),
       husstandId = (1..100).random(),
       personId = "123",
-      periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
+      husstandsmedlemPeriodeFra = LocalDate.parse("2021-01-01"),
+      husstandsmedlemPeriodeTil = LocalDate.parse("2021-07-01"),
       navn = "navn1",
       foedselsdato = LocalDate.parse("1997-05-23"),
       doedsdato = null,

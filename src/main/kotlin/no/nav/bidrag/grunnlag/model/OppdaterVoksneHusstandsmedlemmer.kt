@@ -5,7 +5,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -55,7 +55,7 @@ class OppdaterVoksneHusstandsmedlemmer(
               antallHusstanderFunnet++
 
               // Sett eksisterende forekomst av Husstandsmedlemmer til inaktiv
-              persistenceService.oppdaterEksisterendeHusstandsmedlemskapTilInaktiv(
+              persistenceService.oppdaterEksisterendeRelatertPersonTilInaktiv(
                 grunnlagspakkeId,
                 personIdOgPeriode.personId,
                 timestampOppdatering
@@ -84,10 +84,10 @@ class OppdaterVoksneHusstandsmedlemmer(
               )
 
               husstand.husstandsmedlemmerResponseListe.forEach { husstandsmedlem ->
-                persistenceService.opprettHusstandsmedlemskap(
-                  HusstandsmedlemskapBo(
-                    periodeFra = husstandsmedlem.gyldigFraOgMed,
-                    periodeTil = husstandsmedlem.gyldigTilOgMed,
+                persistenceService.opprettRelatertPerson(
+                  RelatertPersonBo(
+                    husstandsmedlemPeriodeFra = husstandsmedlem.gyldigFraOgMed,
+                    husstandsmedlemPeriodeTil = husstandsmedlem.gyldigTilOgMed,
                     husstandId = opprettetHusstand.husstandId,
                     personId = husstandsmedlem.personId,
                     navn = husstandsmedlem.fornavn + " " +

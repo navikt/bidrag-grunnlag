@@ -12,7 +12,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -458,11 +458,11 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Legger inn barna som husstandsmedlemmer
-    persistenceService.opprettHusstandsmedlemskap(
-      HusstandsmedlemskapBo(
+    persistenceService.opprettRelatertPerson(
+      RelatertPersonBo(
         husstandId = opprettetHusstand.husstandId ,
-        periodeFra = LocalDate.parse("2021-05-01"),
-        periodeTil = LocalDate.parse("2021-06-01"),
+        husstandsmedlemPeriodeFra = LocalDate.parse("2021-05-01"),
+        husstandsmedlemPeriodeTil = LocalDate.parse("2021-06-01"),
         personId = "22233344455",
         navn = "Svett Elefant",
         fodselsdato = LocalDate.parse("2017-05-17"),
@@ -471,11 +471,11 @@ class GrunnlagspakkeServiceTest {
         hentetTidspunkt = LocalDateTime.now()
       )
     )
-    persistenceService.opprettHusstandsmedlemskap(
-      HusstandsmedlemskapBo(
+    persistenceService.opprettRelatertPerson(
+      RelatertPersonBo(
         husstandId = opprettetHusstand.husstandId ,
-        periodeFra = LocalDate.parse("2000-05-01"),
-        periodeTil = LocalDate.parse("2021-07-01"),
+        husstandsmedlemPeriodeFra = LocalDate.parse("2000-05-01"),
+        husstandsmedlemPeriodeTil = LocalDate.parse("2021-07-01"),
         personId = "98798798765",
         navn = "Trang Poncho",
         fodselsdato = LocalDate.parse("2000-12-02"),
@@ -486,11 +486,11 @@ class GrunnlagspakkeServiceTest {
     )
 
     // Legger inn voksent husstandsmedlem
-    persistenceService.opprettHusstandsmedlemskap(
-      HusstandsmedlemskapBo(
+    persistenceService.opprettRelatertPerson(
+      RelatertPersonBo(
         husstandId = opprettetHusstand.husstandId ,
-        periodeFra = LocalDate.parse("2020-02-01"),
-        periodeTil = LocalDate.parse("2020-09-01"),
+        husstandsmedlemPeriodeFra = LocalDate.parse("2020-02-01"),
+        husstandsmedlemPeriodeTil = LocalDate.parse("2020-09-01"),
         personId = "99988877766",
         navn = "Klam Trøffel",
         fodselsdato = LocalDate.parse("1997-02-12"),

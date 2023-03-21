@@ -1,12 +1,12 @@
 package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlemskap
+import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class HusstandsmedlemskapBo(
+data class RelatertPersonBo(
 
   @Schema(description = "Grunnlagspakke-id")
   val grunnlagspakkeId: Int = 0,
@@ -14,10 +14,10 @@ data class HusstandsmedlemskapBo(
   @Schema(description = "Personid til BM eller BP")
   var partPersonId: String?,
 
-  @Schema(description = "Identen til husstandsmedlemmet")
-  var husstandsmedlemPersonId: String?,
+  @Schema(description = "Identen til den relaterte personen. Vil være barn eller husstandsmedlem")
+  var relatertPersonPersonId: String?,
 
-  @Schema(description = "Navn på husstandsmedlemmet, format <Fornavn, mellomnavn, Etternavn")
+  @Schema(description = "Navn på den relaterte personen, format <Fornavn, mellomnavn, Etternavn")
   var navn: String?,
 
   @Schema(description = "Husstandsmedlemmets fødselsdag")
@@ -26,11 +26,11 @@ data class HusstandsmedlemskapBo(
   @Schema(description = "Angir om husstandsmedlemmet er barn av BM eller BM, som dette grunnlaget er hentet for")
   var erBarnAvBmBp: Boolean,
 
-  @Schema(description = "Husstandsmedlemmet bor i husstanden fra- og med måned")
-  val periodeFra: LocalDate?,
+  @Schema(description = "Den relaterte personen bor i husstanden fra- og med måned. Hvis periodeFra og periodeTil == null så er personen barn som ikke bor sammen med BM/BP")
+  val husstandsmedlemPeriodeFra: LocalDate?,
 
-  @Schema(description = "Husstandsmedlemmet bor i husstanden til- og med måned")
-  val periodeTil: LocalDate?,
+  @Schema(description = "Den relaterte personen bor i husstanden til- og med måned")
+  val husstandsmedlemPeriodeTil: LocalDate?,
 
   @Schema(description = "Angir om en sivilstand er aktiv")
   val aktiv: Boolean = true,
@@ -45,12 +45,12 @@ data class HusstandsmedlemskapBo(
   val hentetTidspunkt: LocalDateTime
 )
 
-fun HusstandsmedlemskapBo.toHusstandsmedlemskapEntity() = with(::Husstandsmedlemskap) {
-  val propertiesByName = HusstandsmedlemskapBo::class.memberProperties.associateBy { it.name }
+fun RelatertPersonBo.toRelatertPersonEntity() = with(::RelatertPerson) {
+  val propertiesByName = RelatertPersonBo::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      Husstandsmedlemskap::husstandsmedlemskapId.name -> 0
-      else -> propertiesByName[parameter.name]?.get(this@toHusstandsmedlemskapEntity)
+      RelatertPerson::relatertPersonId.name -> 0
+      else -> propertiesByName[parameter.name]?.get(this@toRelatertPersonEntity)
     }
   })
 

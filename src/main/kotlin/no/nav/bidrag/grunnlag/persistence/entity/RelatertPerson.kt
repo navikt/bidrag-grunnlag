@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -11,11 +11,11 @@ import javax.persistence.Id
 import kotlin.reflect.full.memberProperties
 
 @Entity
-data class Husstandsmedlemskap(
+data class RelatertPerson(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "husstandsmedlemskap_id")
-  val husstandsmedlemskapId: Int = 0,
+  @Column(name = "relatert_person_id")
+  val relatertPersonId: Int = 0,
 
   @Column(nullable = false, name = "grunnlagspakke_id")
   val grunnlagspakkeId: Int = 0,
@@ -23,8 +23,8 @@ data class Husstandsmedlemskap(
   @Column(nullable = false, name = "part_person_id")
   val partPersonId: String = "",
 
-  @Column(nullable = true, name = "husstandsmedlem_person_id")
-  val husstandsmedlemPersonId: String? = null,
+  @Column(nullable = true, name = "relatert_person_person_id")
+  val relatertPersonPersonId: String? = null,
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,
@@ -35,11 +35,11 @@ data class Husstandsmedlemskap(
   @Column(nullable = false, name = "er_barn_av_bm_bp")
   val erBarnAvBmBp: Boolean = false,
 
-  @Column(nullable = true, name = "periode_fra")
-  val periodeFra: LocalDate? = null,
+  @Column(nullable = true, name = "husstandsmedlem_periode_fra")
+  val husstandsmedlemPeriodeFra: LocalDate? = null,
 
-  @Column(nullable = true, name = "periode_til")
-  val periodeTil: LocalDate? = null,
+  @Column(nullable = true, name = "husstandsmedlem_periode_til")
+  val husstandsmedlemPeriodeTil: LocalDate? = null,
 
   @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,
@@ -55,11 +55,11 @@ data class Husstandsmedlemskap(
 )
 
 
-fun Husstandsmedlemskap.toHusstandsmedlemskapBo() = with(::HusstandsmedlemskapBo) {
-  val propertiesByName = Husstandsmedlemskap::class.memberProperties.associateBy { it.name }
+fun RelatertPerson.toRelatertPersonBo() = with(::RelatertPersonBo) {
+  val propertiesByName = RelatertPerson::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toHusstandsmedlemskapBo)
+      else -> propertiesByName[parameter.name]?.get(this@toRelatertPersonBo)
     }
   })
 }

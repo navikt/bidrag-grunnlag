@@ -13,7 +13,7 @@ import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo
 import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
@@ -78,7 +78,7 @@ class OppdaterGrunnlagspakkeServiceTest {
   @Captor
   private lateinit var husstandBoCaptor: ArgumentCaptor<HusstandBo>
   @Captor
-  private lateinit var husstandsmedlemskapBoCaptor: ArgumentCaptor<HusstandsmedlemskapBo>
+  private lateinit var RelatertPersonBoCaptor: ArgumentCaptor<RelatertPersonBo>
   @Captor
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
   @Captor
@@ -305,7 +305,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     Mockito.`when`(persistenceServiceMock.opprettHusstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandBoCaptor)))
       .thenReturn(TestUtil.byggHusstand()
     )
-    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlemskap(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(husstandsmedlemskapBoCaptor)))
+    Mockito.`when`(persistenceServiceMock.opprettRelatertPerson(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(RelatertPersonBoCaptor)))
       .thenReturn(TestUtil.byggHusstandsmedlem()
     )
     Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(
@@ -322,7 +322,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
 //    val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
     val husstandListe = husstandBoCaptor.allValues
-    val husstandsmedlemListe = husstandsmedlemskapBoCaptor.allValues
+    val husstandsmedlemListe = RelatertPersonBoCaptor.allValues
 
     assertAll(
       { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
@@ -352,22 +352,22 @@ class OppdaterGrunnlagspakkeServiceTest {
 
       { Assertions.assertThat(husstandsmedlemListe?.get(0)?.personId).isEqualTo("123") },
       { Assertions.assertThat(husstandsmedlemListe?.get(0)?.navn).isEqualTo("fornavn1 mellomnavn1 etternavn1") },
-      { Assertions.assertThat(husstandsmedlemListe?.get(0)?.periodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
-      { Assertions.assertThat(husstandsmedlemListe?.get(0)?.periodeTil).isEqualTo(LocalDate.parse("2011-02-01")) },
+      { Assertions.assertThat(husstandsmedlemListe?.get(0)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
+      { Assertions.assertThat(husstandsmedlemListe?.get(0)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2011-02-01")) },
       { Assertions.assertThat(husstandsmedlemListe?.get(0)?.opprettetAv).isNull() },
       { Assertions.assertThat(husstandsmedlemListe?.get(0)?.hentetTidspunkt).isNotNull() },
 
       { Assertions.assertThat(husstandsmedlemListe?.get(1)?.personId).isEqualTo("234") },
       { Assertions.assertThat(husstandsmedlemListe?.get(1)?.navn).isEqualTo("fornavn2 mellomnavn2 etternavn2") },
-      { Assertions.assertThat(husstandsmedlemListe?.get(1)?.periodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
-      { Assertions.assertThat(husstandsmedlemListe?.get(1)?.periodeTil).isEqualTo(LocalDate.parse("2011-12-01")) },
+      { Assertions.assertThat(husstandsmedlemListe?.get(1)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
+      { Assertions.assertThat(husstandsmedlemListe?.get(1)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2011-12-01")) },
       { Assertions.assertThat(husstandsmedlemListe?.get(1)?.opprettetAv).isNull() },
       { Assertions.assertThat(husstandsmedlemListe?.get(1)?.hentetTidspunkt).isNotNull() },
 
       { Assertions.assertThat(husstandsmedlemListe?.get(2)?.personId).isEqualTo("345") },
       { Assertions.assertThat(husstandsmedlemListe?.get(2)?.navn).isEqualTo("fornavn3 mellomnavn3 etternavn3") },
-      { Assertions.assertThat(husstandsmedlemListe?.get(2)?.periodeFra).isEqualTo(LocalDate.parse("2011-05-01")) },
-      { Assertions.assertThat(husstandsmedlemListe?.get(2)?.periodeTil).isEqualTo(LocalDate.parse("2011-06-01")) },
+      { Assertions.assertThat(husstandsmedlemListe?.get(2)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2011-05-01")) },
+      { Assertions.assertThat(husstandsmedlemListe?.get(2)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2011-06-01")) },
       { Assertions.assertThat(husstandsmedlemListe?.get(2)?.opprettetAv).isNull() },
       { Assertions.assertThat(husstandsmedlemListe?.get(2)?.hentetTidspunkt).isNotNull() },
 

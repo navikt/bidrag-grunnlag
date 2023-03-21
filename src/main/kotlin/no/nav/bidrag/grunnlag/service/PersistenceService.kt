@@ -22,7 +22,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemskapBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -32,7 +32,7 @@ import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilsynEntity
-import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemskapEntity
+import no.nav.bidrag.grunnlag.bo.toRelatertPersonEntity
 import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
 import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
@@ -50,7 +50,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Forelder
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlemskap
+import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
@@ -66,7 +66,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilsynRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.grunnlag.persistence.repository.HusstandsmedlemskapRepository
+import no.nav.bidrag.grunnlag.persistence.repository.RelatertPersonRepository
 import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
@@ -89,7 +89,7 @@ class PersistenceService(
   val barnetilleggRepository: BarnetilleggRepository,
   val barnRepository: BarnRepository,
   val husstandRepository: HusstandRepository,
-  val husstandsmedlemskapRepository: HusstandsmedlemskapRepository,
+  val RelatertPersonRepository: RelatertPersonRepository,
   val forelderRepository: ForelderRepository,
   val forelderBarnRepository: ForelderBarnRepository,
   val sivilstandRepository: SivilstandRepository,
@@ -167,7 +167,7 @@ class PersistenceService(
     )
   }
 
-  fun oppdaterEksisterendeHusstandsmedlemskapTilInaktiv(
+  fun oppdaterEksisterendeRelatertPersonTilInaktiv(
     grunnlagspakkeId: Int,
     partPersonId: String,
     timestampOppdatering: LocalDateTime
@@ -208,9 +208,9 @@ class PersistenceService(
     return barnetilleggRepository.save(nyBarnetillegg)
   }
 
-  fun opprettHusstandsmedlemskap(husstandsmedlemskapBo: HusstandsmedlemskapBo): Husstandsmedlemskap {
-    val nyttHusstandsmedlemskap = husstandsmedlemskapBo.toHusstandsmedlemskapEntity()
-    return husstandsmedlemskapRepository.save(nyttHusstandsmedlemskap)
+  fun opprettRelatertPerson(RelatertPersonBo: RelatertPersonBo): RelatertPerson {
+    val nyttRelatertPerson = RelatertPersonBo.toRelatertPersonEntity()
+    return RelatertPersonRepository.save(nyttRelatertPerson)
   }
 
   fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
@@ -548,39 +548,25 @@ class PersistenceService(
     )
   }
 
-  fun hentForeldre(grunnlagspakkeId: Int): List<Forelder> {
-    return forelderRepository.hentForeldre(grunnlagspakkeId)
-  }
-
-  // bruker generert id for å kunne hente barn til manuelt innlagte foreldre uten personId
-  fun hentAlleBarnForForelder(forelderId: Int): List<Barn> {
-    return forelderBarnRepository.hentAlleBarnForForelder(forelderId)
-  }
-
-  fun hentBarn(barnId: Int): Barn {
-    return barnRepository.hentBarn(barnId)
-  }
-
-
   fun hentHusstandsmedlemmerUnder18Aar(grunnlagspakkeId: Int, personId: String): List<HusstandDto> {
     val husstandDtoListe = mutableListOf<HusstandDto>()
     husstandRepository.hentHusstand(grunnlagspakkeId, personId)
       .forEach { husstand ->
         val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
 
-        husstandsmedlemskapRepository.hentHusstandsmedlemskap(husstand.husstandId)
+        RelatertPersonRepository.hentRelatertPerson(husstand.husstandId)
           .forEach { husstandsmedlem ->
             if ((husstandsmedlem.personId != null &&
                   !personHarFyllt18Aar(
-                    husstandsmedlem.periodeFra.plusMonths(1),
+                    husstandsmedlem.husstandsmedlemPeriodeFra.plusMonths(1),
                     husstandsmedlem.foedselsdato
                   )
                   || husstandsmedlem.foedselsdato == null)
             ) {
               voksneHusstandsmedlemmerListe.add(
                 HusstandsmedlemDto(
-                  periodeFra = husstandsmedlem.periodeFra,
-                  periodeTil = husstandsmedlem.periodeTil,
+                  periodeFra = husstandsmedlem.husstandsmedlemPeriodeFra,
+                  periodeTil = husstandsmedlem.husstandsmedlemPeriodeTil,
                   personId = husstandsmedlem.personId,
                   navn = husstandsmedlem.navn,
                   foedselsdato = husstandsmedlem.foedselsdato,
@@ -630,19 +616,19 @@ class PersistenceService(
       .forEach { husstand ->
         val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
 
-        husstandsmedlemskapRepository.hentHusstandsmedlemskap(husstand.husstandId)
+        RelatertPersonRepository.hentRelatertPerson(husstand.husstandId)
           .forEach { husstandsmedlem ->
             if ((husstandsmedlem.personId != null &&
                   personHarFyllt18Aar(
-                    husstandsmedlem.periodeFra,
+                    husstandsmedlem.husstandsmedlemPeriodeFra,
                     husstandsmedlem.foedselsdato
                   )
                   || husstandsmedlem.foedselsdato == null)
             ) {
               voksneHusstandsmedlemmerListe.add(
                 HusstandsmedlemDto(
-                  periodeFra = husstandsmedlem.periodeFra,
-                  periodeTil = husstandsmedlem.periodeTil,
+                  periodeFra = husstandsmedlem.husstandsmedlemPeriodeFra,
+                  periodeTil = husstandsmedlem.husstandsmedlemPeriodeTil,
                   personId = husstandsmedlem.personId,
                   navn = husstandsmedlem.navn,
                   foedselsdato = husstandsmedlem.foedselsdato,
