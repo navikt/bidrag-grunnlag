@@ -12,7 +12,6 @@ import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
-import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.ForelderBo

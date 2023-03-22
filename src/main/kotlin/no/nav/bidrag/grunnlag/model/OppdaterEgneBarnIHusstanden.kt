@@ -4,8 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.bo.BarnBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
+import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
@@ -56,7 +55,7 @@ class OppdaterEgneBarnIHusstanden(
         timestampOppdatering
       )
 
-      val barnBoListe = mutableListOf<BarnBo>()
+      val barnBoListe = mutableListOf<PersonBo>()
 
       val husstandsmedlemmerListe = hentHusstandsmedlemmer(husstandsmedlemmerRequest)
 
@@ -114,12 +113,12 @@ class OppdaterEgneBarnIHusstanden(
 
 
 
-  private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: HusstandsmedlemmerRequest): List<HusstandsmedlemBo> {
+  private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: HusstandsmedlemmerRequest): List<PersonBo> {
 
     LOGGER.info("Kaller bidrag-person Husstandsmedlemmer for grunnlag EgneBarnIHusstanden")
     SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer for grunnlag EgneBarnIHusstanden med request: $husstandsmedlemmerRequest")
 
-    val husstandsmedlemListe = mutableListOf<HusstandsmedlemBo>()
+    val husstandsmedlemListe = mutableListOf<PersonBo>()
 
     when (val restResponseHusstandsmedlemmer =
       bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {
@@ -131,7 +130,7 @@ class OppdaterEgneBarnIHusstanden(
           husstandsmedlemmerResponseDto.husstandResponseListe.forEach { husstand ->
             husstand.husstandsmedlemmerResponseListe.forEach { husstandsmedlem ->
               husstandsmedlemListe.add(
-                HusstandsmedlemBo(husstandsmedlem.personId,
+                PersonBo(husstandsmedlem.personId,
                   husstandsmedlem.fornavn + " " + husstandsmedlem.mellomnavn + " " + husstandsmedlem.etternavn,
                   husstandsmedlem.foedselsdato,
                   husstandsmedlem.gyldigFraOgMed,
@@ -163,12 +162,12 @@ class OppdaterEgneBarnIHusstanden(
   }
 
 
-  private fun hentBarn(forelderBarnRequest: ForelderBarnRequest): List<BarnBo> {
+  private fun hentBarn(forelderBarnRequest: ForelderBarnRequest): List<PersonBo> {
 
     LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
     SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
 
-    val barnListe = mutableListOf<BarnBo>()
+    val barnListe = mutableListOf<PersonBo>()
 
 
     // Henter en liste over BMs/BPs barn og henter så info om fødselsdag og navn for disse
@@ -185,7 +184,8 @@ class OppdaterEgneBarnIHusstanden(
               // Kaller bidrag-person for å hente info om fødselsdato og navn
               val navnFoedselDoedResponseDto = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
               // Lager en liste over fnr for alle barn som er funnet. Listen brukes under til å lagre om et husstandsmedlem er barn av BM/BP eller ikke
-              barnListe.add(BarnBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato))
+              barnListe.add(
+                PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato, null, null))
             }
 
           }
@@ -207,7 +207,7 @@ class OppdaterEgneBarnIHusstanden(
 
   }
 
-  fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
+  private fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
     //hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
     when (val restResponseFoedselOgDoed =
       bidragPersonConsumer.hentNavnFoedselOgDoed(personId)) {
