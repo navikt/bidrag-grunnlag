@@ -9,12 +9,8 @@ import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
-import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
-import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -373,130 +369,70 @@ class GrunnlagspakkeServiceTest {
     val grunnlagspakkeIdOpprettet =
       grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
 
-    // Legger inn forelder
-    val opprettetForelder = persistenceService.opprettForelder(
-      ForelderBo(
+    // Legger først inn inn barn med to perioder som husstandsmedlem
+    persistenceService.opprettRelatertPerson(
+      RelatertPersonBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
-        personId = "44448888",
-        navn = "Sliten Kartong",
-        foedselsdato = LocalDate.parse("1990-04-04"),
-        doedsdato = LocalDate.parse("2021-07-01"),
-        aktiv = true,
-        brukFra = LocalDateTime.now(),
-        brukTil = null,
-        opprettetAv = null,
-        hentetTidspunkt = LocalDateTime.now()
-      )
-    )
-
-    // Legger inn barn
-    val opprettetBarnUnder18 = persistenceService.opprettBarn(
-      BarnBo(
-        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
-        personId = "22233344455",
+        partPersonId = "12345678901",
+        relatertPersonPersonId = "22233344455",
         navn = "Svett Elefant",
-        foedselsdato = LocalDate.parse("2017-05-17"),
-        foedselsaar = 2017,
-        doedsdato = LocalDate.parse("2021-06-23"),
+        fodselsdato = LocalDate.parse("2017-05-17"),
+        erBarnAvBmBp = true,
+        husstandsmedlemPeriodeFra = LocalDate.parse("2010-05-01"),
+        husstandsmedlemPeriodeTil = LocalDate.parse("2020-06-01"),
         aktiv = true,
         brukFra = LocalDateTime.now(),
         brukTil = null,
-        opprettetAv = null,
         hentetTidspunkt = LocalDateTime.now()
       )
     )
-    val opprettetBarnOver18 = persistenceService.opprettBarn(
-      BarnBo(
+    persistenceService.opprettRelatertPerson(
+      RelatertPersonBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
-        personId = "98798798765",
-        navn = "Trang Poncho",
-        foedselsdato = LocalDate.parse("2000-12-02"),
-        foedselsaar = 2000,
-        doedsdato = null,
-        aktiv = true,
-        brukFra = LocalDateTime.now(),
-        brukTil = null,
-        opprettetAv = null,
-        hentetTidspunkt = LocalDateTime.now()
-      )
-    )
-
-    // Legger inn forelder-barn-relasjon
-    persistenceService.opprettForelderBarn (
-      ForelderBarnBo(
-        forelderId = opprettetForelder.forelderId,
-        barnId = opprettetBarnUnder18.barnId
-      )
-    )
-    persistenceService.opprettForelderBarn (
-      ForelderBarnBo(
-        forelderId = opprettetForelder.forelderId,
-        barnId = opprettetBarnOver18.barnId
-      )
-    )
-
-    // Legger inn husstand
-    val opprettetHusstand = persistenceService.opprettHusstand(
-      HusstandBo(
-        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
-        personId = "44448888",
-        periodeFra = LocalDate.parse("2001-05-01"),
-        periodeTil = LocalDate.parse("2022-07-01"),
-        adressenavn = "adressenavn1",
-        husnummer = "husnummer1",
-        husbokstav = "husbokstav1",
-        bruksenhetsnummer = "bruksenhetsnummer1",
-        postnummer = "postnummer1",
-        bydelsnummer = "bydelsnummer1",
-        kommunenummer = "kommunenummer1",
-        matrikkelId = 12345,
-        aktiv = true,
-        brukFra = LocalDateTime.now(),
-        brukTil = null,
-        opprettetAv = null,
-        hentetTidspunkt = LocalDateTime.now()
-      )
-    )
-
-    // Legger inn barna som husstandsmedlemmer
-    persistenceService.opprettHusstandsmedlem(
-      HusstandsmedlemBo(
-        husstandId = opprettetHusstand.husstandId ,
-        periodeFra = LocalDate.parse("2021-05-01"),
-        periodeTil = LocalDate.parse("2021-06-01"),
-        personId = "22233344455",
+        partPersonId = "12345678901",
+        relatertPersonPersonId = "22233344455",
         navn = "Svett Elefant",
-        foedselsdato = LocalDate.parse("2017-05-17"),
-        doedsdato = LocalDate.parse("2021-06-23"),
-        opprettetAv = null,
+        fodselsdato = LocalDate.parse("2017-05-17"),
+        erBarnAvBmBp = true,
+        husstandsmedlemPeriodeFra = LocalDate.parse("2021-05-01"),
+        husstandsmedlemPeriodeTil = null,
+        aktiv = true,
+        brukFra = LocalDateTime.now(),
+        brukTil = null,
         hentetTidspunkt = LocalDateTime.now()
       )
     )
-    persistenceService.opprettHusstandsmedlem(
-      HusstandsmedlemBo(
-        husstandId = opprettetHusstand.husstandId ,
-        periodeFra = LocalDate.parse("2000-05-01"),
-        periodeTil = LocalDate.parse("2021-07-01"),
-        personId = "98798798765",
+    persistenceService.opprettRelatertPerson(
+      RelatertPersonBo(
+        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
+        partPersonId = "12345678901",
+        relatertPersonPersonId = "98798798765",
         navn = "Trang Poncho",
-        foedselsdato = LocalDate.parse("2000-12-02"),
-        doedsdato = null,
-        opprettetAv = null,
+        fodselsdato = LocalDate.parse("2000-12-02"),
+        erBarnAvBmBp = true,
+        husstandsmedlemPeriodeFra = null,
+        husstandsmedlemPeriodeTil = null,
+        aktiv = true,
+        brukFra = LocalDateTime.now(),
+        brukTil = null,
         hentetTidspunkt = LocalDateTime.now()
       )
     )
 
     // Legger inn voksent husstandsmedlem
-    persistenceService.opprettHusstandsmedlem(
-      HusstandsmedlemBo(
-        husstandId = opprettetHusstand.husstandId ,
-        periodeFra = LocalDate.parse("2020-02-01"),
-        periodeTil = LocalDate.parse("2020-09-01"),
-        personId = "99988877766",
+    persistenceService.opprettRelatertPerson(
+      RelatertPersonBo(
+        grunnlagspakkeId = grunnlagspakkeIdOpprettet,
+        partPersonId = "12345678901",
+        relatertPersonPersonId = "99988877766",
         navn = "Klam Trøffel",
-        foedselsdato = LocalDate.parse("1997-02-12"),
-        doedsdato = null,
-        opprettetAv = null,
+        fodselsdato = LocalDate.parse("1997-02-12"),
+        erBarnAvBmBp = false,
+        husstandsmedlemPeriodeFra = null,
+        husstandsmedlemPeriodeTil = LocalDate.parse("2020-09-01"),
+        aktiv = true,
+        brukFra = LocalDateTime.now(),
+        brukTil = null,
         hentetTidspunkt = LocalDateTime.now()
       )
     )
@@ -505,14 +441,13 @@ class GrunnlagspakkeServiceTest {
     persistenceService.opprettSivilstand(
       SivilstandBo(
         grunnlagspakkeId = grunnlagspakkeIdOpprettet,
-        personId = "22334455",
+        personId = "12345678901",
         periodeFra = LocalDate.parse("2021-05-01"),
         periodeTil = LocalDate.parse("2021-06-01"),
         sivilstand = "ENSLIG",
         aktiv = true,
         brukFra = LocalDateTime.now(),
         brukTil = null,
-        opprettetAv = null,
         hentetTidspunkt = LocalDateTime.now()
       )
     )
@@ -523,48 +458,20 @@ class GrunnlagspakkeServiceTest {
     assertAll(
       Executable { assertThat(grunnlagspakkeFunnet).isNotNull },
       Executable { assertThat(grunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe.size).isEqualTo(1) }, // Barn over 18 år skal ikke returneres
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].personIdBarn).isEqualTo("22233344455") },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].navn).isEqualTo("Svett Elefant") },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].foedselsdato).isEqualTo(LocalDate.parse("2017-05-17")) },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].foedselsaar).isEqualTo(2017) },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].doedsdato).isEqualTo(LocalDate.parse("2021-06-23"))},
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].hentetTidspunkt).isNotNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.egneBarnListe[0].borISammeHusstandDtoListe?.get(0)?.hentetTidspunkt).isNotNull() },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnIHusstandenListe.size).isEqualTo(2) },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnIHusstandenListe[0].relatertPersonPersonId).isEqualTo("22233344455") },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnIHusstandenListe[0].navn).isEqualTo("Svett Elefant") },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnIHusstandenListe[0].fodselsdato).isEqualTo(LocalDate.parse("2017-05-17")) },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnIHusstandenListe[0].hentetTidspunkt).isNotNull() },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnIHusstandenListe[0].borISammeHusstandDtoListe?.get(0)?.periodeFra).isEqualTo(LocalDate.parse("2010-05-01")) },
+      Executable { assertThat(grunnlagspakkeFunnet.egneBarnIHusstandenListe[0].borISammeHusstandDtoListe?.get(0)?.periodeTil).isEqualTo(LocalDate.parse("2020-06-01")) },
 
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe.size).isEqualTo(1) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2001-05-01")) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-07-01")) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].adressenavn).isEqualTo("adressenavn1") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husnummer).isEqualTo("husnummer1") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husbokstav).isEqualTo("husbokstav1") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].bruksenhetsnummer).isEqualTo("bruksenhetsnummer1") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].postnummer).isEqualTo("postnummer1") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].bydelsnummer).isEqualTo("bydelsnummer1") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].kommunenummer).isEqualTo("kommunenummer1") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].matrikkelId).isEqualTo(12345) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].hentetTidspunkt).isNotNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.size).isEqualTo(1) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.periodeFra).isEqualTo(LocalDate.parse("2020-02-01")) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.periodeTil).isEqualTo(LocalDate.parse("2020-09-01")) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.personId).isEqualTo("99988877766") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.navn).isEqualTo("Klam Trøffel") },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.foedselsdato).isEqualTo(LocalDate.parse("1997-02-12")) },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.doedsdato).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.opprettetAv).isNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.get(0)?.hentetTidspunkt).isNotNull() },
-      Executable { assertThat(grunnlagspakkeFunnet.husstandListe[0].husstandsmedlemmerListe?.size).isEqualTo(1) },
+
 
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe.size).isEqualTo(1) },
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].sivilstand).isEqualTo(SivilstandKode.ENSLIG) },
-      Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].opprettetAv).isNull() },
       Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].hentetTidspunkt).isNotNull() },
 
       )

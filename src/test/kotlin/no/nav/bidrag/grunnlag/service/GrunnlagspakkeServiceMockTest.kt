@@ -8,24 +8,16 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntekt
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektspost
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektspostBo
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarn
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetillegg
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetilleggBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetilsyn
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggBarnetilsynBo
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelder
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBarn
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBarnBo
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggForelderBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggGrunnlagspakke
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstand
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandBo
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandsmedlem
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggHusstandsmedlemBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotte
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotteBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggRelatertPerson
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggRelatertPersonBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstand
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstandBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSkattegrunnlagSkatt
@@ -36,14 +28,10 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggUtvidetBarnetrygdOgSmaabarn
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggUtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
-import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
-import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -73,7 +61,6 @@ class GrunnlagspakkeServiceMockTest {
   private lateinit var persistenceServiceMock: PersistenceService
   @Mock
   private lateinit var oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService
-
   @Captor
   private lateinit var opprettGrunnlagspakkeRequestDtoCaptor: ArgumentCaptor<OpprettGrunnlagspakkeRequestDto>
   @Captor
@@ -89,15 +76,7 @@ class GrunnlagspakkeServiceMockTest {
   @Captor
   private lateinit var barnetilleggBoCaptor: ArgumentCaptor<BarnetilleggBo>
   @Captor
-  private lateinit var forelderBoCaptor: ArgumentCaptor<ForelderBo>
-  @Captor
-  private lateinit var barnBoCaptor: ArgumentCaptor<BarnBo>
-  @Captor
-  private lateinit var forelderBarnBoCaptor: ArgumentCaptor<ForelderBarnBo>
-  @Captor
-  private lateinit var husstandBoCaptor: ArgumentCaptor<HusstandBo>
-  @Captor
-  private lateinit var husstandsmedlemBoCaptor: ArgumentCaptor<HusstandsmedlemBo>
+  private lateinit var relatertPersonBoCaptor: ArgumentCaptor<RelatertPersonBo>
   @Captor
   private lateinit var sivilstandBoCaptor: ArgumentCaptor<SivilstandBo>
   @Captor
@@ -138,16 +117,8 @@ class GrunnlagspakkeServiceMockTest {
       .thenReturn(byggUtvidetBarnetrygdOgSmaabarnstillegg())
     Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(MockitoHelper.capture(barnetilleggBoCaptor)))
       .thenReturn(byggBarnetillegg())
-    Mockito.`when`(persistenceServiceMock.opprettForelder(MockitoHelper.capture(forelderBoCaptor)))
-      .thenReturn(byggForelder())
-    Mockito.`when`(persistenceServiceMock.opprettBarn(MockitoHelper.capture(barnBoCaptor)))
-      .thenReturn(byggBarn())
-    Mockito.`when`(persistenceServiceMock.opprettForelderBarn(MockitoHelper.capture(forelderBarnBoCaptor)))
-      .thenReturn(byggForelderBarn())
-    Mockito.`when`(persistenceServiceMock.opprettHusstand(MockitoHelper.capture(husstandBoCaptor)))
-      .thenReturn(byggHusstand())
-    Mockito.`when`(persistenceServiceMock.opprettHusstandsmedlem(MockitoHelper.capture(husstandsmedlemBoCaptor)))
-      .thenReturn(byggHusstandsmedlem())
+    Mockito.`when`(persistenceServiceMock.opprettRelatertPerson(MockitoHelper.capture(relatertPersonBoCaptor)))
+      .thenReturn(byggRelatertPerson())
     Mockito.`when`(persistenceServiceMock.opprettSivilstand(MockitoHelper.capture(sivilstandBoCaptor)))
       .thenReturn(byggSivilstand())
     Mockito.`when`(persistenceServiceMock.opprettKontantstotte(MockitoHelper.capture(kontantstotteBoCaptor)))
@@ -163,11 +134,7 @@ class GrunnlagspakkeServiceMockTest {
     val nyUtvidetBarnetrygdOgSmaabarnstilleggOpprettet =
       persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(byggUtvidetBarnetrygdOgSmaabarnstilleggBo())
     val nyttBarnetilleggOpprettet = persistenceServiceMock.opprettBarnetillegg(byggBarnetilleggBo())
-    val nyForelderOpprettet = persistenceServiceMock.opprettForelder(byggForelderBo())
-    val nyttBarnOpprettet = persistenceServiceMock.opprettBarn(byggBarnBo())
-    val nyForelderBarnOpprettet = persistenceServiceMock.opprettForelderBarn(byggForelderBarnBo())
-    val nyHusstandOpprettet = persistenceServiceMock.opprettHusstand(byggHusstandBo())
-    val nyHusstandsmedlemOpprettet = persistenceServiceMock.opprettHusstandsmedlem(byggHusstandsmedlemBo())
+    val nyRelatertPersonOpprettet = persistenceServiceMock.opprettRelatertPerson(byggRelatertPersonBo())
     val nySivilstandOpprettet = persistenceServiceMock.opprettSivilstand(byggSivilstandBo())
     val nyKontantstotteOpprettet = persistenceServiceMock.opprettKontantstotte(byggKontantstotteBo())
     val nyBarnetilsynOpprettet = persistenceServiceMock.opprettBarnetilsyn(byggBarnetilsynBo())
@@ -179,11 +146,8 @@ class GrunnlagspakkeServiceMockTest {
     val skattegrunnlagspostBoListe = skattegrunnlagspostBoCaptor.allValues
     val ubstBoListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
     val barnetilleggBoListe = barnetilleggBoCaptor.allValues
-    val forelderBoListe = forelderBoCaptor.allValues
-    val barnBoListe = barnBoCaptor.allValues
-    val forelderBarnBoListe = forelderBarnBoCaptor.allValues
-    val husstandBoListe = husstandBoCaptor.allValues
-    val husstandsmedlemBoListe = husstandsmedlemBoCaptor.allValues
+    val relatertPersonBoListe = relatertPersonBoCaptor.allValues
+    val husstandsmedlemBoListe = relatertPersonBoCaptor.allValues
     val sivilstandBoListe = sivilstandBoCaptor.allValues
     val barnetilleggListe = barnetilleggBoCaptor.allValues
     val kontantstotteListe = kontantstotteBoCaptor.allValues
@@ -197,11 +161,7 @@ class GrunnlagspakkeServiceMockTest {
     Mockito.verify(persistenceServiceMock, Mockito.times(1))
       .opprettUtvidetBarnetrygdOgSmaabarnstillegg(MockitoHelper.any(UtvidetBarnetrygdOgSmaabarnstilleggBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarnetillegg(MockitoHelper.any(BarnetilleggBo::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettForelder(MockitoHelper.any(ForelderBo::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarn(MockitoHelper.any(BarnBo::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettForelderBarn(MockitoHelper.any(ForelderBarnBo::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstand(MockitoHelper.any(HusstandBo::class.java))
-    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettHusstandsmedlem(MockitoHelper.any(HusstandsmedlemBo::class.java))
+    Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettRelatertPerson(MockitoHelper.any(RelatertPersonBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSivilstand(MockitoHelper.any(SivilstandBo::class.java))
     Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettKontantstotte(MockitoHelper.any(KontantstotteBo::class.java))
 
@@ -227,21 +187,8 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(nyttBarnetilleggOpprettet).isNotNull() },
       { assertThat(nyttBarnetilleggOpprettet.grunnlagspakkeId).isNotNull() },
 
-      { assertThat(nyForelderOpprettet).isNotNull() },
-      { assertThat(nyForelderOpprettet.forelderId).isNotNull() },
-
-      { assertThat(nyttBarnOpprettet).isNotNull() },
-      { assertThat(nyttBarnOpprettet.barnId).isNotNull() },
-
-      { assertThat(nyForelderBarnOpprettet).isNotNull() },
-      { assertThat(nyForelderBarnOpprettet.forelder.forelderId).isNotNull() },
-      { assertThat(nyForelderBarnOpprettet.barn.barnId).isNotNull() },
-
-      { assertThat(nyHusstandOpprettet).isNotNull() },
-      { assertThat(nyHusstandOpprettet.husstandId).isNotNull() },
-
-      { assertThat(nyHusstandsmedlemOpprettet).isNotNull() },
-      { assertThat(nyHusstandsmedlemOpprettet.husstandsmedlemId).isNotNull() },
+      { assertThat(nyRelatertPersonOpprettet).isNotNull() },
+      { assertThat(nyRelatertPersonOpprettet.grunnlagspakkeId).isNotNull() },
 
       { assertThat(nySivilstandOpprettet).isNotNull() },
       { assertThat(nySivilstandOpprettet.sivilstandId).isNotNull() },
@@ -306,28 +253,20 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(barnetilleggBoListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000)) },
       { assertThat(barnetilleggBoListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) },
 
-      // sjekk ForelderBo
-      { assertThat(forelderBoListe[0].personId).isEqualTo("4321") },
-      { assertThat(forelderBoListe[0].navn).isEqualTo("navn1") },
-      { assertThat(forelderBoListe[0].foedselsdato).isEqualTo(LocalDate.parse("2001-11-12")) },
-      { assertThat(forelderBoListe[0].doedsdato).isEqualTo(LocalDate.parse("2021-07-01")) },
-      { assertThat(forelderBoListe[0].aktiv).isTrue },
-      { assertThat(forelderBoListe[0].brukFra).isNotNull() },
-      { assertThat(forelderBoListe[0].brukTil).isNull() },
-      { assertThat(forelderBoListe[0].opprettetAv).isNull() },
-      { assertThat(forelderBoListe[0].hentetTidspunkt).isNotNull() },
-
-      // sjekk BarnBo
-      { assertThat(barnBoListe[0].personId).isEqualTo("1234567") },
-      { assertThat(barnBoListe[0].navn).isEqualTo("Svett Elefant") },
-      { assertThat(barnBoListe[0].foedselsdato).isEqualTo(LocalDate.parse("2011-01-01")) },
-      { assertThat(barnBoListe[0].foedselsaar).isEqualTo(2011) },
-      { assertThat(barnBoListe[0].doedsdato).isEqualTo(LocalDate.parse("2021-07-01")) },
-      { assertThat(barnBoListe[0].aktiv).isTrue },
-      { assertThat(barnBoListe[0].brukFra).isNotNull() },
-      { assertThat(barnBoListe[0].brukTil).isNull() },
-      { assertThat(barnBoListe[0].opprettetAv).isNull() },
-      { assertThat(barnBoListe[0].hentetTidspunkt).isNotNull() },
+      // sjekk RelatertPerson
+      { assertThat(relatertPersonBoListe).isNotNull() },
+      { assertThat(relatertPersonBoListe[0].grunnlagspakkeId).isNotNull() },
+      { assertThat(relatertPersonBoListe[0].partPersonId).isEqualTo("1234567") },
+      { assertThat(relatertPersonBoListe[0].relatertPersonPersonId).isEqualTo("7654321") },
+      { assertThat(relatertPersonBoListe[0].navn).isEqualTo("navn1") },
+      { assertThat(relatertPersonBoListe[0].fodselsdato).isEqualTo(LocalDate.parse("1997-05-23")) },
+      { assertThat(relatertPersonBoListe[0].erBarnAvBmBp).isTrue },
+      { assertThat(relatertPersonBoListe[0].husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+      { assertThat(relatertPersonBoListe[0].husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
+      { assertThat(relatertPersonBoListe[0].aktiv).isTrue },
+      { assertThat(relatertPersonBoListe[0].brukFra).isNotNull() },
+      { assertThat(relatertPersonBoListe[0].brukTil).isNull() },
+      { assertThat(relatertPersonBoListe[0].hentetTidspunkt).isNotNull() },
 
       // sjekk BarnetilleggDto
       { assertThat(barnetilleggListe[0].partPersonId).isEqualTo("1234567") },
@@ -352,34 +291,6 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(barnetilsynListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
       { assertThat(barnetilsynListe[0].belop).isEqualTo(7500) },
 
-      // sjekk ForelderBarnBo
-      { assertThat(forelderBarnBoListe).isNotNull()  },
-
-      // sjekk HusstandBo
-      { assertThat(husstandBoListe[0].personId).isEqualTo("1234567") },
-      { assertThat(husstandBoListe[0].periodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
-      { assertThat(husstandBoListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-02-01")) },
-      { assertThat(husstandBoListe[0].adressenavn).isEqualTo("adressenavn1") },
-      { assertThat(husstandBoListe[0].husnummer).isEqualTo("husnummer1") },
-      { assertThat(husstandBoListe[0].husbokstav).isEqualTo("husbokstav1") },
-      { assertThat(husstandBoListe[0].postnummer).isEqualTo("postnr1") },
-      { assertThat(husstandBoListe[0].bydelsnummer).isEqualTo("bydelsnummer1") },
-      { assertThat(husstandBoListe[0].kommunenummer).isEqualTo("kommunenummer1") },
-      { assertThat(husstandBoListe[0].matrikkelId).isEqualTo(11223344) },
-      { assertThat(husstandBoListe[0].aktiv).isTrue },
-      { assertThat(husstandBoListe[0].brukFra).isNotNull() },
-      { assertThat(husstandBoListe[0].brukTil).isNull() },
-      { assertThat(husstandBoListe[0].opprettetAv).isNull() },
-      { assertThat(husstandBoListe[0].hentetTidspunkt).isNotNull() },
-
-      // sjekk HusstandsmedlemBo
-      { assertThat(husstandsmedlemBoListe[0].personId).isEqualTo("123") },
-      { assertThat(husstandsmedlemBoListe[0].navn).isEqualTo("navn1") },
-      { assertThat(husstandsmedlemBoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-      { assertThat(husstandsmedlemBoListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-      { assertThat(husstandsmedlemBoListe[0].opprettetAv).isNull() },
-      { assertThat(husstandsmedlemBoListe[0].hentetTidspunkt).isNotNull() },
-
       // sjekk SivilstandBo
       { assertThat(sivilstandBoListe[0].personId).isEqualTo("1234") },
       { assertThat(sivilstandBoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
@@ -388,7 +299,6 @@ class GrunnlagspakkeServiceMockTest {
       { assertThat(sivilstandBoListe[0].aktiv).isTrue },
       { assertThat(sivilstandBoListe[0].brukFra).isNotNull() },
       { assertThat(sivilstandBoListe[0].brukTil).isNull() },
-      { assertThat(sivilstandBoListe[0].opprettetAv).isNull() },
       { assertThat(sivilstandBoListe[0].hentetTidspunkt).isNotNull() }
 
     )

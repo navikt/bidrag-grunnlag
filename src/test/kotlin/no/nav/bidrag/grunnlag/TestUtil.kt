@@ -12,14 +12,10 @@ import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
-import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
-import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -57,15 +53,11 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.api.InfotrygdPeriode
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.KsSakPeriode
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
-import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
-import no.nav.bidrag.grunnlag.persistence.entity.Forelder
-import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Husstand
-import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
+import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
@@ -400,135 +392,34 @@ class TestUtil {
     )
 
     // PDL-data
-    fun byggForelderBo() = ForelderBo(
+    fun byggRelatertPersonBo() = RelatertPersonBo(
       grunnlagspakkeId = (1..100).random(),
-      personId = "4321",
+      partPersonId = "1234567",
+      relatertPersonPersonId = "7654321",
       navn = "navn1",
-      foedselsdato = LocalDate.parse("2001-11-12"),
-      doedsdato = LocalDate.parse("2021-07-01"),
+      fodselsdato = LocalDate.parse("1997-05-23"),
+      erBarnAvBmBp = true,
+      husstandsmedlemPeriodeFra = LocalDate.parse("2021-01-01"),
+      husstandsmedlemPeriodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetAv = null,
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggForelder() = Forelder(
-      forelderId = (1..100).random(),
+    fun byggRelatertPerson() = RelatertPerson(
+      relatertPersonId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
-      personId = "4321",
+      partPersonId = "1234567",
+      relatertPersonPersonId = "7654321",
       navn = "navn1",
-      foedselsdato = LocalDate.parse("2001-11-12"),
-      doedsdato = LocalDate.parse("2021-07-01"),
+      fodselsdato = LocalDate.parse("1997-05-23"),
+      erBarnAvBmBp = true,
+      husstandsmedlemPeriodeFra = LocalDate.parse("2021-01-01"),
+      husstandsmedlemPeriodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetAv = null,
-      hentetTidspunkt = LocalDateTime.now()
-    )
-
-    fun byggBarnBo() = BarnBo(
-      grunnlagspakkeId = (1..100).random(),
-      personId = "1234567",
-      navn = "Svett Elefant",
-      foedselsdato = LocalDate.parse("2011-01-01"),
-      foedselsaar = 2011,
-      doedsdato = LocalDate.parse("2021-07-01"),
-      aktiv = true,
-      brukFra = LocalDateTime.now(),
-      brukTil = null,
-      opprettetAv = null,
-      hentetTidspunkt = LocalDateTime.now()
-    )
-
-    fun byggBarn() = Barn(
-      barnId = (1..100).random(),
-      grunnlagspakkeId = (1..100).random(),
-      personId = "1234567",
-      navn = "Svett Elefant",
-      foedselsdato = LocalDate.parse("2011-01-01"),
-      foedselsaar = 2011,
-      doedsdato = LocalDate.parse("2021-07-01"),
-      aktiv = true,
-      brukFra = LocalDateTime.now(),
-      brukTil = null,
-      opprettetAv = null,
-      hentetTidspunkt = LocalDateTime.now()
-    )
-
-    fun byggForelderBarnBo() = ForelderBarnBo(
-      forelderId = byggForelder().forelderId,
-      barnId = byggBarn().barnId
-    )
-
-    fun byggForelderBarn() = ForelderBarn(
-      forelder = Forelder(),
-      barn = Barn()
-    )
-
-    fun byggHusstandBo() = HusstandBo(
-      grunnlagspakkeId = (1..100).random(),
-      personId = "1234567",
-      periodeFra = LocalDate.parse("2011-01-01"),
-      periodeTil = LocalDate.parse("2022-02-01"),
-      adressenavn = "adressenavn1",
-      husnummer = "husnummer1",
-      husbokstav = "husbokstav1",
-      bruksenhetsnummer = "bruksenhetsnummer1",
-      postnummer = "postnr1",
-      bydelsnummer = "bydelsnummer1",
-      kommunenummer = "kommunenummer1",
-      matrikkelId = 11223344,
-      aktiv = true,
-      brukFra = LocalDateTime.now(),
-      brukTil = null,
-      opprettetAv = null,
-      hentetTidspunkt = LocalDateTime.now()
-    )
-
-    fun byggHusstand() = Husstand(
-      husstandId = (1..100).random(),
-      grunnlagspakkeId = (1..100).random(),
-      personId = "1234567",
-      periodeFra = LocalDate.parse("2011-01-01"),
-      periodeTil = LocalDate.parse("2022-02-01"),
-      adressenavn = "adressenavn1",
-      husnummer = "husnummer1",
-      husbokstav = "husbokstav1",
-      bruksenhetsnummer = "bruksenhetsnummer1",
-      postnummer = "postnr1",
-      bydelsnummer = "bydelsnummer1",
-      kommunenummer = "kommunenummer1",
-      matrikkelId = 11223344,
-      aktiv = true,
-      brukFra = LocalDateTime.now(),
-      brukTil = null,
-      opprettetAv = null,
-      hentetTidspunkt = LocalDateTime.now()
-    )
-
-    fun byggHusstandsmedlemBo() = HusstandsmedlemBo(
-      periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
-      husstandId = (1..100).random(),
-      personId = "123",
-      navn = "navn1",
-      foedselsdato = LocalDate.parse("1997-05-23"),
-      doedsdato = null,
-      opprettetAv = null,
-      hentetTidspunkt = LocalDateTime.now()
-    )
-
-    fun byggHusstandsmedlem() = Husstandsmedlem(
-      husstandsmedlemId = (1..100).random(),
-      husstandId = (1..100).random(),
-      personId = "123",
-      periodeFra = LocalDate.parse("2021-01-01"),
-      periodeTil = LocalDate.parse("2021-07-01"),
-      navn = "navn1",
-      foedselsdato = LocalDate.parse("1997-05-23"),
-      doedsdato = null,
-      opprettetAv = null,
       hentetTidspunkt = LocalDateTime.now()
     )
 
@@ -541,7 +432,6 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetAv = null,
       hentetTidspunkt = LocalDateTime.now()
     )
 
@@ -555,7 +445,6 @@ class TestUtil {
       aktiv = true,
       brukFra = LocalDateTime.now(),
       brukTil = null,
-      opprettetAv = null,
       hentetTidspunkt = LocalDateTime.now()
     )
 

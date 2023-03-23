@@ -4,11 +4,11 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilsynDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HusstandsmedlemDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.KontantstotteDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.RelatertPersonDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagspostDto
@@ -20,27 +20,20 @@ import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Tilsyntype
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
-import no.nav.bidrag.grunnlag.bo.BarnBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
-import no.nav.bidrag.grunnlag.bo.ForelderBarnBo
-import no.nav.bidrag.grunnlag.bo.ForelderBo
-import no.nav.bidrag.grunnlag.bo.HusstandBo
-import no.nav.bidrag.grunnlag.bo.HusstandsmedlemBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.bo.toAinntektEntity
 import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
-import no.nav.bidrag.grunnlag.bo.toBarnEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilsynEntity
-import no.nav.bidrag.grunnlag.bo.toHusstandEntity
-import no.nav.bidrag.grunnlag.bo.toHusstandsmedlemEntity
 import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
-import no.nav.bidrag.grunnlag.bo.toPersonEntity
+import no.nav.bidrag.grunnlag.bo.toRelatertPersonEntity
 import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagspostEntity
@@ -52,15 +45,11 @@ import no.nav.bidrag.grunnlag.comparator.SkattegrunnlagPeriodComparator
 import no.nav.bidrag.grunnlag.exception.custom.InvalidGrunnlagspakkeIdException
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
-import no.nav.bidrag.grunnlag.persistence.entity.Barn
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
-import no.nav.bidrag.grunnlag.persistence.entity.Forelder
-import no.nav.bidrag.grunnlag.persistence.entity.ForelderBarn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
-import no.nav.bidrag.grunnlag.persistence.entity.Husstand
-import no.nav.bidrag.grunnlag.persistence.entity.Husstandsmedlem
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
+import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
@@ -72,15 +61,11 @@ import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagBo
 import no.nav.bidrag.grunnlag.persistence.entity.toSkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektRepository
 import no.nav.bidrag.grunnlag.persistence.repository.AinntektspostRepository
-import no.nav.bidrag.grunnlag.persistence.repository.BarnRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilsynRepository
-import no.nav.bidrag.grunnlag.persistence.repository.ForelderBarnRepository
-import no.nav.bidrag.grunnlag.persistence.repository.ForelderRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
-import no.nav.bidrag.grunnlag.persistence.repository.HusstandRepository
-import no.nav.bidrag.grunnlag.persistence.repository.HusstandsmedlemRepository
 import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
+import no.nav.bidrag.grunnlag.persistence.repository.RelatertPersonRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
@@ -100,11 +85,7 @@ class PersistenceService(
   val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
   val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository,
   val barnetilleggRepository: BarnetilleggRepository,
-  val barnRepository: BarnRepository,
-  val husstandRepository: HusstandRepository,
-  val husstandsmedlemRepository: HusstandsmedlemRepository,
-  val forelderRepository: ForelderRepository,
-  val forelderBarnRepository: ForelderBarnRepository,
+  val relatertPersonRepository: RelatertPersonRepository,
   val sivilstandRepository: SivilstandRepository,
   val kontantstotteRepository: KontantstotteRepository,
   val barnetilsynRepository: BarnetilsynRepository
@@ -168,24 +149,12 @@ class PersistenceService(
     )
   }
 
-  fun oppdaterEksisterendeBarnTilInaktiv(
+  fun oppdaterEksisterendeRelatertPersonTilInaktiv(
     grunnlagspakkeId: Int,
     partPersonId: String,
     timestampOppdatering: LocalDateTime
   ) {
-    barnRepository.oppdaterEksisterendeBarnTilInaktiv(
-      grunnlagspakkeId,
-      partPersonId,
-      timestampOppdatering
-    )
-  }
-
-  fun oppdaterEksisterendeHusstandTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    husstandRepository.oppdaterEksisterendeHusstandTilInaktiv(
+    relatertPersonRepository.oppdaterEksisterendeRelatertPersonTilInaktiv(
       grunnlagspakkeId,
       partPersonId,
       timestampOppdatering
@@ -204,65 +173,14 @@ class PersistenceService(
     )
   }
 
-  fun oppdaterEksisterendeForelderTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    forelderRepository.oppdaterEksisterendeForelderTilInaktiv(
-      grunnlagspakkeId,
-      partPersonId,
-      timestampOppdatering
-    )
-  }
-
   fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
     val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
     return barnetilleggRepository.save(nyBarnetillegg)
   }
 
-  fun opprettForelder(forelderBo: ForelderBo): Forelder {
-    val nyPerson = forelderBo.toPersonEntity()
-    return forelderRepository.save(nyPerson)
-  }
-
-  fun opprettBarn(barnBo: BarnBo): Barn {
-    val nyttBarn = barnBo.toBarnEntity()
-    return barnRepository.save(nyttBarn)
-  }
-
-  fun opprettForelderBarn(forelderBarnBo: ForelderBarnBo): ForelderBarn {
-    val eksisterendeForelder = forelderRepository.findById(forelderBarnBo.forelderId)
-      .orElseThrow {
-        IllegalArgumentException(
-          String.format(
-            "Fant ikke forelder med id %d i databasen",
-            forelderBarnBo.forelderId
-          )
-        )
-      }
-    val eksisterendeBarn = barnRepository.findById(forelderBarnBo.barnId)
-      .orElseThrow {
-        IllegalArgumentException(
-          String.format(
-            "Fant ikke barn med id %d i databasen",
-            forelderBarnBo.barnId
-          )
-        )
-      }
-    val nyForelderBarn = ForelderBarn(eksisterendeForelder, eksisterendeBarn)
-    SECURE_LOGGER.info("nyForelderBarnrelasjon lagret: $nyForelderBarn")
-    return forelderBarnRepository.save(nyForelderBarn)
-  }
-
-  fun opprettHusstand(husstandBo: HusstandBo): Husstand {
-    val nyHusstand = husstandBo.toHusstandEntity()
-    return husstandRepository.save(nyHusstand)
-  }
-
-  fun opprettHusstandsmedlem(husstandsmedlemBo: HusstandsmedlemBo): Husstandsmedlem {
-    val nyttHusstandsmedlem = husstandsmedlemBo.toHusstandsmedlemEntity()
-    return husstandsmedlemRepository.save(nyttHusstandsmedlem)
+  fun opprettRelatertPerson(relatertPersonBo: RelatertPersonBo): RelatertPerson {
+    val nyRelatertPerson = relatertPersonBo.toRelatertPersonEntity()
+    return relatertPersonRepository.save(nyRelatertPerson)
   }
 
   fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
@@ -600,138 +518,102 @@ class PersistenceService(
     )
   }
 
-  fun hentForeldre(grunnlagspakkeId: Int): List<Forelder> {
-    return forelderRepository.hentForeldre(grunnlagspakkeId)
-  }
-
-  // bruker generert id for å kunne hente barn til manuelt innlagte foreldre uten personId
-  fun hentAlleBarnForForelder(forelderId: Int): List<Barn> {
-    return forelderBarnRepository.hentAlleBarnForForelder(forelderId)
-  }
-
-  fun hentBarn(barnId: Int): Barn {
-    return barnRepository.hentBarn(barnId)
-  }
 
 
-  fun hentHusstandsmedlemmerUnder18Aar(grunnlagspakkeId: Int, personId: String): List<HusstandDto> {
-    val husstandDtoListe = mutableListOf<HusstandDto>()
-    husstandRepository.hentHusstand(grunnlagspakkeId, personId)
-      .forEach { husstand ->
-        val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
 
-        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
-          .forEach { husstandsmedlem ->
-            if ((husstandsmedlem.personId != null &&
-                  !personHarFyllt18Aar(
-                    husstandsmedlem.periodeFra.plusMonths(1),
-                    husstandsmedlem.foedselsdato
-                  )
-                  || husstandsmedlem.foedselsdato == null)
-            ) {
-              voksneHusstandsmedlemmerListe.add(
-                HusstandsmedlemDto(
-                  periodeFra = husstandsmedlem.periodeFra,
-                  periodeTil = husstandsmedlem.periodeTil,
-                  personId = husstandsmedlem.personId,
-                  navn = husstandsmedlem.navn,
-                  foedselsdato = husstandsmedlem.foedselsdato,
-                  doedsdato = husstandsmedlem.doedsdato,
-                  opprettetAv = husstandsmedlem.opprettetAv,
-                  hentetTidspunkt = husstandsmedlem.hentetTidspunkt,
-                )
-              )
-            }
+
+  fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<RelatertPersonDto> {
+    val egneBarnDtoListe = mutableListOf<RelatertPersonDto>()
+    // Filtrerer vekk relaterte personer som ikke er barn av BM/BP
+    val relatertPersonListe = relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.erBarnAvBmBp }
+    // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
+    // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
+    // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
+    var behandletPerson: String? = null
+
+    relatertPersonListe.forEach { relatertPerson ->
+      if (relatertPerson.relatertPersonPersonId != behandletPerson) {
+        val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
+        val alleForekomsterAvRelatertPerson = relatertPersonListe.filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
+        alleForekomsterAvRelatertPerson.forEach { person ->
+          if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
+            borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
           }
-        husstandDtoListe.add(
-          HusstandDto(
-            personId = husstand.personId,
-            periodeFra = husstand.periodeFra,
-            periodeTil = husstand.periodeTil,
-            adressenavn = husstand.adressenavn,
-            husnummer = husstand.husnummer,
-            husbokstav = husstand.husbokstav,
-            bruksenhetsnummer = husstand.bruksenhetsnummer,
-            postnummer = husstand.postnummer,
-            bydelsnummer = husstand.bydelsnummer,
-            kommunenummer = husstand.kommunenummer,
-            matrikkelId = husstand.matrikkelId,
-            landkode = husstand.landkode,
-            opprettetAv = husstand.opprettetAv,
-            hentetTidspunkt = husstand.hentetTidspunkt,
-            husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
-          )
-        )
+        }
+
+        egneBarnDtoListe.add(RelatertPersonDto(
+          partPersonId = relatertPerson.partPersonId,
+          relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
+          navn = relatertPerson.navn,
+          fodselsdato = relatertPerson.fodselsdato,
+          erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
+          aktiv = relatertPerson.aktiv,
+          brukFra = relatertPerson.brukFra,
+          brukTil = relatertPerson.brukTil,
+          hentetTidspunkt = relatertPerson.hentetTidspunkt,
+          borISammeHusstandDtoListe = borISammeHusstandListe
+        ))
+        behandletPerson = relatertPerson.relatertPersonPersonId
       }
-    return husstandDtoListe
+    }
+    return egneBarnDtoListe
   }
 
-  /*
 
 
- // Filter vekk husstandsmedlemmer som ikke har fyllt 18 når personen blir husstandsmedlem
+
+
+
+
+ // Filter vekk husstandsmedlemmer som ikke har fyllt 18 ved virkningstidspunkt. Må gjøres i bidrag-behandling.
  // Endringer gjelder alltid fra neste måned. 01.07 -> 01.08
- // Alle husstandsmedlemmer skal returneres for manuell vurdering. For egne barn i egen husstand skal bare < 18 returneres
+ // Alle husstandsmedlemmer skal returneres for manuell vurdering.
+  // For egne barn i egen husstand skal bare < 22 returneres. Må filtreres i bidrag-behandling
 
 
-  }*/
+  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<RelatertPersonDto> {
+    val voksneHusstandsmedlemmerDtoListe = mutableListOf<RelatertPersonDto>()
 
-  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<HusstandDto> {
-    val husstandDtoListe = mutableListOf<HusstandDto>()
-    husstandRepository.hentHusstand(grunnlagspakkeId)
-      .forEach { husstand ->
-        val voksneHusstandsmedlemmerListe = mutableListOf<HusstandsmedlemDto>()
+    // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
+    // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
+    // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
+    var behandletPerson: String? = null
 
-        husstandsmedlemRepository.hentHusstandsmedlem(husstand.husstandId)
-          .forEach { husstandsmedlem ->
-            if ((husstandsmedlem.personId != null &&
-                  personHarFyllt18Aar(
-                    husstandsmedlem.periodeFra,
-                    husstandsmedlem.foedselsdato
-                  )
-                  || husstandsmedlem.foedselsdato == null)
-            ) {
-              voksneHusstandsmedlemmerListe.add(
-                HusstandsmedlemDto(
-                  periodeFra = husstandsmedlem.periodeFra,
-                  periodeTil = husstandsmedlem.periodeTil,
-                  personId = husstandsmedlem.personId,
-                  navn = husstandsmedlem.navn,
-                  foedselsdato = husstandsmedlem.foedselsdato,
-                  doedsdato = husstandsmedlem.doedsdato,
-                  opprettetAv = husstandsmedlem.opprettetAv,
-                  hentetTidspunkt = husstandsmedlem.hentetTidspunkt,
-                )
-              )
-            }
+    relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).forEach { relatertPerson ->
+      if (relatertPerson.relatertPersonPersonId != behandletPerson) {
+        val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
+        val alleForekomsterAvRelatertPerson =
+          relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
+        alleForekomsterAvRelatertPerson.forEach { person ->
+          if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
+            borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
           }
-        husstandDtoListe.add(
-          HusstandDto(
-            personId = husstand.personId,
-            periodeFra = husstand.periodeFra,
-            periodeTil = husstand.periodeTil,
-            adressenavn = husstand.adressenavn,
-            husnummer = husstand.husnummer,
-            husbokstav = husstand.husbokstav,
-            bruksenhetsnummer = husstand.bruksenhetsnummer,
-            postnummer = husstand.postnummer,
-            bydelsnummer = husstand.bydelsnummer,
-            kommunenummer = husstand.kommunenummer,
-            matrikkelId = husstand.matrikkelId,
-            landkode = husstand.landkode,
-            opprettetAv = husstand.opprettetAv,
-            hentetTidspunkt = husstand.hentetTidspunkt,
-            husstandsmedlemmerListe = voksneHusstandsmedlemmerListe
-          )
-        )
+        }
+
+        voksneHusstandsmedlemmerDtoListe.add(RelatertPersonDto(
+          partPersonId = relatertPerson.partPersonId,
+          relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
+          navn = relatertPerson.navn,
+          fodselsdato = relatertPerson.fodselsdato,
+          erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
+          aktiv = relatertPerson.aktiv,
+          brukFra = relatertPerson.brukFra,
+          brukTil = relatertPerson.brukTil,
+          hentetTidspunkt = relatertPerson.hentetTidspunkt,
+          borISammeHusstandDtoListe = borISammeHusstandListe
+        ))
+        behandletPerson = relatertPerson.relatertPersonPersonId
       }
-    return husstandDtoListe
+    }
+    return voksneHusstandsmedlemmerDtoListe
   }
 
-  fun personHarFyllt18Aar(dato: LocalDate, foedselsdato: LocalDate?): Boolean {
+
+
+  fun sjekkAlder(dato: LocalDate, foedselsdato: LocalDate?, sjekkMotAlder: Int): Boolean {
     val aar = java.time.Period.between(dato, foedselsdato)
     val alder = abs(aar.years)
-    return alder > 18
+    return alder > sjekkMotAlder
   }
 
   fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
@@ -744,7 +626,6 @@ class PersistenceService(
             periodeFra = sivilstand.periodeFra,
             periodeTil = sivilstand.periodeTil,
             sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
-            opprettetAv = sivilstand.opprettetAv,
             hentetTidspunkt = sivilstand.hentetTidspunkt
           )
         )

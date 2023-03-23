@@ -41,9 +41,6 @@ data class Sivilstand(
   @Column(nullable = true, name = "bruk_til")
   val brukTil: LocalDateTime? = null,
 
-  @Column(nullable = true, name = "opprettet_av")
-  val opprettetAv: String? = null,
-
   @Column(nullable = false, name = "hentet_tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
