@@ -9,6 +9,7 @@ spec:
   azure:
     application:
       enabled: true
+      allowAllUsers: true
       tenant: {{ azure.tenant }}
   accessPolicy:
     inbound:
@@ -53,7 +54,9 @@ spec:
       max: 4
       min: {{ spec.replicas.min }}
   ingresses:
-    - {{ ingress }}
+  {{#each ingresses as |url|}}
+     - {{url}}
+  {{/each}}
   env:
     - name: FAMILIEBASAK_URL
       value: https://{{ azure.familiebasak_url }}

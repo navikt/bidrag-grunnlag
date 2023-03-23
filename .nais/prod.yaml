@@ -1,5 +1,6 @@
 name: bidrag-grunnlag
-ingress: https://bidrag-grunnlag.intern.nav.no
+ingresses:
+  - https://bidrag-grunnlag.intern.nav.no
 azure:
   tenant: nav.no
   familiebasak_url: familie-ba-sak.intern.nav.no

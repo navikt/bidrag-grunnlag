@@ -57,26 +57,24 @@ class OppdaterKontantstotte(
 
           // Kontantstøtte fra Infotrygd
           kontantstotteResponse.infotrygdPerioder.forEach { ks ->
-            if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
-              val belopPerParn = ks.beløp.div(ks.barna.size.toInt())
-              ks.barna.forEach { barnPersonId ->
-                antallPerioderFunnet++
-                persistenceService.opprettKontantstotte(
-                  KontantstotteBo(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    partPersonId = personIdOgPeriode.personId,
-                    barnPersonId = barnPersonId,
-                    periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
-                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                    periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
-                    aktiv = true,
-                    brukFra = timestampOppdatering,
-                    belop = belopPerParn,
-                    brukTil = null,
-                    hentetTidspunkt = timestampOppdatering
-                  )
+            val belopPerParn = ks.beløp.div(ks.barna.size.toInt())
+            ks.barna.forEach { barnPersonId ->
+              antallPerioderFunnet++
+              persistenceService.opprettKontantstotte(
+                KontantstotteBo(
+                  grunnlagspakkeId = grunnlagspakkeId,
+                  partPersonId = personIdOgPeriode.personId,
+                  barnPersonId = barnPersonId,
+                  periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
+                  // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                  periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
+                  aktiv = true,
+                  brukFra = timestampOppdatering,
+                  belop = belopPerParn,
+                  brukTil = null,
+                  hentetTidspunkt = timestampOppdatering
                 )
-              }
+              )
             }
           }
 
