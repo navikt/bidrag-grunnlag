@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDateTime
 
-class OppdaterEgneBarnIHusstanden(
+class OppdaterRelatertePersoner(
   private val grunnlagspakkeId: Int,
   private val timestampOppdatering: LocalDateTime,
   private val persistenceService: PersistenceService,
@@ -29,15 +29,14 @@ class OppdaterEgneBarnIHusstanden(
 
   companion object {
     @JvmStatic
-    private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterEgneBarnIHusstanden::class.java)
+    private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterRelatertePersoner::class.java)
   }
 
-  // Henter og lagrer først husstandsmedlemmer for så å hente forelder-barn-relasjoner for å kunne returnere grunnlaget egneBarnIHusstanden
-  // Også barn som ikke bor i samme husstand som BM/BP skal være med i grunnlaget
-  fun oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterEgneBarnIHusstanden {
-
-    egneBarnIHusstandenRequestListe.forEach { personIdOgPeriode ->
-      var antallBarnFunnet = 0
+  // Henter og lagrer først husstandsmedlemmer for så å hente forelder-barn-relasjoner.
+  // Også barn som ikke bor i samme husstand som BM/BP skal være med i grunnlaget og lagres med null i husstandsmedlemPeriodeFra
+  // og husstandsmedlemPeriodeTil.
+  fun oppdaterRelatertePersoner(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterRelatertePersoner {
+    relatertePersonerRequestListe.forEach { personIdOgPeriode ->
       val forelderBarnRequest = ForelderBarnRequest(
         personId = personIdOgPeriode.personId,
         periodeFra = personIdOgPeriode.periodeFra,
@@ -55,10 +54,10 @@ class OppdaterEgneBarnIHusstanden(
         timestampOppdatering
       )
 
-      val barnBoListe = mutableListOf<PersonBo>()
-
+      // henter alle husstandsmedlemmer til BM/BP
       val husstandsmedlemmerListe = hentHusstandsmedlemmer(husstandsmedlemmerRequest)
 
+      // henter alle barn av BM/BP
       val barnListe = hentBarn(forelderBarnRequest)
 
       // Alle husstandsmedlemmer lagres i tabell relatert_person. Det sjekkes om husstandsmedlem finnes i liste over barn.
@@ -81,10 +80,9 @@ class OppdaterEgneBarnIHusstanden(
         )
       }
 
-      // Filtrer først bort barn som ligger i listen over husstandsmedlemmer, og som derfor allerede er lagret, og lagrer deretter de gjenværende
-      // i tabell relatert_person.
-
-      val filtrertBarnListe = barnListe.filter { barn -> husstandsmedlemmerListe.any {it.personId != barn.personId} }
+      // Filtrer listen over BM/BPs barn slik at barn som ligger i listen over husstandsmedlemmer,
+      // og som derfor allerede er lagret, fjernes og lagrer deretter de gjenværende i tabell relatert_person.
+      val filtrertBarnListe = barnListe.filter { barn -> husstandsmedlemmerListe.any { it.personId != barn.personId } }
 
       filtrertBarnListe.forEach { barn ->
         persistenceService.opprettRelatertPerson(
@@ -103,14 +101,9 @@ class OppdaterEgneBarnIHusstanden(
           )
         )
       }
-
-
     }
     return this
-
   }
-
-
 
 
   private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: HusstandsmedlemmerRequest): List<PersonBo> {
@@ -183,11 +176,11 @@ class OppdaterEgneBarnIHusstanden(
             if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
               // Kaller bidrag-person for å hente info om fødselsdato og navn
               val navnFoedselDoedResponseDto = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
-              // Lager en liste over fnr for alle barn som er funnet. Listen brukes under til å lagre om et husstandsmedlem er barn av BM/BP eller ikke
+              // Lager en liste over fnr for alle barn som er funnet
               barnListe.add(
-                PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato, null, null))
+                PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato,
+                  null, null))
             }
-
           }
           return barnListe
         }
@@ -201,10 +194,8 @@ class OppdaterEgneBarnIHusstanden(
           "Feil ved henting av egne barn i husstanden for perioden: ${forelderBarnRequest.periodeFra} ."
         )
       )
-
     }
     return emptyList()
-
   }
 
   private fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {

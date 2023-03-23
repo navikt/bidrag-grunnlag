@@ -20,10 +20,10 @@ data class RelatertPersonBo(
   @Schema(description = "Navn på den relaterte personen, format <Fornavn, mellomnavn, Etternavn")
   var navn: String?,
 
-  @Schema(description = "Husstandsmedlemmets fødselsdag")
+  @Schema(description = "Den relaterte personens fødselsdag")
   var fodselsdato: LocalDate?,
 
-  @Schema(description = "Angir om husstandsmedlemmet er barn av BM eller BM, som dette grunnlaget er hentet for")
+  @Schema(description = "Angir om den relaterte personen er barn av BM eller BM")
   var erBarnAvBmBp: Boolean,
 
   @Schema(description = "Den relaterte personen bor i husstanden fra- og med måned. Hvis periodeFra og periodeTil == null så er personen barn som ikke bor sammen med BM/BP")

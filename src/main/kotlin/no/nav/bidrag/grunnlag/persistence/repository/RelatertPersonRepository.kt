@@ -9,9 +9,9 @@ import java.time.LocalDateTime
 interface RelatertPersonRepository : JpaRepository<RelatertPerson, Int?> {
 
   @Query(
-    "select hm from RelatertPerson hm where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.aktiv = true order by hm.partPersonId, hm.erBarnAvBmBp, hm.relatertPersonPersonId, hm.husstandsmedlemPeriodeFra"
+    "select hm from RelatertPerson hm where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.aktiv = true order by hm.partPersonId, hm.relatertPersonPersonId, hm.navn, hm.fodselsdato, hm.husstandsmedlemPeriodeFra"
   )
-  fun hentRelatertPerson(grunnlagspakkeId: Int): List<RelatertPerson>
+  fun hentRelatertePersoner(grunnlagspakkeId: Int): List<RelatertPerson>
 
   @Modifying
   @Query(

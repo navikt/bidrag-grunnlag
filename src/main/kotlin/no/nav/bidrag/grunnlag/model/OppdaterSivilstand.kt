@@ -113,7 +113,6 @@ class OppdaterSivilstand(
         aktiv = true,
         brukFra = timestampOppdatering,
         brukTil = null,
-        opprettetAv = null,
         hentetTidspunkt = timestampOppdatering
       )
     )

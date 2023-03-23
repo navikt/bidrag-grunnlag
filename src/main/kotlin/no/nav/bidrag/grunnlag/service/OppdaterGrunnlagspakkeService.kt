@@ -21,8 +21,7 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
-import no.nav.bidrag.grunnlag.model.OppdaterEgneBarnIHusstanden
-import no.nav.bidrag.grunnlag.model.OppdaterVoksneHusstandsmedlemmer
+import no.nav.bidrag.grunnlag.model.OppdaterRelatertePersoner
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetilsyn
 import no.nav.bidrag.grunnlag.model.OppdaterKontantstotte
 import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
@@ -176,28 +175,28 @@ class OppdaterGrunnlagspakkeService(
       return this
     }
 
-    fun oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+    fun oppdaterEgneBarnIHusstanden(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
       this.addAll(
-        OppdaterEgneBarnIHusstanden(
+        OppdaterRelatertePersoner(
           grunnlagspakkeId,
           timestampOppdatering,
           persistenceService,
           bidragPersonConsumer
         )
-          .oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe)
+          .oppdaterRelatertePersoner(relatertePersonerRequestListe)
       )
       return this
     }
 
-    fun oppdaterVoksneHusstandsmedlemmer(husstandsmedlemmerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+    fun oppdaterVoksneHusstandsmedlemmer(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
       this.addAll(
-        OppdaterVoksneHusstandsmedlemmer(
+        OppdaterRelatertePersoner(
           grunnlagspakkeId,
           timestampOppdatering,
           persistenceService,
           bidragPersonConsumer
         )
-          .oppdaterVoksneHusstandsmedlemmer(husstandsmedlemmerRequestListe)
+          .oppdaterRelatertePersoner(relatertePersonerRequestListe)
       )
       return this
     }
