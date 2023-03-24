@@ -14,7 +14,7 @@ azure:
   bidragperson_scope: dev-fss.bidrag.bidrag-person
   bidragperson_app: bidrag-person
   bidragperson_cluster: dev-fss
-  familiekssak_url: familie-kontantstotte-sak.dev.intern.nav.no
+  familiekssak_url: familie-kontantstotte-sak.intern.dev.nav.no
   familiekssak_scope: dev-gcp.teamfamilie.familie-ks-sak
 dbname: bidrag-grunnlag-main
 azureAccessInbound:
