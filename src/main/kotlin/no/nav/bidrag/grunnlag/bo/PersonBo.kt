@@ -6,6 +6,6 @@ data class PersonBo(
   val personId: String?,
   var navn: String?,
   var fodselsdato: LocalDate?,
-  val gyldigFraOgMed: LocalDate? = null,
-  val gyldigTilOgMed: LocalDate? = null
+  val husstandsmedlemPeriodeFra: LocalDate? = null,
+  val husstandsmedlemPeriodeTil: LocalDate? = null
   )

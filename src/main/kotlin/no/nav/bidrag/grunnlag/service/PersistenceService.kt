@@ -518,10 +518,6 @@ class PersistenceService(
     )
   }
 
-
-
-
-
   fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<RelatertPersonDto> {
     val egneBarnDtoListe = mutableListOf<RelatertPersonDto>()
     // Filtrerer vekk relaterte personer som ikke er barn av BM/BP
@@ -559,17 +555,10 @@ class PersistenceService(
     return egneBarnDtoListe
   }
 
-
-
-
-
-
-
- // Filter vekk husstandsmedlemmer som ikke har fyllt 18 ved virkningstidspunkt. Må gjøres i bidrag-behandling.
+ // Filtrer vekk husstandsmedlemmer som ikke har fyllt 18 ved virkningstidspunkt. Må gjøres i bidrag-behandling.
  // Endringer gjelder alltid fra neste måned. 01.07 -> 01.08
  // Alle husstandsmedlemmer skal returneres for manuell vurdering.
-  // For egne barn i egen husstand skal bare < 22 returneres. Må filtreres i bidrag-behandling
-
+  // For egne barn i egen husstand skal barn over 22 år filtreres bort, må gjøres i bidrag-behandling.
 
   fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<RelatertPersonDto> {
     val voksneHusstandsmedlemmerDtoListe = mutableListOf<RelatertPersonDto>()
@@ -606,14 +595,6 @@ class PersistenceService(
       }
     }
     return voksneHusstandsmedlemmerDtoListe
-  }
-
-
-
-  fun sjekkAlder(dato: LocalDate, foedselsdato: LocalDate?, sjekkMotAlder: Int): Boolean {
-    val aar = java.time.Period.between(dato, foedselsdato)
-    val alder = abs(aar.years)
-    return alder > sjekkMotAlder
   }
 
   fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
