@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.persistence.entity
 
-import no.nav.bidrag.grunnlag.bo.ForelderBo
+import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -11,26 +11,35 @@ import javax.persistence.Id
 import kotlin.reflect.full.memberProperties
 
 @Entity
-data class Forelder(
+data class RelatertPerson(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "forelder_id")
-  val forelderId: Int = 0,
+  @Column(name = "relatert_person_id")
+  val relatertPersonId: Int = 0,
 
   @Column(nullable = false, name = "grunnlagspakke_id")
   val grunnlagspakkeId: Int = 0,
 
-  @Column(nullable = true, name = "person_id")
-  val personId: String? = null,
+  @Column(nullable = false, name = "part_person_id")
+  val partPersonId: String = "",
+
+  @Column(nullable = true, name = "relatert_person_person_id")
+  val relatertPersonPersonId: String? = null,
 
   @Column(nullable = true, name = "navn")
   val navn: String? = null,
 
-  @Column(nullable = true, name = "foedselsdato")
-  val foedselsdato: LocalDate? = null,
+  @Column(nullable = true, name = "fodselsdato")
+  val fodselsdato: LocalDate? = null,
 
-  @Column(nullable = true, name = "doedsdato")
-  val doedsdato: LocalDate? = null,
+  @Column(nullable = false, name = "er_barn_av_bm_bp")
+  val erBarnAvBmBp: Boolean = false,
+
+  @Column(nullable = true, name = "husstandsmedlem_periode_fra")
+  val husstandsmedlemPeriodeFra: LocalDate? = null,
+
+  @Column(nullable = true, name = "husstandsmedlem_periode_til")
+  val husstandsmedlemPeriodeTil: LocalDate? = null,
 
   @Column(nullable = false, name = "aktiv")
   val aktiv: Boolean = true,
@@ -41,18 +50,16 @@ data class Forelder(
   @Column(nullable = true, name = "bruk_til")
   val brukTil: LocalDateTime? = null,
 
-  @Column(nullable = true, name = "opprettet_av")
-  val opprettetAv: String? = null,
-
   @Column(nullable = false, name = "hentet_tidspunkt")
   val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 )
 
-fun Forelder.toPersonBo() = with(::ForelderBo) {
-  val propertiesByName = Forelder::class.memberProperties.associateBy { it.name }
+
+fun RelatertPerson.toRelatertPersonBo() = with(::RelatertPersonBo) {
+  val propertiesByName = RelatertPerson::class.memberProperties.associateBy { it.name }
   callBy(parameters.associateWith { parameter ->
     when (parameter.name) {
-      else -> propertiesByName[parameter.name]?.get(this@toPersonBo)
+      else -> propertiesByName[parameter.name]?.get(this@toRelatertPersonBo)
     }
   })
 }

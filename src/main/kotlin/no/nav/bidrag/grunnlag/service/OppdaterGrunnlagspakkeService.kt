@@ -21,8 +21,7 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
-import no.nav.bidrag.grunnlag.model.OppdaterEgneBarnIHusstanden
-import no.nav.bidrag.grunnlag.model.OppdaterHusstandsmedlemmer
+import no.nav.bidrag.grunnlag.model.OppdaterRelatertePersoner
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetilsyn
 import no.nav.bidrag.grunnlag.model.OppdaterKontantstotte
 import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
@@ -71,7 +70,7 @@ class OppdaterGrunnlagspakkeService(
       .oppdaterEgneBarnIHusstanden(
         hentRequestListeFor(EGNE_BARN_I_HUSSTANDEN, oppdaterGrunnlagspakkeRequestDto)
       )
-      .oppdaterHusstandsmedlemmer(
+      .oppdaterVoksneHusstandsmedlemmer(
         hentRequestListeFor(HUSSTANDSMEDLEMMER, oppdaterGrunnlagspakkeRequestDto)
       )
       .oppdaterSivilstand(
@@ -176,28 +175,28 @@ class OppdaterGrunnlagspakkeService(
       return this
     }
 
-    fun oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+    fun oppdaterEgneBarnIHusstanden(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
       this.addAll(
-        OppdaterEgneBarnIHusstanden(
+        OppdaterRelatertePersoner(
           grunnlagspakkeId,
           timestampOppdatering,
           persistenceService,
           bidragPersonConsumer
         )
-          .oppdaterEgneBarnIHusstanden(egneBarnIHusstandenRequestListe)
+          .oppdaterRelatertePersoner(relatertePersonerRequestListe)
       )
       return this
     }
 
-    fun oppdaterHusstandsmedlemmer(husstandsmedlemmerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+    fun oppdaterVoksneHusstandsmedlemmer(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
       this.addAll(
-        OppdaterHusstandsmedlemmer(
+        OppdaterRelatertePersoner(
           grunnlagspakkeId,
           timestampOppdatering,
           persistenceService,
           bidragPersonConsumer
         )
-          .oppdaterHusstandsmedlemmer(husstandsmedlemmerRequestListe)
+          .oppdaterRelatertePersoner(relatertePersonerRequestListe)
       )
       return this
     }

@@ -428,8 +428,8 @@ class GrunnlagspakkeControllerTest(
           ubstListe = emptyList(),
           barnetilleggListe = emptyList(),
           kontantstotteListe = emptyList(),
-          egneBarnListe = emptyList(),
-          husstandListe = emptyList(),
+          egneBarnIHusstandenListe = emptyList(),
+          husstandmedlemListe = emptyList(),
           sivilstandListe = emptyList(),
           barnetilsynListe = emptyList()
         )

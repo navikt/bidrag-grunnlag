@@ -10,7 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
-private const val BARNETILSYN_CONTEX = "/api/ekstern/bisys/perioder-barnetilsyn"
+private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
 
 open class FamilieEfSakConsumer(
   private val restTemplate: HttpHeaderRestTemplate
@@ -25,7 +25,7 @@ open class FamilieEfSakConsumer(
     logger.info("Henter barnetilsyn")
 
     val restResponse = restTemplate.tryExchange(
-      BARNETILSYN_CONTEX,
+      BARNETILSYN_CONTEXT,
       HttpMethod.POST,
       initHttpEntity(request),
       BarnetilsynResponse::class.java,
