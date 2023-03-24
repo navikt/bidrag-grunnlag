@@ -407,14 +407,30 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggRelatertPerson() = RelatertPerson(
+    fun byggEgetBarnIHusstanden() = RelatertPerson(
       relatertPersonId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       partPersonId = "1234567",
       relatertPersonPersonId = "7654321",
-      navn = "navn1",
-      fodselsdato = LocalDate.parse("1997-05-23"),
+      navn = "navn1Barn",
+      fodselsdato = LocalDate.parse("2013-05-23"),
       erBarnAvBmBp = true,
+      husstandsmedlemPeriodeFra = null,
+      husstandsmedlemPeriodeTil = null,
+      aktiv = true,
+      brukFra = LocalDateTime.now(),
+      brukTil = null,
+      hentetTidspunkt = LocalDateTime.now()
+    )
+
+    fun byggHusstandsmedlem() = RelatertPerson(
+      relatertPersonId = (1..100).random(),
+      grunnlagspakkeId = (1..100).random(),
+      partPersonId = "1234567",
+      relatertPersonPersonId = "2582582",
+      navn = "navn1Husstandsmedlem",
+      fodselsdato = LocalDate.parse("1997-05-23"),
+      erBarnAvBmBp = false,
       husstandsmedlemPeriodeFra = LocalDate.parse("2021-01-01"),
       husstandsmedlemPeriodeTil = LocalDate.parse("2021-07-01"),
       aktiv = true,
@@ -713,7 +729,7 @@ class TestUtil {
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR
         ),
         ForelderBarnRelasjonResponse(
-          relatertPersonsIdent = "234",
+          relatertPersonsIdent = "222",
           relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR
         ),
@@ -749,28 +765,40 @@ class TestUtil {
           matrikkelId = 12345,
           immutableListOf(
             HusstandsmedlemmerResponse(
-              personId = "123",
+              gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+              gyldigTilOgMed = LocalDate.parse("2011-02-01"),
+              personId = "111",
               fornavn = "fornavn1",
               mellomnavn = "mellomnavn1",
               etternavn = "etternavn1",
-              gyldigFraOgMed = LocalDate.parse("2011-01-01"),
-              gyldigTilOgMed = LocalDate.parse("2011-02-01")
+              foedselsdato = LocalDate.parse("2001-04-17")
             ),
             HusstandsmedlemmerResponse(
-              personId = "234",
-              fornavn = "fornavn2",
-              mellomnavn = "mellomnavn2",
-              etternavn = "etternavn2",
-              gyldigFraOgMed = LocalDate.parse("2011-01-01"),
-              gyldigTilOgMed = LocalDate.parse("2011-12-01")
+              gyldigFraOgMed = LocalDate.parse("2011-05-17"),
+              gyldigTilOgMed = null,
+              personId = "111",
+              fornavn = "fornavn1",
+              mellomnavn = "mellomnavn1",
+              etternavn = "etternavn1",
+              foedselsdato = LocalDate.parse("2001-04-17")
             ),
             HusstandsmedlemmerResponse(
-              personId = "345",
+              gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+              gyldigTilOgMed = LocalDate.parse("2011-12-01"),
+              personId = "333",
               fornavn = "fornavn3",
               mellomnavn = "mellomnavn3",
               etternavn = "etternavn3",
+              foedselsdato = LocalDate.parse("2001-04-17")
+            ),
+            HusstandsmedlemmerResponse(
               gyldigFraOgMed = LocalDate.parse("2011-05-01"),
-              gyldigTilOgMed = LocalDate.parse("2011-06-01")
+              gyldigTilOgMed = LocalDate.parse("2011-06-01"),
+              personId = "444",
+              fornavn = "fornavn4",
+              mellomnavn = "mellomnavn4",
+              etternavn = "etternavn4",
+              foedselsdato = LocalDate.parse("1974-02-01")
             )
           )
         ),
@@ -787,23 +815,23 @@ class TestUtil {
           matrikkelId = 54321,
           immutableListOf(
             HusstandsmedlemmerResponse(
-              gyldigFraOgMed = LocalDate.parse("2017-01-01"),
+              gyldigFraOgMed = LocalDate.parse("2018-01-01"),
               gyldigTilOgMed = LocalDate.parse("2018-02-01"),
-              personId = "987",
-              fornavn = "fornavn1bosted2",
-              mellomnavn = "mellomnavn1bosted2",
-              etternavn = "etternavn1bosted2",
-              foedselsdato = LocalDate.parse("2002-03-17"),
+              personId = "111",
+              fornavn = "fornavn1",
+              mellomnavn = "mellomnavn1",
+              etternavn = "etternavn1",
+              foedselsdato = LocalDate.parse("2001-04-17"),
               doedsdato = null
             ),
             HusstandsmedlemmerResponse(
               gyldigFraOgMed = LocalDate.parse("2020-01-01"),
               gyldigTilOgMed = null,
-              personId = "234",
-              fornavn = "fornavn2bosted2",
-              mellomnavn = "mellomnavn2bosted2",
-              etternavn = "etternavn2bosted2",
-              foedselsdato = LocalDate.parse("2013-07-17"),
+              personId = "555",
+              fornavn = "fornavn5",
+              mellomnavn = "mellomnavn5",
+              etternavn = "etternavn5",
+              foedselsdato = LocalDate.parse("1985-07-17"),
               doedsdato = null
             )
           )

@@ -70,8 +70,8 @@ class OppdaterRelatertePersoner(
             navn = husstandsmedlem.navn,
             fodselsdato = husstandsmedlem.fodselsdato,
             erBarnAvBmBp = barnListe.any { it.personId == husstandsmedlem.personId },
-            husstandsmedlemPeriodeFra = husstandsmedlem.gyldigFraOgMed,
-            husstandsmedlemPeriodeTil = husstandsmedlem.gyldigTilOgMed,
+            husstandsmedlemPeriodeFra = husstandsmedlem.husstandsmedlemPeriodeFra,
+            husstandsmedlemPeriodeTil = husstandsmedlem.husstandsmedlemPeriodeTil,
             aktiv = true,
             brukFra = timestampOppdatering,
             brukTil = null,
@@ -139,7 +139,7 @@ class OppdaterRelatertePersoner(
             "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}"
           )
         )
-        return husstandsmedlemListe
+        return husstandsmedlemListe.sortedWith(compareBy({ it.personId }, { it.husstandsmedlemPeriodeFra } ))
       }
 
       is RestResponse.Failure -> this.add(

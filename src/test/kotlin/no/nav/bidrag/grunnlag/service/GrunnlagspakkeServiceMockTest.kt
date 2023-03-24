@@ -16,7 +16,7 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggGrunnlagspakke
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotte
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotteBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
-import no.nav.bidrag.grunnlag.TestUtil.Companion.byggRelatertPerson
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggEgetBarnIHusstanden
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggRelatertPersonBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstand
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstandBo
@@ -118,7 +118,7 @@ class GrunnlagspakkeServiceMockTest {
     Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(MockitoHelper.capture(barnetilleggBoCaptor)))
       .thenReturn(byggBarnetillegg())
     Mockito.`when`(persistenceServiceMock.opprettRelatertPerson(MockitoHelper.capture(relatertPersonBoCaptor)))
-      .thenReturn(byggRelatertPerson())
+      .thenReturn(byggEgetBarnIHusstanden())
     Mockito.`when`(persistenceServiceMock.opprettSivilstand(MockitoHelper.capture(sivilstandBoCaptor)))
       .thenReturn(byggSivilstand())
     Mockito.`when`(persistenceServiceMock.opprettKontantstotte(MockitoHelper.capture(kontantstotteBoCaptor)))
