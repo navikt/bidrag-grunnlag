@@ -108,8 +108,8 @@ class OppdaterRelatertePersoner(
 
   private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: HusstandsmedlemmerRequest): List<PersonBo> {
 
-    LOGGER.info("Kaller bidrag-person Husstandsmedlemmer for grunnlag EgneBarnIHusstanden")
-    SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer for grunnlag EgneBarnIHusstanden med request: $husstandsmedlemmerRequest")
+    LOGGER.info("Kaller bidrag-person Husstandsmedlemmer")
+    SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: $husstandsmedlemmerRequest")
 
     val husstandsmedlemListe = mutableListOf<PersonBo>()
 
@@ -162,7 +162,6 @@ class OppdaterRelatertePersoner(
 
     val barnListe = mutableListOf<PersonBo>()
 
-
     // Henter en liste over BMs/BPs barn og henter så info om fødselsdag og navn for disse
     when (val restResponseForelderBarnRelasjon =
       bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)) {
@@ -200,10 +199,14 @@ class OppdaterRelatertePersoner(
 
   private fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
     //hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
+    LOGGER.info("Kaller bidrag-person hent navn og fødselsdato")
+    SECURE_LOGGER.info("Kaller bidrag-person hent navn og fødselsdato for : $personId")
     when (val restResponseFoedselOgDoed =
       bidragPersonConsumer.hentNavnFoedselOgDoed(personId)) {
       is RestResponse.Success -> {
         val foedselOgDoedResponse = restResponseFoedselOgDoed.body
+        SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsdato: $foedselOgDoedResponse")
+
         return NavnFoedselDoedResponseDto(
           foedselOgDoedResponse.navn,
           foedselOgDoedResponse.foedselsdato,
