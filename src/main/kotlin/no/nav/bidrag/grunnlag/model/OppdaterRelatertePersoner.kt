@@ -163,11 +163,13 @@ class OppdaterRelatertePersoner(
           forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { forelderBarnRelasjon ->
             if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
               // Kaller bidrag-person for å hente info om fødselsdato og navn
-              val navnFoedselDoedResponseDto = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
-              // Lager en liste over fnr for alle barn som er funnet
-              barnListe.add(
-                PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato,
-                  null, null))
+              if (forelderBarnRelasjon.relatertPersonsIdent != null) {
+                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
+                // Lager en liste over fnr for alle barn som er funnet
+                barnListe.add(
+                  PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato,
+                    null, null))
+              }
             }
           }
           return barnListe

@@ -68,7 +68,7 @@ data class SivilstandDto(
 )
 
 data class Sivilstand(
-  val type: String?,
+  val type: String,
   val gyldigFraOgMed: LocalDate?,
   val bekreftelsesdato: LocalDate?
 )

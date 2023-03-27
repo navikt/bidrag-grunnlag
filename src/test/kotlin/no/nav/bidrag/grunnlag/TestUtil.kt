@@ -27,14 +27,13 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjon
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstand
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstandsmedlemmer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -55,7 +54,6 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
-import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -448,7 +446,7 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggSivilstand() = Sivilstand(
+    fun byggSivilstand() = no.nav.bidrag.grunnlag.persistence.entity.Sivilstand(
       sivilstandId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "1234",
@@ -711,17 +709,17 @@ class TestUtil {
 
     fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonDto(
       immutableListOf(
-        ForelderBarnRelasjonResponse(
+        ForelderBarnRelasjon(
           relatertPersonsIdent = "111",
           relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR
         ),
-        ForelderBarnRelasjonResponse(
+        ForelderBarnRelasjon(
           relatertPersonsIdent = "222",
           relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR
         ),
-        ForelderBarnRelasjonResponse(
+        ForelderBarnRelasjon(
           relatertPersonsIdent = "333",
           relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR

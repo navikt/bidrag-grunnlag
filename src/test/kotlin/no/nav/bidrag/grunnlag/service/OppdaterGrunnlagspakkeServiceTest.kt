@@ -16,9 +16,6 @@ import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
