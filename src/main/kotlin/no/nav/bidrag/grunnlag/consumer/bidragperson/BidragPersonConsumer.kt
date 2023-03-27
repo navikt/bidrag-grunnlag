@@ -5,6 +5,7 @@ import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
@@ -25,7 +26,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
   }
 
-  open fun hentNavnFoedselOgDoed(request: String): RestResponse<NavnFoedselDoedResponseDto> {
+  open fun hentNavnFoedselOgDoed(request: PersonRequest): RestResponse<NavnFoedselDoedResponseDto> {
     logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
 
     val restResponse = restTemplate.tryExchange(
@@ -41,7 +42,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentForelderBarnRelasjon(request: String): RestResponse<ForelderBarnRelasjonDto> {
+  open fun hentForelderBarnRelasjon(request: PersonRequest): RestResponse<ForelderBarnRelasjonDto> {
     logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
 
     val restResponse = restTemplate.tryExchange(
@@ -57,7 +58,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentHusstandsmedlemmer(request: String): RestResponse<HusstandsmedlemmerDto> {
+  open fun hentHusstandsmedlemmer(request: PersonRequest): RestResponse<HusstandsmedlemmerDto> {
     logger.info("Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
 
     val restResponse = restTemplate.tryExchange(
@@ -73,7 +74,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentSivilstand(request: String): RestResponse<SivilstandDto> {
+  open fun hentSivilstand(request: PersonRequest): RestResponse<SivilstandDto> {
     logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
     val restResponse = restTemplate.tryExchange(

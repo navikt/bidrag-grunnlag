@@ -34,6 +34,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstand
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstandsmedlemmer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -662,12 +663,11 @@ class TestUtil {
       fraDato = LocalDate.now()
     )
 
-    fun byggForelderBarnRequest() = "personIdent"
+    fun byggForelderBarnRequest() = PersonRequest("personIdent")
 
-    fun byggHusstandsmedlemmerRequest() = "personIdent"
+    fun byggHusstandsmedlemmerRequest() = PersonRequest("personIdent")
 
-
-    fun byggSivilstandRequest() = "personIdent"
+    fun byggSivilstandRequest() = PersonRequest("personIdent")
 
     fun byggKontantstotteRequest() = BisysDto(
       LocalDate.now(),

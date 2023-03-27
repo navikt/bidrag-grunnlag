@@ -6,6 +6,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -39,7 +40,7 @@ class OppdaterSivilstand(
       SECURE_LOGGER.info("Kaller bidrag-person og henter sivilstand for: $personIdOgPeriode.personId")
 
       when (val restResponseSivilstand =
-        bidragPersonConsumer.hentSivilstand(personIdOgPeriode.personId)) {
+        bidragPersonConsumer.hentSivilstand(PersonRequest(personIdOgPeriode.personId))) {
         is RestResponse.Success -> {
           val sivilstandResponse = restResponseSivilstand.body
           SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")

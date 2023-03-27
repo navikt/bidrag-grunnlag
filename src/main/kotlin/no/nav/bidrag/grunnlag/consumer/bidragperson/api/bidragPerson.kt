@@ -1,6 +1,8 @@
 package no.nav.bidrag.grunnlag.consumer.bidragperson.api
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
+import javax.validation.constraints.NotNull
 
 // Response fra bidrag-person
 
@@ -73,3 +75,6 @@ data class Sivilstand(
   val bekreftelsesdato: LocalDate?
 )
 
+data class PersonRequest(
+  var ident: String
+)

@@ -16,6 +16,7 @@ import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -201,17 +202,17 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        String::class.java)))
+        PersonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
     Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        String::class.java)))
+        PersonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
 
     Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        String::class.java)))
+        PersonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
@@ -262,17 +263,17 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        String::class.java)))
+        PersonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
     Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        String::class.java)))
+        PersonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
 
     Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        String::class.java)))
+        PersonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
@@ -349,7 +350,7 @@ class OppdaterGrunnlagspakkeServiceTest {
       )
     Mockito.`when`(bidragPersonConsumerMock.hentSivilstand(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        String::class.java)))
+        PersonRequest::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId

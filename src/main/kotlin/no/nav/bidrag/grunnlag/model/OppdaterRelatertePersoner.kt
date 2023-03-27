@@ -9,6 +9,7 @@ import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
@@ -47,7 +48,7 @@ class OppdaterRelatertePersoner(
       val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode.personId)
 
       // henter alle barn av BM/BP
-      val barnListe = hentBarn(personIdOgPeriode.personId)
+      val barnListe = hentBarn(PersonRequest(personIdOgPeriode.personId))
 
       // Alle husstandsmedlemmer lagres i tabell relatert_person. Det sjekkes om husstandsmedlem finnes i liste over barn.
       // erBarnAvmBp settes lik true i så fall
@@ -103,7 +104,7 @@ class OppdaterRelatertePersoner(
     val husstandsmedlemListe = mutableListOf<PersonBo>()
 
     when (val restResponseHusstandsmedlemmer =
-      bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {
+      bidragPersonConsumer.hentHusstandsmedlemmer(PersonRequest(husstandsmedlemmerRequest))) {
       is RestResponse.Success -> {
         val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
         SECURE_LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: $husstandsmedlemmerResponseDto")
@@ -144,7 +145,7 @@ class OppdaterRelatertePersoner(
   }
 
 
-  private fun hentBarn(forelderBarnRequest: String): List<PersonBo> {
+  private fun hentBarn(forelderBarnRequest: PersonRequest): List<PersonBo> {
 
     LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
     SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
@@ -164,7 +165,7 @@ class OppdaterRelatertePersoner(
             if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
               // Kaller bidrag-person for å hente info om fødselsdato og navn
               if (forelderBarnRelasjon.relatertPersonsIdent != null) {
-                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
+                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(PersonRequest(forelderBarnRelasjon.relatertPersonsIdent))
                 // Lager en liste over fnr for alle barn som er funnet
                 barnListe.add(
                   PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato,
@@ -179,16 +180,16 @@ class OppdaterRelatertePersoner(
       is RestResponse.Failure -> this.add(
         OppdaterGrunnlagDto(
           GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
-          forelderBarnRequest,
+          forelderBarnRequest.ident,
           if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-          "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest} ."
+          "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.ident} ."
         )
       )
     }
     return emptyList()
   }
 
-  private fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
+  private fun hentNavnFoedselDoed(personId: PersonRequest): NavnFoedselDoedResponseDto? {
     //hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
     LOGGER.info("Kaller bidrag-person hent navn og fødselsdato")
     SECURE_LOGGER.info("Kaller bidrag-person hent navn og fødselsdato for : $personId")
