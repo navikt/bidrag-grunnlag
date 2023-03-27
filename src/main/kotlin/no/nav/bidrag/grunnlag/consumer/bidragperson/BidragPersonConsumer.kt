@@ -33,7 +33,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
       HttpMethod.POST,
       initHttpEntity(request),
       NavnFoedselDoedResponseDto::class.java,
-      NavnFoedselDoedResponseDto(null, null,0, null)
+      NavnFoedselDoedResponseDto("", null,0, null)
     )
 
     logResponse(logger, restResponse)
