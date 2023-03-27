@@ -204,7 +204,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        ForelderBarnRequest::class.java)))
+        String::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
     Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(
@@ -214,7 +214,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        HusstandsmedlemmerRequest::class.java)))
+        String::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
@@ -265,7 +265,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        ForelderBarnRequest::class.java)))
+        String::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
     Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(
@@ -275,7 +275,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        HusstandsmedlemmerRequest::class.java)))
+        String::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
@@ -352,7 +352,7 @@ class OppdaterGrunnlagspakkeServiceTest {
       )
     Mockito.`when`(bidragPersonConsumerMock.hentSivilstand(
       GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-        SivilstandRequest::class.java)))
+        String::class.java)))
       .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponse()))
 
     val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId

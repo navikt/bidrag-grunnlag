@@ -3,12 +3,9 @@ package no.nav.bidrag.grunnlag.consumer.bidragperson
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
@@ -44,15 +41,15 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentForelderBarnRelasjon(request: ForelderBarnRequest): RestResponse<ForelderBarnRelasjonResponseDto> {
+  open fun hentForelderBarnRelasjon(request: String): RestResponse<ForelderBarnRelasjonDto> {
     logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON,
       HttpMethod.POST,
       initHttpEntity(request),
-      ForelderBarnRelasjonResponseDto::class.java,
-      ForelderBarnRelasjonResponseDto(emptyList())
+      ForelderBarnRelasjonDto::class.java,
+      ForelderBarnRelasjonDto(emptyList())
     )
 
     logResponse(logger, restResponse)
@@ -60,15 +57,15 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentHusstandsmedlemmer(request: HusstandsmedlemmerRequest): RestResponse<HusstandsmedlemmerResponseDto> {
+  open fun hentHusstandsmedlemmer(request: String): RestResponse<HusstandsmedlemmerDto> {
     logger.info("Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
       HttpMethod.POST,
       initHttpEntity(request),
-      HusstandsmedlemmerResponseDto::class.java,
-      HusstandsmedlemmerResponseDto(emptyList())
+      HusstandsmedlemmerDto::class.java,
+      HusstandsmedlemmerDto(emptyList())
     )
 
     logResponse(logger, restResponse)
@@ -76,15 +73,15 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     return restResponse
   }
 
-  open fun hentSivilstand(request: SivilstandRequest): RestResponse<SivilstandResponseDto> {
+  open fun hentSivilstand(request: String): RestResponse<SivilstandDto> {
     logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
     val restResponse = restTemplate.tryExchange(
       BIDRAGPERSON_CONTEXT_SIVILSTAND,
       HttpMethod.POST,
       initHttpEntity(request),
-      SivilstandResponseDto::class.java,
-      SivilstandResponseDto(emptyList())
+      SivilstandDto::class.java,
+      SivilstandDto(emptyList())
     )
 
     logResponse(logger, restResponse)

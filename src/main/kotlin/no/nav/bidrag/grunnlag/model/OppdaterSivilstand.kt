@@ -6,8 +6,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
@@ -36,16 +35,11 @@ class OppdaterSivilstand(
 
       var antallPerioderFunnet = 0
 
-      val hentSivilstandRequest = SivilstandRequest(
-        personId = personIdOgPeriode.personId,
-        periodeFra = personIdOgPeriode.periodeFra,
-      )
-
       LOGGER.info("Kaller bidrag-person og henter sivilstand")
-      SECURE_LOGGER.info("Kaller bidrag-person og henter sivilstand med request: $hentSivilstandRequest")
+      SECURE_LOGGER.info("Kaller bidrag-person og henter sivilstand for: $personIdOgPeriode.personId")
 
       when (val restResponseSivilstand =
-        bidragPersonConsumer.hentSivilstand(hentSivilstandRequest)) {
+        bidragPersonConsumer.hentSivilstand(personIdOgPeriode.personId)) {
         is RestResponse.Success -> {
           val sivilstandResponse = restResponseSivilstand.body
           SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
@@ -95,7 +89,7 @@ class OppdaterSivilstand(
   }
 
   fun lagreSivilstand(
-    sivilstand: SivilstandResponse,
+    sivilstand: Sivilstand,
     grunnlagspakkeId: Int,
     timestampOppdatering: LocalDateTime,
     personId: String

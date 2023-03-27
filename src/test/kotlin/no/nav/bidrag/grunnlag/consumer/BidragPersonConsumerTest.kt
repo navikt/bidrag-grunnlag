@@ -4,8 +4,8 @@ import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -49,7 +49,7 @@ internal class BidragPersonConsumerTest {
         eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<HusstandsmedlemmerResponseDto>>()
+        any<Class<HusstandsmedlemmerDto>>()
       )
     )
       .thenReturn(ResponseEntity(TestUtil.byggHentHusstandsmedlemmerResponse(), HttpStatus.OK))
@@ -59,60 +59,60 @@ internal class BidragPersonConsumerTest {
         val hentHusstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
         assertAll(
           Executable { assertThat(hentHusstandsmedlemmerResponse).isNotNull },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.size).isEqualTo(2) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-01-01")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-10-01")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.adressenavn).isEqualTo("adressenavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husnummer).isEqualTo("husnummer1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husbokstav).isEqualTo("husbokstav1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.bruksenhetsnummer).isEqualTo("bruksenhetsnummer1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.postnummer).isEqualTo("postnr1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.bydelsnummer).isEqualTo("bydelsnummer1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.kommunenummer).isEqualTo("kommunenummer1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.matrikkelId).isEqualTo(12345) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.size).isEqualTo(2) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-01-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-10-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.adressenavn).isEqualTo("adressenavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husnummer).isEqualTo("husnummer1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husbokstav).isEqualTo("husbokstav1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.bruksenhetsnummer).isEqualTo("bruksenhetsnummer1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.postnummer).isEqualTo("postnr1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.bydelsnummer).isEqualTo("bydelsnummer1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.kommunenummer).isEqualTo("kommunenummer1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.matrikkelId).isEqualTo(12345) },
 
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(0)?.personId).isEqualTo("111") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(0)?.fornavn).isEqualTo("fornavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(0)?.mellomnavn).isEqualTo("mellomnavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(0)?.etternavn).isEqualTo("etternavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(0)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-01-01")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(0)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-02-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(0)?.personId).isEqualTo("111") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(0)?.fornavn).isEqualTo("fornavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(0)?.mellomnavn).isEqualTo("mellomnavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(0)?.etternavn).isEqualTo("etternavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(0)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-01-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(0)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-02-01")) },
 
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(1)?.personId).isEqualTo("111") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(1)?.fornavn).isEqualTo("fornavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(1)?.mellomnavn).isEqualTo("mellomnavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(1)?.etternavn).isEqualTo("etternavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(1)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-05-17")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(1)?.gyldigTilOgMed).isNull() },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(1)?.personId).isEqualTo("111") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(1)?.fornavn).isEqualTo("fornavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(1)?.mellomnavn).isEqualTo("mellomnavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(1)?.etternavn).isEqualTo("etternavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(1)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-05-17")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(1)?.gyldigTilOgMed).isNull() },
 
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(2)?.personId).isEqualTo("333") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(2)?.fornavn).isEqualTo("fornavn3") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(2)?.mellomnavn).isEqualTo("mellomnavn3") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(2)?.etternavn).isEqualTo("etternavn3") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(2)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-01-01")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(2)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-12-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(2)?.personId).isEqualTo("333") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(2)?.fornavn).isEqualTo("fornavn3") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(2)?.mellomnavn).isEqualTo("mellomnavn3") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(2)?.etternavn).isEqualTo("etternavn3") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(2)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-01-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(2)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-12-01")) },
 
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(3)?.personId).isEqualTo("444") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(3)?.fornavn).isEqualTo("fornavn4") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(3)?.mellomnavn).isEqualTo("mellomnavn4") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(3)?.etternavn).isEqualTo("etternavn4") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(3)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-05-01")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(0)?.husstandsmedlemmerResponseListe?.get(3)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-06-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(3)?.personId).isEqualTo("444") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(3)?.fornavn).isEqualTo("fornavn4") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(3)?.mellomnavn).isEqualTo("mellomnavn4") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(3)?.etternavn).isEqualTo("etternavn4") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(3)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2011-05-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(0)?.husstandsmedlemmerListe?.get(3)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2011-06-01")) },
 
 
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(0)?.personId).isEqualTo("111") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(0)?.fornavn).isEqualTo("fornavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(0)?.mellomnavn).isEqualTo("mellomnavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(0)?.etternavn).isEqualTo("etternavn1") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(0)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2018-01-01")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(0)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2018-02-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(0)?.personId).isEqualTo("111") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(0)?.fornavn).isEqualTo("fornavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(0)?.mellomnavn).isEqualTo("mellomnavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(0)?.etternavn).isEqualTo("etternavn1") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(0)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2018-01-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(0)?.gyldigTilOgMed).isEqualTo(LocalDate.parse("2018-02-01")) },
 
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(1)?.personId).isEqualTo("555") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(1)?.fornavn).isEqualTo("fornavn5") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(1)?.mellomnavn).isEqualTo("mellomnavn5") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(1)?.etternavn).isEqualTo("etternavn5") },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(1)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2020-01-01")) },
-          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandResponseListe?.get(1)?.husstandsmedlemmerResponseListe?.get(1)?.gyldigTilOgMed).isNull() },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(1)?.personId).isEqualTo("555") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(1)?.fornavn).isEqualTo("fornavn5") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(1)?.mellomnavn).isEqualTo("mellomnavn5") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(1)?.etternavn).isEqualTo("etternavn5") },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(1)?.gyldigFraOgMed).isEqualTo(LocalDate.parse("2020-01-01")) },
+          Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe?.get(1)?.husstandsmedlemmerListe?.get(1)?.gyldigTilOgMed).isNull() },
 
           )
       }
@@ -131,7 +131,7 @@ internal class BidragPersonConsumerTest {
         eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<HusstandsmedlemmerResponseDto>>()
+        any<Class<HusstandsmedlemmerDto>>()
       )
     )
       .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
@@ -160,7 +160,7 @@ internal class BidragPersonConsumerTest {
         eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<SivilstandResponseDto>>()
+        any<Class<SivilstandDto>>()
       )
     )
       .thenReturn(ResponseEntity(TestUtil.byggHentSivilstandResponse(), HttpStatus.OK))
@@ -200,7 +200,7 @@ internal class BidragPersonConsumerTest {
         eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
         eq(HttpMethod.POST),
         eq(initHttpEntity(request)),
-        any<Class<SivilstandResponseDto>>()
+        any<Class<SivilstandDto>>()
       )
     )
       .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
