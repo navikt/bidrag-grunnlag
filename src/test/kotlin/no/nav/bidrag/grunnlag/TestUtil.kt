@@ -27,18 +27,15 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponse
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjon
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandResponse
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponse
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstand
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstandsmedlemmer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponse
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -58,7 +55,6 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
-import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -451,7 +447,7 @@ class TestUtil {
       hentetTidspunkt = LocalDateTime.now()
     )
 
-    fun byggSivilstand() = Sivilstand(
+    fun byggSivilstand() = no.nav.bidrag.grunnlag.persistence.entity.Sivilstand(
       sivilstandId = (1..100).random(),
       grunnlagspakkeId = (1..100).random(),
       personId = "1234",
@@ -667,21 +663,11 @@ class TestUtil {
       fraDato = LocalDate.now()
     )
 
-    fun byggForelderBarnRequest() = ForelderBarnRequest(
-      personId = "personIdent",
-      periodeFra = LocalDate.now()
-    )
+    fun byggForelderBarnRequest() = PersonRequest("personIdent")
 
-    fun byggHusstandsmedlemmerRequest() = HusstandsmedlemmerRequest(
-      personId = "personIdent",
-      periodeFra = LocalDate.now()
-    )
+    fun byggHusstandsmedlemmerRequest() = PersonRequest("personIdent")
 
-
-    fun byggSivilstandRequest() = SivilstandRequest(
-      personId = "personIdent",
-      periodeFra = LocalDate.now()
-    )
+    fun byggSivilstandRequest() = PersonRequest("personIdent")
 
     fun byggKontantstotteRequest() = BisysDto(
       LocalDate.now(),
@@ -721,19 +707,19 @@ class TestUtil {
     )
 
 
-    fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonResponseDto(
+    fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonDto(
       immutableListOf(
-        ForelderBarnRelasjonResponse(
+        ForelderBarnRelasjon(
           relatertPersonsIdent = "111",
           relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR
         ),
-        ForelderBarnRelasjonResponse(
+        ForelderBarnRelasjon(
           relatertPersonsIdent = "222",
           relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR
         ),
-        ForelderBarnRelasjonResponse(
+        ForelderBarnRelasjon(
           relatertPersonsIdent = "333",
           relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
           minRolleForPerson = ForelderBarnRelasjonRolle.FAR
@@ -750,9 +736,9 @@ class TestUtil {
     )
 
 
-    fun byggHentHusstandsmedlemmerResponse() = HusstandsmedlemmerResponseDto(
+    fun byggHentHusstandsmedlemmerResponse() = HusstandsmedlemmerDto(
       immutableListOf(
-        HusstandResponse(
+        Husstand(
           gyldigFraOgMed = LocalDate.parse("2011-01-01"),
           gyldigTilOgMed = LocalDate.parse("2011-10-01"),
           adressenavn = "adressenavn1",
@@ -764,7 +750,7 @@ class TestUtil {
           kommunenummer = "kommunenummer1",
           matrikkelId = 12345,
           immutableListOf(
-            HusstandsmedlemmerResponse(
+            Husstandsmedlemmer(
               gyldigFraOgMed = LocalDate.parse("2011-01-01"),
               gyldigTilOgMed = LocalDate.parse("2011-02-01"),
               personId = "111",
@@ -773,7 +759,7 @@ class TestUtil {
               etternavn = "etternavn1",
               foedselsdato = LocalDate.parse("2001-04-17")
             ),
-            HusstandsmedlemmerResponse(
+            Husstandsmedlemmer(
               gyldigFraOgMed = LocalDate.parse("2011-05-17"),
               gyldigTilOgMed = null,
               personId = "111",
@@ -782,7 +768,7 @@ class TestUtil {
               etternavn = "etternavn1",
               foedselsdato = LocalDate.parse("2001-04-17")
             ),
-            HusstandsmedlemmerResponse(
+            Husstandsmedlemmer(
               gyldigFraOgMed = LocalDate.parse("2011-01-01"),
               gyldigTilOgMed = LocalDate.parse("2011-12-01"),
               personId = "333",
@@ -791,7 +777,7 @@ class TestUtil {
               etternavn = "etternavn3",
               foedselsdato = LocalDate.parse("2001-04-17")
             ),
-            HusstandsmedlemmerResponse(
+            Husstandsmedlemmer(
               gyldigFraOgMed = LocalDate.parse("2011-05-01"),
               gyldigTilOgMed = LocalDate.parse("2011-06-01"),
               personId = "444",
@@ -802,7 +788,7 @@ class TestUtil {
             )
           )
         ),
-        HusstandResponse(
+        Husstand(
           gyldigFraOgMed = LocalDate.parse("2011-10-01"),
           gyldigTilOgMed = null,
           adressenavn = "adressenavn2",
@@ -814,7 +800,7 @@ class TestUtil {
           kommunenummer = "kommunenummer2",
           matrikkelId = 54321,
           immutableListOf(
-            HusstandsmedlemmerResponse(
+            Husstandsmedlemmer(
               gyldigFraOgMed = LocalDate.parse("2018-01-01"),
               gyldigTilOgMed = LocalDate.parse("2018-02-01"),
               personId = "111",
@@ -824,7 +810,7 @@ class TestUtil {
               foedselsdato = LocalDate.parse("2001-04-17"),
               doedsdato = null
             ),
-            HusstandsmedlemmerResponse(
+            Husstandsmedlemmer(
               gyldigFraOgMed = LocalDate.parse("2020-01-01"),
               gyldigTilOgMed = null,
               personId = "555",
@@ -840,19 +826,19 @@ class TestUtil {
     )
 
 
-    fun byggHentSivilstandResponse() = SivilstandResponseDto(
+    fun byggHentSivilstandResponse() = SivilstandDto(
       immutableListOf(
-        SivilstandResponse(
+        no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand(
           type = "ENSLIG",
           gyldigFraOgMed = null,
           bekreftelsesdato = null
         ),
-        SivilstandResponse(
+        no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand(
           type = "SAMBOER",
           gyldigFraOgMed = null,
           bekreftelsesdato = LocalDate.parse("2021-01-01")
         ),
-        SivilstandResponse(
+        no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand(
           type = "GIFT",
           gyldigFraOgMed = LocalDate.parse("2021-09-01"),
           bekreftelsesdato = null

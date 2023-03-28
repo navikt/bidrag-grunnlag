@@ -8,9 +8,8 @@ import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
@@ -37,15 +36,6 @@ class OppdaterRelatertePersoner(
   // og husstandsmedlemPeriodeTil.
   fun oppdaterRelatertePersoner(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterRelatertePersoner {
     relatertePersonerRequestListe.forEach { personIdOgPeriode ->
-      val forelderBarnRequest = ForelderBarnRequest(
-        personId = personIdOgPeriode.personId,
-        periodeFra = personIdOgPeriode.periodeFra,
-      )
-
-      val husstandsmedlemmerRequest = HusstandsmedlemmerRequest(
-        personId = personIdOgPeriode.personId,
-        periodeFra = personIdOgPeriode.periodeFra,
-      )
 
       // Sett eksisterende forekomster av RelatertPerson til inaktiv
       persistenceService.oppdaterEksisterendeRelatertPersonTilInaktiv(
@@ -55,10 +45,10 @@ class OppdaterRelatertePersoner(
       )
 
       // henter alle husstandsmedlemmer til BM/BP
-      val husstandsmedlemmerListe = hentHusstandsmedlemmer(husstandsmedlemmerRequest)
+      val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode.personId)
 
       // henter alle barn av BM/BP
-      val barnListe = hentBarn(forelderBarnRequest)
+      val barnListe = hentBarn(PersonRequest(personIdOgPeriode.personId))
 
       // Alle husstandsmedlemmer lagres i tabell relatert_person. Det sjekkes om husstandsmedlem finnes i liste over barn.
       // erBarnAvmBp settes lik true i så fall
@@ -106,7 +96,7 @@ class OppdaterRelatertePersoner(
   }
 
 
-  private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: HusstandsmedlemmerRequest): List<PersonBo> {
+  private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: String): List<PersonBo> {
 
     LOGGER.info("Kaller bidrag-person Husstandsmedlemmer")
     SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: $husstandsmedlemmerRequest")
@@ -114,14 +104,14 @@ class OppdaterRelatertePersoner(
     val husstandsmedlemListe = mutableListOf<PersonBo>()
 
     when (val restResponseHusstandsmedlemmer =
-      bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest)) {
+      bidragPersonConsumer.hentHusstandsmedlemmer(PersonRequest(husstandsmedlemmerRequest))) {
       is RestResponse.Success -> {
         val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
         SECURE_LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: $husstandsmedlemmerResponseDto")
 
-        if (!husstandsmedlemmerResponseDto.husstandResponseListe.isNullOrEmpty()) {
-          husstandsmedlemmerResponseDto.husstandResponseListe.forEach { husstand ->
-            husstand.husstandsmedlemmerResponseListe.forEach { husstandsmedlem ->
+        if (!husstandsmedlemmerResponseDto.husstandListe.isNullOrEmpty()) {
+          husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
+            husstand.husstandsmedlemmerListe.forEach { husstandsmedlem ->
               husstandsmedlemListe.add(
                 PersonBo(husstandsmedlem.personId,
                   husstandsmedlem.fornavn + " " + husstandsmedlem.mellomnavn + " " + husstandsmedlem.etternavn,
@@ -134,7 +124,7 @@ class OppdaterRelatertePersoner(
         this.add(
           OppdaterGrunnlagDto(
             GrunnlagRequestType.HUSSTANDSMEDLEMMER,
-            husstandsmedlemmerRequest.personId,
+            husstandsmedlemmerRequest,
             GrunnlagsRequestStatus.HENTET,
             "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}"
           )
@@ -145,9 +135,9 @@ class OppdaterRelatertePersoner(
       is RestResponse.Failure -> this.add(
         OppdaterGrunnlagDto(
           GrunnlagRequestType.HUSSTANDSMEDLEMMER,
-          husstandsmedlemmerRequest.personId,
+          husstandsmedlemmerRequest,
           if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-          "Feil ved henting av husstandsmedlemmer for perioden: ${husstandsmedlemmerRequest.periodeFra}."
+          "Feil ved henting av husstandsmedlemmer for: ${husstandsmedlemmerRequest}."
         )
       )
     }
@@ -155,7 +145,7 @@ class OppdaterRelatertePersoner(
   }
 
 
-  private fun hentBarn(forelderBarnRequest: ForelderBarnRequest): List<PersonBo> {
+  private fun hentBarn(forelderBarnRequest: PersonRequest): List<PersonBo> {
 
     LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
     SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
@@ -168,17 +158,19 @@ class OppdaterRelatertePersoner(
       is RestResponse.Success -> {
         val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
 
-        if (!forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.isNullOrEmpty()) {
+        if (!forelderBarnRelasjonResponse.forelderBarnRelasjon.isNullOrEmpty()) {
           SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
-          forelderBarnRelasjonResponse.forelderBarnRelasjonResponse.forEach { forelderBarnRelasjon ->
+          forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { forelderBarnRelasjon ->
             if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
               // Kaller bidrag-person for å hente info om fødselsdato og navn
-              val navnFoedselDoedResponseDto = hentNavnFoedselDoed(forelderBarnRelasjon.relatertPersonsIdent)
-              // Lager en liste over fnr for alle barn som er funnet
-              barnListe.add(
-                PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato,
-                  null, null))
+              if (forelderBarnRelasjon.relatertPersonsIdent != null) {
+                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(PersonRequest(forelderBarnRelasjon.relatertPersonsIdent))
+                // Lager en liste over fnr for alle barn som er funnet
+                barnListe.add(
+                  PersonBo(forelderBarnRelasjon.relatertPersonsIdent, navnFoedselDoedResponseDto?.navn, navnFoedselDoedResponseDto?.foedselsdato,
+                    null, null))
+              }
             }
           }
           return barnListe
@@ -188,16 +180,16 @@ class OppdaterRelatertePersoner(
       is RestResponse.Failure -> this.add(
         OppdaterGrunnlagDto(
           GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
-          forelderBarnRequest.personId,
+          forelderBarnRequest.ident,
           if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-          "Feil ved henting av egne barn i husstanden for perioden: ${forelderBarnRequest.periodeFra} ."
+          "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.ident} ."
         )
       )
     }
     return emptyList()
   }
 
-  private fun hentNavnFoedselDoed(personId: String): NavnFoedselDoedResponseDto? {
+  private fun hentNavnFoedselDoed(personId: PersonRequest): NavnFoedselDoedResponseDto? {
     //hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
     LOGGER.info("Kaller bidrag-person hent navn og fødselsdato")
     SECURE_LOGGER.info("Kaller bidrag-person hent navn og fødselsdato for : $personId")
