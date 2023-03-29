@@ -8,44 +8,46 @@ import kotlin.reflect.full.memberProperties
 
 data class KontantstotteBo(
 
-  @Schema(description = "Grunnlagspakke-id")
-  val grunnlagspakkeId: Int = 0,
+    @Schema(description = "Grunnlagspakke-id")
+    val grunnlagspakkeId: Int = 0,
 
-  @Schema(description = "Id til personen som mottar kontatstøtten")
-  val partPersonId: String = "",
+    @Schema(description = "Id til personen som mottar kontatstøtten")
+    val partPersonId: String = "",
 
-  @Schema(description = "Id til barnet kontatstøtten er for")
-  val barnPersonId: String = "",
+    @Schema(description = "Id til barnet kontatstøtten er for")
+    val barnPersonId: String = "",
 
-  @Schema(description = "Periode fra-dato")
-  val periodeFra: LocalDate,
+    @Schema(description = "Periode fra-dato")
+    val periodeFra: LocalDate,
 
-  @Schema(description = "Periode til-dato")
-  val periodeTil: LocalDate?,
+    @Schema(description = "Periode til-dato")
+    val periodeTil: LocalDate?,
 
-  @Schema(description = "Angir om en inntektsopplysning er aktiv")
-  val aktiv: Boolean = true,
+    @Schema(description = "Angir om en inntektsopplysning er aktiv")
+    val aktiv: Boolean = true,
 
-  @Schema(description = "Tidspunkt inntekten taes i bruk")
-  val brukFra: LocalDateTime? = LocalDateTime.now(),
+    @Schema(description = "Tidspunkt inntekten taes i bruk")
+    val brukFra: LocalDateTime? = LocalDateTime.now(),
 
-  @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
-  val brukTil: LocalDateTime? = null,
+    @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
+    val brukTil: LocalDateTime? = null,
 
-  @Schema(description = "Beløpet kontantstøtten er på")
-  val belop: Int,
+    @Schema(description = "Beløpet kontantstøtten er på")
+    val belop: Int,
 
-  @Schema(description = "Hentet tidspunkt")
-  val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    @Schema(description = "Hentet tidspunkt")
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
 
 )
 
 fun KontantstotteBo.toKontantstotteEntity() = with(::Kontantstotte) {
-  val propertiesByName = KontantstotteBo::class.memberProperties.associateBy { it.name }
-  callBy(parameters.associateWith { parameters ->
-    when (parameters.name) {
-      Kontantstotte::kontantstotteId.name -> 0
-      else -> propertiesByName[parameters.name]?.get(this@toKontantstotteEntity)
-    }
-  })
+    val propertiesByName = KontantstotteBo::class.memberProperties.associateBy { it.name }
+    callBy(
+        parameters.associateWith { parameters ->
+            when (parameters.name) {
+                Kontantstotte::kontantstotteId.name -> 0
+                else -> propertiesByName[parameters.name]?.get(this@toKontantstotteEntity)
+            }
+        }
+    )
 }

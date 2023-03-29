@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @Component
 class HibernateExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
-  @ResponseBody
-  @ExceptionHandler(HibernateException::class)
-  protected fun handleHibernateException(e: HibernateException): ResponseEntity<*> {
-    exceptionLogger.logException(e, "SqlExceptionHandler")
-    return ResponseEntity("Feil ved kommunikasjon med databasen. ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
-  }
+    @ResponseBody
+    @ExceptionHandler(HibernateException::class)
+    protected fun handleHibernateException(e: HibernateException): ResponseEntity<*> {
+        exceptionLogger.logException(e, "SqlExceptionHandler")
+        return ResponseEntity("Feil ved kommunikasjon med databasen. ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }

@@ -21,56 +21,56 @@ private const val BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT = "/skattegrunnlag/hent"
 private const val BIDRAGGCPPROXY_BARNETILLEGG_PENSJON_CONTEXT = "/barnetillegg/pensjon/hent"
 
 open class BidragGcpProxyConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-  GrunnlagsConsumer() {
+    GrunnlagsConsumer() {
 
-  companion object {
-    @JvmStatic
-    val logger: Logger = LoggerFactory.getLogger(BidragGcpProxyConsumer::class.java)
-  }
+    companion object {
+        @JvmStatic
+        val logger: Logger = LoggerFactory.getLogger(BidragGcpProxyConsumer::class.java)
+    }
 
-  fun hentAinntekt(request: HentInntektRequest): RestResponse<HentInntektListeResponse> {
-    logger.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
+    fun hentAinntekt(request: HentInntektRequest): RestResponse<HentInntektListeResponse> {
+        logger.info("Henter inntekt fra Inntektskomponenten via bidrag-gcp-proxy")
 
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGGCPPROXY_INNTEKT_CONTEXT,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      HentInntektListeResponse::class.java,
-      HentInntektListeResponse(emptyList(), Aktoer(request.ident, AktoerType.NATURLIG_IDENT))
-    )
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGGCPPROXY_INNTEKT_CONTEXT,
+            HttpMethod.POST,
+            initHttpEntity(request),
+            HentInntektListeResponse::class.java,
+            HentInntektListeResponse(emptyList(), Aktoer(request.ident, AktoerType.NATURLIG_IDENT))
+        )
 
-    logResponse(logger, restResponse)
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 
-  fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): RestResponse<HentSkattegrunnlagResponse> {
-    logger.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
+    fun hentSkattegrunnlag(request: HentSkattegrunnlagRequest): RestResponse<HentSkattegrunnlagResponse> {
+        logger.info("Henter skattegrunnlag fra Sigrun via bidrag-gcp-proxy")
 
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      HentSkattegrunnlagResponse::class.java,
-      HentSkattegrunnlagResponse(emptyList(), emptyList(), null)
-    )
-    logResponse(logger, restResponse)
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGGCPPROXY_SKATTEGRUNNLAG_CONTEXT,
+            HttpMethod.POST,
+            initHttpEntity(request),
+            HentSkattegrunnlagResponse::class.java,
+            HentSkattegrunnlagResponse(emptyList(), emptyList(), null)
+        )
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 
-  open fun hentBarnetilleggPensjon(request: HentBarnetilleggPensjonRequest): RestResponse<HentBarnetilleggPensjonResponse> {
-    logger.info("Henter barnetillegg fra Pensjon via bidrag-gcp-proxy")
+    open fun hentBarnetilleggPensjon(request: HentBarnetilleggPensjonRequest): RestResponse<HentBarnetilleggPensjonResponse> {
+        logger.info("Henter barnetillegg fra Pensjon via bidrag-gcp-proxy")
 
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGGCPPROXY_BARNETILLEGG_PENSJON_CONTEXT,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      HentBarnetilleggPensjonResponse::class.java,
-      HentBarnetilleggPensjonResponse(emptyList())
-    )
-    logResponse(logger, restResponse)
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGGCPPROXY_BARNETILLEGG_PENSJON_CONTEXT,
+            HttpMethod.POST,
+            initHttpEntity(request),
+            HentBarnetilleggPensjonResponse::class.java,
+            HentBarnetilleggPensjonResponse(emptyList())
+        )
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 }

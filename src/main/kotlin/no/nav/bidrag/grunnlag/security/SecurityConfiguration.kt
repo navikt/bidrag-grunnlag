@@ -8,17 +8,17 @@ import org.springframework.security.config.http.SessionCreationPolicy
 @Configuration
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
-  @Throws(Exception::class)
-  override fun configure(http: HttpSecurity) {
-    http.sessionManagement()
-      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      .and()
-      .csrf()
-      .disable()
-      .authorizeRequests()
-      .antMatchers("/**")
-      .permitAll()
-      .anyRequest()
-      .fullyAuthenticated()
-  }
+    @Throws(Exception::class)
+    override fun configure(http: HttpSecurity) {
+        http.sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .csrf()
+            .disable()
+            .authorizeRequests()
+            .antMatchers("/**")
+            .permitAll()
+            .anyRequest()
+            .fullyAuthenticated()
+    }
 }

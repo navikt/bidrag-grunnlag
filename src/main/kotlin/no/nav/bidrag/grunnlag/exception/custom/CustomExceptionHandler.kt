@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @Component
 class CustomExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
-  @ResponseBody
-  @ExceptionHandler(InvalidGrunnlagspakkeIdException::class)
-  protected fun handleInvalidGrunnlagspakkeException(e: InvalidGrunnlagspakkeIdException): ResponseEntity<*> {
-    exceptionLogger.logException(e, "CustomExceptionHandler")
-    return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
-  }
+    @ResponseBody
+    @ExceptionHandler(InvalidGrunnlagspakkeIdException::class)
+    protected fun handleInvalidGrunnlagspakkeException(e: InvalidGrunnlagspakkeIdException): ResponseEntity<*> {
+        exceptionLogger.logException(e, "CustomExceptionHandler")
+        return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
+    }
 }

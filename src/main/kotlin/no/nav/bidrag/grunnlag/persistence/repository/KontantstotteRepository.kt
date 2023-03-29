@@ -8,21 +8,20 @@ import java.time.LocalDateTime
 
 interface KontantstotteRepository : JpaRepository<Kontantstotte, Int?> {
 
-  @Query(
-    "select ks from Kontantstotte ks where ks.grunnlagspakkeId = :grunnlagspakkeId and ks.aktiv = true order by ks.partPersonId, ks.periodeFra, ks.barnPersonId"
-  )
-  fun hentKontantstotte(grunnlagspakkeId: Int): List<Kontantstotte>
+    @Query(
+        "select ks from Kontantstotte ks where ks.grunnlagspakkeId = :grunnlagspakkeId and ks.aktiv = true order by ks.partPersonId, ks.periodeFra, ks.barnPersonId"
+    )
+    fun hentKontantstotte(grunnlagspakkeId: Int): List<Kontantstotte>
 
-  @Modifying
-  @Query(
-    "update Kontantstotte ks " +
-        "set ks.aktiv = false, ks.brukTil = :timestampOppdatering " +
-        "where ks.grunnlagspakkeId = :grunnlagspakkeId and ks.partPersonId = :partPersonId and ks.aktiv = true"
-  )
-  fun oppdaterEksisterendeKontantstotteTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  )
-
+    @Modifying
+    @Query(
+        "update Kontantstotte ks " +
+            "set ks.aktiv = false, ks.brukTil = :timestampOppdatering " +
+            "where ks.grunnlagspakkeId = :grunnlagspakkeId and ks.partPersonId = :partPersonId and ks.aktiv = true"
+    )
+    fun oppdaterEksisterendeKontantstotteTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    )
 }

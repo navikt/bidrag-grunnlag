@@ -26,80 +26,82 @@ import java.time.LocalDate
 @ExtendWith(MockitoExtension::class)
 internal class FamilieEfSakConsumerTest {
 
-  companion object {
-    private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
-  }
-
-  @InjectMocks
-  private lateinit var familieEfSakConsumer: FamilieEfSakConsumer
-
-  @Mock
-  private lateinit var restTemplateMock: HttpHeaderRestTemplate
-
-  @Test
-  fun `Sjekk at ok respons fra Barnetilsyn-endepunkt mappes korrekt`() {
-    val request = TestUtil.byggBarnetilsynRequest()
-
-    Mockito.`when`(
-      restTemplateMock.exchange(
-        eq(BARNETILSYN_CONTEXT),
-        eq(HttpMethod.POST),
-        eq(initHttpEntity(request)),
-        ArgumentMatchers.any<Class<BarnetilsynResponse>>()
-      )
-    )
-      .thenReturn(ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK))
-
-    when (val restResponseBarnetilsyn = familieEfSakConsumer.hentBarnetilsyn(request)) {
-      is RestResponse.Success -> {
-        val hentBarnetilsynResponse = restResponseBarnetilsyn.body
-        assertAll(
-          { Assertions.assertThat(hentBarnetilsynResponse).isNotNull },
-          { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder.size).isEqualTo(1) },
-          { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.fom).isEqualTo(LocalDate.parse("2021-01-01"))},
-          { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.tom).isEqualTo(LocalDate.parse("2021-07-31"))},
-          { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[0]).isEqualTo("01012212345") },
-          { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[1]).isEqualTo("01011034543") },
-        )
-      }
-      else -> {
-        Assertions.fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
-      }
+    companion object {
+        private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
     }
-  }
 
-  @Test
-  @Suppress("NonAsciiCharacters")
-  fun `Sjekk at exception fra Barnetilsyn-endepunkt håndteres korrekt`() {
-    val request = TestUtil.byggBarnetilsynRequest()
+    @InjectMocks
+    private lateinit var familieEfSakConsumer: FamilieEfSakConsumer
 
-    Mockito.`when`(
-      restTemplateMock.exchange(
-        eq(BARNETILSYN_CONTEXT),
-        eq(HttpMethod.POST),
-        eq(initHttpEntity(request)),
-        ArgumentMatchers.any<Class<BarnetilsynResponse>>()
-      )
-    )
-      .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
+    @Mock
+    private lateinit var restTemplateMock: HttpHeaderRestTemplate
 
-    when (val restResponseBarnetilsyn = familieEfSakConsumer.hentBarnetilsyn(request)) {
-      is RestResponse.Failure -> {
-        assertAll(
-          { Assertions.assertThat(restResponseBarnetilsyn.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-          { Assertions.assertThat(restResponseBarnetilsyn.restClientException)
-            .isInstanceOf(HttpClientErrorException::class.java) }
+    @Test
+    fun `Sjekk at ok respons fra Barnetilsyn-endepunkt mappes korrekt`() {
+        val request = TestUtil.byggBarnetilsynRequest()
+
+        Mockito.`when`(
+            restTemplateMock.exchange(
+                eq(BARNETILSYN_CONTEXT),
+                eq(HttpMethod.POST),
+                eq(initHttpEntity(request)),
+                ArgumentMatchers.any<Class<BarnetilsynResponse>>()
+            )
         )
-      }
-      else -> {
-        Assertions.fail("Test returnerte med RestResponse.Success, som ikke var forventet")
-      }
-    }
-  }
+            .thenReturn(ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK))
 
-  fun <T> initHttpEntity(body: T): HttpEntity<T> {
-    val httpHeaders = HttpHeaders()
-    httpHeaders.contentType = MediaType.APPLICATION_JSON
-    return HttpEntity(body, httpHeaders)
-  }
+        when (val restResponseBarnetilsyn = familieEfSakConsumer.hentBarnetilsyn(request)) {
+            is RestResponse.Success -> {
+                val hentBarnetilsynResponse = restResponseBarnetilsyn.body
+                assertAll(
+                    { Assertions.assertThat(hentBarnetilsynResponse).isNotNull },
+                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder.size).isEqualTo(1) },
+                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.fom).isEqualTo(LocalDate.parse("2021-01-01")) },
+                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.tom).isEqualTo(LocalDate.parse("2021-07-31")) },
+                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[0]).isEqualTo("01012212345") },
+                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[1]).isEqualTo("01011034543") }
+                )
+            }
+            else -> {
+                Assertions.fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
+            }
+        }
+    }
+
+    @Test
+    @Suppress("NonAsciiCharacters")
+    fun `Sjekk at exception fra Barnetilsyn-endepunkt håndteres korrekt`() {
+        val request = TestUtil.byggBarnetilsynRequest()
+
+        Mockito.`when`(
+            restTemplateMock.exchange(
+                eq(BARNETILSYN_CONTEXT),
+                eq(HttpMethod.POST),
+                eq(initHttpEntity(request)),
+                ArgumentMatchers.any<Class<BarnetilsynResponse>>()
+            )
+        )
+            .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
+
+        when (val restResponseBarnetilsyn = familieEfSakConsumer.hentBarnetilsyn(request)) {
+            is RestResponse.Failure -> {
+                assertAll(
+                    { Assertions.assertThat(restResponseBarnetilsyn.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
+                    {
+                        Assertions.assertThat(restResponseBarnetilsyn.restClientException)
+                            .isInstanceOf(HttpClientErrorException::class.java)
+                    }
+                )
+            }
+            else -> {
+                Assertions.fail("Test returnerte med RestResponse.Success, som ikke var forventet")
+            }
+        }
+    }
+
+    fun <T> initHttpEntity(body: T): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+        return HttpEntity(body, httpHeaders)
+    }
 }

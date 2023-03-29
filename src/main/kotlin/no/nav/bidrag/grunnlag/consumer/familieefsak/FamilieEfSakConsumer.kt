@@ -13,27 +13,27 @@ import org.springframework.http.HttpMethod
 private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
 
 open class FamilieEfSakConsumer(
-  private val restTemplate: HttpHeaderRestTemplate
+    private val restTemplate: HttpHeaderRestTemplate
 ) : GrunnlagsConsumer() {
 
-  companion object {
-    @JvmStatic
-    private val logger: Logger = LoggerFactory.getLogger(FamilieEfSakConsumer::class.java)
-  }
+    companion object {
+        @JvmStatic
+        private val logger: Logger = LoggerFactory.getLogger(FamilieEfSakConsumer::class.java)
+    }
 
-  open fun hentBarnetilsyn(request: BarnetilsynRequest): RestResponse<BarnetilsynResponse> {
-    logger.info("Henter barnetilsyn")
+    open fun hentBarnetilsyn(request: BarnetilsynRequest): RestResponse<BarnetilsynResponse> {
+        logger.info("Henter barnetilsyn")
 
-    val restResponse = restTemplate.tryExchange(
-      BARNETILSYN_CONTEXT,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      BarnetilsynResponse::class.java,
-      BarnetilsynResponse(emptyList())
-    )
+        val restResponse = restTemplate.tryExchange(
+            BARNETILSYN_CONTEXT,
+            HttpMethod.POST,
+            initHttpEntity(request),
+            BarnetilsynResponse::class.java,
+            BarnetilsynResponse(emptyList())
+        )
 
-    logResponse(logger, restResponse)
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 }

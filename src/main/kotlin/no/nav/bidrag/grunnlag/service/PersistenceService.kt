@@ -74,584 +74,584 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.math.abs
 
 @Service
 class PersistenceService(
-  val grunnlagspakkeRepository: GrunnlagspakkeRepository,
-  val ainntektRepository: AinntektRepository,
-  val ainntektspostRepository: AinntektspostRepository,
-  val skattegrunnlagRepository: SkattegrunnlagRepository,
-  val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
-  val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository,
-  val barnetilleggRepository: BarnetilleggRepository,
-  val relatertPersonRepository: RelatertPersonRepository,
-  val sivilstandRepository: SivilstandRepository,
-  val kontantstotteRepository: KontantstotteRepository,
-  val barnetilsynRepository: BarnetilsynRepository
+    val grunnlagspakkeRepository: GrunnlagspakkeRepository,
+    val ainntektRepository: AinntektRepository,
+    val ainntektspostRepository: AinntektspostRepository,
+    val skattegrunnlagRepository: SkattegrunnlagRepository,
+    val skattegrunnlagspostRepository: SkattegrunnlagspostRepository,
+    val utvidetBarnetrygdOgSmaabarnstilleggRepository: UtvidetBarnetrygdOgSmaabarnstilleggRepository,
+    val barnetilleggRepository: BarnetilleggRepository,
+    val relatertPersonRepository: RelatertPersonRepository,
+    val sivilstandRepository: SivilstandRepository,
+    val kontantstotteRepository: KontantstotteRepository,
+    val barnetilsynRepository: BarnetilsynRepository
 ) {
 
-  private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
+    private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
 
-  fun opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Grunnlagspakke {
-    val nyGrunnlagspakke = opprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity()
-    return grunnlagspakkeRepository.save(nyGrunnlagspakke)
-  }
-
-  fun opprettAinntekt(ainntektBo: AinntektBo): Ainntekt {
-    val nyInntekt = ainntektBo.toAinntektEntity()
-    return ainntektRepository.save(nyInntekt)
-  }
-
-  fun opprettAinntektspost(ainntektspostBo: AinntektspostBo): Ainntektspost {
-    val nyInntektspost = ainntektspostBo.toAinntektspostEntity()
-    return ainntektspostRepository.save(nyInntektspost)
-  }
-
-  fun opprettSkattegrunnlag(skattegrunnlagBo: SkattegrunnlagBo): Skattegrunnlag {
-    val nyInntekt = skattegrunnlagBo.toSkattegrunnlagEntity()
-    return skattegrunnlagRepository.save(nyInntekt)
-  }
-
-  fun opprettSkattegrunnlagspost(skattegrunnlagspostBo: SkattegrunnlagspostBo): Skattegrunnlagspost {
-    val nyInntektspost = skattegrunnlagspostBo.toSkattegrunnlagspostEntity()
-    return skattegrunnlagspostRepository.save(nyInntektspost)
-  }
-
-  fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
-    grunnlagspakkeId: Int,
-    personId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
-      grunnlagspakkeId,
-      personId,
-      timestampOppdatering
-    )
-  }
-
-  fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo)
-      : UtvidetBarnetrygdOgSmaabarnstillegg {
-    val nyUbst = utvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
-    return utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
-  }
-
-  fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
-      grunnlagspakkeId,
-      partPersonId,
-      timestampOppdatering,
-      BarnetilleggType.PENSJON.toString()
-    )
-  }
-
-  fun oppdaterEksisterendeRelatertPersonTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    relatertPersonRepository.oppdaterEksisterendeRelatertPersonTilInaktiv(
-      grunnlagspakkeId,
-      partPersonId,
-      timestampOppdatering
-    )
-  }
-
-  fun oppdaterEksisterendeSivilstandTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
-      grunnlagspakkeId,
-      partPersonId,
-      timestampOppdatering
-    )
-  }
-
-  fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
-    val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
-    return barnetilleggRepository.save(nyBarnetillegg)
-  }
-
-  fun opprettRelatertPerson(relatertPersonBo: RelatertPersonBo): RelatertPerson {
-    val nyRelatertPerson = relatertPersonBo.toRelatertPersonEntity()
-    return relatertPersonRepository.save(nyRelatertPerson)
-  }
-
-  fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
-    val nySivilstand = sivilstandBo.toSivilstandEntity()
-    return sivilstandRepository.save(nySivilstand)
-  }
-
-  // Returnerer lagret, komplett grunnlagspakke
-  fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
-    return HentGrunnlagspakkeDto(
-      grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
-      hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-      hentKontantstotte(grunnlagspakkeId), emptyList(), emptyList(), emptyList(), emptyList()
-    )
-  }
-
-  // Returnerer formaal som er angitt for grunnlagspakken
-  fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String {
-    return grunnlagspakkeRepository.hentFormaalGrunnlagspakke(grunnlagspakkeId)
-  }
-
-  // Valider at grunnlagspakke eksisterer
-  fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
-    if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId))
-      throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id ${grunnlagspakkeId} finnes ikke")
-  }
-
-  // Setter gyldig til-dato = dagens dato for angitt grunnlagspakke
-  fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
-    grunnlagspakkeRepository.lukkGrunnlagspakke(grunnlagspakkeId)
-    return grunnlagspakkeId
-  }
-
-  // Oppdaterer endret timestamp på grunnlagspakke, kalles ved oppdatering av grunnlag
-  fun oppdaterEndretTimestamp(grunnlagspakkeId: Int, timestampOppdatering: LocalDateTime): Int {
-    grunnlagspakkeRepository.oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
-    return grunnlagspakkeId
-  }
-
-  fun oppdaterAinntektForGrunnlagspakke(
-    grunnlagspakkeId: Int,
-    newAinntektForPersonId: List<PeriodComparable<AinntektBo, AinntektspostBo>>,
-    periodeFra: LocalDate,
-    periodeTil: LocalDate,
-    personId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
-    val ainntektPeriodComparator = AinntektPeriodComparator()
-
-    // Finner ut hvilke inntekter som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
-    val comparatorResult =
-      ainntektPeriodComparator.comparePeriodEntities(
-        Period(periodeFra, periodeTil),
-        newAinntektForPersonId,
-        existingAinntektForPersonId
-      )
-
-    // Setter utløpte Ainntekter til utløpt.
-    SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
-    comparatorResult.expiredEntities.forEach() { expiredEntity ->
-      val expiredAinntekt =
-        expiredEntity.periodEntity.copy(brukTil = timestampOppdatering, aktiv = false)
-          .toAinntektEntity()
-      ainntektRepository.save(expiredAinntekt)
+    fun opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Grunnlagspakke {
+        val nyGrunnlagspakke = opprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity()
+        return grunnlagspakkeRepository.save(nyGrunnlagspakke)
     }
-    // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
-    SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
-    comparatorResult.equalEntities.forEach() { equalEntity ->
-      val unchangedAinntekt =
-        equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
-      SECURE_LOGGER.debug("Oppdaterer for inntektId = ${unchangedAinntekt.inntektId}")
-      ainntektRepository.save(unchangedAinntekt)
-    }
-    // Lagrer nye Ainntekter og Ainntektsposter.
-    SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
-    comparatorResult.updatedEntities.forEach() { updatedEntity ->
-      val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
-      updatedEntity.children?.forEach() { ainntektspostDto ->
-        val updatedAinntekt =
-          ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
-        ainntektspostRepository.save(updatedAinntekt)
-      }
-    }
-  }
 
-  fun oppdaterSkattegrunnlagForGrunnlagspakke(
-    grunnlagspakkeId: Int,
-    newSkattegrunnlagForPersonId: List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>,
-    periodeFra: LocalDate,
-    periodeTil: LocalDate,
-    personId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    val existingAinntektForPersonId =
-      hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
-    val ainntektPeriodComparator = SkattegrunnlagPeriodComparator()
-
-    // Finner ut hvilke skattegrunnlag som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
-    val comparatorResult =
-      ainntektPeriodComparator.comparePeriodEntities(
-        Period(periodeFra, periodeTil),
-        newSkattegrunnlagForPersonId,
-        existingAinntektForPersonId
-      )
-
-    // Setter utløpte skattegrunnlag til utløpt.
-    SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende skattegrunnlag til utløpt.")
-    comparatorResult.expiredEntities.forEach() { expiredEntity ->
-      val expiredSkattegrunnlag =
-        expiredEntity.periodEntity.copy(aktiv = false, brukTil = timestampOppdatering)
-          .toSkattegrunnlagEntity()
-      skattegrunnlagRepository.save(expiredSkattegrunnlag)
+    fun opprettAinntekt(ainntektBo: AinntektBo): Ainntekt {
+        val nyInntekt = ainntektBo.toAinntektEntity()
+        return ainntektRepository.save(nyInntekt)
     }
-    // Oppdaterer hentet tidspunkt for uendrede skattegrunnlag.
-    SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
-    comparatorResult.equalEntities.forEach() { equalEntity ->
-      val unchangedSkattegrunnlag =
-        equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering)
-          .toSkattegrunnlagEntity()
-      skattegrunnlagRepository.save(unchangedSkattegrunnlag)
-    }
-    // Lagrer nye skattegrunnlag og skattegrunnlagsposter.
-    SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye skattegrunnlag med underliggende skattegrunnlagsposter")
-    comparatorResult.updatedEntities.forEach() { updatedEntity ->
-      val updatedSkattegrunnlag =
-        skattegrunnlagRepository.save(updatedEntity.periodEntity.toSkattegrunnlagEntity())
-      updatedEntity.children?.forEach() { ainntektspostDto ->
-        val skattegrunnlagspost =
-          ainntektspostDto.copy(skattegrunnlagId = updatedSkattegrunnlag.skattegrunnlagId)
-            .toSkattegrunnlagspostEntity()
-        skattegrunnlagspostRepository.save(skattegrunnlagspost)
-      }
-    }
-  }
 
-  fun hentAinntekt(grunnlagspakkeId: Int): List<AinntektDto> {
-    val ainntektDtoListe = mutableListOf<AinntektDto>()
-    ainntektRepository.hentAinntekter(grunnlagspakkeId)
-      .forEach { inntekt ->
-        val hentAinntektspostListe = mutableListOf<AinntektspostDto>()
-        ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
-          .forEach { inntektspost ->
-            hentAinntektspostListe.add(
-              AinntektspostDto(
-                inntektspost.utbetalingsperiode,
-                inntektspost.opptjeningsperiodeFra,
-                inntektspost.opptjeningsperiodeTil,
-                inntektspost.opplysningspliktigId,
-                inntektspost.virksomhetId,
-                inntektspost.inntektType,
-                inntektspost.fordelType,
-                inntektspost.beskrivelse,
-                inntektspost.belop,
-                inntektspost.etterbetalingsperiodeFra,
-                inntektspost.etterbetalingsperiodeTil
-              )
-            )
-          }
-        ainntektDtoListe.add(
-          AinntektDto(
-            personId = inntekt.personId,
-            periodeFra = inntekt.periodeFra,
-            periodeTil = inntekt.periodeTil,
-            aktiv = inntekt.aktiv,
-            brukFra = inntekt.brukFra,
-            brukTil = inntekt.brukTil,
-            hentetTidspunkt = inntekt.hentetTidspunkt,
-            ainntektspostListe = hentAinntektspostListe
-          )
+    fun opprettAinntektspost(ainntektspostBo: AinntektspostBo): Ainntektspost {
+        val nyInntektspost = ainntektspostBo.toAinntektspostEntity()
+        return ainntektspostRepository.save(nyInntektspost)
+    }
+
+    fun opprettSkattegrunnlag(skattegrunnlagBo: SkattegrunnlagBo): Skattegrunnlag {
+        val nyInntekt = skattegrunnlagBo.toSkattegrunnlagEntity()
+        return skattegrunnlagRepository.save(nyInntekt)
+    }
+
+    fun opprettSkattegrunnlagspost(skattegrunnlagspostBo: SkattegrunnlagspostBo): Skattegrunnlagspost {
+        val nyInntektspost = skattegrunnlagspostBo.toSkattegrunnlagspostEntity()
+        return skattegrunnlagspostRepository.save(nyInntektspost)
+    }
+
+    fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+        grunnlagspakkeId: Int,
+        personId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+            grunnlagspakkeId,
+            personId,
+            timestampOppdatering
         )
-      }
+    }
 
-    return ainntektDtoListe
+    fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo): UtvidetBarnetrygdOgSmaabarnstillegg {
+        val nyUbst = utvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
+        return utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
+    }
 
-  }
+    fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering,
+            BarnetilleggType.PENSJON.toString()
+        )
+    }
 
-  fun hentAinntektForPersonIdToCompare(
-    grunnlagspakkeId: Int,
-    personId: String
-  ): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
-    val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
-    ainntektRepository.hentAinntekter(grunnlagspakkeId)
-      .forEach { inntekt ->
-        SECURE_LOGGER.debug("Hentet eksisterende ainntekter med id ${inntekt.inntektId}")
-        if (inntekt.personId == personId) {
-          val ainntektspostListe = mutableListOf<AinntektspostBo>()
-          ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
-            .forEach() { ainntektspost ->
-              ainntektspostListe.add(ainntektspost.toAinntektspostBo())
+    fun oppdaterEksisterendeRelatertPersonTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        relatertPersonRepository.oppdaterEksisterendeRelatertPersonTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
+        )
+    }
+
+    fun oppdaterEksisterendeSivilstandTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
+        )
+    }
+
+    fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
+        val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
+        return barnetilleggRepository.save(nyBarnetillegg)
+    }
+
+    fun opprettRelatertPerson(relatertPersonBo: RelatertPersonBo): RelatertPerson {
+        val nyRelatertPerson = relatertPersonBo.toRelatertPersonEntity()
+        return relatertPersonRepository.save(nyRelatertPerson)
+    }
+
+    fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
+        val nySivilstand = sivilstandBo.toSivilstandEntity()
+        return sivilstandRepository.save(nySivilstand)
+    }
+
+    // Returnerer lagret, komplett grunnlagspakke
+    fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
+        return HentGrunnlagspakkeDto(
+            grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
+            hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
+            hentKontantstotte(grunnlagspakkeId), emptyList(), emptyList(), emptyList(), emptyList()
+        )
+    }
+
+    // Returnerer formaal som er angitt for grunnlagspakken
+    fun hentFormaalGrunnlagspakke(grunnlagspakkeId: Int): String {
+        return grunnlagspakkeRepository.hentFormaalGrunnlagspakke(grunnlagspakkeId)
+    }
+
+    // Valider at grunnlagspakke eksisterer
+    fun validerGrunnlagspakke(grunnlagspakkeId: Int) {
+        if (!grunnlagspakkeRepository.existsById(grunnlagspakkeId)) {
+            throw InvalidGrunnlagspakkeIdException("Grunnlagspakke med id $grunnlagspakkeId finnes ikke")
+        }
+    }
+
+    // Setter gyldig til-dato = dagens dato for angitt grunnlagspakke
+    fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
+        grunnlagspakkeRepository.lukkGrunnlagspakke(grunnlagspakkeId)
+        return grunnlagspakkeId
+    }
+
+    // Oppdaterer endret timestamp på grunnlagspakke, kalles ved oppdatering av grunnlag
+    fun oppdaterEndretTimestamp(grunnlagspakkeId: Int, timestampOppdatering: LocalDateTime): Int {
+        grunnlagspakkeRepository.oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
+        return grunnlagspakkeId
+    }
+
+    fun oppdaterAinntektForGrunnlagspakke(
+        grunnlagspakkeId: Int,
+        newAinntektForPersonId: List<PeriodComparable<AinntektBo, AinntektspostBo>>,
+        periodeFra: LocalDate,
+        periodeTil: LocalDate,
+        personId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
+        val ainntektPeriodComparator = AinntektPeriodComparator()
+
+        // Finner ut hvilke inntekter som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
+        val comparatorResult =
+            ainntektPeriodComparator.comparePeriodEntities(
+                Period(periodeFra, periodeTil),
+                newAinntektForPersonId,
+                existingAinntektForPersonId
+            )
+
+        // Setter utløpte Ainntekter til utløpt.
+        SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
+        comparatorResult.expiredEntities.forEach() { expiredEntity ->
+            val expiredAinntekt =
+                expiredEntity.periodEntity.copy(brukTil = timestampOppdatering, aktiv = false)
+                    .toAinntektEntity()
+            ainntektRepository.save(expiredAinntekt)
+        }
+        // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
+        SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
+        comparatorResult.equalEntities.forEach() { equalEntity ->
+            val unchangedAinntekt =
+                equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
+            SECURE_LOGGER.debug("Oppdaterer for inntektId = ${unchangedAinntekt.inntektId}")
+            ainntektRepository.save(unchangedAinntekt)
+        }
+        // Lagrer nye Ainntekter og Ainntektsposter.
+        SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
+        comparatorResult.updatedEntities.forEach() { updatedEntity ->
+            val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
+            updatedEntity.children?.forEach() { ainntektspostDto ->
+                val updatedAinntekt =
+                    ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
+                ainntektspostRepository.save(updatedAinntekt)
             }
-          ainntektForPersonIdListe.add(
-            PeriodComparable(inntekt.toAinntektBo(), ainntektspostListe)
-          )
         }
-      }
+    }
 
-    return ainntektForPersonIdListe
-  }
+    fun oppdaterSkattegrunnlagForGrunnlagspakke(
+        grunnlagspakkeId: Int,
+        newSkattegrunnlagForPersonId: List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>,
+        periodeFra: LocalDate,
+        periodeTil: LocalDate,
+        personId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        val existingAinntektForPersonId =
+            hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
+        val ainntektPeriodComparator = SkattegrunnlagPeriodComparator()
 
-  fun hentSkattegrunnlagForPersonIdToCompare(
-    grunnlagspakkeId: Int,
-    personId: String
-  ): List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>> {
-    val skattegrunnlagForPersonIdListe =
-      mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
-    skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
-      .forEach { skattegrunnlag ->
-        if (skattegrunnlag.personId == personId) {
-          val skattegrunnlagpostListe = mutableListOf<SkattegrunnlagspostBo>()
-          skattegrunnlagspostRepository.hentSkattegrunnlagsposter(skattegrunnlag.skattegrunnlagId)
-            .forEach() { skattegrunnlagspost -> skattegrunnlagpostListe.add(skattegrunnlagspost.toSkattegrunnlagspostBo()) }
-          skattegrunnlagForPersonIdListe.add(
-            PeriodComparable(skattegrunnlag.toSkattegrunnlagBo(), skattegrunnlagpostListe)
-          )
-        }
-      }
-    return skattegrunnlagForPersonIdListe
-  }
-
-  fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<SkattegrunnlagDto> {
-    val skattegrunnlagDtoListe = mutableListOf<SkattegrunnlagDto>()
-    skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
-      .forEach { inntekt ->
-        val hentSkattegrunnlagspostListe = mutableListOf<SkattegrunnlagspostDto>()
-        skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
-          .forEach { inntektspost ->
-            hentSkattegrunnlagspostListe.add(
-              SkattegrunnlagspostDto(
-                skattegrunnlagType = inntektspost.skattegrunnlagType,
-                inntektType = inntektspost.inntektType,
-                belop = inntektspost.belop
-              )
+        // Finner ut hvilke skattegrunnlag som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
+        val comparatorResult =
+            ainntektPeriodComparator.comparePeriodEntities(
+                Period(periodeFra, periodeTil),
+                newSkattegrunnlagForPersonId,
+                existingAinntektForPersonId
             )
-          }
-        skattegrunnlagDtoListe.add(
-          SkattegrunnlagDto(
-            personId = inntekt.personId,
-            periodeFra = inntekt.periodeFra,
-            periodeTil = inntekt.periodeTil,
-            aktiv = inntekt.aktiv,
-            brukFra = inntekt.brukFra,
-            brukTil = inntekt.brukTil,
-            hentetTidspunkt = inntekt.hentetTidspunkt,
-            hentSkattegrunnlagspostListe
-          )
-        )
-      }
 
-    return skattegrunnlagDtoListe
-
-  }
-
-  fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
-    val utvidetBarnetrygdOgSmaabarnstilleggDtoListe =
-      mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
-    utvidetBarnetrygdOgSmaabarnstilleggRepository.hentUbst(grunnlagspakkeId)
-      .forEach { ubst ->
-        utvidetBarnetrygdOgSmaabarnstilleggDtoListe.add(
-          UtvidetBarnetrygdOgSmaabarnstilleggDto(
-            personId = ubst.personId,
-            type = ubst.type,
-            periodeFra = ubst.periodeFra,
-            periodeTil = ubst.periodeTil,
-            aktiv = ubst.aktiv,
-            brukFra = ubst.brukFra,
-            brukTil = ubst.brukTil,
-            belop = ubst.belop,
-            manueltBeregnet = ubst.manueltBeregnet,
-            hentetTidspunkt = ubst.hentetTidspunkt
-          )
-        )
-      }
-    return utvidetBarnetrygdOgSmaabarnstilleggDtoListe
-  }
-
-  fun hentBarnetillegg(grunnlagspakkeId: Int): List<BarnetilleggDto> {
-    val barnetilleggDtoListe = mutableListOf<BarnetilleggDto>()
-    barnetilleggRepository.hentBarnetillegg(grunnlagspakkeId)
-      .forEach { barnetillegg ->
-        barnetilleggDtoListe.add(
-          BarnetilleggDto(
-            partPersonId = barnetillegg.partPersonId,
-            barnPersonId = barnetillegg.barnPersonId,
-            barnetilleggType = barnetillegg.barnetilleggType,
-            periodeFra = barnetillegg.periodeFra,
-            periodeTil = barnetillegg.periodeTil,
-            aktiv = barnetillegg.aktiv,
-            brukFra = barnetillegg.brukFra,
-            brukTil = barnetillegg.brukTil,
-            belopBrutto = barnetillegg.belopBrutto,
-            barnType = barnetillegg.barnType,
-            hentetTidspunkt = barnetillegg.hentetTidspunkt
-          )
-        )
-      }
-    return barnetilleggDtoListe
-  }
-
-  fun hentKontantstotte(grunnlagspakkeId: Int): List<KontantstotteDto> {
-    val kontantstotteDtoListe = mutableListOf<KontantstotteDto>()
-    kontantstotteRepository.hentKontantstotte(grunnlagspakkeId)
-      .forEach { kontantstotte ->
-        kontantstotteDtoListe.add(
-          KontantstotteDto(
-            partPersonId = kontantstotte.partPersonId,
-            barnPersonId = kontantstotte.barnPersonId,
-            periodeFra = kontantstotte.periodeFra,
-            periodeTil = kontantstotte.periodeTil,
-            aktiv = kontantstotte.aktiv,
-            brukFra = kontantstotte.brukFra,
-            brukTil = kontantstotte.brukTil,
-            belop = kontantstotte.belop,
-            hentetTidspunkt = kontantstotte.hentetTidspunkt
-          )
-        )
-      }
-    return kontantstotteDtoListe
-  }
-
-  fun opprettKontantstotte(kontantstotteBo: KontantstotteBo): Kontantstotte {
-    val nyKontantstotte = kontantstotteBo.toKontantstotteEntity()
-    return kontantstotteRepository.save(nyKontantstotte)
-  }
-
-  fun oppdaterEksisterendeKontantstotteTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
-      grunnlagspakkeId,
-      partPersonId,
-      timestampOppdatering
-    )
-  }
-
-  fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<RelatertPersonDto> {
-    val egneBarnDtoListe = mutableListOf<RelatertPersonDto>()
-    // Filtrerer vekk relaterte personer som ikke er barn av BM/BP
-    val relatertPersonListe = relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.erBarnAvBmBp }
-    // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
-    // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
-    // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
-    var behandletPerson: String? = null
-
-    relatertPersonListe.forEach { relatertPerson ->
-      if (relatertPerson.relatertPersonPersonId != behandletPerson) {
-        val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
-        val alleForekomsterAvRelatertPerson = relatertPersonListe.filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
-        alleForekomsterAvRelatertPerson.forEach { person ->
-          if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
-            borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
-          }
+        // Setter utløpte skattegrunnlag til utløpt.
+        SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende skattegrunnlag til utløpt.")
+        comparatorResult.expiredEntities.forEach() { expiredEntity ->
+            val expiredSkattegrunnlag =
+                expiredEntity.periodEntity.copy(aktiv = false, brukTil = timestampOppdatering)
+                    .toSkattegrunnlagEntity()
+            skattegrunnlagRepository.save(expiredSkattegrunnlag)
         }
-
-        egneBarnDtoListe.add(RelatertPersonDto(
-          partPersonId = relatertPerson.partPersonId,
-          relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
-          navn = relatertPerson.navn,
-          fodselsdato = relatertPerson.fodselsdato,
-          erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
-          aktiv = relatertPerson.aktiv,
-          brukFra = relatertPerson.brukFra,
-          brukTil = relatertPerson.brukTil,
-          hentetTidspunkt = relatertPerson.hentetTidspunkt,
-          borISammeHusstandDtoListe = borISammeHusstandListe
-        ))
-        behandletPerson = relatertPerson.relatertPersonPersonId
-      }
-    }
-    return egneBarnDtoListe
-  }
-
- // Filtrer vekk husstandsmedlemmer som ikke har fyllt 18 ved virkningstidspunkt. Må gjøres i bidrag-behandling.
- // Endringer gjelder alltid fra neste måned. 01.07 -> 01.08
- // Alle husstandsmedlemmer skal returneres for manuell vurdering.
-  // For egne barn i egen husstand skal barn over 22 år filtreres bort, må gjøres i bidrag-behandling.
-
-  fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<RelatertPersonDto> {
-    val voksneHusstandsmedlemmerDtoListe = mutableListOf<RelatertPersonDto>()
-
-    // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
-    // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
-    // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
-    var behandletPerson: String? = null
-
-    relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).forEach { relatertPerson ->
-      if (relatertPerson.relatertPersonPersonId != behandletPerson) {
-        val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
-        val alleForekomsterAvRelatertPerson =
-          relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
-        alleForekomsterAvRelatertPerson.forEach { person ->
-          if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
-            borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
-          }
+        // Oppdaterer hentet tidspunkt for uendrede skattegrunnlag.
+        SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
+        comparatorResult.equalEntities.forEach() { equalEntity ->
+            val unchangedSkattegrunnlag =
+                equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering)
+                    .toSkattegrunnlagEntity()
+            skattegrunnlagRepository.save(unchangedSkattegrunnlag)
         }
-
-        voksneHusstandsmedlemmerDtoListe.add(RelatertPersonDto(
-          partPersonId = relatertPerson.partPersonId,
-          relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
-          navn = relatertPerson.navn,
-          fodselsdato = relatertPerson.fodselsdato,
-          erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
-          aktiv = relatertPerson.aktiv,
-          brukFra = relatertPerson.brukFra,
-          brukTil = relatertPerson.brukTil,
-          hentetTidspunkt = relatertPerson.hentetTidspunkt,
-          borISammeHusstandDtoListe = borISammeHusstandListe
-        ))
-        behandletPerson = relatertPerson.relatertPersonPersonId
-      }
+        // Lagrer nye skattegrunnlag og skattegrunnlagsposter.
+        SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye skattegrunnlag med underliggende skattegrunnlagsposter")
+        comparatorResult.updatedEntities.forEach() { updatedEntity ->
+            val updatedSkattegrunnlag =
+                skattegrunnlagRepository.save(updatedEntity.periodEntity.toSkattegrunnlagEntity())
+            updatedEntity.children?.forEach() { ainntektspostDto ->
+                val skattegrunnlagspost =
+                    ainntektspostDto.copy(skattegrunnlagId = updatedSkattegrunnlag.skattegrunnlagId)
+                        .toSkattegrunnlagspostEntity()
+                skattegrunnlagspostRepository.save(skattegrunnlagspost)
+            }
+        }
     }
-    return voksneHusstandsmedlemmerDtoListe
-  }
 
-  fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
-    val sivilstandDtoListe = mutableListOf<SivilstandDto>()
-    sivilstandRepository.hentSivilstand(grunnlagspakkeId)
-      .forEach { sivilstand ->
-        sivilstandDtoListe.add(
-          SivilstandDto(
-            personId = sivilstand.personId,
-            periodeFra = sivilstand.periodeFra,
-            periodeTil = sivilstand.periodeTil,
-            sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
-            hentetTidspunkt = sivilstand.hentetTidspunkt
-          )
+    fun hentAinntekt(grunnlagspakkeId: Int): List<AinntektDto> {
+        val ainntektDtoListe = mutableListOf<AinntektDto>()
+        ainntektRepository.hentAinntekter(grunnlagspakkeId)
+            .forEach { inntekt ->
+                val hentAinntektspostListe = mutableListOf<AinntektspostDto>()
+                ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
+                    .forEach { inntektspost ->
+                        hentAinntektspostListe.add(
+                            AinntektspostDto(
+                                inntektspost.utbetalingsperiode,
+                                inntektspost.opptjeningsperiodeFra,
+                                inntektspost.opptjeningsperiodeTil,
+                                inntektspost.opplysningspliktigId,
+                                inntektspost.virksomhetId,
+                                inntektspost.inntektType,
+                                inntektspost.fordelType,
+                                inntektspost.beskrivelse,
+                                inntektspost.belop,
+                                inntektspost.etterbetalingsperiodeFra,
+                                inntektspost.etterbetalingsperiodeTil
+                            )
+                        )
+                    }
+                ainntektDtoListe.add(
+                    AinntektDto(
+                        personId = inntekt.personId,
+                        periodeFra = inntekt.periodeFra,
+                        periodeTil = inntekt.periodeTil,
+                        aktiv = inntekt.aktiv,
+                        brukFra = inntekt.brukFra,
+                        brukTil = inntekt.brukTil,
+                        hentetTidspunkt = inntekt.hentetTidspunkt,
+                        ainntektspostListe = hentAinntektspostListe
+                    )
+                )
+            }
+
+        return ainntektDtoListe
+    }
+
+    fun hentAinntektForPersonIdToCompare(
+        grunnlagspakkeId: Int,
+        personId: String
+    ): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
+        val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
+        ainntektRepository.hentAinntekter(grunnlagspakkeId)
+            .forEach { inntekt ->
+                SECURE_LOGGER.debug("Hentet eksisterende ainntekter med id ${inntekt.inntektId}")
+                if (inntekt.personId == personId) {
+                    val ainntektspostListe = mutableListOf<AinntektspostBo>()
+                    ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
+                        .forEach() { ainntektspost ->
+                            ainntektspostListe.add(ainntektspost.toAinntektspostBo())
+                        }
+                    ainntektForPersonIdListe.add(
+                        PeriodComparable(inntekt.toAinntektBo(), ainntektspostListe)
+                    )
+                }
+            }
+
+        return ainntektForPersonIdListe
+    }
+
+    fun hentSkattegrunnlagForPersonIdToCompare(
+        grunnlagspakkeId: Int,
+        personId: String
+    ): List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>> {
+        val skattegrunnlagForPersonIdListe =
+            mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
+        skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
+            .forEach { skattegrunnlag ->
+                if (skattegrunnlag.personId == personId) {
+                    val skattegrunnlagpostListe = mutableListOf<SkattegrunnlagspostBo>()
+                    skattegrunnlagspostRepository.hentSkattegrunnlagsposter(skattegrunnlag.skattegrunnlagId)
+                        .forEach() { skattegrunnlagspost -> skattegrunnlagpostListe.add(skattegrunnlagspost.toSkattegrunnlagspostBo()) }
+                    skattegrunnlagForPersonIdListe.add(
+                        PeriodComparable(skattegrunnlag.toSkattegrunnlagBo(), skattegrunnlagpostListe)
+                    )
+                }
+            }
+        return skattegrunnlagForPersonIdListe
+    }
+
+    fun hentSkattegrunnlag(grunnlagspakkeId: Int): List<SkattegrunnlagDto> {
+        val skattegrunnlagDtoListe = mutableListOf<SkattegrunnlagDto>()
+        skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
+            .forEach { inntekt ->
+                val hentSkattegrunnlagspostListe = mutableListOf<SkattegrunnlagspostDto>()
+                skattegrunnlagspostRepository.hentSkattegrunnlagsposter(inntekt.skattegrunnlagId)
+                    .forEach { inntektspost ->
+                        hentSkattegrunnlagspostListe.add(
+                            SkattegrunnlagspostDto(
+                                skattegrunnlagType = inntektspost.skattegrunnlagType,
+                                inntektType = inntektspost.inntektType,
+                                belop = inntektspost.belop
+                            )
+                        )
+                    }
+                skattegrunnlagDtoListe.add(
+                    SkattegrunnlagDto(
+                        personId = inntekt.personId,
+                        periodeFra = inntekt.periodeFra,
+                        periodeTil = inntekt.periodeTil,
+                        aktiv = inntekt.aktiv,
+                        brukFra = inntekt.brukFra,
+                        brukTil = inntekt.brukTil,
+                        hentetTidspunkt = inntekt.hentetTidspunkt,
+                        hentSkattegrunnlagspostListe
+                    )
+                )
+            }
+
+        return skattegrunnlagDtoListe
+    }
+
+    fun hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstilleggDto> {
+        val utvidetBarnetrygdOgSmaabarnstilleggDtoListe =
+            mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggDto>()
+        utvidetBarnetrygdOgSmaabarnstilleggRepository.hentUbst(grunnlagspakkeId)
+            .forEach { ubst ->
+                utvidetBarnetrygdOgSmaabarnstilleggDtoListe.add(
+                    UtvidetBarnetrygdOgSmaabarnstilleggDto(
+                        personId = ubst.personId,
+                        type = ubst.type,
+                        periodeFra = ubst.periodeFra,
+                        periodeTil = ubst.periodeTil,
+                        aktiv = ubst.aktiv,
+                        brukFra = ubst.brukFra,
+                        brukTil = ubst.brukTil,
+                        belop = ubst.belop,
+                        manueltBeregnet = ubst.manueltBeregnet,
+                        hentetTidspunkt = ubst.hentetTidspunkt
+                    )
+                )
+            }
+        return utvidetBarnetrygdOgSmaabarnstilleggDtoListe
+    }
+
+    fun hentBarnetillegg(grunnlagspakkeId: Int): List<BarnetilleggDto> {
+        val barnetilleggDtoListe = mutableListOf<BarnetilleggDto>()
+        barnetilleggRepository.hentBarnetillegg(grunnlagspakkeId)
+            .forEach { barnetillegg ->
+                barnetilleggDtoListe.add(
+                    BarnetilleggDto(
+                        partPersonId = barnetillegg.partPersonId,
+                        barnPersonId = barnetillegg.barnPersonId,
+                        barnetilleggType = barnetillegg.barnetilleggType,
+                        periodeFra = barnetillegg.periodeFra,
+                        periodeTil = barnetillegg.periodeTil,
+                        aktiv = barnetillegg.aktiv,
+                        brukFra = barnetillegg.brukFra,
+                        brukTil = barnetillegg.brukTil,
+                        belopBrutto = barnetillegg.belopBrutto,
+                        barnType = barnetillegg.barnType,
+                        hentetTidspunkt = barnetillegg.hentetTidspunkt
+                    )
+                )
+            }
+        return barnetilleggDtoListe
+    }
+
+    fun hentKontantstotte(grunnlagspakkeId: Int): List<KontantstotteDto> {
+        val kontantstotteDtoListe = mutableListOf<KontantstotteDto>()
+        kontantstotteRepository.hentKontantstotte(grunnlagspakkeId)
+            .forEach { kontantstotte ->
+                kontantstotteDtoListe.add(
+                    KontantstotteDto(
+                        partPersonId = kontantstotte.partPersonId,
+                        barnPersonId = kontantstotte.barnPersonId,
+                        periodeFra = kontantstotte.periodeFra,
+                        periodeTil = kontantstotte.periodeTil,
+                        aktiv = kontantstotte.aktiv,
+                        brukFra = kontantstotte.brukFra,
+                        brukTil = kontantstotte.brukTil,
+                        belop = kontantstotte.belop,
+                        hentetTidspunkt = kontantstotte.hentetTidspunkt
+                    )
+                )
+            }
+        return kontantstotteDtoListe
+    }
+
+    fun opprettKontantstotte(kontantstotteBo: KontantstotteBo): Kontantstotte {
+        val nyKontantstotte = kontantstotteBo.toKontantstotteEntity()
+        return kontantstotteRepository.save(nyKontantstotte)
+    }
+
+    fun oppdaterEksisterendeKontantstotteTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
         )
-      }
-    return sivilstandDtoListe
-  }
+    }
 
-  fun opprettBarnetilsyn(barnetilsynBo: BarnetilsynBo): Barnetilsyn {
-    val nyBarnetilsyn = barnetilsynBo.toBarnetilsynEntity()
-    return barnetilsynRepository.save(nyBarnetilsyn)
-  }
+    fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<RelatertPersonDto> {
+        val egneBarnDtoListe = mutableListOf<RelatertPersonDto>()
+        // Filtrerer vekk relaterte personer som ikke er barn av BM/BP
+        val relatertPersonListe = relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.erBarnAvBmBp }
+        // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
+        // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
+        // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
+        var behandletPerson: String? = null
 
-  fun hentBarnetilsyn(grunnlagspakkeId: Int): List<BarnetilsynDto> {
-    val barnetilsynDtoListe = mutableListOf<BarnetilsynDto>()
-    barnetilsynRepository.hentBarnetilsyn(grunnlagspakkeId)
-      .forEach { barnetilsyn ->
-        barnetilsynDtoListe.add(
-          BarnetilsynDto(
-            partPersonId = barnetilsyn.partPersonId,
-            barnPersonId = barnetilsyn.barnPersonId,
-            periodeFra = barnetilsyn.periodeFra,
-            periodeTil = barnetilsyn.periodeTil,
-            aktiv = barnetilsyn.aktiv,
-            brukFra = barnetilsyn.brukFra,
-            brukTil = barnetilsyn.brukTil,
-            belop = barnetilsyn.belop,
-            tilsynstype = barnetilsyn.tilsynstype?: Tilsyntype.IKKE_ANGITT,
-            skolealder = barnetilsyn.skolealder?: Skolealder.IKKE_ANGITT,
-            hentetTidspunkt = barnetilsyn.hentetTidspunkt
-          )
+        relatertPersonListe.forEach { relatertPerson ->
+            if (relatertPerson.relatertPersonPersonId != behandletPerson) {
+                val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
+                val alleForekomsterAvRelatertPerson = relatertPersonListe.filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
+                alleForekomsterAvRelatertPerson.forEach { person ->
+                    if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
+                        borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
+                    }
+                }
+
+                egneBarnDtoListe.add(
+                    RelatertPersonDto(
+                        partPersonId = relatertPerson.partPersonId,
+                        relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
+                        navn = relatertPerson.navn,
+                        fodselsdato = relatertPerson.fodselsdato,
+                        erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
+                        aktiv = relatertPerson.aktiv,
+                        brukFra = relatertPerson.brukFra,
+                        brukTil = relatertPerson.brukTil,
+                        hentetTidspunkt = relatertPerson.hentetTidspunkt,
+                        borISammeHusstandDtoListe = borISammeHusstandListe
+                    )
+                )
+                behandletPerson = relatertPerson.relatertPersonPersonId
+            }
+        }
+        return egneBarnDtoListe
+    }
+
+    // Filtrer vekk husstandsmedlemmer som ikke har fyllt 18 ved virkningstidspunkt. Må gjøres i bidrag-behandling.
+    // Endringer gjelder alltid fra neste måned. 01.07 -> 01.08
+    // Alle husstandsmedlemmer skal returneres for manuell vurdering.
+    // For egne barn i egen husstand skal barn over 22 år filtreres bort, må gjøres i bidrag-behandling.
+
+    fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<RelatertPersonDto> {
+        val voksneHusstandsmedlemmerDtoListe = mutableListOf<RelatertPersonDto>()
+
+        // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
+        // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
+        // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
+        var behandletPerson: String? = null
+
+        relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).forEach { relatertPerson ->
+            if (relatertPerson.relatertPersonPersonId != behandletPerson) {
+                val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
+                val alleForekomsterAvRelatertPerson =
+                    relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
+                alleForekomsterAvRelatertPerson.forEach { person ->
+                    if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
+                        borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
+                    }
+                }
+
+                voksneHusstandsmedlemmerDtoListe.add(
+                    RelatertPersonDto(
+                        partPersonId = relatertPerson.partPersonId,
+                        relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
+                        navn = relatertPerson.navn,
+                        fodselsdato = relatertPerson.fodselsdato,
+                        erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
+                        aktiv = relatertPerson.aktiv,
+                        brukFra = relatertPerson.brukFra,
+                        brukTil = relatertPerson.brukTil,
+                        hentetTidspunkt = relatertPerson.hentetTidspunkt,
+                        borISammeHusstandDtoListe = borISammeHusstandListe
+                    )
+                )
+                behandletPerson = relatertPerson.relatertPersonPersonId
+            }
+        }
+        return voksneHusstandsmedlemmerDtoListe
+    }
+
+    fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
+        val sivilstandDtoListe = mutableListOf<SivilstandDto>()
+        sivilstandRepository.hentSivilstand(grunnlagspakkeId)
+            .forEach { sivilstand ->
+                sivilstandDtoListe.add(
+                    SivilstandDto(
+                        personId = sivilstand.personId,
+                        periodeFra = sivilstand.periodeFra,
+                        periodeTil = sivilstand.periodeTil,
+                        sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
+                        hentetTidspunkt = sivilstand.hentetTidspunkt
+                    )
+                )
+            }
+        return sivilstandDtoListe
+    }
+
+    fun opprettBarnetilsyn(barnetilsynBo: BarnetilsynBo): Barnetilsyn {
+        val nyBarnetilsyn = barnetilsynBo.toBarnetilsynEntity()
+        return barnetilsynRepository.save(nyBarnetilsyn)
+    }
+
+    fun hentBarnetilsyn(grunnlagspakkeId: Int): List<BarnetilsynDto> {
+        val barnetilsynDtoListe = mutableListOf<BarnetilsynDto>()
+        barnetilsynRepository.hentBarnetilsyn(grunnlagspakkeId)
+            .forEach { barnetilsyn ->
+                barnetilsynDtoListe.add(
+                    BarnetilsynDto(
+                        partPersonId = barnetilsyn.partPersonId,
+                        barnPersonId = barnetilsyn.barnPersonId,
+                        periodeFra = barnetilsyn.periodeFra,
+                        periodeTil = barnetilsyn.periodeTil,
+                        aktiv = barnetilsyn.aktiv,
+                        brukFra = barnetilsyn.brukFra,
+                        brukTil = barnetilsyn.brukTil,
+                        belop = barnetilsyn.belop,
+                        tilsynstype = barnetilsyn.tilsynstype ?: Tilsyntype.IKKE_ANGITT,
+                        skolealder = barnetilsyn.skolealder ?: Skolealder.IKKE_ANGITT,
+                        hentetTidspunkt = barnetilsyn.hentetTidspunkt
+                    )
+                )
+            }
+        return barnetilsynDtoListe
+    }
+
+    fun oppdaterEksisterendeBarnetilsynTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
         )
-      }
-    return barnetilsynDtoListe
-  }
-
-
-  fun oppdaterEksisterendeBarnetilsynTilInaktiv(
-    grunnlagspakkeId: Int,
-    partPersonId: String,
-    timestampOppdatering: LocalDateTime
-  ) {
-    barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
-      grunnlagspakkeId,
-      partPersonId,
-      timestampOppdatering
-    )
-  }
+    }
 }
