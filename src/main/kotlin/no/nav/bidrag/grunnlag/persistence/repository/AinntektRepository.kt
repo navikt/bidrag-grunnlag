@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query
 
 interface AinntektRepository : JpaRepository<Ainntekt, Int?> {
 
-  @Query(
-    "select ain from Ainntekt ain where ain.grunnlagspakkeId = :grunnlagspakkeId and ain.aktiv = true order by ain.personId, ain.periodeFra"
-  )
-  fun hentAinntekter(grunnlagspakkeId: Int): List<Ainntekt>
+    @Query(
+        "select ain from Ainntekt ain where ain.grunnlagspakkeId = :grunnlagspakkeId and ain.aktiv = true order by ain.personId, ain.periodeFra"
+    )
+    fun hentAinntekter(grunnlagspakkeId: Int): List<Ainntekt>
 }

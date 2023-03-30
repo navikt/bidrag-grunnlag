@@ -7,26 +7,27 @@ import kotlin.reflect.full.memberProperties
 
 data class SkattegrunnlagspostBo(
 
-  @Schema(description = "Skattegrunnlag-id")
-  val skattegrunnlagId: Int = 0,
+    @Schema(description = "Skattegrunnlag-id")
+    val skattegrunnlagId: Int = 0,
 
-  @Schema(description = "Ordinær eller Svalbard")
-  val skattegrunnlagType: String,
+    @Schema(description = "Ordinær eller Svalbard")
+    val skattegrunnlagType: String,
 
-  @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
-  val inntektType: String,
+    @Schema(description = "Type inntekt, Lonnsinntekt, Naeringsinntekt, Pensjon eller trygd, Ytelse fra offentlig")
+    val inntektType: String,
 
-  @Schema(description = "Belop")
-  val belop: BigDecimal
+    @Schema(description = "Belop")
+    val belop: BigDecimal
 )
 
 fun SkattegrunnlagspostBo.toSkattegrunnlagspostEntity() = with(::Skattegrunnlagspost) {
-  val propertiesByName = SkattegrunnlagspostBo::class.memberProperties.associateBy { it.name }
-  callBy(parameters.associateWith { parameter ->
-    when (parameter.name) {
-      Skattegrunnlagspost::skattegrunnlagspostId.name -> 0
-      else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostEntity)
-    }
-  })
-
+    val propertiesByName = SkattegrunnlagspostBo::class.memberProperties.associateBy { it.name }
+    callBy(
+        parameters.associateWith { parameter ->
+            when (parameter.name) {
+                Skattegrunnlagspost::skattegrunnlagspostId.name -> 0
+                else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostEntity)
+            }
+        }
+    )
 }

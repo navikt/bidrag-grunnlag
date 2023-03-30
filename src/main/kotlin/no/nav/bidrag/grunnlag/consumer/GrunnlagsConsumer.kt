@@ -9,16 +9,16 @@ import org.springframework.http.MediaType
 
 open class GrunnlagsConsumer {
 
-  fun <T> logResponse(logger: Logger, restResponse: RestResponse<T>) {
-    when (restResponse) {
-      is RestResponse.Success -> logger.info("Response: ${HttpStatus.OK}")
-      is RestResponse.Failure -> logger.warn("Response: ${restResponse.statusCode}/${restResponse.message}")
+    fun <T> logResponse(logger: Logger, restResponse: RestResponse<T>) {
+        when (restResponse) {
+            is RestResponse.Success -> logger.info("Response: ${HttpStatus.OK}")
+            is RestResponse.Failure -> logger.warn("Response: ${restResponse.statusCode}/${restResponse.message}")
+        }
     }
-  }
 
-  fun <T> initHttpEntity(body: T): HttpEntity<T> {
-    val httpHeaders = HttpHeaders()
-    httpHeaders.contentType = MediaType.APPLICATION_JSON
-    return HttpEntity(body, httpHeaders)
-  }
+    fun <T> initHttpEntity(body: T): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+        return HttpEntity(body, httpHeaders)
+    }
 }

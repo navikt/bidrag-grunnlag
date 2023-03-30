@@ -19,7 +19,6 @@ import org.springframework.http.HttpHeaders
     info = Info(title = "bidrag-grunnlag", version = "v1"),
     security = [SecurityRequirement(name = "bearer-key")]
 )
-
 @Profile(TEST_PROFILE, LOCAL_PROFILE)
 class BidragGrunnlagTestConfig {
 

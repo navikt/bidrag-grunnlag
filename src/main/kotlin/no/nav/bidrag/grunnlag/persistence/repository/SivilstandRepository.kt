@@ -8,17 +8,16 @@ import java.time.LocalDateTime
 
 interface SivilstandRepository : JpaRepository<Sivilstand, Int?> {
 
-  @Query(
-    "select si from Sivilstand si where si.grunnlagspakkeId = :grunnlagspakkeId and si.aktiv = true order by si.personId, si.periodeFra"
-  )
-  fun hentSivilstand(grunnlagspakkeId: Int): List<Sivilstand>
+    @Query(
+        "select si from Sivilstand si where si.grunnlagspakkeId = :grunnlagspakkeId and si.aktiv = true order by si.personId, si.periodeFra"
+    )
+    fun hentSivilstand(grunnlagspakkeId: Int): List<Sivilstand>
 
-  @Modifying
-  @Query(
-    "update Sivilstand sst " +
-        "set sst.aktiv = false, sst.brukTil = :timestampOppdatering " +
-        "where sst.grunnlagspakkeId = :grunnlagspakkeId and sst.personId = :personId and sst.aktiv = true"
-  )
-  fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
-
+    @Modifying
+    @Query(
+        "update Sivilstand sst " +
+            "set sst.aktiv = false, sst.brukTil = :timestampOppdatering " +
+            "where sst.grunnlagspakkeId = :grunnlagspakkeId and sst.personId = :personId and sst.aktiv = true"
+    )
+    fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
 }

@@ -8,16 +8,16 @@ import java.time.LocalDateTime
 
 interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetBarnetrygdOgSmaabarnstillegg, Int?> {
 
-  @Query(
-    "select ubst from UtvidetBarnetrygdOgSmaabarnstillegg ubst where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.aktiv = true order by ubst.personId, ubst.periodeFra"
-  )
-  fun hentUbst(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
+    @Query(
+        "select ubst from UtvidetBarnetrygdOgSmaabarnstillegg ubst where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.aktiv = true order by ubst.personId, ubst.periodeFra"
+    )
+    fun hentUbst(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
 
-  @Modifying
-  @Query(
-    "update UtvidetBarnetrygdOgSmaabarnstillegg ubst " +
-        "set ubst.aktiv = false, ubst.brukTil = :timestampOppdatering " +
-        "where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.personId = :personId and ubst.aktiv = true"
-  )
-  fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
+    @Modifying
+    @Query(
+        "update UtvidetBarnetrygdOgSmaabarnstillegg ubst " +
+            "set ubst.aktiv = false, ubst.brukTil = :timestampOppdatering " +
+            "where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.personId = :personId and ubst.aktiv = true"
+    )
+    fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
 }
