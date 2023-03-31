@@ -4,7 +4,8 @@ import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.behandling.felles.enums.SivilstandKode
+import no.nav.bidrag.domain.enums.Sivilstandstype
+import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
@@ -16,7 +17,6 @@ import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -247,7 +247,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentForelderBarnRelasjon(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonRequest::class.java
+                    PersonIdent::class.java
                 )
             )
         )
@@ -256,7 +256,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentNavnFoedselOgDoed(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonRequest::class.java
+                    PersonIdent::class.java
                 )
             )
         )
@@ -265,7 +265,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentHusstandsmedlemmer(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonRequest::class.java
+                    PersonIdent::class.java
                 )
             )
         )
@@ -324,7 +324,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentForelderBarnRelasjon(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonRequest::class.java
+                    PersonIdent::class.java
                 )
             )
         )
@@ -333,7 +333,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentNavnFoedselOgDoed(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonRequest::class.java
+                    PersonIdent::class.java
                 )
             )
         )
@@ -342,7 +342,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentHusstandsmedlemmer(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonRequest::class.java
+                    PersonIdent::class.java
                 )
             )
         )
@@ -427,7 +427,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonRequest::class.java
+                    PersonIdent::class.java
                 )
             )
         )
@@ -455,17 +455,17 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(sivilstandListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
             { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(SivilstandKode.ENSLIG.toString()) },
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.SEPARERT_PARTNER.toString()) },
 
             { Assertions.assertThat(sivilstandListe[1].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(sivilstandListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(SivilstandKode.SAMBOER.toString()) },
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.ENKE_ELLER_ENKEMANN.toString()) },
 
             { Assertions.assertThat(sivilstandListe[2].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(sivilstandListe[2].periodeFra).isEqualTo(LocalDate.parse("2021-09-01")) },
             { Assertions.assertThat(sivilstandListe[2].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[2].sivilstand).isEqualTo(SivilstandKode.GIFT.toString()) },
+            { Assertions.assertThat(sivilstandListe[2].sivilstand).isEqualTo(Sivilstandstype.GJENLEVENDE_PARTNER.toString()) },
 
             // sjekk oppdatertGrunnlagspakke
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },

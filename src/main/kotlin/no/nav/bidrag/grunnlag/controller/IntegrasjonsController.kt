@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
@@ -10,11 +11,6 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -25,6 +21,10 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
+import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
+import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.SivilstandDto
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.springframework.http.HttpStatus
@@ -70,25 +70,25 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_FOEDSEL_DOED)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL")
-    fun hentFoedselOgDoed(@RequestBody bidragPersonRequest: PersonRequest): ResponseEntity<NavnFoedselDoedResponseDto> {
-        return handleRestResponse(bidragPersonConsumer.hentNavnFoedselOgDoed(bidragPersonRequest))
+    fun hentFoedselOgDoed(@RequestBody bidragPersonIdent: PersonIdent): ResponseEntity<NavnFødselDødDto> {
+        return handleRestResponse(bidragPersonConsumer.hentNavnFoedselOgDoed(bidragPersonIdent))
     }
 
     @PostMapping(HENT_FORELDER_BARN_RELASJON)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
-    fun hentForelderbarnrelasjon(@RequestBody bidragPersonRequest: PersonRequest): ResponseEntity<ForelderBarnRelasjonDto> {
-        return handleRestResponse(bidragPersonConsumer.hentForelderBarnRelasjon(bidragPersonRequest))
+    fun hentForelderbarnrelasjon(@RequestBody bidragPersonIdent: PersonIdent): ResponseEntity<ForelderBarnRelasjonDto> {
+        return handleRestResponse(bidragPersonConsumer.hentForelderBarnRelasjon(bidragPersonIdent))
     }
 
     @PostMapping(HENT_HUSSTANDSMEDLEMMER)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
-    fun hentHusstandsmedlemmer(@RequestBody husstandsmedlemmerRequest: PersonRequest): ResponseEntity<HusstandsmedlemmerDto> {
+    fun hentHusstandsmedlemmer(@RequestBody husstandsmedlemmerRequest: PersonIdent): ResponseEntity<HusstandsmedlemmerDto> {
         return handleRestResponse(bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest))
     }
 
     @PostMapping(HENT_SIVILSTAND)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
-    fun hentSivilstand(@RequestBody sivilstandRequest: PersonRequest): ResponseEntity<SivilstandDto> {
+    fun hentSivilstand(@RequestBody sivilstandRequest: PersonIdent): ResponseEntity<SivilstandDto> {
         return handleRestResponse(bidragPersonConsumer.hentSivilstand(sivilstandRequest))
     }
 

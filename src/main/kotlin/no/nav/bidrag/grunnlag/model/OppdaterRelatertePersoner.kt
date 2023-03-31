@@ -3,16 +3,16 @@ package no.nav.bidrag.grunnlag.model
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domain.enums.Familierelasjon
+import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.transport.person.NavnFødselDødDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -48,7 +48,7 @@ class OppdaterRelatertePersoner(
             val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode.personId)
 
             // henter alle barn av BM/BP
-            val barnListe = hentBarn(PersonRequest(personIdOgPeriode.personId))
+            val barnListe = hentBarn(PersonIdent(personIdOgPeriode.personId))
 
             // Alle husstandsmedlemmer lagres i tabell relatert_person. Det sjekkes om husstandsmedlem finnes i liste over barn.
             // erBarnAvmBp settes lik true i så fall
@@ -103,7 +103,7 @@ class OppdaterRelatertePersoner(
 
         when (
             val restResponseHusstandsmedlemmer =
-                bidragPersonConsumer.hentHusstandsmedlemmer(PersonRequest(husstandsmedlemmerRequest))
+                bidragPersonConsumer.hentHusstandsmedlemmer(PersonIdent(husstandsmedlemmerRequest))
         ) {
             is RestResponse.Success -> {
                 val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
@@ -111,14 +111,14 @@ class OppdaterRelatertePersoner(
 
                 if (!husstandsmedlemmerResponseDto.husstandListe.isNullOrEmpty()) {
                     husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
-                        husstand.husstandsmedlemmerListe.forEach { husstandsmedlem ->
+                        husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
                             husstandsmedlemListe.add(
                                 PersonBo(
-                                    husstandsmedlem.personId,
-                                    husstandsmedlem.fornavn + " " + husstandsmedlem.mellomnavn + " " + husstandsmedlem.etternavn,
-                                    husstandsmedlem.foedselsdato,
-                                    husstandsmedlem.gyldigFraOgMed,
-                                    husstandsmedlem.gyldigTilOgMed
+                                    husstandsmedlem.personId.verdi,
+                                    husstandsmedlem.fornavn.verdi + " " + husstandsmedlem.mellomnavn?.verdi + " " + husstandsmedlem.etternavn.verdi,
+                                    husstandsmedlem.fødselsdato?.verdi,
+                                    husstandsmedlem.gyldigFraOgMed?.verdi,
+                                    husstandsmedlem.gyldigTilOgMed?.verdi
                                 )
                             )
                         }
@@ -147,7 +147,7 @@ class OppdaterRelatertePersoner(
         return emptyList()
     }
 
-    private fun hentBarn(forelderBarnRequest: PersonRequest): List<PersonBo> {
+    private fun hentBarn(forelderBarnRequest: PersonIdent): List<PersonBo> {
         LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
         SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
 
@@ -165,16 +165,16 @@ class OppdaterRelatertePersoner(
                     SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
                     forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { forelderBarnRelasjon ->
-                        if (forelderBarnRelasjon.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN) {
+                        if (forelderBarnRelasjon.relatertPersonsRolle == Familierelasjon.BARN) {
                             // Kaller bidrag-person for å hente info om fødselsdato og navn
                             if (forelderBarnRelasjon.relatertPersonsIdent != null) {
-                                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(PersonRequest(forelderBarnRelasjon.relatertPersonsIdent))
+                                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(PersonIdent(forelderBarnRelasjon.relatertPersonsIdent!!.verdi))
                                 // Lager en liste over fnr for alle barn som er funnet
                                 barnListe.add(
                                     PersonBo(
-                                        forelderBarnRelasjon.relatertPersonsIdent,
-                                        navnFoedselDoedResponseDto?.navn,
-                                        navnFoedselDoedResponseDto?.foedselsdato,
+                                        forelderBarnRelasjon.relatertPersonsIdent?.verdi,
+                                        navnFoedselDoedResponseDto?.navn?.verdi,
+                                        navnFoedselDoedResponseDto?.fødselsdato?.verdi,
                                         null,
                                         null
                                     )
@@ -189,16 +189,16 @@ class OppdaterRelatertePersoner(
             is RestResponse.Failure -> this.add(
                 OppdaterGrunnlagDto(
                     GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
-                    forelderBarnRequest.ident,
+                    forelderBarnRequest.verdi,
                     if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                    "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.ident} ."
+                    "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.verdi} ."
                 )
             )
         }
         return emptyList()
     }
 
-    private fun hentNavnFoedselDoed(personId: PersonRequest): NavnFoedselDoedResponseDto? {
+    private fun hentNavnFoedselDoed(personId: PersonIdent): NavnFødselDødDto? {
         // hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
         LOGGER.info("Kaller bidrag-person hent navn og fødselsdato")
         SECURE_LOGGER.info("Kaller bidrag-person hent navn og fødselsdato for : $personId")
@@ -210,11 +210,11 @@ class OppdaterRelatertePersoner(
                 val foedselOgDoedResponse = restResponseFoedselOgDoed.body
                 SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsdato: $foedselOgDoedResponse")
 
-                return NavnFoedselDoedResponseDto(
+                return NavnFødselDødDto(
                     foedselOgDoedResponse.navn,
-                    foedselOgDoedResponse.foedselsdato,
-                    foedselOgDoedResponse.foedselsaar,
-                    foedselOgDoedResponse.doedsdato
+                    foedselOgDoedResponse.fødselsdato,
+                    foedselOgDoedResponse.fødselsår,
+                    foedselOgDoedResponse.dødsdato
                 )
             }
 

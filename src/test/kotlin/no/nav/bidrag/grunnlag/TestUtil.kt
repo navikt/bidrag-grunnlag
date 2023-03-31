@@ -7,9 +7,28 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
 import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domain.enums.Familierelasjon
+import no.nav.bidrag.domain.enums.Sivilstandstype
+import no.nav.bidrag.domain.ident.PersonIdent
+import no.nav.bidrag.domain.number.Fødselsår
+import no.nav.bidrag.domain.number.MatrikkelId
+import no.nav.bidrag.domain.string.Adressenavn
+import no.nav.bidrag.domain.string.Bruksenhetsnummer
+import no.nav.bidrag.domain.string.Bydelsnummer
+import no.nav.bidrag.domain.string.Etternavn
+import no.nav.bidrag.domain.string.Fornavn
+import no.nav.bidrag.domain.string.FulltNavn
+import no.nav.bidrag.domain.string.Husbokstav
+import no.nav.bidrag.domain.string.Husnummer
+import no.nav.bidrag.domain.string.Kommunenummer
+import no.nav.bidrag.domain.string.Mellomnavn
+import no.nav.bidrag.domain.string.Postnummer
+import no.nav.bidrag.domain.tid.Bekreftelsesdato
+import no.nav.bidrag.domain.tid.FomDato
+import no.nav.bidrag.domain.tid.Fødselsdato
+import no.nav.bidrag.domain.tid.TomDato
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
@@ -27,15 +46,6 @@ import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarne
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjon
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonRolle
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstand
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.Husstandsmedlemmer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.PersonRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandDto
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -57,6 +67,14 @@ import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
+import no.nav.bidrag.transport.person.ForelderBarnRelasjon
+import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
+import no.nav.bidrag.transport.person.Husstand
+import no.nav.bidrag.transport.person.Husstandsmedlem
+import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
+import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.Sivilstand
+import no.nav.bidrag.transport.person.SivilstandDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
@@ -440,7 +458,7 @@ class TestUtil {
             personId = "1234",
             periodeFra = LocalDate.parse("2021-01-01"),
             periodeTil = LocalDate.parse("2021-07-01"),
-            sivilstand = SivilstandKode.SAMBOER.toString(),
+            sivilstand = Sivilstandstype.SEPARERT_PARTNER.toString(),
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
@@ -453,7 +471,7 @@ class TestUtil {
             personId = "1234",
             periodeFra = LocalDate.parse("2021-01-01"),
             periodeTil = LocalDate.parse("2021-07-01"),
-            sivilstand = SivilstandKode.SAMBOER.toString(),
+            sivilstand = Sivilstandstype.SEPARERT_PARTNER.toString(),
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
@@ -662,11 +680,11 @@ class TestUtil {
             fraDato = LocalDate.now()
         )
 
-        fun byggForelderBarnRequest() = PersonRequest("personIdent")
+        fun byggForelderBarnRequest() = PersonIdent("personIdent")
 
-        fun byggHusstandsmedlemmerRequest() = PersonRequest("personIdent")
+        fun byggHusstandsmedlemmerRequest() = PersonIdent("personIdent")
 
-        fun byggSivilstandRequest() = PersonRequest("personIdent")
+        fun byggSivilstandRequest() = PersonIdent("personIdent")
 
         fun byggKontantstotteRequest() = BisysDto(
             LocalDate.now(),
@@ -708,113 +726,113 @@ class TestUtil {
         fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonDto(
             immutableListOf(
                 ForelderBarnRelasjon(
-                    relatertPersonsIdent = "111",
-                    relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
-                    minRolleForPerson = ForelderBarnRelasjonRolle.FAR
+                    relatertPersonsIdent = PersonIdent("111"),
+                    relatertPersonsRolle = Familierelasjon.BARN,
+                    minRolleForPerson = Familierelasjon.FAR
                 ),
                 ForelderBarnRelasjon(
-                    relatertPersonsIdent = "222",
-                    relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
-                    minRolleForPerson = ForelderBarnRelasjonRolle.FAR
+                    relatertPersonsIdent = PersonIdent("222"),
+                    relatertPersonsRolle = Familierelasjon.BARN,
+                    minRolleForPerson = Familierelasjon.FAR
                 ),
                 ForelderBarnRelasjon(
-                    relatertPersonsIdent = "333",
-                    relatertPersonsRolle = ForelderBarnRelasjonRolle.BARN,
-                    minRolleForPerson = ForelderBarnRelasjonRolle.FAR
+                    relatertPersonsIdent = PersonIdent("333"),
+                    relatertPersonsRolle = Familierelasjon.BARN,
+                    minRolleForPerson = Familierelasjon.FAR
                 )
             )
         )
 
-        fun byggHentNavnFoedselOgDoedResponse() = NavnFoedselDoedResponseDto(
-            navn = "Dunkel Sol",
-            foedselsdato = LocalDate.parse("2001-04-17"),
-            foedselsaar = 2001,
-            doedsdato = null
+        fun byggHentNavnFoedselOgDoedResponse() = NavnFødselDødDto(
+            navn = FulltNavn("Dunkel Sol"),
+            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
+            fødselsår = Fødselsår(2001),
+            dødsdato = null
         )
 
         fun byggHentHusstandsmedlemmerResponse() = HusstandsmedlemmerDto(
             immutableListOf(
                 Husstand(
-                    gyldigFraOgMed = LocalDate.parse("2011-01-01"),
-                    gyldigTilOgMed = LocalDate.parse("2011-10-01"),
-                    adressenavn = "adressenavn1",
-                    husnummer = "husnummer1",
-                    husbokstav = "husbokstav1",
-                    bruksenhetsnummer = "bruksenhetsnummer1",
-                    postnummer = "postnr1",
-                    bydelsnummer = "bydelsnummer1",
-                    kommunenummer = "kommunenummer1",
-                    matrikkelId = 12345,
+                    gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
+                    gyldigTilOgMed = TomDato(LocalDate.parse("2011-10-01")),
+                    adressenavn = Adressenavn("adressenavn1"),
+                    husnummer = Husnummer("husnummer1"),
+                    husbokstav = Husbokstav("husbokstav1"),
+                    bruksenhetsnummer = Bruksenhetsnummer("bruksenhetsnummer1"),
+                    postnummer = Postnummer("postnr1"),
+                    bydelsnummer = Bydelsnummer("bydelsnummer1"),
+                    kommunenummer = Kommunenummer("kommunenummer1"),
+                    matrikkelId = MatrikkelId(12345),
                     immutableListOf(
-                        Husstandsmedlemmer(
-                            gyldigFraOgMed = LocalDate.parse("2011-01-01"),
-                            gyldigTilOgMed = LocalDate.parse("2011-02-01"),
-                            personId = "111",
-                            fornavn = "fornavn1",
-                            mellomnavn = "mellomnavn1",
-                            etternavn = "etternavn1",
-                            foedselsdato = LocalDate.parse("2001-04-17")
+                        Husstandsmedlem(
+                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
+                            gyldigTilOgMed = TomDato(LocalDate.parse("2011-02-01")),
+                            personId = PersonIdent("111"),
+                            fornavn = Fornavn("fornavn1"),
+                            mellomnavn = Mellomnavn("mellomnavn1"),
+                            etternavn = Etternavn("etternavn1"),
+                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
                         ),
-                        Husstandsmedlemmer(
-                            gyldigFraOgMed = LocalDate.parse("2011-05-17"),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-17")),
                             gyldigTilOgMed = null,
-                            personId = "111",
-                            fornavn = "fornavn1",
-                            mellomnavn = "mellomnavn1",
-                            etternavn = "etternavn1",
-                            foedselsdato = LocalDate.parse("2001-04-17")
+                            personId = PersonIdent("111"),
+                            fornavn = Fornavn("fornavn1"),
+                            mellomnavn = Mellomnavn("mellomnavn1"),
+                            etternavn = Etternavn("etternavn1"),
+                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
                         ),
-                        Husstandsmedlemmer(
-                            gyldigFraOgMed = LocalDate.parse("2011-01-01"),
-                            gyldigTilOgMed = LocalDate.parse("2011-12-01"),
-                            personId = "333",
-                            fornavn = "fornavn3",
-                            mellomnavn = "mellomnavn3",
-                            etternavn = "etternavn3",
-                            foedselsdato = LocalDate.parse("2001-04-17")
+                        Husstandsmedlem(
+                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
+                            gyldigTilOgMed = TomDato(LocalDate.parse("2011-12-01")),
+                            personId = PersonIdent("333"),
+                            fornavn = Fornavn("fornavn3"),
+                            mellomnavn = Mellomnavn("mellomnavn3"),
+                            etternavn = Etternavn("etternavn3"),
+                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
                         ),
-                        Husstandsmedlemmer(
-                            gyldigFraOgMed = LocalDate.parse("2011-05-01"),
-                            gyldigTilOgMed = LocalDate.parse("2011-06-01"),
-                            personId = "444",
-                            fornavn = "fornavn4",
-                            mellomnavn = "mellomnavn4",
-                            etternavn = "etternavn4",
-                            foedselsdato = LocalDate.parse("1974-02-01")
+                        Husstandsmedlem(
+                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-01")),
+                            gyldigTilOgMed = TomDato(LocalDate.parse("2011-06-01")),
+                            personId = PersonIdent("444"),
+                            fornavn = Fornavn("fornavn4"),
+                            mellomnavn = Mellomnavn("mellomnavn4"),
+                            etternavn = Etternavn("etternavn4"),
+                            fødselsdato = Fødselsdato(LocalDate.parse("1974-02-01"))
                         )
                     )
                 ),
                 Husstand(
-                    gyldigFraOgMed = LocalDate.parse("2011-10-01"),
+                    gyldigFraOgMed = FomDato(LocalDate.parse("2011-10-01")),
                     gyldigTilOgMed = null,
-                    adressenavn = "adressenavn2",
-                    husnummer = "husnummer2",
-                    husbokstav = "husbokstav2",
-                    bruksenhetsnummer = "bruksenhetsnummer2",
-                    postnummer = "postnr2",
-                    bydelsnummer = "bydelsnummer2",
-                    kommunenummer = "kommunenummer2",
-                    matrikkelId = 54321,
+                    adressenavn = Adressenavn("adressenavn2"),
+                    husnummer = Husnummer("husnummer2"),
+                    husbokstav = Husbokstav("husbokstav2"),
+                    bruksenhetsnummer = Bruksenhetsnummer("bruksenhetsnummer2"),
+                    postnummer = Postnummer("postnr2"),
+                    bydelsnummer = Bydelsnummer("bydelsnummer2"),
+                    kommunenummer = Kommunenummer("kommunenummer2"),
+                    matrikkelId = MatrikkelId(54321),
                     immutableListOf(
-                        Husstandsmedlemmer(
-                            gyldigFraOgMed = LocalDate.parse("2018-01-01"),
-                            gyldigTilOgMed = LocalDate.parse("2018-02-01"),
-                            personId = "111",
-                            fornavn = "fornavn1",
-                            mellomnavn = "mellomnavn1",
-                            etternavn = "etternavn1",
-                            foedselsdato = LocalDate.parse("2001-04-17"),
-                            doedsdato = null
+                        Husstandsmedlem(
+                            gyldigFraOgMed = FomDato(LocalDate.parse("2018-01-01")),
+                            gyldigTilOgMed = TomDato(LocalDate.parse("2018-02-01")),
+                            personId = PersonIdent("111"),
+                            fornavn = Fornavn("fornavn1"),
+                            mellomnavn = Mellomnavn("mellomnavn1"),
+                            etternavn = Etternavn("etternavn1"),
+                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
+                            dødsdato = null
                         ),
-                        Husstandsmedlemmer(
-                            gyldigFraOgMed = LocalDate.parse("2020-01-01"),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = FomDato(LocalDate.parse("2020-01-01")),
                             gyldigTilOgMed = null,
-                            personId = "555",
-                            fornavn = "fornavn5",
-                            mellomnavn = "mellomnavn5",
-                            etternavn = "etternavn5",
-                            foedselsdato = LocalDate.parse("1985-07-17"),
-                            doedsdato = null
+                            personId = PersonIdent("555"),
+                            fornavn = Fornavn("fornavn5"),
+                            mellomnavn = Mellomnavn("mellomnavn5"),
+                            etternavn = Etternavn("etternavn5"),
+                            fødselsdato = Fødselsdato(LocalDate.parse("1985-07-17")),
+                            dødsdato = null
                         )
                     )
                 )
@@ -823,19 +841,19 @@ class TestUtil {
 
         fun byggHentSivilstandResponse() = SivilstandDto(
             immutableListOf(
-                no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand(
-                    type = "ENSLIG",
+                Sivilstand(
+                    type = Sivilstandstype.SEPARERT_PARTNER,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null
                 ),
-                no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand(
-                    type = "SAMBOER",
+                Sivilstand(
+                    type = Sivilstandstype.ENKE_ELLER_ENKEMANN,
                     gyldigFraOgMed = null,
-                    bekreftelsesdato = LocalDate.parse("2021-01-01")
+                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2021-01-01"))
                 ),
-                no.nav.bidrag.grunnlag.consumer.bidragperson.api.Sivilstand(
-                    type = "GIFT",
-                    gyldigFraOgMed = LocalDate.parse("2021-09-01"),
+                Sivilstand(
+                    type = Sivilstandstype.GJENLEVENDE_PARTNER,
+                    gyldigFraOgMed = FomDato(LocalDate.parse("2021-09-01")),
                     bekreftelsesdato = null
                 )
             )
