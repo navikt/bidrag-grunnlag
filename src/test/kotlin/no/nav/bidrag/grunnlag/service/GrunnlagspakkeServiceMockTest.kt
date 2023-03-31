@@ -4,6 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequest
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
 import no.nav.bidrag.behandling.felles.enums.SivilstandKode
+import no.nav.bidrag.domain.enums.Sivilstandstype
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntekt
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektspost
@@ -309,7 +310,7 @@ class GrunnlagspakkeServiceMockTest {
             { assertThat(sivilstandBoListe[0].personId).isEqualTo("1234") },
             { assertThat(sivilstandBoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { assertThat(sivilstandBoListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-            { assertThat(sivilstandBoListe[0].sivilstand).isEqualTo(SivilstandKode.SAMBOER.toString()) },
+            { assertThat(sivilstandBoListe[0].sivilstand).isEqualTo(Sivilstandstype.SEPARERT_PARTNER.toString()) },
             { assertThat(sivilstandBoListe[0].aktiv).isTrue },
             { assertThat(sivilstandBoListe[0].brukFra).isNotNull() },
             { assertThat(sivilstandBoListe[0].brukTil).isNull() },
