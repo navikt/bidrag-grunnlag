@@ -3,7 +3,6 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.enums.BarnType
 import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.SivilstandKode
 import no.nav.bidrag.domain.enums.Sivilstandstype
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntekt
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektBo

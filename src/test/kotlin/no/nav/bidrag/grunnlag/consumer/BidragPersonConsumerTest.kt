@@ -4,7 +4,16 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.domain.enums.Sivilstandstype
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.domain.number.MatrikkelId
-import no.nav.bidrag.domain.string.*
+import no.nav.bidrag.domain.string.Adressenavn
+import no.nav.bidrag.domain.string.Bruksenhetsnummer
+import no.nav.bidrag.domain.string.Bydelsnummer
+import no.nav.bidrag.domain.string.Etternavn
+import no.nav.bidrag.domain.string.Fornavn
+import no.nav.bidrag.domain.string.Husbokstav
+import no.nav.bidrag.domain.string.Husnummer
+import no.nav.bidrag.domain.string.Kommunenummer
+import no.nav.bidrag.domain.string.Mellomnavn
+import no.nav.bidrag.domain.string.Postnummer
 import no.nav.bidrag.domain.tid.Bekreftelsesdato
 import no.nav.bidrag.domain.tid.FomDato
 import no.nav.bidrag.domain.tid.TomDato

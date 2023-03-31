@@ -5,6 +5,7 @@ import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.domain.enums.Sivilstandstype
+import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
@@ -16,7 +17,6 @@ import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest

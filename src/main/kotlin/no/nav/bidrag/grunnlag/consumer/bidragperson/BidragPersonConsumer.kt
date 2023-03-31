@@ -1,12 +1,10 @@
 package no.nav.bidrag.grunnlag.consumer.bidragperson
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.domain.number.Fødselsår
 import no.nav.bidrag.domain.string.FulltNavn
-import no.nav.bidrag.domain.tid.Dødsdato
-import no.nav.bidrag.domain.tid.Fødselsdato
+import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
@@ -38,7 +36,8 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             HttpMethod.POST,
             initHttpEntity(request),
             NavnFødselDødDto::class.java,
-            NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null))
+            NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null)
+        )
 
         logResponse(logger, restResponse)
 

@@ -3,10 +3,10 @@ package no.nav.bidrag.grunnlag.model
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
-import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
