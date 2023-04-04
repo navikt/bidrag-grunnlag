@@ -10,7 +10,6 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
-import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.person.SivilstandDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35,7 +34,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_FOEDSEL_DOED,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(request.verdi)),
+            initHttpEntity(request),
             NavnFødselDødDto::class.java,
             NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null)
         )
@@ -51,7 +50,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(request.verdi)),
+            initHttpEntity(request),
             ForelderBarnRelasjonDto::class.java,
             ForelderBarnRelasjonDto(emptyList())
         )
@@ -67,7 +66,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(request.verdi)),
+            initHttpEntity(request),
             HusstandsmedlemmerDto::class.java,
             HusstandsmedlemmerDto(emptyList())
         )
@@ -83,7 +82,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_SIVILSTAND,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(request.verdi)),
+            initHttpEntity(request),
             SivilstandDto::class.java,
             SivilstandDto(emptyList())
         )
