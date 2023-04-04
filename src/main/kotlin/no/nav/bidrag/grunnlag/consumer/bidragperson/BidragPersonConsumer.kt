@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.person.SivilstandDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -34,7 +35,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_FOEDSEL_DOED,
             HttpMethod.POST,
-            initHttpEntity(request),
+            initHttpEntity(PersonRequest(request.verdi)),
             NavnFødselDødDto::class.java,
             NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null)
         )
@@ -50,7 +51,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON,
             HttpMethod.POST,
-            initHttpEntity(request),
+            initHttpEntity(PersonRequest(request.verdi)),
             ForelderBarnRelasjonDto::class.java,
             ForelderBarnRelasjonDto(emptyList())
         )
@@ -66,7 +67,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
             HttpMethod.POST,
-            initHttpEntity(request),
+            initHttpEntity(PersonRequest(request.verdi)),
             HusstandsmedlemmerDto::class.java,
             HusstandsmedlemmerDto(emptyList())
         )
@@ -82,7 +83,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_SIVILSTAND,
             HttpMethod.POST,
-            initHttpEntity(request),
+            initHttpEntity(PersonRequest(request.verdi)),
             SivilstandDto::class.java,
             SivilstandDto(emptyList())
         )
