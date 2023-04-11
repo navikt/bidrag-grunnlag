@@ -56,8 +56,8 @@ class OppdaterOvergangsstønad(
 //                    )
 
                     // Overgangsstønad fra ef-sak
-                    overgangsstønadResponse.perioder.forEach { os ->
-                        if (os.fomDato.isBefore(personIdOgPeriode.periodeTil)) {
+                    overgangsstønadResponse.data.perioder.forEach { periode ->
+                        if (periode.fomDato.isBefore(personIdOgPeriode.periodeTil)) {
                             antallPerioderFunnet++
 //                            persistenceService.opprettOvergangsstønad(
 //                                OvergangsstønadBo(

@@ -8,6 +8,10 @@ data class EksternePerioderRequest(
     val tomDato: LocalDate
 )
 
+data class Ressurs(
+    val data: EksternePerioderMedBeløpResponse
+)
+
 data class EksternePerioderMedBeløpResponse(
     val perioder: List<EksternPeriodeMedBeløp>
 )

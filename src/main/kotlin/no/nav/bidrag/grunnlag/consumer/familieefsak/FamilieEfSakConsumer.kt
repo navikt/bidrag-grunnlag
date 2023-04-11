@@ -6,6 +6,7 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderMedBeløpResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
@@ -40,15 +41,15 @@ open class FamilieEfSakConsumer(
         return restResponse
     }
 
-    open fun hentOvergangsstønad(request: EksternePerioderRequest): RestResponse<EksternePerioderMedBeløpResponse> {
+    open fun hentOvergangsstønad(request: EksternePerioderRequest): RestResponse<Ressurs> {
         logger.info("Henter overgangsstønad")
 
         val restResponse = restTemplate.tryExchange(
             OVERGANGSSTØNAD_CONTEXT,
             HttpMethod.POST,
             initHttpEntity(request),
-            EksternePerioderMedBeløpResponse::class.java,
-            EksternePerioderMedBeløpResponse(emptyList())
+            Ressurs::class.java,
+            Ressurs(EksternePerioderMedBeløpResponse(emptyList()))
         )
 
         logResponse(logger, restResponse)
