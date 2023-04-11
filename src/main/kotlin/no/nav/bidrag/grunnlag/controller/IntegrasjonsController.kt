@@ -130,6 +130,6 @@ class IntegrasjonsController(
         const val HENT_SIVILSTAND = "/integrasjoner/sivilstand"
         const val HENT_KONTANTSTOTTE = "/integrasjoner/kontantstotte"
         const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"
-        const val HENT_OVERGANGSSTØNAD = "/integrasjoner/overgangsstønad"
+        const val HENT_OVERGANGSSTØNAD = "/integrasjoner/overgangsstonad"
     }
 }
