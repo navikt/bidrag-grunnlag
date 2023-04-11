@@ -19,6 +19,7 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderMedBeløpResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
@@ -108,7 +109,7 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_OVERGANGSSTØNAD)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller familie-ef-sak og henter overgangsstønad")
-    fun hentOvergangsstønad(@RequestBody eksternePerioderRequest: EksternePerioderRequest): ResponseEntity<EksternePerioderMedBeløpResponse> {
+    fun hentOvergangsstønad(@RequestBody eksternePerioderRequest: EksternePerioderRequest): ResponseEntity<Ressurs> {
         return handleRestResponse(familieEfSakConsumer.hentOvergangsstønad(eksternePerioderRequest))
     }
 
