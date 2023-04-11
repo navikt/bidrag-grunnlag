@@ -4,7 +4,6 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -13,9 +12,7 @@ import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.YearMonth
 
 class OppdaterOvergangsstønad(
     private val grunnlagspakkeId: Int,
@@ -57,7 +54,6 @@ class OppdaterOvergangsstønad(
 //                        personIdOgPeriode.personId,
 //                        timestampOppdatering
 //                    )
-
 
                     // Overgangsstønad fra ef-sak
                     overgangsstønadResponse.perioder.forEach { os ->
