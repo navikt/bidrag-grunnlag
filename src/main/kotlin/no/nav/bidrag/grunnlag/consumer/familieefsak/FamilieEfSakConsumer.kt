@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
 private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
-private const val OVERGANGSSTØNAD_CONTEXT = "/api/ekstern/overgangsstonad/med-belop"
+private const val OVERGANGSSTØNAD_CONTEXT = "/api/ekstern/perioder/overgangsstonad/med-belop"
 
 open class FamilieEfSakConsumer(
     private val restTemplate: HttpHeaderRestTemplate
