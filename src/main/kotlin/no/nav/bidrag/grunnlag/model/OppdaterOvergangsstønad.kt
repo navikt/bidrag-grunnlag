@@ -86,6 +86,7 @@ class OppdaterOvergangsstønad(
                 }
 
                 is RestResponse.Failure -> {
+                    SECURE_LOGGER.info("EF-sak overgangsstønad ga feil og følgende respons: $restResponseOvergangsstønad")
                     this.add(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.OVERGANGSSTONAD,
