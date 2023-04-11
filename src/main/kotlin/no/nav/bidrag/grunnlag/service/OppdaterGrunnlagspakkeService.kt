@@ -11,6 +11,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILSYN
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.KONTANTSTOTTE
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.OVERGANGSSTONAD
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SIVILSTAND
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SKATTEGRUNNLAG
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
@@ -23,6 +24,7 @@ import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetilsyn
 import no.nav.bidrag.grunnlag.model.OppdaterKontantstotte
+import no.nav.bidrag.grunnlag.model.OppdaterOvergangsstønad
 import no.nav.bidrag.grunnlag.model.OppdaterRelatertePersoner
 import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
 import no.nav.bidrag.grunnlag.model.OppdaterSkattegrunnlag
@@ -77,6 +79,9 @@ class OppdaterGrunnlagspakkeService(
             )
             .oppdaterBarnetilsyn(
                 hentRequestListeFor(BARNETILSYN, oppdaterGrunnlagspakkeRequestDto)
+            )
+            .oppdaterOvergangsstønad(
+                hentRequestListeFor(OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto)
             )
 
         return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
@@ -222,6 +227,18 @@ class OppdaterGrunnlagspakkeService(
                     familieEfSakConsumer
                 )
                     .oppdaterBarnetilsyn(barnetilsynRequestListe)
+            )
+            return this
+        }
+        fun oppdaterOvergangsstønad(overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+            this.addAll(
+                OppdaterOvergangsstønad(
+                    grunnlagspakkeId,
+                    timestampOppdatering,
+                    persistenceService,
+                    familieEfSakConsumer
+                )
+                    .oppdaterOvergangsstønad(overgangsstønadRequestListe)
             )
             return this
         }

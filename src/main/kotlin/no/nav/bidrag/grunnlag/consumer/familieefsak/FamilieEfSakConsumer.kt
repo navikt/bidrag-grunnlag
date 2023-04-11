@@ -4,6 +4,8 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderMedBeløpResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
 private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
+private const val OVERGANGSSTØNAD_CONTEXT = "/api/ekstern/overgangsstonad/med-belop"
 
 open class FamilieEfSakConsumer(
     private val restTemplate: HttpHeaderRestTemplate
@@ -30,6 +33,22 @@ open class FamilieEfSakConsumer(
             initHttpEntity(request),
             BarnetilsynResponse::class.java,
             BarnetilsynResponse(emptyList())
+        )
+
+        logResponse(logger, restResponse)
+
+        return restResponse
+    }
+
+    open fun hentOvergangsstønad(request: EksternePerioderRequest): RestResponse<EksternePerioderMedBeløpResponse> {
+        logger.info("Henter overgangsstønad")
+
+        val restResponse = restTemplate.tryExchange(
+            OVERGANGSSTØNAD_CONTEXT,
+            HttpMethod.POST,
+            initHttpEntity(request),
+            EksternePerioderMedBeløpResponse::class.java,
+            EksternePerioderMedBeløpResponse(emptyList())
         )
 
         logResponse(logger, restResponse)

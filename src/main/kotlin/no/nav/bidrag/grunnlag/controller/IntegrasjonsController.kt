@@ -17,6 +17,8 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderMedBeløpResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
@@ -104,6 +106,12 @@ class IntegrasjonsController(
         return handleRestResponse(familieEfSakConsumer.hentBarnetilsyn(barnetilsynRequest))
     }
 
+    @PostMapping(HENT_OVERGANGSSTØNAD)
+    @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller familie-ef-sak og henter overgangsstønad")
+    fun hentOvergangsstønad(@RequestBody eksternePerioderRequest: EksternePerioderRequest): ResponseEntity<EksternePerioderMedBeløpResponse> {
+        return handleRestResponse(familieEfSakConsumer.hentOvergangsstønad(eksternePerioderRequest))
+    }
+
     private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {
         return when (restResponse) {
             is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
@@ -122,5 +130,6 @@ class IntegrasjonsController(
         const val HENT_SIVILSTAND = "/integrasjoner/sivilstand"
         const val HENT_KONTANTSTOTTE = "/integrasjoner/kontantstotte"
         const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"
+        const val HENT_OVERGANGSSTØNAD = "/integrasjoner/overgangsstønad"
     }
 }
