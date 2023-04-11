@@ -13,26 +13,26 @@ import org.springframework.http.HttpMethod
 private const val FAMILIEBASAK_CONTEXT = "/api/bisys/hent-utvidet-barnetrygd"
 
 open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-  GrunnlagsConsumer() {
+    GrunnlagsConsumer() {
 
-  companion object {
-    @JvmStatic
-    val logger: Logger = LoggerFactory.getLogger(FamilieBaSakConsumer::class.java)
-  }
+    companion object {
+        @JvmStatic
+        val logger: Logger = LoggerFactory.getLogger(FamilieBaSakConsumer::class.java)
+    }
 
-  open fun hentFamilieBaSak(request: FamilieBaSakRequest): RestResponse<FamilieBaSakResponse> {
-    logger.info("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
+    open fun hentFamilieBaSak(request: FamilieBaSakRequest): RestResponse<FamilieBaSakResponse> {
+        logger.info("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
 
-    val restResponse = restTemplate.tryExchange(
-      FAMILIEBASAK_CONTEXT,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      FamilieBaSakResponse::class.java,
-      FamilieBaSakResponse(emptyList())
-    )
+        val restResponse = restTemplate.tryExchange(
+            FAMILIEBASAK_CONTEXT,
+            HttpMethod.POST,
+            initHttpEntity(request),
+            FamilieBaSakResponse::class.java,
+            FamilieBaSakResponse(emptyList())
+        )
 
-    logResponse(logger, restResponse)
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 }

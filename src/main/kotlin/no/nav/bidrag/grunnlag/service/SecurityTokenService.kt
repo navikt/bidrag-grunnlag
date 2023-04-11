@@ -13,22 +13,24 @@ import org.springframework.stereotype.Service
 @Service
 class SecurityTokenService(val authorizedClientManager: OAuth2AuthorizedClientManager) {
 
-  private val ANONYMOUS_AUTHENTICATION: Authentication = AnonymousAuthenticationToken(
-    "anonymous", "anonymousUser", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
-  )
+    private val ANONYMOUS_AUTHENTICATION: Authentication = AnonymousAuthenticationToken(
+        "anonymous",
+        "anonymousUser",
+        AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
+    )
 
-  fun generateBearerToken(clientRegistrationId: String): ClientHttpRequestInterceptor? {
-    return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
-      val accessToken = authorizedClientManager
-        .authorize(
-          OAuth2AuthorizeRequest
-            .withClientRegistrationId(clientRegistrationId)
-            .principal(ANONYMOUS_AUTHENTICATION)
-            .build()
-        )!!.accessToken
+    fun generateBearerToken(clientRegistrationId: String): ClientHttpRequestInterceptor? {
+        return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
+            val accessToken = authorizedClientManager
+                .authorize(
+                    OAuth2AuthorizeRequest
+                        .withClientRegistrationId(clientRegistrationId)
+                        .principal(ANONYMOUS_AUTHENTICATION)
+                        .build()
+                )!!.accessToken
 
-      request.headers.setBearerAuth(accessToken.tokenValue)
-      execution.execute(request, body!!)
+            request.headers.setBearerAuth(accessToken.tokenValue)
+            execution.execute(request, body!!)
+        }
     }
-  }
 }

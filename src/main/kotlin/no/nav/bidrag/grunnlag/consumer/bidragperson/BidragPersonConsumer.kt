@@ -1,16 +1,17 @@
 package no.nav.bidrag.grunnlag.consumer.bidragperson
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.domain.ident.PersonIdent
+import no.nav.bidrag.domain.number.Fødselsår
+import no.nav.bidrag.domain.string.FulltNavn
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.NavnFoedselDoedResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRelasjonResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.ForelderBarnRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerResponseDto
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandRequest
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.SivilstandResponseDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
+import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
+import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
+import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.PersonRequest
+import no.nav.bidrag.transport.person.SivilstandDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -21,74 +22,74 @@ private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER = "/bidrag-person/huss
 private const val BIDRAGPERSON_CONTEXT_SIVILSTAND = "/bidrag-person/sivilstand"
 
 open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-  GrunnlagsConsumer() {
+    GrunnlagsConsumer() {
 
-  companion object {
-    @JvmStatic
-    val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
-  }
+    companion object {
+        @JvmStatic
+        val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
+    }
 
-  open fun hentNavnFoedselOgDoed(request: String): RestResponse<NavnFoedselDoedResponseDto> {
-    logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
+    open fun hentNavnFoedselOgDoed(request: PersonIdent): RestResponse<NavnFødselDødDto> {
+        logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
 
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGPERSON_CONTEXT_FOEDSEL_DOED,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      NavnFoedselDoedResponseDto::class.java,
-      NavnFoedselDoedResponseDto(null, null,0, null)
-    )
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGPERSON_CONTEXT_FOEDSEL_DOED,
+            HttpMethod.POST,
+            initHttpEntity(PersonRequest(request.verdi)),
+            NavnFødselDødDto::class.java,
+            NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null)
+        )
 
-    logResponse(logger, restResponse)
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 
-  open fun hentForelderBarnRelasjon(request: ForelderBarnRequest): RestResponse<ForelderBarnRelasjonResponseDto> {
-    logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
+    open fun hentForelderBarnRelasjon(request: PersonIdent): RestResponse<ForelderBarnRelasjonDto> {
+        logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
 
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      ForelderBarnRelasjonResponseDto::class.java,
-      ForelderBarnRelasjonResponseDto(emptyList())
-    )
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON,
+            HttpMethod.POST,
+            initHttpEntity(PersonRequest(request.verdi)),
+            ForelderBarnRelasjonDto::class.java,
+            ForelderBarnRelasjonDto(emptyList())
+        )
 
-    logResponse(logger, restResponse)
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 
-  open fun hentHusstandsmedlemmer(request: HusstandsmedlemmerRequest): RestResponse<HusstandsmedlemmerResponseDto> {
-    logger.info("Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
+    open fun hentHusstandsmedlemmer(request: PersonIdent): RestResponse<HusstandsmedlemmerDto> {
+        logger.info("Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid fra PDL")
 
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      HusstandsmedlemmerResponseDto::class.java,
-      HusstandsmedlemmerResponseDto(emptyList())
-    )
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
+            HttpMethod.POST,
+            initHttpEntity(PersonRequest(request.verdi)),
+            HusstandsmedlemmerDto::class.java,
+            HusstandsmedlemmerDto(emptyList())
+        )
 
-    logResponse(logger, restResponse)
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 
-  open fun hentSivilstand(request: SivilstandRequest): RestResponse<SivilstandResponseDto> {
-    logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
+    open fun hentSivilstand(request: PersonIdent): RestResponse<SivilstandDto> {
+        logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
-    val restResponse = restTemplate.tryExchange(
-      BIDRAGPERSON_CONTEXT_SIVILSTAND,
-      HttpMethod.POST,
-      initHttpEntity(request),
-      SivilstandResponseDto::class.java,
-      SivilstandResponseDto(emptyList())
-    )
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGPERSON_CONTEXT_SIVILSTAND,
+            HttpMethod.POST,
+            initHttpEntity(PersonRequest(request.verdi)),
+            SivilstandDto::class.java,
+            SivilstandDto(emptyList())
+        )
 
-    logResponse(logger, restResponse)
+        logResponse(logger, restResponse)
 
-    return restResponse
-  }
+        return restResponse
+    }
 }

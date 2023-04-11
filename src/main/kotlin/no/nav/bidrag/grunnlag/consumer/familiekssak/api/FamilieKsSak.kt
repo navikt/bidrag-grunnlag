@@ -11,16 +11,16 @@ data class BisysResponsDto(
 )
 
 data class InfotrygdPeriode(
-  val fomMåned: YearMonth,
-  val tomMåned: YearMonth?,
-  val beløp: Int,
-  val barna: List<String>
+    val fomMåned: YearMonth,
+    val tomMåned: YearMonth?,
+    val beløp: Int,
+    val barna: List<String>
 )
 
 data class KsSakPeriode(
-  val fomMåned: YearMonth,
-  val tomMåned: YearMonth?,
-  val barn: Barn
+    val fomMåned: YearMonth,
+    val tomMåned: YearMonth?,
+    val barn: Barn
 )
 
 data class Barn(val beløp: Int, val ident: String)

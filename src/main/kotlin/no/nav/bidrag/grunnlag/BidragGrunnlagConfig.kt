@@ -27,106 +27,106 @@ const val LIVE_PROFILE = "live"
 
 @Configuration
 @OpenAPIDefinition(
-  info = Info(title = "bidrag-grunnlag", version = "v1"),
-  security = [SecurityRequirement(name = "bearer-key")]
+    info = Info(title = "bidrag-grunnlag", version = "v1"),
+    security = [SecurityRequirement(name = "bearer-key")]
 )
 @EnableJwtTokenValidation
 @SecurityScheme(
-  bearerFormat = "JWT",
-  name = "bearer-key",
-  scheme = "bearer",
-  type = SecuritySchemeType.HTTP
+    bearerFormat = "JWT",
+    name = "bearer-key",
+    scheme = "bearer",
+    type = SecuritySchemeType.HTTP
 )
 class BidragGrunnlagConfig {
 
-  companion object {
+    companion object {
 
-    @JvmStatic
-    private val LOGGER = LoggerFactory.getLogger(BidragGrunnlagConfig::class.java)
-  }
+        @JvmStatic
+        private val LOGGER = LoggerFactory.getLogger(BidragGrunnlagConfig::class.java)
+    }
 
-  @Bean
-  fun exceptionLogger(): ExceptionLogger {
-    return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
-  }
+    @Bean
+    fun exceptionLogger(): ExceptionLogger {
+        return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
+    }
 
-  @Bean
-  fun correlationIdFilter(): CorrelationIdFilter {
-    return CorrelationIdFilter()
-  }
+    @Bean
+    fun correlationIdFilter(): CorrelationIdFilter {
+        return CorrelationIdFilter()
+    }
 
-  @Bean
-  @Scope("prototype")
-  fun restTemplate(): HttpHeaderRestTemplate {
-    val httpHeaderRestTemplate = HttpHeaderRestTemplate()
-    httpHeaderRestTemplate.addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER) { CorrelationId.fetchCorrelationIdForThread() }
-    return httpHeaderRestTemplate
-  }
+    @Bean
+    @Scope("prototype")
+    fun restTemplate(): HttpHeaderRestTemplate {
+        val httpHeaderRestTemplate = HttpHeaderRestTemplate()
+        httpHeaderRestTemplate.addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER) { CorrelationId.fetchCorrelationIdForThread() }
+        return httpHeaderRestTemplate
+    }
 
-  @Bean
-  fun familieBaSakConsumer(
-    @Value("\${FAMILIEBASAK_URL}") url: String,
-    restTemplate: HttpHeaderRestTemplate,
-    securityTokenService: SecurityTokenService,
-    exceptionLogger: ExceptionLogger
-  ): FamilieBaSakConsumer {
-    LOGGER.info("Url satt i config: $url")
-    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiebasak"))
-    return FamilieBaSakConsumer(restTemplate)
-  }
+    @Bean
+    fun familieBaSakConsumer(
+        @Value("\${FAMILIEBASAK_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): FamilieBaSakConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiebasak"))
+        return FamilieBaSakConsumer(restTemplate)
+    }
 
-  @Bean
-  fun familieEfSakConsumer(
-    @Value("\${FAMILIEEFSAK_URL}") url: String,
-    restTemplate: HttpHeaderRestTemplate,
-    securityTokenService: SecurityTokenService,
-    exceptionLogger: ExceptionLogger
-  ): FamilieEfSakConsumer {
-    LOGGER.info("Url satt i config: $url")
-    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("familieefsak"))
-    return FamilieEfSakConsumer(restTemplate)
-  }
+    @Bean
+    fun familieEfSakConsumer(
+        @Value("\${FAMILIEEFSAK_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): FamilieEfSakConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("familieefsak"))
+        return FamilieEfSakConsumer(restTemplate)
+    }
 
-  @Bean
-  fun bidragGcpProxyConsumer(
-    @Value("\${BIDRAGGCPPROXY_URL}") url: String,
-    restTemplate: HttpHeaderRestTemplate,
-    securityTokenService: SecurityTokenService,
-    exceptionLogger: ExceptionLogger
-  ): BidragGcpProxyConsumer {
-    LOGGER.info("Url satt i config: $url")
-    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidraggcpproxy"))
-    return BidragGcpProxyConsumer(restTemplate)
-  }
+    @Bean
+    fun bidragGcpProxyConsumer(
+        @Value("\${BIDRAGGCPPROXY_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): BidragGcpProxyConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidraggcpproxy"))
+        return BidragGcpProxyConsumer(restTemplate)
+    }
 
-  @Bean
-  fun bidragPersonConsumer(
-    @Value("\${BIDRAGPERSON_URL}") url: String,
-    restTemplate: HttpHeaderRestTemplate,
-    securityTokenService: SecurityTokenService,
-    exceptionLogger: ExceptionLogger
-  ): BidragPersonConsumer {
-    LOGGER.info("Url satt i config: $url")
-    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidragperson"))
-    return BidragPersonConsumer(restTemplate)
-  }
+    @Bean
+    fun bidragPersonConsumer(
+        @Value("\${BIDRAGPERSON_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): BidragPersonConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidragperson"))
+        return BidragPersonConsumer(restTemplate)
+    }
 
-  @Bean
-  fun familieKsSakConsumer(
-    @Value("\${FAMILIEKSSAK_URL}") url: String,
-    restTemplate: HttpHeaderRestTemplate,
-    securityTokenService: SecurityTokenService,
-    exceptionLogger: ExceptionLogger
-  ): FamilieKsSakConsumer {
-    LOGGER.info("Url satt i config: $url")
-    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiekssak"))
-    return FamilieKsSakConsumer(restTemplate)
-  }
+    @Bean
+    fun familieKsSakConsumer(
+        @Value("\${FAMILIEKSSAK_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): FamilieKsSakConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiekssak"))
+        return FamilieKsSakConsumer(restTemplate)
+    }
 
 /*  @Bean
   fun kontantstotteConsumer(
