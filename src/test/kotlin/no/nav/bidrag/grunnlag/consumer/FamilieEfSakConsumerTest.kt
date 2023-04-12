@@ -1,7 +1,8 @@
-package no.nav.bidrag.grunnlag.consumer.familieefsak
+package no.nav.bidrag.grunnlag.consumer
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
+import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -89,11 +90,11 @@ internal class FamilieEfSakConsumerTest {
                 val hentOvergangsstønadResponse = restResponseOvergangsstønad.body
                 assertAll(
                     { Assertions.assertThat(hentOvergangsstønadResponse).isNotNull },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].personIdent).isEqualTo("123") },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].fomDato).isEqualTo(LocalDate.parse("2021-01-01")) },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].tomDato).isEqualTo(LocalDate.parse("2021-07-31")) },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].beløp).isEqualTo(222) },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].datakilde).isEqualTo("ef-sak") }
+                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].personIdent).isEqualTo("12345678910") },
+                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].fomDato).isEqualTo(LocalDate.parse("2020-01-01")) },
+                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].tomDato).isEqualTo(LocalDate.parse("2020-12-31")) },
+                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].beløp).isEqualTo(111) },
+                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].datakilde).isEqualTo("Infotrygd") }
                 )
             }
             else -> {

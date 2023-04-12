@@ -22,6 +22,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
@@ -117,9 +119,19 @@ class GrunnlagspakkeControllerTest(
                 ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK)
             )
 
+        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/bisys/perioder-barnetilsyn"), eq(HttpMethod.POST), any(), any<Class<BarnetilsynResponse>>()))
+            .thenReturn(
+                ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK)
+            )
+
         Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utbetalingsinfo"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
             .thenReturn(
                 ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
+            )
+
+        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/perioder/overgangsstonad/med-belop"), eq(HttpMethod.POST), any(), any<Class<Ressurs>>()))
+            .thenReturn(
+                ResponseEntity(TestUtil.byggOvergangsstønadResponse(), HttpStatus.OK)
             )
 
         val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
@@ -128,7 +140,7 @@ class GrunnlagspakkeControllerTest(
             OppdaterGrunnlagspakkeDto::class.java
         ) { isOk() }
 
-        assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(5)
+        assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(7)
 
         oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
             assertEquals(GrunnlagsRequestStatus.HENTET, grunnlagstypeResponse.status)
@@ -163,6 +175,16 @@ class GrunnlagspakkeControllerTest(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
 
+        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/bisys/perioder-barnetilsyn"), eq(HttpMethod.POST), any(), any<Class<BarnetilsynResponse>>()))
+            .thenThrow(
+                HttpClientErrorException(HttpStatus.NOT_FOUND)
+            )
+
+        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/perioder/overgangsstonad/med-belop"), eq(HttpMethod.POST), any(), any<Class<Ressurs>>()))
+            .thenThrow(
+                HttpClientErrorException(HttpStatus.NOT_FOUND)
+            )
+
         val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
@@ -170,7 +192,7 @@ class GrunnlagspakkeControllerTest(
         ) { isOk() }
 
         assertThat(oppdaterGrunnlagspakkeDto).isNotNull
-        assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(5)
+        assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(7)
 
         oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.forEach { grunnlagstypeResponse ->
             assertEquals(grunnlagstypeResponse.status, GrunnlagsRequestStatus.IKKE_FUNNET)

@@ -147,6 +147,12 @@ class TestUtil {
                     periodeTil = LocalDate.parse("2022-01-01")
                 ),
                 GrunnlagRequestDto(
+                    type = GrunnlagRequestType.BARNETILSYN,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2021-01-01"),
+                    periodeTil = LocalDate.parse("2022-01-01")
+                ),
+                GrunnlagRequestDto(
                     type = GrunnlagRequestType.OVERGANGSSTONAD,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
