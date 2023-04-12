@@ -4,6 +4,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
+import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -23,7 +24,7 @@ class OppdaterOvergangsstønad(
 
     companion object {
         @JvmStatic
-        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterBarnetillegg::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterOvergangsstønad::class.java)
     }
 
     fun oppdaterOvergangsstønad(overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterOvergangsstønad {
@@ -49,30 +50,30 @@ class OppdaterOvergangsstønad(
                     val overgangsstønadResponse = restResponseOvergangsstønad.body
                     SECURE_LOGGER.info("EF-sak overgangsstønad ga følgende respons: $overgangsstønadResponse")
 
-//                    persistenceService.oppdaterEksisterendeOvergangsstønadTilInaktiv(
-//                        grunnlagspakkeId,
-//                        personIdOgPeriode.personId,
-//                        timestampOppdatering
-//                    )
+                    persistenceService.oppdaterEksisterendeOvergangsstønadTilInaktiv(
+                        grunnlagspakkeId,
+                        personIdOgPeriode.personId,
+                        timestampOppdatering
+                    )
 
                     // Overgangsstønad fra ef-sak
                     overgangsstønadResponse.data.perioder.forEach { periode ->
                         if (periode.fomDato.isBefore(personIdOgPeriode.periodeTil)) {
                             antallPerioderFunnet++
-//                            persistenceService.opprettOvergangsstønad(
-//                                OvergangsstønadBo(
-//                                    grunnlagspakkeId = grunnlagspakkeId,
-//                                    partPersonId = personIdOgPeriode.personId,
-//                                    periodeFra = os.fomDato,
-//                                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-//                                    periodeTil = if (os.tomDato != null) os.tomDato.plusMonths(1) else null,
-//                                    aktiv = true,
-//                                    brukFra = timestampOppdatering,
-//                                    belop = os.beløp,
-//                                    brukTil = null,
-//                                    hentetTidspunkt = timestampOppdatering
-//                                )
-//                            )
+                            persistenceService.opprettOvergangsstønad(
+                                OvergangsstønadBo(
+                                    grunnlagspakkeId = grunnlagspakkeId,
+                                    partPersonId = personIdOgPeriode.personId,
+                                    periodeFra = periode.fomDato,
+                                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                                    periodeTil = periode.tomDato.plusMonths(1).withDayOfMonth(1),
+                                    aktiv = true,
+                                    brukFra = timestampOppdatering,
+                                    belop = periode.beløp,
+                                    brukTil = null,
+                                    hentetTidspunkt = timestampOppdatering
+                                )
+                            )
                         }
                     }
                     this.add(

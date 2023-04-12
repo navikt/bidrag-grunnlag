@@ -17,7 +17,6 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderMedBeløpResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer

@@ -8,6 +8,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.KontantstotteDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OvergangsstønadDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.RelatertPersonDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
@@ -23,6 +24,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -33,6 +35,7 @@ import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilsynEntity
 import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
+import no.nav.bidrag.grunnlag.bo.toOvergangsstønadEntity
 import no.nav.bidrag.grunnlag.bo.toRelatertPersonEntity
 import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
@@ -49,6 +52,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
+import no.nav.bidrag.grunnlag.persistence.entity.Overgangsstonad
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
@@ -65,6 +69,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilsynRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
+import no.nav.bidrag.grunnlag.persistence.repository.OvergangsstonadRepository
 import no.nav.bidrag.grunnlag.persistence.repository.RelatertPersonRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
@@ -87,7 +92,8 @@ class PersistenceService(
     val relatertPersonRepository: RelatertPersonRepository,
     val sivilstandRepository: SivilstandRepository,
     val kontantstotteRepository: KontantstotteRepository,
-    val barnetilsynRepository: BarnetilsynRepository
+    val barnetilsynRepository: BarnetilsynRepository,
+    val overgangsstønadRepository: OvergangsstonadRepository
 ) {
 
     private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
@@ -649,6 +655,43 @@ class PersistenceService(
         timestampOppdatering: LocalDateTime
     ) {
         barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
+        )
+    }
+
+    fun hentOvergangsstønad(grunnlagspakkeId: Int): List<OvergangsstønadDto> {
+        val overgangsstønadDtoListe = mutableListOf<OvergangsstønadDto>()
+        overgangsstønadRepository.hentOvergangsstonad(grunnlagspakkeId)
+            .forEach { overgangsstønad ->
+                overgangsstønadDtoListe.add(
+                    OvergangsstønadDto(
+                        partPersonId = overgangsstønad.partPersonId,
+                        periodeFra = overgangsstønad.periodeFra,
+                        periodeTil = overgangsstønad.periodeTil,
+                        aktiv = overgangsstønad.aktiv,
+                        brukFra = overgangsstønad.brukFra,
+                        brukTil = overgangsstønad.brukTil,
+                        belop = overgangsstønad.belop,
+                        hentetTidspunkt = overgangsstønad.hentetTidspunkt
+                    )
+                )
+            }
+        return overgangsstønadDtoListe
+    }
+
+    fun opprettOvergangsstønad(overgangsstønadBo: OvergangsstønadBo): Overgangsstonad {
+        val nyOvergangsstønad = overgangsstønadBo.toOvergangsstønadEntity()
+        return overgangsstønadRepository.save(nyOvergangsstønad)
+    }
+
+    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        overgangsstønadRepository.oppdaterEksisterendeOvergangsstonadTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
             timestampOppdatering

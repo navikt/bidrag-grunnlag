@@ -1,21 +1,18 @@
 package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
+import no.nav.bidrag.grunnlag.persistence.entity.Overgangsstonad
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.full.memberProperties
 
-data class KontantstotteBo(
+data class OvergangsstønadBo(
 
     @Schema(description = "Grunnlagspakke-id")
     val grunnlagspakkeId: Int = 0,
 
-    @Schema(description = "Id til personen som mottar kontantstøtten")
+    @Schema(description = "Id til personen som mottar overgangsstønaden")
     val partPersonId: String = "",
-
-    @Schema(description = "Id til barnet kontantstøtten er for")
-    val barnPersonId: String = "",
 
     @Schema(description = "Periode fra-dato")
     val periodeFra: LocalDate,
@@ -32,7 +29,7 @@ data class KontantstotteBo(
     @Schema(description = "Tidspunkt inntekten ikke lenger aktiv. Null betyr at inntekten er aktiv")
     val brukTil: LocalDateTime? = null,
 
-    @Schema(description = "Beløpet kontantstøtten er på")
+    @Schema(description = "Beløp overgangsstønad")
     val belop: Int,
 
     @Schema(description = "Hentet tidspunkt")
@@ -40,13 +37,13 @@ data class KontantstotteBo(
 
 )
 
-fun KontantstotteBo.toKontantstotteEntity() = with(::Kontantstotte) {
-    val propertiesByName = KontantstotteBo::class.memberProperties.associateBy { it.name }
+fun OvergangsstønadBo.toOvergangsstønadEntity() = with(::Overgangsstonad) {
+    val propertiesByName = OvergangsstønadBo::class.memberProperties.associateBy { it.name }
     callBy(
         parameters.associateWith { parameters ->
             when (parameters.name) {
-                Kontantstotte::kontantstotteId.name -> 0
-                else -> propertiesByName[parameters.name]?.get(this@toKontantstotteEntity)
+                Overgangsstonad::overgangsstonadId.name -> 0
+                else -> propertiesByName[parameters.name]?.get(this@toOvergangsstønadEntity)
             }
         }
     )

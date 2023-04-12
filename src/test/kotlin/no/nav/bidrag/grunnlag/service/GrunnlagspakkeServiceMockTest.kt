@@ -17,6 +17,8 @@ import no.nav.bidrag.grunnlag.TestUtil.Companion.byggGrunnlagspakke
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotte
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggKontantstotteBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggNyGrunnlagspakkeRequest
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggOvergangsstønad
+import no.nav.bidrag.grunnlag.TestUtil.Companion.byggOvergangsstønadBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggRelatertPersonBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstand
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggSivilstandBo
@@ -31,6 +33,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -96,6 +99,9 @@ class GrunnlagspakkeServiceMockTest {
     @Captor
     private lateinit var barnetilsynBoCaptor: ArgumentCaptor<BarnetilsynBo>
 
+    @Captor
+    private lateinit var overgangsstønadBoCaptor: ArgumentCaptor<OvergangsstønadBo>
+
     @Test
     fun `Skal opprette ny grunnlagspakke`() {
         Mockito.`when`(persistenceServiceMock.opprettNyGrunnlagspakke(MockitoHelper.capture(opprettGrunnlagspakkeRequestDtoCaptor)))
@@ -139,6 +145,8 @@ class GrunnlagspakkeServiceMockTest {
             .thenReturn(byggKontantstotte())
         Mockito.`when`(persistenceServiceMock.opprettBarnetilsyn(MockitoHelper.capture(barnetilsynBoCaptor)))
             .thenReturn(byggBarnetilsyn())
+        Mockito.`when`(persistenceServiceMock.opprettOvergangsstønad(MockitoHelper.capture(overgangsstønadBoCaptor)))
+            .thenReturn(byggOvergangsstønad())
 
         val grunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
         val nyAinntektOpprettet = persistenceServiceMock.opprettAinntekt(byggAinntektBo())
@@ -152,6 +160,7 @@ class GrunnlagspakkeServiceMockTest {
         val nySivilstandOpprettet = persistenceServiceMock.opprettSivilstand(byggSivilstandBo())
         val nyKontantstotteOpprettet = persistenceServiceMock.opprettKontantstotte(byggKontantstotteBo())
         val nyBarnetilsynOpprettet = persistenceServiceMock.opprettBarnetilsyn(byggBarnetilsynBo())
+        val nyOvergangsstønadOpprettet = persistenceServiceMock.opprettOvergangsstønad(byggOvergangsstønadBo())
 
         val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
         val ainntektBoListe = ainntektBoCaptor.allValues
@@ -166,6 +175,7 @@ class GrunnlagspakkeServiceMockTest {
         val barnetilleggListe = barnetilleggBoCaptor.allValues
         val kontantstotteListe = kontantstotteBoCaptor.allValues
         val barnetilsynListe = barnetilsynBoCaptor.allValues
+        val overgangsstønadListe = overgangsstønadBoCaptor.allValues
 
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(MockitoHelper.any(AinntektBo::class.java))
@@ -178,6 +188,8 @@ class GrunnlagspakkeServiceMockTest {
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettRelatertPerson(MockitoHelper.any(RelatertPersonBo::class.java))
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSivilstand(MockitoHelper.any(SivilstandBo::class.java))
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettKontantstotte(MockitoHelper.any(KontantstotteBo::class.java))
+        Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettBarnetilsyn(MockitoHelper.any(BarnetilsynBo::class.java))
+        Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettOvergangsstønad(MockitoHelper.any(OvergangsstønadBo::class.java))
 
         assertAll(
             { assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
@@ -212,6 +224,9 @@ class GrunnlagspakkeServiceMockTest {
 
             { assertThat(nyBarnetilsynOpprettet).isNotNull() },
             { assertThat(nyBarnetilsynOpprettet.grunnlagspakkeId).isNotNull() },
+
+            { assertThat(nyOvergangsstønadOpprettet).isNotNull() },
+            { assertThat(nyOvergangsstønadOpprettet.grunnlagspakkeId).isNotNull() },
 
             // sjekk GrunnlagspakkeDto
             { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
@@ -313,7 +328,13 @@ class GrunnlagspakkeServiceMockTest {
             { assertThat(sivilstandBoListe[0].aktiv).isTrue },
             { assertThat(sivilstandBoListe[0].brukFra).isNotNull() },
             { assertThat(sivilstandBoListe[0].brukTil).isNull() },
-            { assertThat(sivilstandBoListe[0].hentetTidspunkt).isNotNull() }
+            { assertThat(sivilstandBoListe[0].hentetTidspunkt).isNotNull() },
+
+            // sjekk OvergangsstønadDto
+            { assertThat(overgangsstønadListe[0].partPersonId).isEqualTo("1234567") },
+            { assertThat(overgangsstønadListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+            { assertThat(overgangsstønadListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
+            { assertThat(overgangsstønadListe[0].belop).isEqualTo(7500) },
 
         )
     }

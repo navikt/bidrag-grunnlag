@@ -34,6 +34,7 @@ import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -53,7 +54,11 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternPeriodeMedBeløp
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderMedBeløpResponse
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode
+import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.InfotrygdPeriode
@@ -64,6 +69,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
+import no.nav.bidrag.grunnlag.persistence.entity.Overgangsstonad
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
@@ -136,6 +142,12 @@ class TestUtil {
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.KONTANTSTOTTE,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2021-01-01"),
+                    periodeTil = LocalDate.parse("2022-01-01")
+                ),
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.OVERGANGSSTONAD,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01")
@@ -216,6 +228,17 @@ class TestUtil {
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01")
+                )
+            )
+        )
+
+        fun byggOppdaterGrunnlagspakkeRequestOvergangsstønad() = OppdaterGrunnlagspakkeRequestDto(
+            grunnlagRequestDtoListe = listOf(
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.OVERGANGSSTONAD,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2022-01-01"),
+                    periodeTil = LocalDate.parse("2023-07-01")
                 )
             )
         )
@@ -536,6 +559,31 @@ class TestUtil {
             skolealder = Skolealder.UNDER
         )
 
+        fun byggOvergangsstønadBo() = OvergangsstønadBo(
+            grunnlagspakkeId = (1..100).random(),
+            partPersonId = "1234567",
+            periodeFra = LocalDate.parse("2021-01-01"),
+            periodeTil = LocalDate.parse("2021-07-01"),
+            aktiv = true,
+            brukFra = LocalDateTime.now(),
+            brukTil = null,
+            belop = 7500,
+            hentetTidspunkt = LocalDateTime.now()
+        )
+
+        fun byggOvergangsstønad() = Overgangsstonad(
+            overgangsstonadId = (1..100).random(),
+            grunnlagspakkeId = (1..100).random(),
+            partPersonId = "1234567",
+            periodeFra = LocalDate.parse("2021-01-01"),
+            periodeTil = LocalDate.parse("2021-07-01"),
+            aktiv = true,
+            brukFra = LocalDateTime.now(),
+            brukTil = null,
+            belop = 7500,
+            hentetTidspunkt = LocalDateTime.now()
+        )
+
         fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
             immutableListOf(
                 UtvidetBarnetrygdPeriode(
@@ -589,6 +637,27 @@ class TestUtil {
                         tom = LocalDate.parse("2021-07-31")
                     ),
                     barnIdenter = immutableListOf("01012212345", "01011034543")
+                )
+            )
+        )
+
+        fun byggOvergangsstønadResponse() = Ressurs(
+            EksternePerioderMedBeløpResponse(
+                immutableListOf(
+                    EksternPeriodeMedBeløp(
+                        personIdent = "12345678910",
+                        fomDato = LocalDate.parse("2020-01-01"),
+                        tomDato = LocalDate.parse("2020-12-31"),
+                        beløp = 111,
+                        datakilde = "Infotrygd"
+                    ),
+                    EksternPeriodeMedBeløp(
+                        personIdent = "12345678910",
+                        fomDato = LocalDate.parse("2021-01-01"),
+                        tomDato = LocalDate.parse("2021-07-31"),
+                        beløp = 222,
+                        datakilde = "ef-sak"
+                    )
                 )
             )
         )
@@ -695,6 +764,12 @@ class TestUtil {
 
         fun byggBarnetilsynRequest() = BarnetilsynRequest(
             "123",
+            LocalDate.now()
+        )
+
+        fun byggOvergangsstønadRequest() = EksternePerioderRequest(
+            "123",
+            LocalDate.now(),
             LocalDate.now()
         )
 
