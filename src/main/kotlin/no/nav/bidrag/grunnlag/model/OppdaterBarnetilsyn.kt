@@ -92,7 +92,7 @@ class OppdaterBarnetilsyn(
                     OppdaterGrunnlagDto(
                         GrunnlagRequestType.BARNETILSYN,
                         personIdOgPeriode.personId,
-                        GrunnlagsRequestStatus.FEILET,
+                        GrunnlagsRequestStatus.IKKE_FUNNET,
                         "Feil ved henting av barnetilsyn for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
                     )
                 )
