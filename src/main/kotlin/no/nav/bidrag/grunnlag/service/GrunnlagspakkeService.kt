@@ -64,7 +64,8 @@ class GrunnlagspakkeService(
             persistenceService.hentEgneBarnIHusstanden(grunnlagspakkeId),
             persistenceService.hentVoksneHusstandsmedlemmer(grunnlagspakkeId),
             persistenceService.hentSivilstand(grunnlagspakkeId),
-            persistenceService.hentBarnetilsyn(grunnlagspakkeId)
+            persistenceService.hentBarnetilsyn(grunnlagspakkeId),
+            persistenceService.hentOvergangsstønad(grunnlagspakkeId)
         )
     }
 

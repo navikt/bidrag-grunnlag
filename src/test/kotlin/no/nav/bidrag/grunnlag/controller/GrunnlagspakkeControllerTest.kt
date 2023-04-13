@@ -446,7 +446,8 @@ class GrunnlagspakkeControllerTest(
                     egneBarnIHusstandenListe = emptyList(),
                     husstandmedlemListe = emptyList(),
                     sivilstandListe = emptyList(),
-                    barnetilsynListe = emptyList()
+                    barnetilsynListe = emptyList(),
+                    overgangsstonadListe = emptyList()
                 )
             )
 

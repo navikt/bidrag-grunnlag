@@ -5,10 +5,9 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.AinntektspostDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilleggDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BarnetilsynDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.BorISammeHusstandDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.KontantstotteDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OvergangsstønadDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.OvergangsstonadDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.RelatertPersonDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SivilstandDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.SkattegrunnlagDto
@@ -123,21 +122,39 @@ class PersistenceService(
         return skattegrunnlagspostRepository.save(nyInntektspost)
     }
 
-    fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
-        grunnlagspakkeId: Int,
-        personId: String,
-        timestampOppdatering: LocalDateTime
-    ) {
-        utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
-            grunnlagspakkeId,
-            personId,
-            timestampOppdatering
-        )
-    }
-
     fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo): UtvidetBarnetrygdOgSmaabarnstillegg {
         val nyUbst = utvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
         return utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
+    }
+
+    fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
+        val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
+        return barnetilleggRepository.save(nyBarnetillegg)
+    }
+
+    fun opprettRelatertPerson(relatertPersonBo: RelatertPersonBo): RelatertPerson {
+        val nyRelatertPerson = relatertPersonBo.toRelatertPersonEntity()
+        return relatertPersonRepository.save(nyRelatertPerson)
+    }
+
+    fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
+        val nySivilstand = sivilstandBo.toSivilstandEntity()
+        return sivilstandRepository.save(nySivilstand)
+    }
+
+    fun opprettKontantstotte(kontantstotteBo: KontantstotteBo): Kontantstotte {
+        val nyKontantstotte = kontantstotteBo.toKontantstotteEntity()
+        return kontantstotteRepository.save(nyKontantstotte)
+    }
+
+    fun opprettBarnetilsyn(barnetilsynBo: BarnetilsynBo): Barnetilsyn {
+        val nyBarnetilsyn = barnetilsynBo.toBarnetilsynEntity()
+        return barnetilsynRepository.save(nyBarnetilsyn)
+    }
+
+    fun opprettOvergangsstønad(overgangsstønadBo: OvergangsstønadBo): Overgangsstonad {
+        val nyOvergangsstønad = overgangsstønadBo.toOvergangsstønadEntity()
+        return overgangsstønadRepository.save(nyOvergangsstønad)
     }
 
     fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
@@ -177,27 +194,51 @@ class PersistenceService(
         )
     }
 
-    fun opprettBarnetillegg(barnetilleggBo: BarnetilleggBo): Barnetillegg {
-        val nyBarnetillegg = barnetilleggBo.toBarnetilleggEntity()
-        return barnetilleggRepository.save(nyBarnetillegg)
+    fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+        grunnlagspakkeId: Int,
+        personId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+            grunnlagspakkeId,
+            personId,
+            timestampOppdatering
+        )
     }
 
-    fun opprettRelatertPerson(relatertPersonBo: RelatertPersonBo): RelatertPerson {
-        val nyRelatertPerson = relatertPersonBo.toRelatertPersonEntity()
-        return relatertPersonRepository.save(nyRelatertPerson)
+    fun oppdaterEksisterendeBarnetilsynTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
+        )
     }
 
-    fun opprettSivilstand(sivilstandBo: SivilstandBo): Sivilstand {
-        val nySivilstand = sivilstandBo.toSivilstandEntity()
-        return sivilstandRepository.save(nySivilstand)
+    fun oppdaterEksisterendeKontantstotteTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
+        )
     }
 
-    // Returnerer lagret, komplett grunnlagspakke
-    fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
-        return HentGrunnlagspakkeDto(
-            grunnlagspakkeId, hentAinntekt(grunnlagspakkeId), hentSkattegrunnlag(grunnlagspakkeId),
-            hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId), hentBarnetillegg(grunnlagspakkeId),
-            hentKontantstotte(grunnlagspakkeId), emptyList(), emptyList(), emptyList(), emptyList()
+    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(
+        grunnlagspakkeId: Int,
+        partPersonId: String,
+        timestampOppdatering: LocalDateTime
+    ) {
+        overgangsstønadRepository.oppdaterEksisterendeOvergangsstonadTilInaktiv(
+            grunnlagspakkeId,
+            partPersonId,
+            timestampOppdatering
         )
     }
 
@@ -504,22 +545,6 @@ class PersistenceService(
         return kontantstotteDtoListe
     }
 
-    fun opprettKontantstotte(kontantstotteBo: KontantstotteBo): Kontantstotte {
-        val nyKontantstotte = kontantstotteBo.toKontantstotteEntity()
-        return kontantstotteRepository.save(nyKontantstotte)
-    }
-
-    fun oppdaterEksisterendeKontantstotteTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime
-    ) {
-        kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
-            grunnlagspakkeId,
-            partPersonId,
-            timestampOppdatering
-        )
-    }
 
     fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<RelatertPersonDto> {
         val egneBarnDtoListe = mutableListOf<RelatertPersonDto>()
@@ -621,10 +646,6 @@ class PersistenceService(
         return sivilstandDtoListe
     }
 
-    fun opprettBarnetilsyn(barnetilsynBo: BarnetilsynBo): Barnetilsyn {
-        val nyBarnetilsyn = barnetilsynBo.toBarnetilsynEntity()
-        return barnetilsynRepository.save(nyBarnetilsyn)
-    }
 
     fun hentBarnetilsyn(grunnlagspakkeId: Int): List<BarnetilsynDto> {
         val barnetilsynDtoListe = mutableListOf<BarnetilsynDto>()
@@ -649,24 +670,13 @@ class PersistenceService(
         return barnetilsynDtoListe
     }
 
-    fun oppdaterEksisterendeBarnetilsynTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime
-    ) {
-        barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
-            grunnlagspakkeId,
-            partPersonId,
-            timestampOppdatering
-        )
-    }
 
-    fun hentOvergangsstønad(grunnlagspakkeId: Int): List<OvergangsstønadDto> {
-        val overgangsstønadDtoListe = mutableListOf<OvergangsstønadDto>()
+    fun hentOvergangsstønad(grunnlagspakkeId: Int): List<OvergangsstonadDto> {
+        val overgangsstønadDtoListe = mutableListOf<OvergangsstonadDto>()
         overgangsstønadRepository.hentOvergangsstonad(grunnlagspakkeId)
             .forEach { overgangsstønad ->
                 overgangsstønadDtoListe.add(
-                    OvergangsstønadDto(
+                    OvergangsstonadDto(
                         partPersonId = overgangsstønad.partPersonId,
                         periodeFra = overgangsstønad.periodeFra,
                         periodeTil = overgangsstønad.periodeTil,
@@ -681,20 +691,5 @@ class PersistenceService(
         return overgangsstønadDtoListe
     }
 
-    fun opprettOvergangsstønad(overgangsstønadBo: OvergangsstønadBo): Overgangsstonad {
-        val nyOvergangsstønad = overgangsstønadBo.toOvergangsstønadEntity()
-        return overgangsstønadRepository.save(nyOvergangsstønad)
-    }
 
-    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime
-    ) {
-        overgangsstønadRepository.oppdaterEksisterendeOvergangsstonadTilInaktiv(
-            grunnlagspakkeId,
-            partPersonId,
-            timestampOppdatering
-        )
-    }
 }
