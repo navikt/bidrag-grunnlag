@@ -639,6 +639,9 @@ class PersistenceService(
                         periodeFra = sivilstand.periodeFra,
                         periodeTil = sivilstand.periodeTil,
                         sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
+                        aktiv = sivilstand.aktiv,
+                        brukFra = sivilstand.brukFra,
+                        brukTil = sivilstand.brukTil,
                         hentetTidspunkt = sivilstand.hentetTidspunkt
                     )
                 )
