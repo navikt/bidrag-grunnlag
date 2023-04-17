@@ -79,6 +79,7 @@ import no.nav.bidrag.transport.person.Husstand
 import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.person.Sivilstand
 import no.nav.bidrag.transport.person.SivilstandDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
@@ -755,11 +756,11 @@ class TestUtil {
             fraDato = LocalDate.now()
         )
 
-        fun byggForelderBarnRequest() = PersonIdent("personIdent")
+        fun byggForelderBarnRequest() = PersonRequest(PersonIdent("personIdent"))
 
-        fun byggHusstandsmedlemmerRequest() = PersonIdent("personIdent")
+        fun byggHusstandsmedlemmerRequest() = PersonRequest(PersonIdent("personIdent"))
 
-        fun byggSivilstandRequest() = PersonIdent("personIdent")
+        fun byggSivilstandRequest() = PersonRequest(PersonIdent("personIdent"))
 
         fun byggKontantstotteRequest() = BisysDto(
             LocalDate.now(),

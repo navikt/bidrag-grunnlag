@@ -68,7 +68,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentHusstandsmedlemmerResponse(), HttpStatus.OK))
 
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
+        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request.ident)) {
             is RestResponse.Success -> {
                 val hentHusstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
                 assertAll(
@@ -149,7 +149,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
+        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request.ident)) {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseHusstandsmedlemmer.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
@@ -176,7 +176,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentSivilstandResponse(), HttpStatus.OK))
 
-        when (val restResponseSivilstand = bidragPersonConsumer!!.hentSivilstand(request)) {
+        when (val restResponseSivilstand = bidragPersonConsumer!!.hentSivilstand(request.ident)) {
             is RestResponse.Success -> {
                 val hentSivilstandResponse = restResponseSivilstand.body
                 assertAll(
@@ -216,7 +216,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
-        when (val restResponseSivilstand = bidragPersonConsumer!!.hentSivilstand(request)) {
+        when (val restResponseSivilstand = bidragPersonConsumer!!.hentSivilstand(request.ident)) {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseSivilstand.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
