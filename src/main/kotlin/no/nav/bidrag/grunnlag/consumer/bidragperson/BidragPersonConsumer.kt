@@ -16,7 +16,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
-private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/foedselogdoed"
+private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/navnfoedseldoed"
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
 private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER = "/bidrag-person/husstandsmedlemmer"
 private const val BIDRAGPERSON_CONTEXT_SIVILSTAND = "/bidrag-person/sivilstand"
