@@ -35,8 +35,6 @@ class OppdaterRelatertePersoner(
     // Også barn som ikke bor i samme husstand som BM/BP skal være med i grunnlaget og lagres med null i husstandsmedlemPeriodeFra
     // og husstandsmedlemPeriodeTil.
     fun oppdaterRelatertePersoner(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterRelatertePersoner {
-        LOGGER.info("OppdaterRelatertePersoner")
-        SECURE_LOGGER.info("OppdaterRelatertePersoner: $relatertePersonerRequestListe")
         relatertePersonerRequestListe.forEach { personIdOgPeriode ->
 
             // Sett eksisterende forekomster av RelatertPerson til inaktiv
