@@ -666,7 +666,6 @@ class OppdaterGrunnlagspakkeServiceTest {
         )
     }
 
-
     /*  @Test
       @Suppress("NonAsciiCharacters")
       fun `skal overstyre periodeFra ved innhenting av ainntekter før 2015`() {

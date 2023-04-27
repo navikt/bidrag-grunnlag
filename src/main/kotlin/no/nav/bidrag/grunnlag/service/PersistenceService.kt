@@ -545,7 +545,6 @@ class PersistenceService(
         return kontantstotteDtoListe
     }
 
-
     fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<RelatertPersonDto> {
         val egneBarnDtoListe = mutableListOf<RelatertPersonDto>()
         // Filtrerer vekk relaterte personer som ikke er barn av BM/BP
@@ -649,7 +648,6 @@ class PersistenceService(
         return sivilstandDtoListe
     }
 
-
     fun hentBarnetilsyn(grunnlagspakkeId: Int): List<BarnetilsynDto> {
         val barnetilsynDtoListe = mutableListOf<BarnetilsynDto>()
         barnetilsynRepository.hentBarnetilsyn(grunnlagspakkeId)
@@ -673,7 +671,6 @@ class PersistenceService(
         return barnetilsynDtoListe
     }
 
-
     fun hentOvergangsstønad(grunnlagspakkeId: Int): List<OvergangsstonadDto> {
         val overgangsstønadDtoListe = mutableListOf<OvergangsstonadDto>()
         overgangsstønadRepository.hentOvergangsstonad(grunnlagspakkeId)
@@ -693,6 +690,4 @@ class PersistenceService(
             }
         return overgangsstønadDtoListe
     }
-
-
 }

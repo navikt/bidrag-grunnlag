@@ -17,13 +17,10 @@ import no.nav.bidrag.domain.number.MatrikkelId
 import no.nav.bidrag.domain.string.Adressenavn
 import no.nav.bidrag.domain.string.Bruksenhetsnummer
 import no.nav.bidrag.domain.string.Bydelsnummer
-import no.nav.bidrag.domain.string.Etternavn
-import no.nav.bidrag.domain.string.Fornavn
 import no.nav.bidrag.domain.string.FulltNavn
 import no.nav.bidrag.domain.string.Husbokstav
 import no.nav.bidrag.domain.string.Husnummer
 import no.nav.bidrag.domain.string.Kommunenummer
-import no.nav.bidrag.domain.string.Mellomnavn
 import no.nav.bidrag.domain.string.Postnummer
 import no.nav.bidrag.domain.tid.Bekreftelsesdato
 import no.nav.bidrag.domain.tid.FomDato
@@ -850,36 +847,28 @@ class TestUtil {
                             gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
                             gyldigTilOgMed = TomDato(LocalDate.parse("2011-02-01")),
                             personId = PersonIdent("111"),
-                            fornavn = Fornavn("fornavn1"),
-                            mellomnavn = Mellomnavn("mellomnavn1"),
-                            etternavn = Etternavn("etternavn1"),
+                            navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
                             fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
                         ),
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-17")),
                             gyldigTilOgMed = null,
                             personId = PersonIdent("111"),
-                            fornavn = Fornavn("fornavn1"),
-                            mellomnavn = Mellomnavn("mellomnavn1"),
-                            etternavn = Etternavn("etternavn1"),
+                            navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
                             fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
                         ),
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
                             gyldigTilOgMed = TomDato(LocalDate.parse("2011-12-01")),
                             personId = PersonIdent("333"),
-                            fornavn = Fornavn("fornavn3"),
-                            mellomnavn = Mellomnavn("mellomnavn3"),
-                            etternavn = Etternavn("etternavn3"),
+                            navn = FulltNavn("fornavn3 mellomnavn3 etternavn3"),
                             fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
                         ),
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-01")),
                             gyldigTilOgMed = TomDato(LocalDate.parse("2011-06-01")),
                             personId = PersonIdent("444"),
-                            fornavn = Fornavn("fornavn4"),
-                            mellomnavn = Mellomnavn("mellomnavn4"),
-                            etternavn = Etternavn("etternavn4"),
+                            navn = FulltNavn("fornavn4 mellomnavn4 etternavn4"),
                             fødselsdato = Fødselsdato(LocalDate.parse("1974-02-01"))
                         )
                     )
@@ -900,9 +889,7 @@ class TestUtil {
                             gyldigFraOgMed = FomDato(LocalDate.parse("2018-01-01")),
                             gyldigTilOgMed = TomDato(LocalDate.parse("2018-02-01")),
                             personId = PersonIdent("111"),
-                            fornavn = Fornavn("fornavn1"),
-                            mellomnavn = Mellomnavn("mellomnavn1"),
-                            etternavn = Etternavn("etternavn1"),
+                            navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
                             fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
                             dødsdato = null
                         ),
@@ -910,9 +897,7 @@ class TestUtil {
                             gyldigFraOgMed = FomDato(LocalDate.parse("2020-01-01")),
                             gyldigTilOgMed = null,
                             personId = PersonIdent("555"),
-                            fornavn = Fornavn("fornavn5"),
-                            mellomnavn = Mellomnavn("mellomnavn5"),
-                            etternavn = Etternavn("etternavn5"),
+                            navn = FulltNavn("fornavn5 mellomnavn5 etternavn5"),
                             fødselsdato = Fødselsdato(LocalDate.parse("1985-07-17")),
                             dødsdato = null
                         )
