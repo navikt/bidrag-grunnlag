@@ -55,6 +55,7 @@ class OppdaterRelatertePersoner(
             husstandsmedlemmerListe.forEach { husstandsmedlem ->
                 persistenceService.opprettRelatertPerson(
                     RelatertPersonBo(
+                        grunnlagspakkeId = grunnlagspakkeId,
                         partPersonId = personIdOgPeriode.personId,
                         relatertPersonPersonId = husstandsmedlem.personId,
                         navn = husstandsmedlem.navn,
@@ -77,6 +78,7 @@ class OppdaterRelatertePersoner(
             filtrertBarnListe.forEach { barn ->
                 persistenceService.opprettRelatertPerson(
                     RelatertPersonBo(
+                        grunnlagspakkeId = grunnlagspakkeId,
                         partPersonId = personIdOgPeriode.personId,
                         relatertPersonPersonId = barn.personId,
                         navn = barn.navn,
@@ -115,7 +117,7 @@ class OppdaterRelatertePersoner(
                             husstandsmedlemListe.add(
                                 PersonBo(
                                     husstandsmedlem.personId.verdi,
-                                    husstandsmedlem.fornavn.verdi + " " + husstandsmedlem.mellomnavn?.verdi + " " + husstandsmedlem.etternavn.verdi,
+                                    husstandsmedlem.navn.verdi,
                                     husstandsmedlem.fødselsdato?.verdi,
                                     husstandsmedlem.gyldigFraOgMed?.verdi,
                                     husstandsmedlem.gyldigTilOgMed?.verdi

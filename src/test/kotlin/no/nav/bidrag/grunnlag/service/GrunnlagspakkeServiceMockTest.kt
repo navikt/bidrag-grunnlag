@@ -334,7 +334,7 @@ class GrunnlagspakkeServiceMockTest {
             { assertThat(overgangsstønadListe[0].partPersonId).isEqualTo("1234567") },
             { assertThat(overgangsstønadListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { assertThat(overgangsstønadListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-            { assertThat(overgangsstønadListe[0].belop).isEqualTo(7500) },
+            { assertThat(overgangsstønadListe[0].belop).isEqualTo(7500) }
 
         )
     }
