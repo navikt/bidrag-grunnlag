@@ -181,21 +181,10 @@ class TestUtil {
             )
         )
 
-        fun byggOppdaterGrunnlagspakkeRequestEgneBarnIHusstanden() = OppdaterGrunnlagspakkeRequestDto(
+        fun byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn() = OppdaterGrunnlagspakkeRequestDto(
             grunnlagRequestDtoListe = listOf(
                 GrunnlagRequestDto(
-                    type = GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
-                    personId = "12345678910",
-                    periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
-        )
-
-        fun byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmer() = OppdaterGrunnlagspakkeRequestDto(
-            grunnlagRequestDtoListe = listOf(
-                GrunnlagRequestDto(
-                    type = GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+                    type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01")

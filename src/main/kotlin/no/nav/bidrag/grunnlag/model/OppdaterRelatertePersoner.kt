@@ -128,7 +128,7 @@ class OppdaterRelatertePersoner(
                 }
                 this.add(
                     OppdaterGrunnlagDto(
-                        GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+                        GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                         husstandsmedlemmerRequest,
                         GrunnlagsRequestStatus.HENTET,
                         "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}"
@@ -139,10 +139,10 @@ class OppdaterRelatertePersoner(
 
             is RestResponse.Failure -> this.add(
                 OppdaterGrunnlagDto(
-                    GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+                    GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     husstandsmedlemmerRequest,
                     if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                    "Feil ved henting av husstandsmedlemmer for: $husstandsmedlemmerRequest."
+                    "Feil ved henting av husstandsmedlemmer og egne barn for: $husstandsmedlemmerRequest."
                 )
             )
         }
@@ -190,7 +190,7 @@ class OppdaterRelatertePersoner(
 
             is RestResponse.Failure -> this.add(
                 OppdaterGrunnlagDto(
-                    GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
+                    GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     forelderBarnRequest.verdi,
                     if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
                     "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.verdi} ."
