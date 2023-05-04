@@ -170,7 +170,6 @@ class GrunnlagspakkeServiceMockTest {
         val ubstBoListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
         val barnetilleggBoListe = barnetilleggBoCaptor.allValues
         val relatertPersonBoListe = relatertPersonBoCaptor.allValues
-        val husstandsmedlemBoListe = relatertPersonBoCaptor.allValues
         val sivilstandBoListe = sivilstandBoCaptor.allValues
         val barnetilleggListe = barnetilleggBoCaptor.allValues
         val kontantstotteListe = kontantstotteBoCaptor.allValues

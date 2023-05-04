@@ -443,8 +443,7 @@ class GrunnlagspakkeControllerTest(
                     ubstListe = emptyList(),
                     barnetilleggListe = emptyList(),
                     kontantstotteListe = emptyList(),
-                    egneBarnIHusstandenListe = emptyList(),
-                    husstandmedlemListe = emptyList(),
+                    husstandmedlemmerOgEgneBarnListe = emptyList(),
                     sivilstandListe = emptyList(),
                     barnetilsynListe = emptyList(),
                     overgangsstonadListe = emptyList()

@@ -8,8 +8,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.AINNTEKT
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILLEGG
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILSYN
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER
+import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.KONTANTSTOTTE
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.OVERGANGSSTONAD
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SIVILSTAND
@@ -68,11 +67,8 @@ class OppdaterGrunnlagspakkeService(
             .oppdaterKontantstotte(
                 hentRequestListeFor(KONTANTSTOTTE, oppdaterGrunnlagspakkeRequestDto)
             )
-            .oppdaterEgneBarnIHusstanden(
-                hentRequestListeFor(EGNE_BARN_I_HUSSTANDEN, oppdaterGrunnlagspakkeRequestDto)
-            )
-            .oppdaterVoksneHusstandsmedlemmer(
-                hentRequestListeFor(HUSSTANDSMEDLEMMER, oppdaterGrunnlagspakkeRequestDto)
+            .oppdaterHusstandsmedlemmerOgEgneBarn(
+                hentRequestListeFor(HUSSTANDSMEDLEMMER_OG_EGNE_BARN, oppdaterGrunnlagspakkeRequestDto)
             )
             .oppdaterSivilstand(
                 hentRequestListeFor(SIVILSTAND, oppdaterGrunnlagspakkeRequestDto)
@@ -179,20 +175,7 @@ class OppdaterGrunnlagspakkeService(
             return this
         }
 
-        fun oppdaterEgneBarnIHusstanden(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
-            this.addAll(
-                OppdaterRelatertePersoner(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    bidragPersonConsumer
-                )
-                    .oppdaterRelatertePersoner(relatertePersonerRequestListe)
-            )
-            return this
-        }
-
-        fun oppdaterVoksneHusstandsmedlemmer(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterHusstandsmedlemmerOgEgneBarn(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterRelatertePersoner(
                     grunnlagspakkeId,
