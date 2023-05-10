@@ -37,7 +37,6 @@ import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
@@ -60,6 +59,16 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.InfotrygdPeriode
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.KsSakPeriode
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.Aktoer
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.ArbeidsInntektInformasjonIntern
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.ArbeidsInntektMaanedIntern
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeResponseIntern
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.InntektIntern
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.OpplysningspliktigIntern
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonDetaljerIntern
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonIntern
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.VirksomhetIntern
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
@@ -79,7 +88,6 @@ import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.person.Sivilstand
 import no.nav.bidrag.transport.person.SivilstandDto
-import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
@@ -90,8 +98,11 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.Fradrag
 import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.Inntekt
 import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
+import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
+import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.TilleggsinformasjonDetaljerType
 import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
@@ -152,6 +163,17 @@ class TestUtil {
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.OVERGANGSSTONAD,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2021-01-01"),
+                    periodeTil = LocalDate.parse("2022-01-01")
+                )
+            )
+        )
+
+        fun byggOppdaterGrunnlagspakkeRequestAInntekt() = OppdaterGrunnlagspakkeRequestDto(
+            grunnlagRequestDtoListe = listOf(
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.AINNTEKT,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01")
@@ -232,28 +254,6 @@ class TestUtil {
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2022-01-01"),
                     periodeTil = LocalDate.parse("2023-07-01")
-                )
-            )
-        )
-
-        fun byggOppdaterGrunnlagspakkeRequestAinntekt() = OppdaterGrunnlagspakkeRequestDto(
-            grunnlagRequestDtoListe = listOf(
-                GrunnlagRequestDto(
-                    type = GrunnlagRequestType.AINNTEKT,
-                    personId = "12345678910",
-                    periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
-        )
-
-        fun byggOppdaterGrunnlagspakkeRequestAinntektTidligereEnn2015() = OppdaterGrunnlagspakkeRequestDto(
-            grunnlagRequestDtoListe = listOf(
-                GrunnlagRequestDto(
-                    type = GrunnlagRequestType.AINNTEKT,
-                    personId = "12345678910",
-                    periodeFra = LocalDate.parse("2011-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
                 )
             )
         )
@@ -655,19 +655,69 @@ class TestUtil {
             )
         )
 
-        fun byggHentInntektRequest() = HentInntektRequest(
-            ident = "ident",
-            innsynHistoriskeInntekterDato = LocalDate.now(),
-            maanedFom = LocalDate.now().toString(),
-            maanedTom = LocalDate.now().toString(),
+        fun byggHentInntektListeRequest() = HentInntektListeRequest(
+            ident = Aktoer(identifikator = "ident"),
+            maanedFom = YearMonth.of(LocalDate.now().year, LocalDate.now().month),
+            maanedTom = YearMonth.of(LocalDate.now().year, LocalDate.now().month),
             ainntektsfilter = "BidragA-Inntekt",
             formaal = "Bidrag"
         )
 
         fun byggHentInntektListeResponse() = HentInntektListeResponse(
             byggArbeidsInntektMaanedListe(),
-            Aktoer("", AktoerType.NATURLIG_IDENT)
+            no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer("", AktoerType.NATURLIG_IDENT)
         )
+        fun byggHentInntektListeResponseIntern() =
+            byggArbeidsInntektMaanedListeIntern(HttpStatus.OK, byggArbeidsInntektMaanedListe())
+
+        private fun byggArbeidsInntektMaanedListeIntern(httpStatus: HttpStatus, eksternRespons: List<ArbeidsInntektMaaned>): HentInntektListeResponseIntern {
+            val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
+
+            eksternRespons.forEach() { arbeidsInntektMaaned ->
+                val inntektInternListe = mutableListOf<InntektIntern>()
+                arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach() { inntekt ->
+                    val inntektIntern = InntektIntern(
+                        inntektType = inntekt.inntektType.toString(),
+                        beloep = inntekt.beloep,
+                        fordel = inntekt.fordel,
+                        inntektsperiodetype = inntekt.inntektsperiodetype,
+                        opptjeningsperiodeFom = inntekt.opptjeningsperiodeFom,
+                        opptjeningsperiodeTom = inntekt.opptjeningsperiodeTom,
+                        utbetaltIMaaned = inntekt.utbetaltIMaaned?.toString(),
+                        opplysningspliktig = OpplysningspliktigIntern(
+                            inntekt.opplysningspliktig?.identifikator,
+                            inntekt.opplysningspliktig?.aktoerType.toString()
+                        ),
+                        virksomhet = VirksomhetIntern(
+                            inntekt.virksomhet?.identifikator,
+                            inntekt.virksomhet?.aktoerType.toString()
+                        ),
+                        tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE) {
+                            TilleggsinformasjonIntern(
+                                inntekt.tilleggsinformasjon.kategori,
+                                TilleggsinformasjonDetaljerIntern(
+                                    (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
+                                    (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
+                                        1
+                                    )
+                                )
+                            )
+                        } else {
+                            null
+                        },
+                        beskrivelse = inntekt.beskrivelse
+                    )
+                    inntektInternListe.add(inntektIntern)
+                }
+                arbeidsInntektMaanedListe.add(
+                    ArbeidsInntektMaanedIntern(
+                        arbeidsInntektMaaned.aarMaaned.toString(),
+                        ArbeidsInntektInformasjonIntern(inntektInternListe)
+                    )
+                )
+            }
+            return HentInntektListeResponseIntern(httpStatus, arbeidsInntektMaanedListe)
+        }
 
         private fun byggArbeidsInntektMaanedListe(): List<ArbeidsInntektMaaned> {
             val arbeidsforholdListe = mutableListOf<ArbeidsforholdFrilanser>()
@@ -706,7 +756,7 @@ class TestUtil {
                 null,
                 null,
                 null,
-                Aktoer("Testaktor", AktoerType.NATURLIG_IDENT),
+                no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer("Testaktor", AktoerType.NATURLIG_IDENT),
                 null,
                 null,
                 false,
@@ -741,8 +791,6 @@ class TestUtil {
             personIdent = "personIdent",
             fraDato = LocalDate.now()
         )
-
-        fun byggForelderBarnRequest() = PersonRequest(PersonIdent("personIdent"))
 
         fun byggHusstandsmedlemmerRequest() = PersonRequest(PersonIdent("personIdent"))
 

@@ -14,6 +14,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
 import no.nav.bidrag.grunnlag.service.SecurityTokenService
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.slf4j.LoggerFactory
@@ -100,6 +101,19 @@ class BidragGrunnlagConfig {
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
         restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidraggcpproxy"))
         return BidragGcpProxyConsumer(restTemplate)
+    }
+
+    @Bean
+    fun inntektskomponentenConsumer(
+        @Value("\${INNTEKTSKOMPONENTEN_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): InntektskomponentenConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("inntektskomponenten"))
+        return InntektskomponentenConsumer(restTemplate)
     }
 
     @Bean

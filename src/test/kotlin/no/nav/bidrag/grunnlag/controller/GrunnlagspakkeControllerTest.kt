@@ -15,7 +15,6 @@ import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektListeResponseIntern
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
@@ -26,11 +25,13 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
+import no.nav.bidrag.grunnlag.service.InntektskomponentenService
 import no.nav.bidrag.grunnlag.service.OppdaterGrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -75,15 +76,29 @@ class GrunnlagspakkeControllerTest(
 
     private val restTemplate: HttpHeaderRestTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
     private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
+    private val inntektskomponentenConsumer: InntektskomponentenConsumer = InntektskomponentenConsumer(restTemplate)
+    private val inntektskomponentenService: InntektskomponentenService = InntektskomponentenService(inntektskomponentenConsumer)
     private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
     private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
     private val familieKsSakConsumer: FamilieKsSakConsumer = FamilieKsSakConsumer(restTemplate)
     private val familieEfSakConsumer: FamilieEfSakConsumer = FamilieEfSakConsumer(restTemplate)
-    private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(persistenceService, familieBaSakConsumer, bidragGcpProxyConsumer, bidragPersonConsumer, familieKsSakConsumer, familieEfSakConsumer)
+    private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(
+        persistenceService,
+        familieBaSakConsumer,
+        bidragGcpProxyConsumer,
+        inntektskomponentenService,
+        bidragPersonConsumer,
+        familieKsSakConsumer,
+        familieEfSakConsumer
+    )
     private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
     private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
     private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)
-        .setControllerAdvice(RestExceptionHandler(exceptionLogger), CustomExceptionHandler(exceptionLogger), HibernateExceptionHandler(exceptionLogger))
+        .setControllerAdvice(
+            RestExceptionHandler(exceptionLogger),
+            CustomExceptionHandler(exceptionLogger),
+            HibernateExceptionHandler(exceptionLogger)
+        )
         .build()
 
     @BeforeEach
@@ -100,7 +115,14 @@ class GrunnlagspakkeControllerTest(
     fun `skal oppdatere en grunnlagspakke`() {
         val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
-        Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponse>>())).thenReturn(
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/proxy/inntektskomponenten-q1/rs/api/v1/hentdetaljerteabonnerteinntekter"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<HentInntektListeResponse>>()
+            )
+        ).thenReturn(
             ResponseEntity(TestUtil.byggHentInntektListeResponse(), HttpStatus.OK)
         )
 
@@ -109,17 +131,38 @@ class GrunnlagspakkeControllerTest(
                 ResponseEntity(TestUtil.byggHentSkattegrunnlagResponse(), HttpStatus.OK)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/barnetillegg/pensjon/hent"), eq(HttpMethod.POST), any(), any<Class<HentBarnetilleggPensjonResponse>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/barnetillegg/pensjon/hent"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<HentBarnetilleggPensjonResponse>>()
+            )
+        )
             .thenReturn(
                 ResponseEntity(TestUtil.byggHentBarnetilleggPensjonResponse(), HttpStatus.OK)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utvidet-barnetrygd"), eq(HttpMethod.POST), any(), any<Class<FamilieBaSakResponse>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/bisys/hent-utvidet-barnetrygd"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<FamilieBaSakResponse>>()
+            )
+        )
             .thenReturn(
                 ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/bisys/perioder-barnetilsyn"), eq(HttpMethod.POST), any(), any<Class<BarnetilsynResponse>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/ekstern/bisys/perioder-barnetilsyn"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<BarnetilsynResponse>>()
+            )
+        )
             .thenReturn(
                 ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK)
             )
@@ -129,7 +172,14 @@ class GrunnlagspakkeControllerTest(
                 ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/perioder/overgangsstonad/med-belop"), eq(HttpMethod.POST), any(), any<Class<Ressurs>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/ekstern/perioder/overgangsstonad/med-belop"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<Ressurs>>()
+            )
+        )
             .thenReturn(
                 ResponseEntity(TestUtil.byggOvergangsstønadResponse(), HttpStatus.OK)
             )
@@ -152,20 +202,53 @@ class GrunnlagspakkeControllerTest(
     fun `skal oppdatere grunnlagspakke og håndtere rest-kall-feil`() {
         val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
-        Mockito.`when`(restTemplate.exchange(eq("/inntekt/hent"), eq(HttpMethod.POST), any(), any<Class<HentInntektListeResponseIntern>>())).thenThrow(
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/proxy/inntektskomponenten-q1/rs/api/v1/hentdetaljerteabonnerteinntekter"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<HentInntektListeResponse>>()
+            )
+        ).thenThrow(
             HttpClientErrorException(HttpStatus.NOT_FOUND)
         )
 
-        Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>())).thenThrow(
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/proxy/inntektskomponenten-q1/rs/api/v1/hentinntektliste"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<HentInntektListeResponse>>()
+            )
+        ).thenThrow(
             HttpClientErrorException(HttpStatus.NOT_FOUND)
         )
 
-        Mockito.`when`(restTemplate.exchange(eq("/barnetillegg/pensjon/hent"), eq(HttpMethod.POST), any(), any<Class<HentBarnetilleggPensjonResponse>>()))
+        Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>()))
             .thenThrow(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utvidet-barnetrygd"), eq(HttpMethod.POST), any(), any<Class<FamilieBaSakResponse>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/barnetillegg/pensjon/hent"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<HentBarnetilleggPensjonResponse>>()
+            )
+        )
+            .thenThrow(
+                HttpClientErrorException(HttpStatus.NOT_FOUND)
+            )
+
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/bisys/hent-utvidet-barnetrygd"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<FamilieBaSakResponse>>()
+            )
+        )
             .thenThrow(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
@@ -175,12 +258,26 @@ class GrunnlagspakkeControllerTest(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/bisys/perioder-barnetilsyn"), eq(HttpMethod.POST), any(), any<Class<BarnetilsynResponse>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/ekstern/bisys/perioder-barnetilsyn"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<BarnetilsynResponse>>()
+            )
+        )
             .thenThrow(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/ekstern/perioder/overgangsstonad/med-belop"), eq(HttpMethod.POST), any(), any<Class<Ressurs>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/ekstern/perioder/overgangsstonad/med-belop"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<Ressurs>>()
+            )
+        )
             .thenThrow(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
@@ -220,7 +317,8 @@ class GrunnlagspakkeControllerTest(
     fun `skal fange opp og håndtere Hibernate-feil`() {
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
         val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
-        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
+        val mockMvc =
+            MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
 
         val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
