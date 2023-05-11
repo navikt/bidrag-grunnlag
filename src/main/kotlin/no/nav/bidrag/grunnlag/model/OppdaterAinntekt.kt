@@ -93,18 +93,18 @@ class OppdaterAinntekt(
                             persistenceService.oppdaterAinntektForGrunnlagspakke(
                                 grunnlagspakkeId,
                                 nyeAinntekter,
-                                personIdOgPeriode.periodeFra,
-                                personIdOgPeriode.periodeTil,
-                                personIdOgPeriode.personId,
+                                hentInntektListeRequest.maanedFom.atDay(1),
+                                hentInntektListeRequest.maanedTom.atDay(1).plusMonths(1),
+                                hentInntektListeRequest.ident.identifikator,
                                 timestampOppdatering
                             )
 
                             this.add(
                                 OppdaterGrunnlagDto(
                                     GrunnlagRequestType.AINNTEKT,
-                                    personIdOgPeriode.personId,
+                                    hentInntektListeRequest.ident.identifikator,
                                     GrunnlagsRequestStatus.HENTET,
-                                    "Ingen inntekter funnet. Evt. eksisterende perioder vil bli satt til inaktive."
+                                    "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive."
                                 )
                             )
                         } else {
@@ -118,7 +118,7 @@ class OppdaterAinntekt(
                                     antallPerioderFunnet++
                                     val inntekt = AinntektBo(
                                         grunnlagspakkeId = grunnlagspakkeId,
-                                        personId = personIdOgPeriode.personId,
+                                        personId = hentInntektListeRequest.ident.identifikator,
                                         periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                                         // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
                                         periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
@@ -159,27 +159,27 @@ class OppdaterAinntekt(
                             persistenceService.oppdaterAinntektForGrunnlagspakke(
                                 grunnlagspakkeId,
                                 nyeAinntekter,
-                                personIdOgPeriode.periodeFra,
-                                personIdOgPeriode.periodeTil,
-                                personIdOgPeriode.personId,
+                                hentInntektListeRequest.maanedFom.atDay(1),
+                                hentInntektListeRequest.maanedTom.atDay(1).plusMonths(1),
+                                hentInntektListeRequest.ident.identifikator,
                                 timestampOppdatering
                             )
                             if (antallPerioderFunnet.equals(0)) {
                                 this.add(
                                     OppdaterGrunnlagDto(
                                         GrunnlagRequestType.AINNTEKT,
-                                        personIdOgPeriode.personId,
+                                        hentInntektListeRequest.ident.identifikator,
                                         GrunnlagsRequestStatus.HENTET,
-                                        "Ingen inntekter funnet. Evt. eksisterende perioder vil bli satt til inaktive."
+                                        "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive."
                                     )
                                 )
                             } else {
                                 this.add(
                                     OppdaterGrunnlagDto(
                                         GrunnlagRequestType.AINNTEKT,
-                                        personIdOgPeriode.personId,
+                                        hentInntektListeRequest.ident.identifikator,
                                         GrunnlagsRequestStatus.HENTET,
-                                        "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet"
+                                        "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet"
                                     )
                                 )
                             }
@@ -188,9 +188,9 @@ class OppdaterAinntekt(
                         this.add(
                             OppdaterGrunnlagDto(
                                 GrunnlagRequestType.AINNTEKT,
-                                personIdOgPeriode.personId,
+                                hentInntektListeRequest.ident.identifikator,
                                 if (hentInntektListeResponseIntern.httpStatus == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                                "Feil ved henting av hentInntektListeRequest for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+                                "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}."
                             )
                         )
                     }
