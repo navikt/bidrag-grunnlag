@@ -117,7 +117,7 @@ class GrunnlagspakkeControllerTest(
 
         Mockito.`when`(
             restTemplate.exchange(
-                eq("/proxy/inntektskomponenten-q1/rs/api/v1/hentdetaljerteabonnerteinntekter"),
+                eq("/rs/api/v1/hentdetaljerteabonnerteinntekter"),
                 eq(HttpMethod.POST),
                 any(),
                 any<Class<HentInntektListeResponse>>()
@@ -204,7 +204,7 @@ class GrunnlagspakkeControllerTest(
 
         Mockito.`when`(
             restTemplate.exchange(
-                eq("/proxy/inntektskomponenten-q1/rs/api/v1/hentdetaljerteabonnerteinntekter"),
+                eq("/rs/api/v1/hentdetaljerteabonnerteinntekter"),
                 eq(HttpMethod.POST),
                 any(),
                 any<Class<HentInntektListeResponse>>()
@@ -215,7 +215,7 @@ class GrunnlagspakkeControllerTest(
 
         Mockito.`when`(
             restTemplate.exchange(
-                eq("/proxy/inntektskomponenten-q1/rs/api/v1/hentinntektliste"),
+                eq("/rs/api/v1/hentinntektliste"),
                 eq(HttpMethod.POST),
                 any(),
                 any<Class<HentInntektListeResponse>>()

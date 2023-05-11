@@ -13,8 +13,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 
-private const val INNTEKT_LISTE_CONTEXT = "/proxy/inntektskomponenten-q1/rs/api/v1/hentinntektliste"
-private const val DETALJERTE_ABONNERTE_INNTEKTER_CONTEXT = "/proxy/inntektskomponenten-q1/rs/api/v1/hentdetaljerteabonnerteinntekter"
+private const val INNTEKT_LISTE_CONTEXT = "/rs/api/v1/hentinntektliste"
+private const val DETALJERTE_ABONNERTE_INNTEKTER_CONTEXT = "/rs/api/v1/hentdetaljerteabonnerteinntekter"
 
 open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 

@@ -26,7 +26,7 @@ spec:
         - host: {{ azure.bidraggcpproxy_url }}
         - host: {{ azure.bidragperson_url }}
         - host: {{ azure.familiekssak_url }}
-        - host: {{ azure.inntektskomponenten_url }}
+        - host: {{ azure.inntektskomponenten_base_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
