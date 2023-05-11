@@ -106,6 +106,6 @@ internal class InntektskomponentenConsumerTest {
     }
 
     companion object {
-        private const val INNTEKT_LISTE_CONTEXT = "/proxy/inntektskomponenten-q1/rs/api/v1/hentinntektliste"
+        private const val INNTEKT_LISTE_CONTEXT = "/rs/api/v1/hentinntektliste"
     }
 }
