@@ -26,6 +26,7 @@ spec:
         - host: {{ azure.bidraggcpproxy_url }}
         - host: {{ azure.bidragperson_url }}
         - host: {{ azure.familiekssak_url }}
+        - host: {{ azure.inntektskomponenten_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
@@ -70,6 +71,10 @@ spec:
       value: https://{{ azure.bidraggcpproxy_url }}
     - name: BIDRAGGCPPROXY_SCOPE
       value: {{ azure.bidraggcpproxy_scope }}
+    - name: INNTEKTSKOMPONENTEN_URL
+      value: https://{{ azure.inntektskomponenten_url }}
+    - name: INNTEKTSKOMPONENTEN_SCOPE
+      value: {{ azure.inntektskomponenten_scope }}
     - name: BIDRAGPERSON_URL
       value: https://{{ azure.bidragperson_url }}
     - name: BIDRAGPERSON_SCOPE

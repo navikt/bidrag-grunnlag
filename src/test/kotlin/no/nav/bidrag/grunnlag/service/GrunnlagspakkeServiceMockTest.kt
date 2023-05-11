@@ -343,5 +343,6 @@ class GrunnlagspakkeServiceMockTest {
         // use this in place of captor.capture() if you are trying to capture an argument that is not nullable
         fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
         fun <T> any(type: Class<T>): T = Mockito.any(type)
+        fun <T> any(): T = Mockito.any()
     }
 }

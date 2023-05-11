@@ -36,6 +36,7 @@ class OppdaterGrunnlagspakkeService(
     private val persistenceService: PersistenceService,
     private val familieBaSakConsumer: FamilieBaSakConsumer,
     private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
+    private val inntektskomponentenService: InntektskomponentenService,
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
     private val familieEfSakConsumer: FamilieEfSakConsumer
@@ -114,7 +115,7 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    bidragGcpProxyConsumer
+                    inntektskomponentenService
                 )
                     .oppdaterAinntekt(ainntektRequestListe)
             )

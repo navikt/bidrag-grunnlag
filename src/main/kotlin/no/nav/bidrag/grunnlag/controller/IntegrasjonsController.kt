@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.ainntekt.HentInntektRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
@@ -22,6 +21,8 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
+import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
@@ -40,6 +41,7 @@ import org.springframework.web.server.ResponseStatusException
 @ProtectedWithClaims(issuer = ISSUER)
 class IntegrasjonsController(
     private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
+    private val inntektskomponentenConsumer: InntektskomponentenConsumer,
     private val familieBaSakConsumer: FamilieBaSakConsumer,
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
@@ -48,8 +50,14 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_AINNTEKT)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter A-inntekt")
-    fun hentAinntekt(@RequestBody hentAinntektRequest: HentInntektRequest): ResponseEntity<HentInntektListeResponse> {
-        return handleRestResponse(bidragGcpProxyConsumer.hentAinntekt(hentAinntektRequest))
+    fun hentAinntekt(@RequestBody hentInntektListeRequest: HentInntektListeRequest): ResponseEntity<HentInntektListeResponse> {
+        return handleRestResponse(inntektskomponentenConsumer.hentInntekter(hentInntektListeRequest, false))
+    }
+
+    @PostMapping(HENT_AINNTEKT_ABONNEMENT)
+    @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter A-inntekt med abonnement")
+    fun hentAinntektAbonnement(@RequestBody hentInntektListeRequest: HentInntektListeRequest): ResponseEntity<HentInntektListeResponse> {
+        return handleRestResponse(inntektskomponentenConsumer.hentInntekter(hentInntektListeRequest, true))
     }
 
     @PostMapping(HENT_SKATTEGRUNNLAG)
@@ -121,6 +129,7 @@ class IntegrasjonsController(
 
     companion object {
         const val HENT_AINNTEKT = "/integrasjoner/ainntekt"
+        const val HENT_AINNTEKT_ABONNEMENT = "/integrasjoner/ainntekt/abonnement"
         const val HENT_SKATTEGRUNNLAG = "/integrasjoner/skattegrunnlag"
         const val HENT_BARNETILLEGG_PENSJON = "/integrasjoner/barnetillegg"
         const val HENT_FAMILIEBASAK = "/integrasjoner/familiebasak"
