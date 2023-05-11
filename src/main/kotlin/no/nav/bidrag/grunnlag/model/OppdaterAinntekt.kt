@@ -73,6 +73,7 @@ class OppdaterAinntekt(
                 )
 
                 val hentInntektListeRequestListe = lagInntektListeRequest(hentInntektRequest)
+                val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
 
                 hentInntektListeRequestListe.forEach { hentInntektListeRequest ->
                     // Henter inntekter for ett og ett år (litt uvisst hvorfor det er løst slik)
@@ -84,41 +85,24 @@ class OppdaterAinntekt(
 
                     if (hentInntektListeResponseIntern.httpStatus.is2xxSuccessful) {
                         var antallPerioderFunnet = 0
-                        val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
 
                         if (hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
-                            // Hvis det ikke finnes noen perioder i responsen:
-                            // - evt. eksisterende ainntekter settes til aktiv=false (i oppdaterAinntektForGrunnlagspakke)
-                            // - ingen nye ainntekter opprettes
-                            persistenceService.oppdaterAinntektForGrunnlagspakke(
-                                grunnlagspakkeId,
-                                nyeAinntekter,
-                                personIdOgPeriode.periodeFra,
-                                personIdOgPeriode.periodeTil,
-                                personIdOgPeriode.personId,
-                                timestampOppdatering
-                            )
-
                             this.add(
                                 OppdaterGrunnlagDto(
                                     GrunnlagRequestType.AINNTEKT,
-                                    personIdOgPeriode.personId,
+                                    hentInntektListeRequest.ident.identifikator,
                                     GrunnlagsRequestStatus.HENTET,
-                                    "Ingen inntekter funnet. Evt. eksisterende perioder vil bli satt til inaktive."
+                                    "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive."
                                 )
                             )
                         } else {
-                            // Hvis det finnes perioder i responsen:
-                            // - hvis InntektIntern ikke er tom, legg til data for den aktuelle perioden
-                            // - i oppdaterAinntektForGrunnlagspakke vil evt. nye perioder opprettes og eksisterende perioder som ikke finnes i den nye responsen
-                            //   vil bli satt til aktiv=false
                             hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
 
                                 if (!inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
                                     antallPerioderFunnet++
                                     val inntekt = AinntektBo(
                                         grunnlagspakkeId = grunnlagspakkeId,
-                                        personId = personIdOgPeriode.personId,
+                                        personId = hentInntektListeRequest.ident.identifikator,
                                         periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
                                         // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
                                         periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
@@ -156,30 +140,22 @@ class OppdaterAinntekt(
                                     nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
                                 }
                             }
-                            persistenceService.oppdaterAinntektForGrunnlagspakke(
-                                grunnlagspakkeId,
-                                nyeAinntekter,
-                                personIdOgPeriode.periodeFra,
-                                personIdOgPeriode.periodeTil,
-                                personIdOgPeriode.personId,
-                                timestampOppdatering
-                            )
                             if (antallPerioderFunnet.equals(0)) {
                                 this.add(
                                     OppdaterGrunnlagDto(
                                         GrunnlagRequestType.AINNTEKT,
-                                        personIdOgPeriode.personId,
+                                        hentInntektListeRequest.ident.identifikator,
                                         GrunnlagsRequestStatus.HENTET,
-                                        "Ingen inntekter funnet. Evt. eksisterende perioder vil bli satt til inaktive."
+                                        "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive."
                                     )
                                 )
                             } else {
                                 this.add(
                                     OppdaterGrunnlagDto(
                                         GrunnlagRequestType.AINNTEKT,
-                                        personIdOgPeriode.personId,
+                                        hentInntektListeRequest.ident.identifikator,
                                         GrunnlagsRequestStatus.HENTET,
-                                        "Antall inntekter funnet (periode ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}): $antallPerioderFunnet"
+                                        "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet"
                                     )
                                 )
                             }
@@ -188,13 +164,24 @@ class OppdaterAinntekt(
                         this.add(
                             OppdaterGrunnlagDto(
                                 GrunnlagRequestType.AINNTEKT,
-                                personIdOgPeriode.personId,
+                                hentInntektListeRequest.ident.identifikator,
                                 if (hentInntektListeResponseIntern.httpStatus == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                                "Feil ved henting av hentInntektListeRequest for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+                                "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}."
                             )
                         )
                     }
                 }
+
+                // Evt. nye perioder opprettes og evt. eksisterende perioder som ikke finnes i den nye responsen vil bli satt til aktiv=false
+                persistenceService.oppdaterAinntektForGrunnlagspakke(
+                    grunnlagspakkeId,
+                    nyeAinntekter,
+                    personIdOgPeriode.periodeFra,
+                    personIdOgPeriode.periodeTil,
+                    personIdOgPeriode.personId,
+                    timestampOppdatering
+                )
+
             }
         }
         return this

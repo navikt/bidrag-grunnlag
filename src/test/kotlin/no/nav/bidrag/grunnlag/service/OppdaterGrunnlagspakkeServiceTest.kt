@@ -152,7 +152,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             },
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
-                    .isEqualTo("Antall inntekter funnet (periode 2021-01-01 - 2022-01-01): 1")
+                    .isEqualTo("Antall inntekter funnet for periode 2021-01 - 2021-12: 1")
             }
         )
     }
