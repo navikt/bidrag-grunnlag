@@ -73,6 +73,7 @@ class OppdaterAinntekt(
                 )
 
                 val hentInntektListeRequestListe = lagInntektListeRequest(hentInntektRequest)
+                val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
 
                 hentInntektListeRequestListe.forEach { hentInntektListeRequest ->
                     // Henter inntekter for ett og ett år (litt uvisst hvorfor det er løst slik)
@@ -84,21 +85,8 @@ class OppdaterAinntekt(
 
                     if (hentInntektListeResponseIntern.httpStatus.is2xxSuccessful) {
                         var antallPerioderFunnet = 0
-                        val nyeAinntekter = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
 
                         if (hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
-                            // Hvis det ikke finnes noen perioder i responsen:
-                            // - evt. eksisterende ainntekter settes til aktiv=false (i oppdaterAinntektForGrunnlagspakke)
-                            // - ingen nye ainntekter opprettes
-                            persistenceService.oppdaterAinntektForGrunnlagspakke(
-                                grunnlagspakkeId,
-                                nyeAinntekter,
-                                hentInntektListeRequest.maanedFom.atDay(1),
-                                hentInntektListeRequest.maanedTom.atDay(1).plusMonths(1),
-                                hentInntektListeRequest.ident.identifikator,
-                                timestampOppdatering
-                            )
-
                             this.add(
                                 OppdaterGrunnlagDto(
                                     GrunnlagRequestType.AINNTEKT,
@@ -108,10 +96,6 @@ class OppdaterAinntekt(
                                 )
                             )
                         } else {
-                            // Hvis det finnes perioder i responsen:
-                            // - hvis InntektIntern ikke er tom, legg til data for den aktuelle perioden
-                            // - i oppdaterAinntektForGrunnlagspakke vil evt. nye perioder opprettes og eksisterende perioder som ikke finnes i den nye responsen
-                            //   vil bli satt til aktiv=false
                             hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
 
                                 if (!inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
@@ -156,14 +140,6 @@ class OppdaterAinntekt(
                                     nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
                                 }
                             }
-                            persistenceService.oppdaterAinntektForGrunnlagspakke(
-                                grunnlagspakkeId,
-                                nyeAinntekter,
-                                hentInntektListeRequest.maanedFom.atDay(1),
-                                hentInntektListeRequest.maanedTom.atDay(1).plusMonths(1),
-                                hentInntektListeRequest.ident.identifikator,
-                                timestampOppdatering
-                            )
                             if (antallPerioderFunnet.equals(0)) {
                                 this.add(
                                     OppdaterGrunnlagDto(
@@ -195,6 +171,17 @@ class OppdaterAinntekt(
                         )
                     }
                 }
+
+                // Evt. nye perioder opprettes og evt. eksisterende perioder som ikke finnes i den nye responsen vil bli satt til aktiv=false
+                persistenceService.oppdaterAinntektForGrunnlagspakke(
+                    grunnlagspakkeId,
+                    nyeAinntekter,
+                    personIdOgPeriode.periodeFra,
+                    personIdOgPeriode.periodeTil,
+                    personIdOgPeriode.personId,
+                    timestampOppdatering
+                )
+
             }
         }
         return this
