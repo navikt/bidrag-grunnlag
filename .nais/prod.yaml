@@ -9,6 +9,7 @@ azure:
   familieefsak_scope: prod-gcp.teamfamilie.familie-ef-sak
   bidraggcpproxy_url: bidrag-gcp-proxy.prod-fss-pub.nais.io
   bidraggcpproxy_scope: prod-fss.bidrag.bidrag-gcp-proxy
+  inntektskomponenten_base_url: team-inntekt-proxy.prod-fss-pub.nais.io
   inntektskomponenten_url: team-inntekt-proxy.prod-fss-pub.nais.io/proxy/inntektskomponenten
   inntektskomponenten_scope: prod-fss.team-inntekt.inntektskomponenten
   bidragperson_scope: prod-fss.bidrag.bidrag-person
