@@ -61,7 +61,9 @@ class GrunnlagspakkeService(
             persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
             persistenceService.hentBarnetillegg(grunnlagspakkeId),
             persistenceService.hentKontantstotte(grunnlagspakkeId),
-            persistenceService.hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId),
+            emptyList(),
+            emptyList(),
+//            persistenceService.hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId),
             persistenceService.hentSivilstand(grunnlagspakkeId),
             persistenceService.hentBarnetilsyn(grunnlagspakkeId),
             persistenceService.hentOvergangsstønad(grunnlagspakkeId)

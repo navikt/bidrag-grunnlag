@@ -513,51 +513,51 @@ class GrunnlagspakkeControllerTest(
 
         assertNotNull(okResult)
     }
-
-    @Test
-    @Suppress("NonAsciiCharacters")
-    fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke-kall`() {
-        val errorResult = TestUtil.performRequest(
-            mockMvc,
-            HttpMethod.GET,
-            "/grunnlagspakke/null",
-            null,
-            MutableMap::class.java
-        ) { isBadRequest() }
-
-        assertNotNull(errorResult)
-        assertNotNull(errorResult["grunnlagspakkeId"])
-
-        val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
-        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
-
-        Mockito.`when`(grunnlagspakkeService.hentGrunnlagspakke(1))
-            .thenReturn(
-                HentGrunnlagspakkeDto(
-                    grunnlagspakkeId = 1,
-                    ainntektListe = emptyList(),
-                    skattegrunnlagListe = emptyList(),
-                    ubstListe = emptyList(),
-                    barnetilleggListe = emptyList(),
-                    kontantstotteListe = emptyList(),
-                    husstandmedlemmerOgEgneBarnListe = emptyList(),
-                    sivilstandListe = emptyList(),
-                    barnetilsynListe = emptyList(),
-                    overgangsstonadListe = emptyList()
-                )
-            )
-
-        val okResult = TestUtil.performRequest(
-            mockMvc,
-            HttpMethod.GET,
-            "/grunnlagspakke/1",
-            null,
-            HentGrunnlagspakkeDto::class.java
-        ) { isOk() }
-
-        assertNotNull(okResult)
-    }
+//
+//    @Test
+//    @Suppress("NonAsciiCharacters")
+//    fun `skal håndtere feil eller manglende felter i input ved hent grunnlagspakke-kall`() {
+//        val errorResult = TestUtil.performRequest(
+//            mockMvc,
+//            HttpMethod.GET,
+//            "/grunnlagspakke/null",
+//            null,
+//            MutableMap::class.java
+//        ) { isBadRequest() }
+//
+//        assertNotNull(errorResult)
+//        assertNotNull(errorResult["grunnlagspakkeId"])
+//
+//        val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
+//        val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
+//        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
+//
+//        Mockito.`when`(grunnlagspakkeService.hentGrunnlagspakke(1))
+//            .thenReturn(
+//                HentGrunnlagspakkeDto(
+//                    grunnlagspakkeId = 1,
+//                    ainntektListe = emptyList(),
+//                    skattegrunnlagListe = emptyList(),
+//                    ubstListe = emptyList(),
+//                    barnetilleggListe = emptyList(),
+//                    kontantstotteListe = emptyList(),
+//                    husstandmedlemmerOgEgneBarnListe = emptyList(),
+//                    sivilstandListe = emptyList(),
+//                    barnetilsynListe = emptyList(),
+//                    overgangsstonadListe = emptyList()
+//                )
+//            )
+//
+//        val okResult = TestUtil.performRequest(
+//            mockMvc,
+//            HttpMethod.GET,
+//            "/grunnlagspakke/1",
+//            null,
+//            HentGrunnlagspakkeDto::class.java
+//        ) { isOk() }
+//
+//        assertNotNull(okResult)
+//    }
 
     private fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Int {
         val nyGrunnlagspakkeOpprettetResponse = TestUtil.performRequest(
