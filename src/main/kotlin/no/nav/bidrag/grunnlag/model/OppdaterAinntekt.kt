@@ -181,7 +181,6 @@ class OppdaterAinntekt(
                     personIdOgPeriode.personId,
                     timestampOppdatering
                 )
-
             }
         }
         return this
