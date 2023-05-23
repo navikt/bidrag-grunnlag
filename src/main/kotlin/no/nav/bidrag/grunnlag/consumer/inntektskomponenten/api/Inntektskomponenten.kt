@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api
 
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
@@ -27,7 +27,7 @@ data class Aktoer(
 )
 
 data class HentInntektListeResponseIntern(
-    val httpStatus: HttpStatus,
+    val httpStatus: HttpStatusCode,
     val arbeidsInntektMaanedIntern: List<ArbeidsInntektMaanedIntern>?
 )
 

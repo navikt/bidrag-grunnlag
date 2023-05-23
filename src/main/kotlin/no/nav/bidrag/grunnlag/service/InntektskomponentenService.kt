@@ -17,6 +17,7 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetalj
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Service
 
 @Service
@@ -33,7 +34,7 @@ class InntektskomponentenService(
     fun hentInntekt(inntektListeRequest: HentInntektListeRequest): HentInntektListeResponseIntern {
         LOGGER.info("Kaller inntektskomponenten")
         val hentInntektListeResponse = ArrayList<ArbeidsInntektMaaned>()
-        var httpStatus = HttpStatus.OK
+        var httpStatus: HttpStatusCode = HttpStatus.OK
 
         // Hent abonnerte inntekter
         when (val restResponseInntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, true)) {
@@ -67,7 +68,7 @@ class InntektskomponentenService(
         return mapResponsTilInternStruktur(httpStatus, hentInntektListeResponse)
     }
 
-    private fun mapResponsTilInternStruktur(httpStatus: HttpStatus, eksternRespons: List<ArbeidsInntektMaaned>): HentInntektListeResponseIntern {
+    private fun mapResponsTilInternStruktur(httpStatus: HttpStatusCode, eksternRespons: List<ArbeidsInntektMaaned>): HentInntektListeResponseIntern {
         val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
         eksternRespons.forEach() { arbeidsInntektMaaned ->

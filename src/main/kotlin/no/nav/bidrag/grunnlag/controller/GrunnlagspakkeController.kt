@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotNull
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
@@ -19,8 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import javax.validation.Valid
-import javax.validation.constraints.NotNull
 
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
