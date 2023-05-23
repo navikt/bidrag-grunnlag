@@ -170,7 +170,6 @@ class GrunnlagspakkeServiceMockTest {
         val ubstBoListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
         val barnetilleggBoListe = barnetilleggBoCaptor.allValues
         val relatertPersonBoListe = relatertPersonBoCaptor.allValues
-        val husstandsmedlemBoListe = relatertPersonBoCaptor.allValues
         val sivilstandBoListe = sivilstandBoCaptor.allValues
         val barnetilleggListe = barnetilleggBoCaptor.allValues
         val kontantstotteListe = kontantstotteBoCaptor.allValues
@@ -334,7 +333,7 @@ class GrunnlagspakkeServiceMockTest {
             { assertThat(overgangsstønadListe[0].partPersonId).isEqualTo("1234567") },
             { assertThat(overgangsstønadListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { assertThat(overgangsstønadListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-            { assertThat(overgangsstønadListe[0].belop).isEqualTo(7500) },
+            { assertThat(overgangsstønadListe[0].belop).isEqualTo(7500) }
 
         )
     }
@@ -344,5 +343,6 @@ class GrunnlagspakkeServiceMockTest {
         // use this in place of captor.capture() if you are trying to capture an argument that is not nullable
         fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
         fun <T> any(type: Class<T>): T = Mockito.any(type)
+        fun <T> any(): T = Mockito.any()
     }
 }

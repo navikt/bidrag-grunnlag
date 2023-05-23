@@ -62,8 +62,10 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     }
 
     open fun hentHusstandsmedlemmer(personIdent: PersonIdent): RestResponse<HusstandsmedlemmerDto> {
-        logger.info("Kaller bidrag-person som igjen henter info om en persons bostedsadresser " +
-                "og personer som har bodd på samme adresse på samme tid fra PDL")
+        logger.info(
+            "Kaller bidrag-person som igjen henter info om en persons bostedsadresser " +
+                "og personer som har bodd på samme adresse på samme tid fra PDL"
+        )
 
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,

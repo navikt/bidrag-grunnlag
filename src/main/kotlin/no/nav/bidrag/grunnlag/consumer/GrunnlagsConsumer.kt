@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import java.util.*
 
 open class GrunnlagsConsumer {
 
@@ -19,6 +20,14 @@ open class GrunnlagsConsumer {
     fun <T> initHttpEntity(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
+        return HttpEntity(body, httpHeaders)
+    }
+
+    fun <T> initHttpEntityInntektskomponenten(body: T): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+        httpHeaders.add("Nav-Call-Id", UUID.randomUUID().toString())
+        httpHeaders.add("Nav-Consumer-Id", "BIDRAG-GRUNNLAG")
         return HttpEntity(body, httpHeaders)
     }
 }

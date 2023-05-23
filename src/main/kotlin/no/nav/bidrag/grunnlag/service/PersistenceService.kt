@@ -545,53 +545,10 @@ class PersistenceService(
         return kontantstotteDtoListe
     }
 
+    // Henter alle husstandsmedlemmer og personens egne barn, uavhengig om de bor i samme husstand.
 
-    fun hentEgneBarnIHusstanden(grunnlagspakkeId: Int): List<RelatertPersonDto> {
-        val egneBarnDtoListe = mutableListOf<RelatertPersonDto>()
-        // Filtrerer vekk relaterte personer som ikke er barn av BM/BP
-        val relatertPersonListe = relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.erBarnAvBmBp }
-        // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
-        // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
-        // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
-        var behandletPerson: String? = null
-
-        relatertPersonListe.forEach { relatertPerson ->
-            if (relatertPerson.relatertPersonPersonId != behandletPerson) {
-                val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
-                val alleForekomsterAvRelatertPerson = relatertPersonListe.filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
-                alleForekomsterAvRelatertPerson.forEach { person ->
-                    if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
-                        borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
-                    }
-                }
-
-                egneBarnDtoListe.add(
-                    RelatertPersonDto(
-                        partPersonId = relatertPerson.partPersonId,
-                        relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
-                        navn = relatertPerson.navn,
-                        fodselsdato = relatertPerson.fodselsdato,
-                        erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
-                        aktiv = relatertPerson.aktiv,
-                        brukFra = relatertPerson.brukFra,
-                        brukTil = relatertPerson.brukTil,
-                        hentetTidspunkt = relatertPerson.hentetTidspunkt,
-                        borISammeHusstandDtoListe = borISammeHusstandListe
-                    )
-                )
-                behandletPerson = relatertPerson.relatertPersonPersonId
-            }
-        }
-        return egneBarnDtoListe
-    }
-
-    // Filtrer vekk husstandsmedlemmer som ikke har fyllt 18 ved virkningstidspunkt. Må gjøres i bidrag-behandling.
-    // Endringer gjelder alltid fra neste måned. 01.07 -> 01.08
-    // Alle husstandsmedlemmer skal returneres for manuell vurdering.
-    // For egne barn i egen husstand skal barn over 22 år filtreres bort, må gjøres i bidrag-behandling.
-
-    fun hentVoksneHusstandsmedlemmer(grunnlagspakkeId: Int): List<RelatertPersonDto> {
-        val voksneHusstandsmedlemmerDtoListe = mutableListOf<RelatertPersonDto>()
+    fun hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId: Int): List<RelatertPersonDto> {
+        val husstandsmedlemmerOgEgneBarnListe = mutableListOf<RelatertPersonDto>()
 
         // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
         // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
@@ -609,7 +566,7 @@ class PersistenceService(
                     }
                 }
 
-                voksneHusstandsmedlemmerDtoListe.add(
+                husstandsmedlemmerOgEgneBarnListe.add(
                     RelatertPersonDto(
                         partPersonId = relatertPerson.partPersonId,
                         relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
@@ -626,7 +583,7 @@ class PersistenceService(
                 behandletPerson = relatertPerson.relatertPersonPersonId
             }
         }
-        return voksneHusstandsmedlemmerDtoListe
+        return husstandsmedlemmerOgEgneBarnListe
     }
 
     fun hentSivilstand(grunnlagspakkeId: Int): List<SivilstandDto> {
@@ -648,7 +605,6 @@ class PersistenceService(
             }
         return sivilstandDtoListe
     }
-
 
     fun hentBarnetilsyn(grunnlagspakkeId: Int): List<BarnetilsynDto> {
         val barnetilsynDtoListe = mutableListOf<BarnetilsynDto>()
@@ -673,7 +629,6 @@ class PersistenceService(
         return barnetilsynDtoListe
     }
 
-
     fun hentOvergangsstønad(grunnlagspakkeId: Int): List<OvergangsstonadDto> {
         val overgangsstønadDtoListe = mutableListOf<OvergangsstonadDto>()
         overgangsstønadRepository.hentOvergangsstonad(grunnlagspakkeId)
@@ -693,6 +648,4 @@ class PersistenceService(
             }
         return overgangsstønadDtoListe
     }
-
-
 }

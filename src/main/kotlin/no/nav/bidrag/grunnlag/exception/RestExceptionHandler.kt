@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.validation.FieldError
@@ -25,7 +26,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import java.lang.NumberFormatException
 import java.time.format.DateTimeParseException
-import java.util.function.Consumer
 
 @RestControllerAdvice
 @Component
@@ -70,13 +70,11 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
     ): ResponseEntity<*> {
         exceptionLogger.logException(e, "RestExceptionHandler")
         val errors: MutableMap<String, String?> = HashMap()
-        e.bindingResult.allErrors.forEach(
-            Consumer { error: ObjectError ->
-                val fieldName = (error as FieldError).field
-                val errorMessage = error.getDefaultMessage()
-                errors[fieldName] = errorMessage
-            }
-        )
+        e.bindingResult.allErrors.forEach { error: ObjectError ->
+            val fieldName = (error as FieldError).field
+            val errorMessage = error.getDefaultMessage()
+            errors[fieldName] = errorMessage
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
     }
 
@@ -135,7 +133,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
 sealed class RestResponse<T> {
     data class Success<T>(val body: T) : RestResponse<T>()
-    data class Failure<T>(val message: String?, val statusCode: HttpStatus, val restClientException: RestClientException) : RestResponse<T>()
+    data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: RestClientException) : RestResponse<T>()
 }
 
 fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {

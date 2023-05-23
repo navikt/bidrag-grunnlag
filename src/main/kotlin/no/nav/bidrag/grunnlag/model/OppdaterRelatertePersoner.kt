@@ -55,6 +55,7 @@ class OppdaterRelatertePersoner(
             husstandsmedlemmerListe.forEach { husstandsmedlem ->
                 persistenceService.opprettRelatertPerson(
                     RelatertPersonBo(
+                        grunnlagspakkeId = grunnlagspakkeId,
                         partPersonId = personIdOgPeriode.personId,
                         relatertPersonPersonId = husstandsmedlem.personId,
                         navn = husstandsmedlem.navn,
@@ -77,6 +78,7 @@ class OppdaterRelatertePersoner(
             filtrertBarnListe.forEach { barn ->
                 persistenceService.opprettRelatertPerson(
                     RelatertPersonBo(
+                        grunnlagspakkeId = grunnlagspakkeId,
                         partPersonId = personIdOgPeriode.personId,
                         relatertPersonPersonId = barn.personId,
                         navn = barn.navn,
@@ -115,7 +117,7 @@ class OppdaterRelatertePersoner(
                             husstandsmedlemListe.add(
                                 PersonBo(
                                     husstandsmedlem.personId.verdi,
-                                    husstandsmedlem.fornavn.verdi + " " + husstandsmedlem.mellomnavn?.verdi + " " + husstandsmedlem.etternavn.verdi,
+                                    husstandsmedlem.navn.verdi,
                                     husstandsmedlem.fødselsdato?.verdi,
                                     husstandsmedlem.gyldigFraOgMed?.verdi,
                                     husstandsmedlem.gyldigTilOgMed?.verdi
@@ -126,7 +128,7 @@ class OppdaterRelatertePersoner(
                 }
                 this.add(
                     OppdaterGrunnlagDto(
-                        GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+                        GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                         husstandsmedlemmerRequest,
                         GrunnlagsRequestStatus.HENTET,
                         "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}"
@@ -137,10 +139,10 @@ class OppdaterRelatertePersoner(
 
             is RestResponse.Failure -> this.add(
                 OppdaterGrunnlagDto(
-                    GrunnlagRequestType.HUSSTANDSMEDLEMMER,
+                    GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     husstandsmedlemmerRequest,
                     if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                    "Feil ved henting av husstandsmedlemmer for: $husstandsmedlemmerRequest."
+                    "Feil ved henting av husstandsmedlemmer og egne barn for: $husstandsmedlemmerRequest."
                 )
             )
         }
@@ -188,7 +190,7 @@ class OppdaterRelatertePersoner(
 
             is RestResponse.Failure -> this.add(
                 OppdaterGrunnlagDto(
-                    GrunnlagRequestType.EGNE_BARN_I_HUSSTANDEN,
+                    GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     forelderBarnRequest.verdi,
                     if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
                     "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.verdi} ."

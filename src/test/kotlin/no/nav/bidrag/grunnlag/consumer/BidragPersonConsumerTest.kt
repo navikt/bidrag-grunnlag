@@ -7,12 +7,10 @@ import no.nav.bidrag.domain.number.MatrikkelId
 import no.nav.bidrag.domain.string.Adressenavn
 import no.nav.bidrag.domain.string.Bruksenhetsnummer
 import no.nav.bidrag.domain.string.Bydelsnummer
-import no.nav.bidrag.domain.string.Etternavn
-import no.nav.bidrag.domain.string.Fornavn
+import no.nav.bidrag.domain.string.FulltNavn
 import no.nav.bidrag.domain.string.Husbokstav
 import no.nav.bidrag.domain.string.Husnummer
 import no.nav.bidrag.domain.string.Kommunenummer
-import no.nav.bidrag.domain.string.Mellomnavn
 import no.nav.bidrag.domain.string.Postnummer
 import no.nav.bidrag.domain.tid.Bekreftelsesdato
 import no.nav.bidrag.domain.tid.FomDato
@@ -86,44 +84,32 @@ internal class BidragPersonConsumerTest {
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].matrikkelId).isEqualTo(MatrikkelId(12345)) },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].personId).isEqualTo(PersonIdent("111")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].fornavn).isEqualTo(Fornavn("fornavn1")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].mellomnavn).isEqualTo(Mellomnavn("mellomnavn1")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].etternavn).isEqualTo(Etternavn("etternavn1")) },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].navn).isEqualTo(FulltNavn("fornavn1 mellomnavn1 etternavn1")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2011-01-01"))) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].gyldigTilOgMed).isEqualTo(TomDato(LocalDate.parse("2011-02-01"))) },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].personId).isEqualTo(PersonIdent("111")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].fornavn).isEqualTo(Fornavn("fornavn1")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].mellomnavn).isEqualTo(Mellomnavn("mellomnavn1")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].etternavn).isEqualTo(Etternavn("etternavn1")) },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].navn).isEqualTo(FulltNavn("fornavn1 mellomnavn1 etternavn1")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2011-05-17"))) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].gyldigTilOgMed).isNull() },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].personId).isEqualTo(PersonIdent("333")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].fornavn).isEqualTo(Fornavn("fornavn3")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].mellomnavn).isEqualTo(Mellomnavn("mellomnavn3")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].etternavn).isEqualTo(Etternavn("etternavn3")) },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].navn).isEqualTo(FulltNavn("fornavn3 mellomnavn3 etternavn3")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2011-01-01"))) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].gyldigTilOgMed).isEqualTo(TomDato(LocalDate.parse("2011-12-01"))) },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].personId).isEqualTo(PersonIdent("444")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].fornavn).isEqualTo(Fornavn("fornavn4")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].mellomnavn).isEqualTo(Mellomnavn("mellomnavn4")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].etternavn).isEqualTo(Etternavn("etternavn4")) },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].navn).isEqualTo(FulltNavn("fornavn4 mellomnavn4 etternavn4")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2011-05-01"))) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].gyldigTilOgMed).isEqualTo(TomDato(LocalDate.parse("2011-06-01"))) },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].personId).isEqualTo(PersonIdent("111")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].fornavn).isEqualTo(Fornavn("fornavn1")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].mellomnavn).isEqualTo(Mellomnavn("mellomnavn1")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].etternavn).isEqualTo(Etternavn("etternavn1")) },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].navn).isEqualTo(FulltNavn("fornavn1 mellomnavn1 etternavn1")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2018-01-01"))) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].gyldigTilOgMed).isEqualTo(TomDato(LocalDate.parse("2018-02-01"))) },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].personId).isEqualTo(PersonIdent("555")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].fornavn).isEqualTo(Fornavn("fornavn5")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].mellomnavn).isEqualTo(Mellomnavn("mellomnavn5")) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].etternavn).isEqualTo(Etternavn("etternavn5")) },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].navn).isEqualTo(FulltNavn("fornavn5 mellomnavn5 etternavn5")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2020-01-01"))) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].gyldigTilOgMed).isNull() }
 

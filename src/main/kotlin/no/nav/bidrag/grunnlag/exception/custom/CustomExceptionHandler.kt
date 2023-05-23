@@ -18,4 +18,11 @@ class CustomExceptionHandler(private val exceptionLogger: ExceptionLogger) {
         exceptionLogger.logException(e, "CustomExceptionHandler")
         return ResponseEntity(e.message, HttpStatus.NOT_FOUND)
     }
+
+    @ResponseBody
+    @ExceptionHandler(UgyldigInputException::class)
+    protected fun handleUgyldigInputException(e: UgyldigInputException): ResponseEntity<*> {
+        exceptionLogger.logException(e, "CustomExceptionHandler")
+        return ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+    }
 }
