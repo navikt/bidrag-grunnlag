@@ -55,16 +55,16 @@ class GrunnlagspakkeService(
         // Validerer at grunnlagspakke eksisterer
         persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
         return HentGrunnlagspakkeDto(
-            grunnlagspakkeId,
-            persistenceService.hentAinntekt(grunnlagspakkeId),
-            persistenceService.hentSkattegrunnlag(grunnlagspakkeId),
-            persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
-            persistenceService.hentBarnetillegg(grunnlagspakkeId),
-            persistenceService.hentKontantstotte(grunnlagspakkeId),
-            persistenceService.hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId),
-            persistenceService.hentSivilstand(grunnlagspakkeId),
-            persistenceService.hentBarnetilsyn(grunnlagspakkeId),
-            persistenceService.hentOvergangsstønad(grunnlagspakkeId)
+            grunnlagspakkeId = grunnlagspakkeId,
+            ainntektListe = persistenceService.hentAinntekt(grunnlagspakkeId),
+            skattegrunnlagListe = persistenceService.hentSkattegrunnlag(grunnlagspakkeId),
+            ubstListe = persistenceService.hentUtvidetBarnetrygdOgSmaabarnstillegg(grunnlagspakkeId),
+            barnetilleggListe = persistenceService.hentBarnetillegg(grunnlagspakkeId),
+            kontantstotteListe = persistenceService.hentKontantstotte(grunnlagspakkeId),
+            husstandmedlemmerOgEgneBarnListe = persistenceService.hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId),
+            sivilstandListe = persistenceService.hentSivilstand(grunnlagspakkeId),
+            barnetilsynListe = persistenceService.hentBarnetilsyn(grunnlagspakkeId),
+            overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId)
         )
     }
 
