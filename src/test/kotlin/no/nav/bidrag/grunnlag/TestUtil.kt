@@ -38,7 +38,7 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
@@ -814,7 +814,7 @@ class TestUtil {
             LocalDate.now()
         )
 
-        fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(
+        fun byggHentBarnetilleggPensjonRequest() = HentArbeidsforholdRequest(
             mottaker = "personIdent",
             fom = LocalDate.now(),
             tom = LocalDate.now()

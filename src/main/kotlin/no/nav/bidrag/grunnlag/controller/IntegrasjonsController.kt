@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.ISSUER
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
@@ -40,7 +40,7 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
 class IntegrasjonsController(
-    private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
+    private val bidragGcpProxyConsumer: AaregConsumer,
     private val inntektskomponentenConsumer: InntektskomponentenConsumer,
     private val familieBaSakConsumer: FamilieBaSakConsumer,
     private val bidragPersonConsumer: BidragPersonConsumer,
@@ -68,7 +68,7 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_BARNETILLEGG_PENSJON)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter barnetillegg fra pensjon")
-    fun hentBarnetilleggPensjon(@RequestBody hentBarnetilleggPensjonRequest: HentBarnetilleggPensjonRequest): ResponseEntity<HentBarnetilleggPensjonResponse> {
+    fun hentBarnetilleggPensjon(@RequestBody hentBarnetilleggPensjonRequest: HentArbeidsforholdRequest): ResponseEntity<HentBarnetilleggPensjonResponse> {
         return handleRestResponse(bidragGcpProxyConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest))
     }
 

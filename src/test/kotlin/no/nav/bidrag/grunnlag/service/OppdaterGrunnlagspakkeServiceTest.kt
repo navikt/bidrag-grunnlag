@@ -14,8 +14,8 @@ import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
@@ -56,7 +56,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     private lateinit var familieBaSakConsumerMock: FamilieBaSakConsumer
 
     @Mock
-    private lateinit var bidragGcpProxyConsumerMock: BidragGcpProxyConsumer
+    private lateinit var bidragGcpProxyConsumerMock: AaregConsumer
 
     @Mock
     private lateinit var inntektskomponentenServiceMock: InntektskomponentenService
@@ -238,7 +238,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragGcpProxyConsumerMock.hentBarnetilleggPensjon(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    HentBarnetilleggPensjonRequest::class.java
+                    HentArbeidsforholdRequest::class.java
                 )
             )
         )
