@@ -11,7 +11,7 @@ import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
-import no.nav.bidrag.transport.person.SivilstandDto
+import no.nav.bidrag.transport.person.Sivilstandshistorikk
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -80,15 +80,15 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    open fun hentSivilstand(personIdent: PersonIdent): RestResponse<SivilstandDto> {
+    open fun hentSivilstand(personIdent: PersonIdent): RestResponse<Sivilstandshistorikk> {
         logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_SIVILSTAND,
             HttpMethod.POST,
             initHttpEntity(PersonRequest(personIdent)),
-            SivilstandDto::class.java,
-            SivilstandDto(emptyList())
+            Sivilstandshistorikk::class.java,
+            Sivilstandshistorikk(emptyList())
         )
 
         logResponse(logger, restResponse)
