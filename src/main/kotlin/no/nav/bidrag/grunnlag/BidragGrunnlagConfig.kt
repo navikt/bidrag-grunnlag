@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme
 import no.nav.bidrag.commons.CorrelationId
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.CorrelationIdFilter
+import no.nav.bidrag.commons.web.DefaultCorsFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.commons.web.UserMdcFilter
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RootUriTemplateHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Scope
 
 const val LIVE_PROFILE = "live"
@@ -38,6 +41,7 @@ const val LIVE_PROFILE = "live"
     scheme = "bearer",
     type = SecuritySchemeType.HTTP
 )
+@Import(CorrelationIdFilter::class, UserMdcFilter::class, DefaultCorsFilter::class)
 class BidragGrunnlagConfig {
 
     companion object {
@@ -50,12 +54,6 @@ class BidragGrunnlagConfig {
     fun exceptionLogger(): ExceptionLogger {
         return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
     }
-
-    @Bean
-    fun correlationIdFilter(): CorrelationIdFilter {
-        return CorrelationIdFilter()
-    }
-
     @Bean
     @Scope("prototype")
     fun restTemplate(): HttpHeaderRestTemplate {

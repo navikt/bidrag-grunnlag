@@ -19,7 +19,7 @@ import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
-import no.nav.bidrag.transport.person.SivilstandDto
+import no.nav.bidrag.transport.person.Sivilstandshistorikk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertAll
@@ -157,7 +157,7 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<SivilstandDto>>()
+                any<Class<Sivilstandshistorikk>>()
             )
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentSivilstandResponse(), HttpStatus.OK))
@@ -197,7 +197,7 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<SivilstandDto>>()
+                any<Class<Sivilstandshistorikk>>()
             )
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))

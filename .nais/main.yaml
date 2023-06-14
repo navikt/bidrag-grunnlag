@@ -30,6 +30,9 @@ azureAccessInbound:
   - application: bidrag-cucumber-cloud
     namespace: bidrag
     cluster: dev-gcp
+  - application: bidrag-ui
+    namespace: bidrag
+    cluster: dev-fss
 spec:
   replicas:
     min: 2

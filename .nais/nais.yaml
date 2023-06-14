@@ -11,6 +11,10 @@ spec:
       enabled: true
       allowAllUsers: true
       tenant: {{ azure.tenant }}
+      claims:
+        extra:
+          - "NAVident"
+          - "azp_name"
   accessPolicy:
     inbound:
       rules:

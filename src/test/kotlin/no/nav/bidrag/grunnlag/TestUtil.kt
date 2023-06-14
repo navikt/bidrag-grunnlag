@@ -87,7 +87,7 @@ import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.person.Sivilstand
-import no.nav.bidrag.transport.person.SivilstandDto
+import no.nav.bidrag.transport.person.Sivilstandshistorikk
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
@@ -943,7 +943,7 @@ class TestUtil {
             )
         )
 
-        fun byggHentSivilstandResponse() = SivilstandDto(
+        fun byggHentSivilstandResponse() = Sivilstandshistorikk(
             immutableListOf(
                 Sivilstand(
                     type = Sivilstandstype.SEPARERT_PARTNER,
