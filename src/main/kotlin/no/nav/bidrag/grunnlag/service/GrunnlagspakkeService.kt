@@ -1,11 +1,11 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -62,6 +62,7 @@ class GrunnlagspakkeService(
             barnetilleggListe = persistenceService.hentBarnetillegg(grunnlagspakkeId),
             kontantstotteListe = persistenceService.hentKontantstotte(grunnlagspakkeId),
             husstandmedlemmerOgEgneBarnListe = persistenceService.hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId),
+
             sivilstandListe = persistenceService.hentSivilstand(grunnlagspakkeId),
             barnetilsynListe = persistenceService.hentBarnetilsyn(grunnlagspakkeId),
             overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId)
