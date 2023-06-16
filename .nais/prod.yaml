@@ -19,6 +19,10 @@ azure:
   familiekssak_scope: prod-gcp.teamfamilie.familie-ks-sak
   familiekssak_url: familie-ks-sak.intern.nav.no
   familiekssak_app: familie-ks-sak
+  aareg_url: aareg-services.prod-fss-pub.nais.io
+  aareg_scope: prod-fss.aareg-services
+  aareg_app: aareg-services
+  aareg_cluster: prod-fss
 dbname: bidrag-grunnlag-prod
 azureAccessInbound:
   - application: bidrag-gcp-proxy

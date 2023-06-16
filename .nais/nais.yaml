@@ -31,6 +31,7 @@ spec:
         - host: {{ azure.bidragperson_url }}
         - host: {{ azure.familiekssak_url }}
         - host: {{ azure.inntektskomponenten_base_url }}
+        - host: {{ azure.aareg_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
@@ -87,6 +88,10 @@ spec:
       value: https://{{ azure.familiekssak_url }}
     - name: FAMILIEKSSAK_SCOPE
       value: {{ azure.familiekssak_scope }}
+    - name: AAREG_URL
+      value: https://{{ azure.aareg_url }}
+    - name: AAREG_SCOPE
+      value: {{ azure.aareg_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}

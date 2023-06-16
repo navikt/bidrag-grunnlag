@@ -2,7 +2,7 @@ package no.nav.bidrag.grunnlag.consumer
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -34,7 +34,7 @@ import java.time.LocalDate
 internal class BidragGcpProxyConsumerTest {
 
     @InjectMocks
-    private val bidragGcpProxyConsumer: AaregConsumer? = null
+    private val bidragGcpProxyConsumer: BidragGcpProxyConsumer? = null
 
     @Mock
     private val restTemplateMock: HttpHeaderRestTemplate? = null

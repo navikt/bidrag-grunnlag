@@ -11,6 +11,7 @@ import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.DefaultCorsFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.commons.web.UserMdcFilter
+import no.nav.bidrag.grunnlag.consumer.aareg.AaregConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -54,6 +55,7 @@ class BidragGrunnlagConfig {
     fun exceptionLogger(): ExceptionLogger {
         return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
     }
+
     @Bean
     @Scope("prototype")
     fun restTemplate(): HttpHeaderRestTemplate {
@@ -140,16 +142,16 @@ class BidragGrunnlagConfig {
         return FamilieKsSakConsumer(restTemplate)
     }
 
-/*  @Bean
-  fun kontantstotteConsumer(
-    @Value("\${KONTANTSTOTTE_URL}") url: String,
-    restTemplate: HttpHeaderRestTemplate,
-    securityTokenService: SecurityTokenService,
-    exceptionLogger: ExceptionLogger
-  ): KontantstotteConsumer {
-    LOGGER.info("Url satt i config: $url")
-    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("kontantstotte"))
-    return KontantstotteConsumer(restTemplate)
-  }*/
+    @Bean
+    fun aaregConsumer(
+        @Value("\${AAREG_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): AaregConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("aareg"))
+        return AaregConsumer(restTemplate)
+    }
 }

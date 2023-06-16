@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.consumer.arbeidsforhold
+package no.nav.bidrag.grunnlag.consumer.aareg
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
@@ -22,10 +22,11 @@ open class AaregConsumer(private val restTemplate: HttpHeaderRestTemplate) :
 
     open fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<HentArbeidsforholdResponse> {
         logger.info("Henter arbeidsforhold fra aareg")
+//        SECURE_LOGGER.info("Henter arbeidsforhold fra aareg med request: $request")
 
         val restResponse = restTemplate.tryExchange(
             AAREG_CONTEXT,
-            HttpMethod.POST,
+            HttpMethod.GET,
             initHttpEntity(request),
             HentArbeidsforholdResponse::class.java,
             HentArbeidsforholdResponse(emptyList())

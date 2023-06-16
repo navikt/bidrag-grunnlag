@@ -1,15 +1,11 @@
 package no.nav.bidrag.grunnlag.model
 
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
-import no.nav.bidrag.behandling.felles.enums.BarnType
-import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.AaregConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
+import no.nav.bidrag.grunnlag.consumer.aareg.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
@@ -33,65 +29,63 @@ class OppdaterArbeidsforhold(
     fun oppdaterArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterArbeidsforhold {
         arbeidsforholdRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
-            val hentBarnetilleggPensjonRequest = HentBarnetilleggPensjonRequest(
-                mottaker = personIdOgPeriode.personId,
-                fom = personIdOgPeriode.periodeFra,
-                tom = personIdOgPeriode.periodeTil.minusDays(1)
+            val hentArbeidsforholdRequest = HentArbeidsforholdRequest(
+                arbeidstakerId = personIdOgPeriode.personId
             )
 
-            LOGGER.info("Kaller barnetillegg pensjon")
-            SECURE_LOGGER.info("Kaller barnetillegg pensjon med request: $hentBarnetilleggPensjonRequest")
+            LOGGER.info("Kaller Aareg for å hente arbeidsforhold")
+            SECURE_LOGGER.info("Kaller Aareg request: $hentArbeidsforholdRequest")
 
             when (
-                val restResponseBarnetilleggPensjon =
+                val restResponseArbeidsforhold =
                     aaregConsumer.hentArbeidsforhold(hentArbeidsforholdRequest)
             ) {
                 is RestResponse.Success -> {
-                    val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
+                    val arbeidsforholdResponse = restResponseArbeidsforhold.body
 
-                    SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
+                    SECURE_LOGGER.info("Aareg hent arbeidsforhold følgende respons: $arbeidsforholdResponse")
 
-                    persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
+/*                    persistenceService.oppdaterEksisterendeArbeidsforholdTilInaktiv(
                         grunnlagspakkeId,
                         personIdOgPeriode.personId,
                         timestampOppdatering
                     )
-                    barnetilleggPensjonResponse.barnetilleggPensjonListe?.forEach { bt ->
+                    arbeidsforholdResponse.arbeidsforholdListe?.forEach { af ->
                         antallPerioderFunnet++
-                        persistenceService.opprettBarnetillegg(
-                            BarnetilleggBo(
+                        persistenceService.opprettArbeidsforhold(
+                            ArbeidsforholdBo(
                                 grunnlagspakkeId = grunnlagspakkeId,
                                 partPersonId = personIdOgPeriode.personId,
-                                barnPersonId = bt.barn,
+                                barnPersonId = af.barn,
                                 barnetilleggType = BarnetilleggType.PENSJON.toString(),
-                                periodeFra = bt.fom,
+                                periodeFra = af.fom,
                                 // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                periodeTil = bt.tom?.plusMonths(1)?.withDayOfMonth(1),
+                                periodeTil = af.tom?.plusMonths(1)?.withDayOfMonth(1),
                                 aktiv = true,
                                 brukFra = timestampOppdatering,
                                 brukTil = null,
-                                belopBrutto = bt.beloep,
-                                barnType = if (bt.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
+                                belopBrutto = af.beloep,
+                                barnType = if (af.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
                                 hentetTidspunkt = timestampOppdatering
                             )
                         )
                     }
                     this.add(
                         OppdaterGrunnlagDto(
-                            GrunnlagRequestType.BARNETILLEGG,
+                            GrunnlagRequestType.ARBEIDSFORHOLD,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
                             "Antall perioder funnet: $antallPerioderFunnet"
                         )
-                    )
+                    )*/
                 }
 
                 is RestResponse.Failure -> this.add(
                     OppdaterGrunnlagDto(
                         GrunnlagRequestType.BARNETILLEGG,
                         personIdOgPeriode.personId,
-                        if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                        "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
+                        if (restResponseArbeidsforhold.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+                        "Feil ved henting av arbeidsforhold for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
                     )
                 )
             }

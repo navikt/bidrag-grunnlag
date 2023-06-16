@@ -64,7 +64,8 @@ class GrunnlagspakkeService(
             husstandmedlemmerOgEgneBarnListe = persistenceService.hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId),
             sivilstandListe = persistenceService.hentSivilstand(grunnlagspakkeId),
             barnetilsynListe = persistenceService.hentBarnetilsyn(grunnlagspakkeId),
-            overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId)
+            overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId),
+            arbeidsforholdListe = emptyList()
         )
     }
 

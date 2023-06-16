@@ -4,8 +4,11 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.ISSUER
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.AaregConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentArbeidsforholdRequest
+import no.nav.bidrag.grunnlag.consumer.aareg.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdRequest
+import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdResponse
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
+import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
@@ -40,12 +43,13 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
 class IntegrasjonsController(
-    private val bidragGcpProxyConsumer: AaregConsumer,
+    private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
     private val inntektskomponentenConsumer: InntektskomponentenConsumer,
     private val familieBaSakConsumer: FamilieBaSakConsumer,
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
-    private val familieEfSakConsumer: FamilieEfSakConsumer
+    private val familieEfSakConsumer: FamilieEfSakConsumer,
+    private val aaregConsumer: AaregConsumer
 ) {
 
     @PostMapping(HENT_AINNTEKT)
@@ -68,7 +72,7 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_BARNETILLEGG_PENSJON)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter barnetillegg fra pensjon")
-    fun hentBarnetilleggPensjon(@RequestBody hentBarnetilleggPensjonRequest: HentArbeidsforholdRequest): ResponseEntity<HentBarnetilleggPensjonResponse> {
+    fun hentBarnetilleggPensjon(@RequestBody hentBarnetilleggPensjonRequest: HentBarnetilleggPensjonRequest): ResponseEntity<HentBarnetilleggPensjonResponse> {
         return handleRestResponse(bidragGcpProxyConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest))
     }
 
@@ -120,6 +124,12 @@ class IntegrasjonsController(
         return handleRestResponse(familieEfSakConsumer.hentOvergangsstønad(eksternePerioderRequest))
     }
 
+    @PostMapping(HENT_ARBEIDSFORHOLD)
+    @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller aareg og henter arbeidsforhold")
+    fun hentArbeidsforhold(@RequestBody hentArbeidsforholdRequest: HentArbeidsforholdRequest): ResponseEntity<HentArbeidsforholdResponse> {
+        return handleRestResponse(aaregConsumer.hentArbeidsforhold(hentArbeidsforholdRequest))
+    }
+
     private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {
         return when (restResponse) {
             is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
@@ -140,5 +150,6 @@ class IntegrasjonsController(
         const val HENT_KONTANTSTOTTE = "/integrasjoner/kontantstotte"
         const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"
         const val HENT_OVERGANGSSTØNAD = "/integrasjoner/overgangsstonad"
+        const val HENT_ARBEIDSFORHOLD = "/integrasjoner/arbeidsforhold"
     }
 }
