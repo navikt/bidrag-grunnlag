@@ -30,7 +30,7 @@ class OppdaterArbeidsforhold(
         arbeidsforholdRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
             val hentArbeidsforholdRequest = HentArbeidsforholdRequest(
-                `Nav-Personident` = personIdOgPeriode.personId
+                `navPersonident` = personIdOgPeriode.personId
             )
 
             LOGGER.info("Kaller Aareg for å hente arbeidsforhold")
@@ -82,7 +82,7 @@ class OppdaterArbeidsforhold(
 
                 is RestResponse.Failure -> this.add(
                     OppdaterGrunnlagDto(
-                        GrunnlagRequestType.BARNETILLEGG,
+                        GrunnlagRequestType.ARBEIDSFORHOLD,
                         personIdOgPeriode.personId,
                         if (restResponseArbeidsforhold.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
                         "Feil ved henting av arbeidsforhold for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
