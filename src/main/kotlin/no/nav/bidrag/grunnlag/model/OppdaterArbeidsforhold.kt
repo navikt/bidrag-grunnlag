@@ -30,7 +30,7 @@ class OppdaterArbeidsforhold(
         arbeidsforholdRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
             val hentArbeidsforholdRequest = HentArbeidsforholdRequest(
-                arbeidstakerId = personIdOgPeriode.personId
+                `Nav-Personident` = personIdOgPeriode.personId
             )
 
             LOGGER.info("Kaller Aareg for å hente arbeidsforhold")
