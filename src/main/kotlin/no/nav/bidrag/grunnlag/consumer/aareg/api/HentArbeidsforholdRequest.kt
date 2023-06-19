@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.consumer.aareg.api
 
 data class HentArbeidsforholdRequest(
-    val navPersonident: String,
+    val arbeidstakerId: String,
     val arbeidsforholdtypeFilter: String? = null,
     val rapporteringsordningFilter: String? = null,
     val arbeidsforholdstatusFilter: String? = null,

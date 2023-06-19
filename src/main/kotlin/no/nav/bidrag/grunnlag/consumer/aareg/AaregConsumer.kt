@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.consumer.aareg
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdResponse
@@ -22,12 +23,12 @@ open class AaregConsumer(private val restTemplate: HttpHeaderRestTemplate) :
 
     open fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<HentArbeidsforholdResponse> {
         logger.info("Henter arbeidsforhold fra aareg")
-//        SECURE_LOGGER.info("Henter arbeidsforhold fra aareg med request: $request")
+        SECURE_LOGGER.info("Henter arbeidsforhold fra aareg med request: $request")
 
         val restResponse = restTemplate.tryExchange(
             AAREG_CONTEXT,
             HttpMethod.GET,
-            initHttpEntity(request),
+            initHttpEntityAareg(request, request.arbeidstakerId),
             HentArbeidsforholdResponse::class.java,
             HentArbeidsforholdResponse(emptyList())
         )
