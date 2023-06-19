@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.consumer.aareg.api
 
 data class HentArbeidsforholdResponse(
-    val arbeidsforholdListe: List<Arbeidsforhold>?
+    val arbeidsforholdListe: Array<Arbeidsforhold>?
 )
 
 data class Arbeidsforhold(

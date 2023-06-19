@@ -146,3 +146,4 @@ fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity
         RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
     }
 }
+
