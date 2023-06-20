@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.behandling.felles.enums.BarnType
-import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domain.enums.BarnType
+import no.nav.bidrag.domain.enums.BarnetilleggType
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
+import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer

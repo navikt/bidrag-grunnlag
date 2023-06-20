@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.bo
 
 import io.swagger.v3.oas.annotations.media.Schema
-import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
-import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Tilsyntype
+import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domain.enums.barnetilsyn.Tilsyntype
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import java.time.LocalDate
 import java.time.LocalDateTime

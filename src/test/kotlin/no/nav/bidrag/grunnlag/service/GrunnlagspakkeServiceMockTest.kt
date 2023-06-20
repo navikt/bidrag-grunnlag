@@ -1,8 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.enums.BarnType
-import no.nav.bidrag.behandling.felles.enums.Formaal
+import no.nav.bidrag.domain.enums.BarnType
+import no.nav.bidrag.domain.enums.Formaal
 import no.nav.bidrag.domain.enums.Sivilstandstype
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntekt
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektBo
@@ -39,6 +38,7 @@ import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.DisplayName

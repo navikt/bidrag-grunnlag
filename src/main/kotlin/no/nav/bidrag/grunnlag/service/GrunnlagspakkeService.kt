@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagspakkeDto
 import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagspakkeDto

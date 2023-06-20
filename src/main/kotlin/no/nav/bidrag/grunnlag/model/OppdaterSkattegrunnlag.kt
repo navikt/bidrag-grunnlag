@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
+import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domain.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo

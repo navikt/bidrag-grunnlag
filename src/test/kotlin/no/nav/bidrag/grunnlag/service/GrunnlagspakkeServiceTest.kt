@@ -1,10 +1,9 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
-import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.SivilstandKode
-import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
+import no.nav.bidrag.domain.enums.BarnetilleggType
+import no.nav.bidrag.domain.enums.Formaal
+import no.nav.bidrag.domain.enums.SivilstandKode
+import no.nav.bidrag.domain.enums.SkattegrunnlagType
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.AinntektBo
@@ -16,6 +15,7 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
+import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll

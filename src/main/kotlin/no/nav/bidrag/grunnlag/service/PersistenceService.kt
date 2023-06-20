@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
-import no.nav.bidrag.behandling.felles.enums.SivilstandKode
-import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
-import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Tilsyntype
+import no.nav.bidrag.domain.enums.BarnetilleggType
+import no.nav.bidrag.domain.enums.SivilstandKode
+import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domain.enums.barnetilsyn.Tilsyntype
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo

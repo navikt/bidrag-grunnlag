@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import org.junit.jupiter.api.Assertions.assertEquals
