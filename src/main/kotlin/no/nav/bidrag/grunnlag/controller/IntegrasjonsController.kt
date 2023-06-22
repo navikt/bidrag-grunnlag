@@ -127,7 +127,8 @@ class IntegrasjonsController(
     @PostMapping(HENT_ARBEIDSFORHOLD)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller aareg og henter arbeidsforhold")
     fun hentArbeidsforhold(@RequestBody hentArbeidsforholdRequest: HentArbeidsforholdRequest): ResponseEntity<List<Arbeidsforhold>> {
-        return aaregConsumer.hentArbeidsforhold(hentArbeidsforholdRequest)
+//        return aaregConsumer.hentArbeidsforhold(hentArbeidsforholdRequest)
+        return handleRestResponse(aaregConsumer.hentArbeidsforholdRiktig(hentArbeidsforholdRequest))
     }
 
     private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {

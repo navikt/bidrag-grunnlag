@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import no.nav.bidrag.commons.ExceptionLogger
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -136,6 +137,17 @@ sealed class RestResponse<T> {
 }
 
 fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {
+    return try {
+        val response = exchange(url, httpMethod, httpEntity, responseType)
+        RestResponse.Success(response.body ?: fallbackBody)
+    } catch (e: HttpClientErrorException) {
+        RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+    } catch (e: HttpServerErrorException) {
+        RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+    }
+}
+
+fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: ParameterizedTypeReference<T>, fallbackBody: T): RestResponse<T> {
     return try {
         val response = exchange(url, httpMethod, httpEntity, responseType)
         RestResponse.Success(response.body ?: fallbackBody)
