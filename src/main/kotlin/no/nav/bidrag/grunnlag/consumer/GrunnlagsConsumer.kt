@@ -38,5 +38,4 @@ open class GrunnlagsConsumer {
         httpHeaders.add("Nav-Personident", ident)
         return HttpEntity(body, httpHeaders)
     }
-
 }

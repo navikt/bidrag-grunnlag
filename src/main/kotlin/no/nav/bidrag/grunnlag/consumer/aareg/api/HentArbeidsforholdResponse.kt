@@ -11,7 +11,7 @@ data class Arbeidsforhold(
     val arbeidstaker: Arbeidstaker?,
     val bruksperiode: Bruksperiode?,
     val navArbeidsforholdId: Int?,
-    val navUuid: String?,
+    val id: String?,
     val navVersjon: Int?,
     val opplysningspliktig: Opplysningspliktig?,
     val opprettet: String?,

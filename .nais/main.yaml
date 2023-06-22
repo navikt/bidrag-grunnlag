@@ -20,7 +20,7 @@ azure:
   familiekssak_url: familie-kontantstotte-sak.intern.dev.nav.no
   familiekssak_scope: dev-gcp.teamfamilie.familie-ks-sak
   aareg_url: aareg-services.dev-fss-pub.nais.io
-  aareg_scope: dev-fss.aareg-services-nais
+  aareg_scope: dev-fss.arbeidsforhold.aareg-services-nais
   aareg_app: aareg-services
   aareg_cluster: dev-fss
 dbname: bidrag-grunnlag-main

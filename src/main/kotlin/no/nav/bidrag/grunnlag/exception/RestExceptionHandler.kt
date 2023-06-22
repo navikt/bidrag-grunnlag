@@ -24,7 +24,6 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
-import java.lang.NumberFormatException
 import java.time.format.DateTimeParseException
 
 @RestControllerAdvice
@@ -146,4 +145,3 @@ fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity
         RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
     }
 }
-

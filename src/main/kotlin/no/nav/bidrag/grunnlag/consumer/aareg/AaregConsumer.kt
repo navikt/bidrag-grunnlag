@@ -3,7 +3,6 @@ package no.nav.bidrag.grunnlag.consumer.aareg
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
-import no.nav.bidrag.grunnlag.consumer.aareg.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
