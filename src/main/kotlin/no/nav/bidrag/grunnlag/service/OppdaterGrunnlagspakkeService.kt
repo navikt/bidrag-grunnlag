@@ -6,7 +6,6 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.AINNTEKT
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.ARBEIDSFORHOLD
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILLEGG
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILSYN
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN
@@ -84,9 +83,9 @@ class OppdaterGrunnlagspakkeService(
             .oppdaterOvergangsstønad(
                 hentRequestListeFor(OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto)
             )
-            .oppdaterArbeidsforhold(
-                hentRequestListeFor(ARBEIDSFORHOLD, oppdaterGrunnlagspakkeRequestDto)
-            )
+//            .oppdaterArbeidsforhold(
+//                hentRequestListeFor(ARBEIDSFORHOLD, oppdaterGrunnlagspakkeRequestDto)
+//            )
 
         return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
     }

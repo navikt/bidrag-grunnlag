@@ -1,24 +1,24 @@
 package no.nav.bidrag.grunnlag.consumer.aareg.api
 
-data class HentArbeidsforholdResponse(
-    val arbeidsforholdListe: List<Arbeidsforhold>?
-)
+// data class HentArbeidsforholdResponse(
+//    val arbeidsforholdListe: List<Arbeidsforhold>?
+// )
 
 data class Arbeidsforhold(
-    val ansettelsesdetaljer: List<Ansettelsesdetaljer>?,
-    val ansettelsesperiode: Ansettelsesperiode?,
-    val arbeidssted: Arbeidssted?,
-    val arbeidstaker: Arbeidstaker?,
-    val bruksperiode: Bruksperiode?,
-    val navArbeidsforholdId: Int?,
-    val id: String?,
-    val navVersjon: Int?,
-    val opplysningspliktig: Opplysningspliktig?,
-    val opprettet: String?,
-    val rapporteringsordning: Rapporteringsordning?,
-    val sistBekreftet: String?,
-    val sistEndret: String?,
-    val type: Type?
+    val ansettelsesdetaljer: List<Ansettelsesdetaljer>? = emptyList(),
+    val ansettelsesperiode: Ansettelsesperiode? = null,
+    val arbeidssted: Arbeidssted? = null,
+    val arbeidstaker: Arbeidstaker? = null,
+    val bruksperiode: Bruksperiode? = null,
+    val navArbeidsforholdId: Int? = null,
+    val id: String? = null,
+    val navVersjon: Int? = null,
+    val opplysningspliktig: Opplysningspliktig? = null,
+    val opprettet: String? = null,
+    val rapporteringsordning: Rapporteringsordning? = null,
+    val sistBekreftet: String? = null,
+    val sistEndret: String? = null,
+    val type: Type? = null
 )
 
 data class Ansettelsesdetaljer(

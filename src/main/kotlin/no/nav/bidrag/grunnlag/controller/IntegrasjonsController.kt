@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.consumer.aareg.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.aareg.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdRequest
-import no.nav.bidrag.grunnlag.consumer.aareg.api.HentArbeidsforholdResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
@@ -126,8 +126,8 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_ARBEIDSFORHOLD)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller aareg og henter arbeidsforhold")
-    fun hentArbeidsforhold(@RequestBody hentArbeidsforholdRequest: HentArbeidsforholdRequest): ResponseEntity<HentArbeidsforholdResponse> {
-        return handleRestResponse(aaregConsumer.hentArbeidsforhold(hentArbeidsforholdRequest))
+    fun hentArbeidsforhold(@RequestBody hentArbeidsforholdRequest: HentArbeidsforholdRequest): ResponseEntity<List<Arbeidsforhold>> {
+        return aaregConsumer.hentArbeidsforhold(hentArbeidsforholdRequest)
     }
 
     private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {
