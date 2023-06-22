@@ -34,6 +34,7 @@ open class AaregConsumer(private val restTemplate: HttpHeaderRestTemplate) :
             responseType
         )
 
+        SECURE_LOGGER.info("Respons fra aareg: ${restResponse.body}")
         return restResponse
     }
 }
