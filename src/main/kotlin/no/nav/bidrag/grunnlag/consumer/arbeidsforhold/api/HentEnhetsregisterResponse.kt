@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class HentEnhetsregisterResponse(
@@ -39,6 +40,6 @@ data class BruksperiodeEreg(
 )
 
 data class Gyldighetsperiode(
-    val fom: LocalDateTime?,
-    val tom: LocalDateTime?
+    val fom: LocalDate?,
+    val tom: LocalDate?
 )
