@@ -54,6 +54,7 @@ class BidragGrunnlagConfig {
     fun exceptionLogger(): ExceptionLogger {
         return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
     }
+
     @Bean
     @Scope("prototype")
     fun restTemplate(): HttpHeaderRestTemplate {
