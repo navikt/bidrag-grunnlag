@@ -1,8 +1,4 @@
-package no.nav.bidrag.grunnlag.consumer.aareg.api
-
-// data class HentArbeidsforholdResponse(
-//    val arbeidsforholdListe: List<Arbeidsforhold>?
-// )
+package no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api
 
 data class Arbeidsforhold(
     val ansettelsesdetaljer: List<Ansettelsesdetaljer>? = emptyList(),

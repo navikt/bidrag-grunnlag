@@ -14,7 +14,7 @@ import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
-import no.nav.bidrag.grunnlag.consumer.aareg.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
@@ -72,7 +72,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     private lateinit var familieEfSakConsumerMock: FamilieEfSakConsumer
 
     @Mock
-    private lateinit var aaregConsumer: AaregConsumer
+    private lateinit var arbeidsforholdConsumer: ArbeidsforholdConsumer
 
     @Captor
     private lateinit var utvidetBarnetrygdOgSmaabarnstilleggBoCaptor: ArgumentCaptor<UtvidetBarnetrygdOgSmaabarnstilleggBo>

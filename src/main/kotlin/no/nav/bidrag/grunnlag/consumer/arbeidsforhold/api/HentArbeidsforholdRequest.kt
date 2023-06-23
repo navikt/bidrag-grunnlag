@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.consumer.aareg.api
+package no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api
 
 data class HentArbeidsforholdRequest(
     val arbeidstakerId: String,

@@ -147,6 +147,7 @@ fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity
     }
 }
 
+// Brukes hvis responseType er en liste
 fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: ParameterizedTypeReference<T>, fallbackBody: T): RestResponse<T> {
     return try {
         val response = exchange(url, httpMethod, httpEntity, responseType)

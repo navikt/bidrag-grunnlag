@@ -32,6 +32,7 @@ spec:
         - host: {{ azure.familiekssak_url }}
         - host: {{ azure.inntektskomponenten_base_url }}
         - host: {{ azure.aareg_url }}
+        - host: {{ unsecure.ereg_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
@@ -92,6 +93,8 @@ spec:
       value: https://{{ azure.aareg_url }}
     - name: AAREG_SCOPE
       value: {{ azure.aareg_scope }}
+    - name: EREG_URL
+      value: https://{{ unsecure.ereg_url }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}

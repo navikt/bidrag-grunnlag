@@ -6,6 +6,7 @@ BIDRAGPERSON_URL: http://localhost:${wiremock.server.port}/bidragperson
 KONTANTSTOTTE_URL: http://localhost:${wiremock.server.port}/kontantstotte
 FAMILIEKSSAK_URL: http://localhost:${wiremock.server.port}/familiekssak
 AAREG_URL: http://localhost:${wiremock.server.https-port}/aareg
+EREG_URL: http://localhost:${wiremock.server.https-port}/ereg
 spring:
   config.activate.on-profile: test, local
   flyway.enabled: false

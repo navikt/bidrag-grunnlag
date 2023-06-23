@@ -14,7 +14,7 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.OVERGANGSSTONAD
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SIVILSTAND
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SKATTEGRUNNLAG
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
-import no.nav.bidrag.grunnlag.consumer.aareg.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -42,7 +42,7 @@ class OppdaterGrunnlagspakkeService(
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
     private val familieEfSakConsumer: FamilieEfSakConsumer,
-    private val aaregConsumer: AaregConsumer
+    private val arbeidsforholdConsumer: ArbeidsforholdConsumer
 ) {
     fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,
@@ -238,7 +238,7 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    aaregConsumer
+                    arbeidsforholdConsumer
                 )
                     .oppdaterArbeidsforhold(arbeidsforholdRequestListe)
             )

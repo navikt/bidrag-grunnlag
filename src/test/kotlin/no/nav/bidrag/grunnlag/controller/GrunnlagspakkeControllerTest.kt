@@ -14,7 +14,7 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.aareg.AaregConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
@@ -83,7 +83,7 @@ class GrunnlagspakkeControllerTest(
     private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
     private val familieKsSakConsumer: FamilieKsSakConsumer = FamilieKsSakConsumer(restTemplate)
     private val familieEfSakConsumer: FamilieEfSakConsumer = FamilieEfSakConsumer(restTemplate)
-    private val aaregConsumer: AaregConsumer = AaregConsumer(restTemplate)
+    private val arbeidsforholdConsumer: ArbeidsforholdConsumer = ArbeidsforholdConsumer(restTemplate)
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(
         persistenceService,
         familieBaSakConsumer,
@@ -92,7 +92,7 @@ class GrunnlagspakkeControllerTest(
         bidragPersonConsumer,
         familieKsSakConsumer,
         familieEfSakConsumer,
-        aaregConsumer
+        arbeidsforholdConsumer
     )
     private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
     private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
