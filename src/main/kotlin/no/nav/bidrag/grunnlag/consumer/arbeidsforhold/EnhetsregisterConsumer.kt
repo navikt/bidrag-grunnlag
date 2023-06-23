@@ -38,6 +38,9 @@ open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTempla
 
     private fun byggEregUrl(request: HentEnhetsregisterRequest): String {
         val url = "/v2/organisasjon/${request.organisasjonsnummer}/noekkelinfo"
-        return if (!request.gyldigDato.isNullOrBlank()) url.plus("?gyldigDato={${request.gyldigDato}}") else url
+        val endeligurl = if (!request.gyldigDato.isNullOrBlank()) url.plus("?gyldigDato={${request.gyldigDato}}") else url
+        LOGGER.info("url: $url")
+        LOGGER.info("endeligurl: $endeligurl")
+        return endeligurl
     }
 }
