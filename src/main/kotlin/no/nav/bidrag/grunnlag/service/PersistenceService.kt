@@ -570,8 +570,7 @@ class PersistenceService(
                     if (relatertPerson.relatertPersonPersonId != behandletPerson) {
                         val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
                         val alleForekomsterAvRelatertPerson =
-                            relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId)
-                                .filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
+                            filtrertListe.filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
                         alleForekomsterAvRelatertPerson.forEach { person ->
                             if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
                                 borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
