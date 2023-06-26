@@ -499,7 +499,6 @@ class GrunnlagspakkeServiceTest {
         )
     }
 
-
     @Test
     @Suppress("NonAsciiCharacters")
     fun `Test på å hente husstandsmedlemmer for to ulik personer i samme grunnlagspakke`() {
@@ -575,7 +574,7 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2020-09-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2020-11-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeFra).isEqualTo(LocalDate.parse("2022-09-01")) },
-            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeTil).isNull() },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeTil).isNull() }
 
         )
     }
