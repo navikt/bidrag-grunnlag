@@ -51,24 +51,26 @@ class OppdaterRelatertePersoner(
             val barnListe = hentBarn(PersonIdent(personIdOgPeriode.personId))
 
             // Alle husstandsmedlemmer lagres i tabell relatert_person. Det sjekkes om husstandsmedlem finnes i liste over barn.
-            // erBarnAvmBp settes lik true i så fall
+            // erBarnAvmBp settes lik true i så fall. Tester slik at person ikke lagres som eget husstandsmedlem.
             husstandsmedlemmerListe.forEach { husstandsmedlem ->
-                persistenceService.opprettRelatertPerson(
-                    RelatertPersonBo(
-                        grunnlagspakkeId = grunnlagspakkeId,
-                        partPersonId = personIdOgPeriode.personId,
-                        relatertPersonPersonId = husstandsmedlem.personId,
-                        navn = husstandsmedlem.navn,
-                        fodselsdato = husstandsmedlem.fodselsdato,
-                        erBarnAvBmBp = barnListe.any { it.personId == husstandsmedlem.personId },
-                        husstandsmedlemPeriodeFra = husstandsmedlem.husstandsmedlemPeriodeFra,
-                        husstandsmedlemPeriodeTil = husstandsmedlem.husstandsmedlemPeriodeTil,
-                        aktiv = true,
-                        brukFra = timestampOppdatering,
-                        brukTil = null,
-                        hentetTidspunkt = timestampOppdatering
+                if (husstandsmedlem.personId != personIdOgPeriode.personId) {
+                    persistenceService.opprettRelatertPerson(
+                        RelatertPersonBo(
+                            grunnlagspakkeId = grunnlagspakkeId,
+                            partPersonId = personIdOgPeriode.personId,
+                            relatertPersonPersonId = husstandsmedlem.personId,
+                            navn = husstandsmedlem.navn,
+                            fodselsdato = husstandsmedlem.fodselsdato,
+                            erBarnAvBmBp = barnListe.any { it.personId == husstandsmedlem.personId },
+                            husstandsmedlemPeriodeFra = husstandsmedlem.husstandsmedlemPeriodeFra,
+                            husstandsmedlemPeriodeTil = husstandsmedlem.husstandsmedlemPeriodeTil,
+                            aktiv = true,
+                            brukFra = timestampOppdatering,
+                            brukTil = null,
+                            hentetTidspunkt = timestampOppdatering
+                        )
                     )
-                )
+                }
             }
 
             // Filtrer listen over BM/BPs barn slik at barn som ligger i listen over husstandsmedlemmer,

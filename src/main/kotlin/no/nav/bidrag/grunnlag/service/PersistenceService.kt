@@ -545,44 +545,59 @@ class PersistenceService(
         return kontantstotteDtoListe
     }
 
-    // Henter alle husstandsmedlemmer og personens egne barn, uavhengig om de bor i samme husstand.
+    // Henter alle husstandsmedlemmer og personenes egne barn, uavhengig om de bor i samme husstand.
 
     fun hentHusstandsmedlemmerOgEgneBarn(grunnlagspakkeId: Int): List<RelatertPersonDto> {
         val husstandsmedlemmerOgEgneBarnListe = mutableListOf<RelatertPersonDto>()
 
-        // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
-        // med BM/BP. I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
-        // har delt bolig med BM/BP. Sjekker derfor under om personen allerede har blitt lagt på responsen.
-        var behandletPerson: String? = null
+        val relatertePersonerListe = relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId)
+        // relatertePersonerListe inneholder alle personer (partPersonId) grunnlaget husstandsmedlemmer er innhentet for i grunnlagspakken.
+        // For å unngå duplikate perioder i responsen må det sjekkes at periode gjelder for aktuell partPersonId.
+        var behandletPartPersonId: String? = null
 
-        relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).forEach { relatertPerson ->
-            if (relatertPerson.relatertPersonPersonId != behandletPerson) {
-                val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
-                val alleForekomsterAvRelatertPerson =
-                    relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId).filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
-                alleForekomsterAvRelatertPerson.forEach { person ->
-                    if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
-                        borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
+        relatertePersonerListe.forEach { part ->
+            // En relatert person kan forekomme flere ganger i uttrekk fra tabell, én gang for hver periode personen har delt bolig
+            // med BM/BP (partPersonId). I responsen fra bidrag-grunnlag skal hver person kun ligge én gang, med en liste over perioder personen
+            // har delt bolig med BM/BP (part_person_id). Sjekker derfor under om personen allerede har blitt lagt på responsen.
+
+            if (part.partPersonId != behandletPartPersonId) {
+                val filtrertListe = relatertePersonerListe.filter { it.partPersonId == part.partPersonId }
+                behandletPartPersonId = part.partPersonId
+
+                var behandletPerson: String? = null
+
+                filtrertListe.forEach { relatertPerson ->
+                    if (relatertPerson.relatertPersonPersonId != behandletPerson) {
+                        val borISammeHusstandListe = mutableListOf<BorISammeHusstandDto>()
+                        val alleForekomsterAvRelatertPerson =
+                            relatertPersonRepository.hentRelatertePersoner(grunnlagspakkeId)
+                                .filter { it.relatertPersonPersonId == relatertPerson.relatertPersonPersonId }
+                        alleForekomsterAvRelatertPerson.forEach { person ->
+                            if (person.husstandsmedlemPeriodeFra != null || person.husstandsmedlemPeriodeTil != null) {
+                                borISammeHusstandListe.add(BorISammeHusstandDto(person.husstandsmedlemPeriodeFra, person.husstandsmedlemPeriodeTil))
+                            }
+                        }
+
+                        husstandsmedlemmerOgEgneBarnListe.add(
+                            RelatertPersonDto(
+                                partPersonId = relatertPerson.partPersonId,
+                                relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
+                                navn = relatertPerson.navn,
+                                fodselsdato = relatertPerson.fodselsdato,
+                                erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
+                                aktiv = relatertPerson.aktiv,
+                                brukFra = relatertPerson.brukFra,
+                                brukTil = relatertPerson.brukTil,
+                                hentetTidspunkt = relatertPerson.hentetTidspunkt,
+                                borISammeHusstandDtoListe = borISammeHusstandListe
+                            )
+                        )
+                        behandletPerson = relatertPerson.relatertPersonPersonId
                     }
                 }
-
-                husstandsmedlemmerOgEgneBarnListe.add(
-                    RelatertPersonDto(
-                        partPersonId = relatertPerson.partPersonId,
-                        relatertPersonPersonId = relatertPerson.relatertPersonPersonId,
-                        navn = relatertPerson.navn,
-                        fodselsdato = relatertPerson.fodselsdato,
-                        erBarnAvBmBp = relatertPerson.erBarnAvBmBp,
-                        aktiv = relatertPerson.aktiv,
-                        brukFra = relatertPerson.brukFra,
-                        brukTil = relatertPerson.brukTil,
-                        hentetTidspunkt = relatertPerson.hentetTidspunkt,
-                        borISammeHusstandDtoListe = borISammeHusstandListe
-                    )
-                )
-                behandletPerson = relatertPerson.relatertPersonPersonId
             }
         }
+
         return husstandsmedlemmerOgEgneBarnListe
     }
 
