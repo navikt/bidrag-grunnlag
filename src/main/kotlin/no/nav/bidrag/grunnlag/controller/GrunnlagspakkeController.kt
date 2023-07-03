@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
@@ -112,12 +114,37 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
         return ResponseEntity(grunnlagspakkeId, HttpStatus.OK)
     }
 
+
+    @PostMapping(HENT_GRUNNLAG)
+    @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Trigger innhenting av arbeidsforhold for personer angitt i requesten")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Arbeidsforhold innhentet"),
+            ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
+            ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data"),
+            ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
+            ApiResponse(responseCode = "500", description = "Serverfeil"),
+            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
+        ]
+    )
+    fun hentGrunnlag(
+        @PathVariable @NotNull
+        @Valid @RequestBody
+        request: HentGrunnlagRequestDto
+    ):
+        ResponseEntity<HentGrunnlagDto>? {
+        val hentGrunnlagDto = grunnlagspakkeService.hentGrunnlag(request)
+        LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
+        return ResponseEntity(hentGrunnlagDto, HttpStatus.OK)
+    }
+
     companion object {
 
         const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke"
         const val GRUNNLAGSPAKKE_OPPDATER = "/grunnlagspakke/{grunnlagspakkeId}/oppdater"
         const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/{grunnlagspakkeId}"
         const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/{grunnlagspakkeId}/lukk"
+        const val HENT_GRUNNLAG = "/hentgrunnlag"
         private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
     }
 }

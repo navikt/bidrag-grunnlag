@@ -1,5 +1,9 @@
 package no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.YearMonth
+
 data class Arbeidsforhold(
     val ansettelsesdetaljer: List<Ansettelsesdetaljer>? = emptyList(),
     val ansettelsesperiode: Ansettelsesperiode? = null,
@@ -11,23 +15,29 @@ data class Arbeidsforhold(
     val navVersjon: Int? = null,
     val opplysningspliktig: Opplysningspliktig? = null,
     val opprettet: String? = null,
-    val rapporteringsordning: Rapporteringsordning? = null,
+    val rapporteringsordning: Kodeverksentitet? = null,
     val sistBekreftet: String? = null,
     val sistEndret: String? = null,
-    val type: Type? = null
+    val type: Kodeverksentitet? = null,
+    val permisjoner: List<Permisjon>,
+    val permitteringer: List<Permittering>,
 )
 
 data class Ansettelsesdetaljer(
     val antallTimerPrUke: Double?,
-    val arbeidstidsordning: Arbeidstidsordning?,
+    val arbeidstidsordning: Kodeverksentitet?,
+    val ansettelsesform: Kodeverksentitet?,
     val avtaltStillingsprosent: Double?,
     val rapporteringsmaaneder: Rapporteringsmaaneder?,
     val type: String?,
-    val yrke: Yrke?
+    val yrke: Kodeverksentitet?,
+    val sisteStillingsprosentendring: LocalDate,
+    val sisteLoennsendring: LocalDate,
 )
 
 data class Ansettelsesperiode(
-    val startdato: String?
+    val startdato: LocalDate,
+    val sluttdato: LocalDate?
 )
 
 data class Arbeidssted(
@@ -49,30 +59,16 @@ data class Opplysningspliktig(
     val type: String?
 )
 
-data class Rapporteringsordning(
-    val beskrivelse: String?,
-    val kode: String?
-)
-
-data class Type(
-    val beskrivelse: String?,
-    val kode: String?
-)
-
-data class Arbeidstidsordning(
+data class Kodeverksentitet(
     val beskrivelse: String?,
     val kode: String?
 )
 
 data class Rapporteringsmaaneder(
-    val fra: String?,
-    val til: String?
+    val fra: YearMonth?,
+    val til: YearMonth?
 )
 
-data class Yrke(
-    val beskrivelse: String?,
-    val kode: String?
-)
 
 data class Identer(
     val ident: String?,
@@ -83,4 +79,43 @@ data class ArbeidsgiverIdenter(
     val gjeldende: Boolean?,
     val ident: String?,
     val type: String?
+)
+
+data class Permisjon(
+    val startdato: LocalDate?,
+    val sluttdato: LocalDate?,
+    val id: String?,
+    val type: Kodeverksentitet?,
+    val prosent: Double?,
+    val varsling: Kodeverksentitet?,
+    val idHistorikk: List<IdHistorikk>?,
+    val sporingsinformasjon: Sporingsinformasjon?
+)
+
+data class Permittering(
+    val startdato: LocalDate?,
+    val sluttdato: LocalDate?,
+    val id: String?,
+    val type: Kodeverksentitet?,
+    val prosent: Double?,
+    val varsling: Kodeverksentitet?,
+    val idHistorikk: List<IdHistorikk>?,
+    val sporingsinformasjon: Sporingsinformasjon?
+)
+
+data class IdHistorikk(
+    val id: String,
+    val fom: LocalDate,
+    val tom: LocalDate
+)
+
+data class Sporingsinformasjon(
+    val opprettetTidspunkt: LocalDateTime?,
+    val opprettetAv: String?,
+    val opprettetKilde: String?,
+    val opprettetKildereferanse: String?,
+    val endretTidspunkt: LocalDateTime?,
+    val endretAv: String?,
+    val endretKilde: String?,
+    val endretKildereferanse: String?
 )

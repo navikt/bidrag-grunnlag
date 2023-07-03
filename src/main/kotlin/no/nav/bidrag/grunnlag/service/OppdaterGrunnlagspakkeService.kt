@@ -14,14 +14,12 @@ import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.OVERGANGSSTONAD
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SIVILSTAND
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SKATTEGRUNNLAG
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
-import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
-import no.nav.bidrag.grunnlag.model.OppdaterArbeidsforhold
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetilsyn
 import no.nav.bidrag.grunnlag.model.OppdaterKontantstotte
@@ -42,7 +40,6 @@ class OppdaterGrunnlagspakkeService(
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
     private val familieEfSakConsumer: FamilieEfSakConsumer,
-    private val arbeidsforholdConsumer: ArbeidsforholdConsumer
 ) {
     fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,
@@ -83,9 +80,6 @@ class OppdaterGrunnlagspakkeService(
             .oppdaterOvergangsstønad(
                 hentRequestListeFor(OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto)
             )
-//            .oppdaterArbeidsforhold(
-//                hentRequestListeFor(ARBEIDSFORHOLD, oppdaterGrunnlagspakkeRequestDto)
-//            )
 
         return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
     }
@@ -232,17 +226,17 @@ class OppdaterGrunnlagspakkeService(
             )
             return this
         }
-        fun oppdaterArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
-            this.addAll(
-                OppdaterArbeidsforhold(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    arbeidsforholdConsumer
-                )
-                    .oppdaterArbeidsforhold(arbeidsforholdRequestListe)
-            )
-            return this
-        }
+//        fun oppdaterArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+//            this.addAll(
+//                OppdaterArbeidsforhold(
+//                    grunnlagspakkeId,
+//                    timestampOppdatering,
+//                    persistenceService,
+//                    arbeidsforholdConsumer
+//                )
+//                    .oppdaterArbeidsforhold(arbeidsforholdRequestListe)
+//            )
+//            return this
+//        }
     }
 }

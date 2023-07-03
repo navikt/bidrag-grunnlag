@@ -1,5 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
@@ -15,7 +17,8 @@ import java.time.LocalDateTime
 @Transactional
 class GrunnlagspakkeService(
     private val persistenceService: PersistenceService,
-    private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService
+    private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService,
+    private val hentGrunnlagService: HentGrunnlagService
 ) {
 
     fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Int {
@@ -65,7 +68,6 @@ class GrunnlagspakkeService(
             sivilstandListe = persistenceService.hentSivilstand(grunnlagspakkeId),
             barnetilsynListe = persistenceService.hentBarnetilsyn(grunnlagspakkeId),
             overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId),
-            arbeidsforholdListe = emptyList()
         )
     }
 
@@ -73,6 +75,11 @@ class GrunnlagspakkeService(
         // Validerer at grunnlagspakke eksisterer
         persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
         return persistenceService.lukkGrunnlagspakke(grunnlagspakkeId)
+    }
+
+
+    fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
+        return hentGrunnlagService.hentGrunnlag(hentGrunnlagRequestDto)
     }
 }
 
