@@ -11,7 +11,6 @@ import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class HentArbeidsforhold(
@@ -56,8 +55,8 @@ class HentArbeidsforhold(
                         arbeidsforhold.ansettelsesdetaljer?.forEach {
                             ansettelsesdetaljerListe.add(
                                 no.nav.bidrag.behandling.felles.dto.grunnlag.Ansettelsesdetaljer(
-                                    periodeFra = LocalDate.parse(it.rapporteringsmaaneder?.fra.toString() + "-01"),
-                                    periodeTil = LocalDate.parse(it.rapporteringsmaaneder?.til.toString() + "-01"),
+                                    periodeFra = it.rapporteringsmaaneder?.fra,
+                                    periodeTil = it.rapporteringsmaaneder?.til,
                                     arbeidsforholdType = it.type,
                                     arbeidstidsordningBeskrivelse = it.arbeidstidsordning?.beskrivelse,
                                     ansettelsesformBeskrivelse = it.ansettelsesform?.beskrivelse,
