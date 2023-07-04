@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.behandling.felles.enums.BarnType
@@ -37,6 +38,8 @@ import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Ansettelsesperiode
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
@@ -163,6 +166,17 @@ class TestUtil {
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.OVERGANGSSTONAD,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2021-01-01"),
+                    periodeTil = LocalDate.parse("2022-01-01")
+                )
+            )
+        )
+
+        fun byggHentGrunnlagRequestKomplett() = HentGrunnlagRequestDto(
+            grunnlagRequestDtoListe = listOf(
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.ARBEIDSFORHOLD,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01")
@@ -655,6 +669,47 @@ class TestUtil {
             )
         )
 
+        fun byggArbeidsforholdResponse() =
+            immutableListOf(
+                Arbeidsforhold(
+                    ansettelsesdetaljer = null,
+                    ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
+                    arbeidssted = null,
+                    arbeidstaker = null,
+                    bruksperiode = null,
+                    navArbeidsforholdId = null,
+                    id = null,
+                    navVersjon = null,
+                    opplysningspliktig = null,
+                    opprettet = null,
+                    rapporteringsordning = null,
+                    sistBekreftet = null,
+                    sistEndret = null,
+                    type = null,
+                    permisjoner = emptyList(),
+                    permitteringer = emptyList()
+                ),
+
+                Arbeidsforhold(
+                    ansettelsesdetaljer = null,
+                    ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
+                    arbeidssted = null,
+                    arbeidstaker = null,
+                    bruksperiode = null,
+                    navArbeidsforholdId = null,
+                    id = null,
+                    navVersjon = null,
+                    opplysningspliktig = null,
+                    opprettet = null,
+                    rapporteringsordning = null,
+                    sistBekreftet = null,
+                    sistEndret = null,
+                    type = null,
+                    permisjoner = emptyList(),
+                    permitteringer = emptyList()
+                )
+            )
+
         fun byggHentInntektListeRequest() = HentInntektListeRequest(
             ident = Aktoer(identifikator = "ident"),
             maanedFom = YearMonth.of(LocalDate.now().year, LocalDate.now().month),
@@ -667,10 +722,14 @@ class TestUtil {
             byggArbeidsInntektMaanedListe(),
             no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer("", AktoerType.NATURLIG_IDENT)
         )
+
         fun byggHentInntektListeResponseIntern() =
             byggArbeidsInntektMaanedListeIntern(HttpStatus.OK, byggArbeidsInntektMaanedListe())
 
-        private fun byggArbeidsInntektMaanedListeIntern(httpStatus: HttpStatus, eksternRespons: List<ArbeidsInntektMaaned>): HentInntektListeResponseIntern {
+        private fun byggArbeidsInntektMaanedListeIntern(
+            httpStatus: HttpStatus,
+            eksternRespons: List<ArbeidsInntektMaaned>
+        ): HentInntektListeResponseIntern {
             val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
             eksternRespons.forEach() { arbeidsInntektMaaned ->

@@ -20,7 +20,7 @@ data class Arbeidsforhold(
     val sistEndret: String? = null,
     val type: Kodeverksentitet? = null,
     val permisjoner: List<Permisjon>,
-    val permitteringer: List<Permittering>,
+    val permitteringer: List<Permittering>
 )
 
 data class Ansettelsesdetaljer(
@@ -32,7 +32,7 @@ data class Ansettelsesdetaljer(
     val type: String?,
     val yrke: Kodeverksentitet?,
     val sisteStillingsprosentendring: LocalDate,
-    val sisteLoennsendring: LocalDate,
+    val sisteLoennsendring: LocalDate
 )
 
 data class Ansettelsesperiode(
@@ -68,7 +68,6 @@ data class Rapporteringsmaaneder(
     val fra: YearMonth?,
     val til: YearMonth?
 )
-
 
 data class Identer(
     val ident: String?,

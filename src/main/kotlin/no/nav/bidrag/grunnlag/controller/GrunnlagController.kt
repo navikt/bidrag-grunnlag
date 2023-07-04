@@ -14,6 +14,7 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeReques
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
+import no.nav.bidrag.grunnlag.service.HentGrunnlagService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
-class GrunnlagspakkeController(private val grunnlagspakkeService: GrunnlagspakkeService) {
+class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeService, private val hentGrunnlagService: HentGrunnlagService) {
 
     @PostMapping(GRUNNLAGSPAKKE_NY)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")
@@ -114,9 +115,11 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
         return ResponseEntity(grunnlagspakkeId, HttpStatus.OK)
     }
 
-
     @PostMapping(HENT_GRUNNLAG)
-    @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Trigger innhenting av arbeidsforhold for personer angitt i requesten")
+    @Operation(
+        security = [SecurityRequirement(name = "bearer-key")],
+        summary = "Trigger innhenting av arbeidsforhold for personer angitt i requesten"
+    )
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Arbeidsforhold innhentet"),
@@ -129,11 +132,12 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
     )
     fun hentGrunnlag(
         @PathVariable @NotNull
-        @Valid @RequestBody
+        @Valid
+        @RequestBody
         request: HentGrunnlagRequestDto
     ):
         ResponseEntity<HentGrunnlagDto>? {
-        val hentGrunnlagDto = grunnlagspakkeService.hentGrunnlag(request)
+        val hentGrunnlagDto = hentGrunnlagService.hentGrunnlag(request)
         LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
         return ResponseEntity(hentGrunnlagDto, HttpStatus.OK)
     }
@@ -145,6 +149,6 @@ class GrunnlagspakkeController(private val grunnlagspakkeService: Grunnlagspakke
         const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/{grunnlagspakkeId}"
         const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/{grunnlagspakkeId}/lukk"
         const val HENT_GRUNNLAG = "/hentgrunnlag"
-        private val LOGGER = LoggerFactory.getLogger(GrunnlagspakkeController::class.java)
+        private val LOGGER = LoggerFactory.getLogger(GrunnlagController::class.java)
     }
 }

@@ -39,7 +39,7 @@ class OppdaterGrunnlagspakkeService(
     private val inntektskomponentenService: InntektskomponentenService,
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
-    private val familieEfSakConsumer: FamilieEfSakConsumer,
+    private val familieEfSakConsumer: FamilieEfSakConsumer
 ) {
     fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,

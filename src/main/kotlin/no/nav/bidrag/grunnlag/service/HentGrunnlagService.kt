@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.behandling.felles.dto.grunnlag.ArbeidsforholdDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
@@ -42,7 +43,7 @@ class HentGrunnlagService(
             periodeTil = grunnlagRequestDto.periodeTil
         )
 
-    inner class HentGrunnlag() : MutableList<HentGrunnlagDto> by mutableListOf() {
+    inner class HentGrunnlag() : MutableList<ArbeidsforholdDto> by mutableListOf() {
         fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlag {
             this.addAll(
                 HentArbeidsforhold(
@@ -54,4 +55,3 @@ class HentGrunnlagService(
         }
     }
 }
-

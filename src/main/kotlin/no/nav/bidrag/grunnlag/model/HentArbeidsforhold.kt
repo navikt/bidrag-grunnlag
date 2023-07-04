@@ -23,7 +23,9 @@ class HentArbeidsforhold(
         private val LOGGER: Logger = LoggerFactory.getLogger(HentArbeidsforhold::class.java)
     }
 
-    fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): HentArbeidsforhold {
+    fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): List<ArbeidsforholdDto> {
+        val arbeidsforholdListe = mutableListOf<ArbeidsforholdDto>()
+
         arbeidsforholdRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
             val hentArbeidsforholdRequest = HentArbeidsforholdRequest(
@@ -39,8 +41,6 @@ class HentArbeidsforhold(
             ) {
                 is RestResponse.Success -> {
                     val arbeidsforholdResponse = restResponseArbeidsforhold.body
-
-                    val arbeidsforholdListe = mutableListOf<ArbeidsforholdDto>()
 
                     SECURE_LOGGER.info("Aareg hent arbeidsforhold ga følgende respons: $arbeidsforholdResponse")
 
@@ -65,7 +65,7 @@ class HentArbeidsforhold(
                                     antallTimerPrUke = it.antallTimerPrUke,
                                     avtaltStillingsprosent = it.avtaltStillingsprosent,
                                     sisteStillingsprosentendringDato = it.sisteStillingsprosentendring,
-                                    sisteLønnsendringDato = it.sisteLoennsendring,
+                                    sisteLønnsendringDato = it.sisteLoennsendring
                                 )
                             )
                         }
@@ -76,9 +76,9 @@ class HentArbeidsforhold(
                                     startdato = it.startdato,
                                     sluttdato = it.sluttdato,
                                     beskrivelse = it.type?.beskrivelse,
-                                    prosent = it.prosent,
+                                    prosent = it.prosent
 
-                                    )
+                                )
                             )
                         }
 
@@ -88,7 +88,7 @@ class HentArbeidsforhold(
                                     startdato = it.startdato,
                                     sluttdato = it.sluttdato,
                                     beskrivelse = it.type?.beskrivelse,
-                                    prosent = it.prosent,
+                                    prosent = it.prosent
                                 )
                             )
                         }
@@ -107,20 +107,23 @@ class HentArbeidsforhold(
                             )
                         )
                     }
+                    return arbeidsforholdListe
 
-                    this.add(
-                        HentGrunnlagDto(arbeidsforholdListe)
-                    )
+//                    this.add(
+//                        HentGrunnlagDto(arbeidsforholdListe)
+//                    )
                 }
 
-                is RestResponse.Failure ->
-                    if (restResponseArbeidsforhold.statusCode == HttpStatus.NOT_FOUND)
+                is RestResponse.Failure -> {
+                    if (restResponseArbeidsforhold.statusCode == HttpStatus.NOT_FOUND) {
                         SECURE_LOGGER.info("Ingen arbeidsforhold funnet for ${personIdOgPeriode.personId}")
+                    }
+                    return arbeidsforholdListe
+                }
             }
         }
-        return this
+        return arbeidsforholdListe
     }
-
 
     private fun finnArbeidsgiverinfo(arbeidssted: Arbeidssted?): Arbeidsgiverinfo? {
         return if (arbeidssted?.type == "Underenhet") {
@@ -131,11 +134,13 @@ class HentArbeidsforhold(
                 orgnr = orgnr,
                 navn = navn
             )
-        } else null
+        } else {
+            null
+        }
     }
 }
 
-    data class Arbeidsgiverinfo(
-        val orgnr: String?,
-        val navn: String?
-    )
+data class Arbeidsgiverinfo(
+    val orgnr: String?,
+    val navn: String?
+)
