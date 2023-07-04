@@ -56,8 +56,8 @@ class HentArbeidsforhold(
                         arbeidsforhold.ansettelsesdetaljer?.forEach {
                             ansettelsesdetaljerListe.add(
                                 no.nav.bidrag.behandling.felles.dto.grunnlag.Ansettelsesdetaljer(
-                                    periodeFra = LocalDate.parse(it.rapporteringsmaaneder?.fra.toString()).withDayOfMonth(1),
-                                    periodeTil = LocalDate.parse(it.rapporteringsmaaneder?.til.toString()).withDayOfMonth(1),
+                                    periodeFra = LocalDate.parse(it.rapporteringsmaaneder?.fra.toString() + "-01"),
+                                    periodeTil = LocalDate.parse(it.rapporteringsmaaneder?.til.toString() + "-01"),
                                     arbeidsforholdType = it.type,
                                     arbeidstidsordningBeskrivelse = it.arbeidstidsordning?.beskrivelse,
                                     ansettelsesformBeskrivelse = it.ansettelsesform?.beskrivelse,
