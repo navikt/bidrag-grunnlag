@@ -94,7 +94,7 @@ spec:
     - name: AAREG_SCOPE
       value: {{ azure.aareg_scope }}
     - name: EREG_URL
-      value: https://{{ unsecure.ereg_url }}
+      value: https://{{ azure.unsecure.ereg_url }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}
