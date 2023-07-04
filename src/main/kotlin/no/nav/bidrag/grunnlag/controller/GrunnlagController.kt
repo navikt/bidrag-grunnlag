@@ -117,8 +117,7 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
 
     @PostMapping(HENT_GRUNNLAG)
     @Operation(
-        security = [SecurityRequirement(name = "bearer-key")],
-        summary = "Trigger innhenting av arbeidsforhold for personer angitt i requesten"
+        security = [SecurityRequirement(name = "bearer-key")], summary = "Trigger innhenting av grunnlag for personer angitt i requesten"
     )
     @ApiResponses(
         value = [
@@ -131,9 +130,7 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
         ]
     )
     fun hentGrunnlag(
-        @PathVariable @NotNull
-        @Valid
-        @RequestBody
+        @Valid @RequestBody
         request: HentGrunnlagRequestDto
     ):
         ResponseEntity<HentGrunnlagDto>? {
