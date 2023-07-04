@@ -19,8 +19,8 @@ data class Arbeidsforhold(
     val sistBekreftet: String? = null,
     val sistEndret: String? = null,
     val type: Kodeverksentitet? = null,
-    val permisjoner: List<Permisjon>,
-    val permitteringer: List<Permittering>
+    val permisjoner: List<Permisjon>?,
+    val permitteringer: List<Permittering>?
 )
 
 data class Ansettelsesdetaljer(

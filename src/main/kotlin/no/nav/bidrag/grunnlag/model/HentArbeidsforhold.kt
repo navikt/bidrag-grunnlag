@@ -70,7 +70,7 @@ class HentArbeidsforhold(
                             )
                         }
 
-                        arbeidsforhold.permisjoner.forEach {
+                        arbeidsforhold.permisjoner?.forEach {
                             permisjonListe.add(
                                 no.nav.bidrag.behandling.felles.dto.grunnlag.Permisjon(
                                     startdato = it.startdato,
@@ -82,7 +82,7 @@ class HentArbeidsforhold(
                             )
                         }
 
-                        arbeidsforhold.permitteringer.forEach {
+                        arbeidsforhold.permitteringer?.forEach {
                             permitteringListe.add(
                                 no.nav.bidrag.behandling.felles.dto.grunnlag.Permittering(
                                     startdato = it.startdato,
