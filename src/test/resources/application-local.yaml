@@ -5,6 +5,8 @@ INNTEKTSKOMPONENTEN_URL: http://localhost:${wiremock.server.https-port}/inntekts
 BIDRAGPERSON_URL: http://localhost:${wiremock.server.https-port}/bidragperson
 #KONTANTSTOTTE_URL: http://localhost:${wiremock.server.https-port}/kontantstotte
 FAMILIEKSSAK_URL: http://localhost:${wiremock.server.https-port}/familiekssak
+AAREG_URL: http://localhost:${wiremock.server.https-port}/aareg
+EREG_URL: http://localhost:${wiremock.server.https-port}/ereg
 spring:
   config.activate.on-profile: local
   flyway.enabled: false
@@ -50,6 +52,12 @@ spring:
             client-secret: secret
             authorization-grant-type: client_credentials
             scope: api://inntektskomponenten/.default
+          aareg:
+            provider: aad
+            client-id: someid
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope: api://aareg/.default
         provider:
           aad:
             token-uri: http://localhost:${mock-oauth2-server.port}/azure/token

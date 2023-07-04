@@ -11,6 +11,8 @@ import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.DefaultCorsFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.commons.web.UserMdcFilter
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -141,16 +143,27 @@ class BidragGrunnlagConfig {
         return FamilieKsSakConsumer(restTemplate)
     }
 
-/*  @Bean
-  fun kontantstotteConsumer(
-    @Value("\${KONTANTSTOTTE_URL}") url: String,
-    restTemplate: HttpHeaderRestTemplate,
-    securityTokenService: SecurityTokenService,
-    exceptionLogger: ExceptionLogger
-  ): KontantstotteConsumer {
-    LOGGER.info("Url satt i config: $url")
-    restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-    restTemplate.interceptors.add(securityTokenService.generateBearerToken("kontantstotte"))
-    return KontantstotteConsumer(restTemplate)
-  }*/
+    @Bean
+    fun arbeidsforholdConsumer(
+        @Value("\${AAREG_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): ArbeidsforholdConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("aareg"))
+        return ArbeidsforholdConsumer(restTemplate)
+    }
+
+    @Bean
+    fun enhetsregisterConsumer(
+        @Value("\${EREG_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        exceptionLogger: ExceptionLogger
+    ): EnhetsregisterConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        return EnhetsregisterConsumer(restTemplate)
+    }
 }

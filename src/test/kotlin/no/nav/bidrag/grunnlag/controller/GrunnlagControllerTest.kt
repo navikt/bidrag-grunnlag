@@ -1,6 +1,8 @@
 package no.nav.bidrag.grunnlag.controller
 
 import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
+import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
@@ -14,6 +16,9 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
@@ -31,6 +36,7 @@ import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
+import no.nav.bidrag.grunnlag.service.HentGrunnlagService
 import no.nav.bidrag.grunnlag.service.InntektskomponentenService
 import no.nav.bidrag.grunnlag.service.OppdaterGrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -42,6 +48,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -51,6 +58,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -62,13 +70,13 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.HttpClientErrorException
 import java.time.LocalDate
 
-@DisplayName("GrunnlagspakkeControllerTest")
+@DisplayName("GrunnlagControllerTest")
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(classes = [BidragGrunnlagTest::class], webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
 @Transactional
-class GrunnlagspakkeControllerTest(
+class GrunnlagControllerTest(
     @Autowired val grunnlagspakkeRepository: GrunnlagspakkeRepository,
     @Autowired val persistenceService: PersistenceService,
     @Autowired val exceptionLogger: ExceptionLogger
@@ -82,6 +90,8 @@ class GrunnlagspakkeControllerTest(
     private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
     private val familieKsSakConsumer: FamilieKsSakConsumer = FamilieKsSakConsumer(restTemplate)
     private val familieEfSakConsumer: FamilieEfSakConsumer = FamilieEfSakConsumer(restTemplate)
+    private val arbeidsforholdConsumer: ArbeidsforholdConsumer = ArbeidsforholdConsumer(restTemplate)
+    private val enhetsregisterConsumer: EnhetsregisterConsumer = EnhetsregisterConsumer(restTemplate)
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(
         persistenceService,
         familieBaSakConsumer,
@@ -91,9 +101,11 @@ class GrunnlagspakkeControllerTest(
         familieKsSakConsumer,
         familieEfSakConsumer
     )
-    private val grunnlagspakkeService: GrunnlagspakkeService = GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
-    private val grunnlagspakkeController: GrunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
-    private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController)
+    private val grunnlagspakkeService: GrunnlagspakkeService =
+        GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
+    private val hentGrunnlagService: HentGrunnlagService = HentGrunnlagService(arbeidsforholdConsumer, enhetsregisterConsumer)
+    private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
+    private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagController)
         .setControllerAdvice(
             RestExceptionHandler(exceptionLogger),
             CustomExceptionHandler(exceptionLogger),
@@ -316,9 +328,9 @@ class GrunnlagspakkeControllerTest(
     @Suppress("NonAsciiCharacters")
     fun `skal fange opp og håndtere Hibernate-feil`() {
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
         val mockMvc =
-            MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
+            MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
 
         val grunnlagspakkeIdOpprettet = opprettGrunnlagspakke(OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456"))
 
@@ -373,17 +385,17 @@ class GrunnlagspakkeControllerTest(
     @Test
     @Suppress("NonAsciiCharacters")
     fun `skal håndtere feil eller manglende felter i input ved opprett grunnlagspakke-kall`() {
-        var errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke1.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_NY)
+        var errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke1.json", GrunnlagController.GRUNNLAGSPAKKE_NY)
 
         assertNotNull(errorResult)
         assertNotNull(errorResult["formaal"])
 
-        errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke2.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_NY)
+        errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke2.json", GrunnlagController.GRUNNLAGSPAKKE_NY)
 
         assertNotNull(errorResult)
         assertNotNull(errorResult["opprettetAv"])
 
-        errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke3.json", GrunnlagspakkeController.GRUNNLAGSPAKKE_NY)
+        errorResult = performExpectedFailingRequest("/requests/opprettGrunnlagspakke3.json", GrunnlagController.GRUNNLAGSPAKKE_NY)
 
         assertNotNull(errorResult)
         assertNotNull(errorResult["opprettetAv"])
@@ -392,7 +404,7 @@ class GrunnlagspakkeControllerTest(
         val okResult = TestUtil.performRequest(
             mockMvc,
             HttpMethod.POST,
-            GrunnlagspakkeController.GRUNNLAGSPAKKE_NY,
+            GrunnlagController.GRUNNLAGSPAKKE_NY,
             fileContent,
             Int::class.java
         ) { isOk() }
@@ -444,8 +456,8 @@ class GrunnlagspakkeControllerTest(
         assertNotNull(errorResult["grunnlagRequestDtoListe[0].periodeTil"])
 
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
-        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
+        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
         Mockito.`when`(
             grunnlagspakkeService.oppdaterGrunnlagspakke(
@@ -498,8 +510,8 @@ class GrunnlagspakkeControllerTest(
         assertNotNull(errorResult["grunnlagspakkeId"])
 
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
-        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
+        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
         Mockito.`when`(grunnlagspakkeService.lukkGrunnlagspakke(1)).thenReturn(1)
 
@@ -529,8 +541,8 @@ class GrunnlagspakkeControllerTest(
         assertNotNull(errorResult["grunnlagspakkeId"])
 
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagspakkeController = GrunnlagspakkeController(grunnlagspakkeService)
-        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagspakkeController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
+        val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
         Mockito.`when`(grunnlagspakkeService.hentGrunnlagspakke(1))
             .thenReturn(
@@ -559,11 +571,36 @@ class GrunnlagspakkeControllerTest(
         assertNotNull(okResult)
     }
 
+    @Disabled
+    @Test
+    fun `skal hente grunnlag direkte uten å gå via grunnlagspakke`() {
+        val responseType = object : ParameterizedTypeReference<List<Arbeidsforhold>>() {}
+
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/v2/arbeidstaker/arbeidsforhold"),
+                eq(HttpMethod.POST),
+                any(),
+                eq(responseType)
+            )
+        )
+            .thenReturn(
+                ResponseEntity(TestUtil.byggArbeidsforholdResponse(), HttpStatus.OK)
+            )
+
+        val hentGrunnlagDto = hentGrunnlag(
+            TestUtil.byggHentGrunnlagRequestKomplett(),
+            HentGrunnlagDto::class.java
+        ) { isOk() }
+
+        assertThat(hentGrunnlagDto.arbeidsforholdListe.size).isEqualTo(2)
+    }
+
     private fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Int {
         val nyGrunnlagspakkeOpprettetResponse = TestUtil.performRequest(
             mockMvc,
             HttpMethod.POST,
-            GrunnlagspakkeController.GRUNNLAGSPAKKE_NY,
+            GrunnlagController.GRUNNLAGSPAKKE_NY,
             opprettGrunnlagspakkeRequestDto,
             Int::class.java
         ) { isOk() }
@@ -609,5 +646,20 @@ class GrunnlagspakkeControllerTest(
             json,
             MutableMap::class.java
         ) { isBadRequest() }
+    }
+
+    private fun <Response> hentGrunnlag(
+        hentGrunnlagRequestDto: HentGrunnlagRequestDto,
+        responseType: Class<Response>,
+        customMockMvc: MockMvc? = null,
+        expectedStatus: StatusResultMatchersDsl.() -> Unit
+    ): Response {
+        return TestUtil.performRequest(
+            customMockMvc ?: mockMvc,
+            HttpMethod.POST,
+            "/hentgrunnlag",
+            hentGrunnlagRequestDto,
+            responseType
+        ) { expectedStatus() }
     }
 }
