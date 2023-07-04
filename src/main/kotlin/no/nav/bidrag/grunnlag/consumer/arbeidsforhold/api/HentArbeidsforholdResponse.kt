@@ -31,22 +31,22 @@ data class Ansettelsesdetaljer(
     val rapporteringsmaaneder: Rapporteringsmaaneder?,
     val type: String?,
     val yrke: Kodeverksentitet?,
-    val sisteStillingsprosentendring: LocalDate,
-    val sisteLoennsendring: LocalDate
+    val sisteStillingsprosentendring: LocalDate?,
+    val sisteLoennsendring: LocalDate?
 )
 
 data class Ansettelsesperiode(
-    val startdato: LocalDate,
+    val startdato: LocalDate?,
     val sluttdato: LocalDate?
 )
 
 data class Arbeidssted(
-    val identer: List<Identer>,
+    val identer: List<Identer>?,
     val type: String?
 )
 
 data class Arbeidstaker(
-    val identer: List<ArbeidsgiverIdenter>
+    val identer: List<ArbeidsgiverIdenter>?
 )
 
 data class Bruksperiode(
@@ -103,9 +103,9 @@ data class Permittering(
 )
 
 data class IdHistorikk(
-    val id: String,
-    val fom: LocalDate,
-    val tom: LocalDate
+    val id: String?,
+    val fom: LocalDate?,
+    val tom: LocalDate?
 )
 
 data class Sporingsinformasjon(
