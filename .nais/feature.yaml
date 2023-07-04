@@ -19,6 +19,12 @@ azure:
   bidragperson_cluster: dev-fss
   familiekssak_url: familie-kontantstotte-sak.intern.dev.nav.no
   familiekssak_scope: dev-gcp.teamfamilie.familie-ks-sak
+  aareg_url: aareg-services.dev-fss-pub.nais.io
+  aareg_scope: dev-fss.arbeidsforhold.aareg-services-nais
+  aareg_app: aareg-services-nais
+  aareg_cluster: dev-fss
+  unsecure:
+    ereg_url: ereg-services.dev-fss-pub.nais.io
 dbname: bidrag-grunnlag-feature
 azureAccessInbound:
   - application: bidrag-gcp-proxy-feature
