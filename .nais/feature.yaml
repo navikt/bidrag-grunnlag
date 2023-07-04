@@ -23,8 +23,8 @@ azure:
   aareg_scope: dev-fss.arbeidsforhold.aareg-services-nais
   aareg_app: aareg-services-nais
   aareg_cluster: dev-fss
-  unsecure:
-    ereg_url: ereg-services.dev-fss-pub.nais.io
+unsecure:
+  ereg_url: ereg-services.dev-fss-pub.nais.io
 dbname: bidrag-grunnlag-feature
 azureAccessInbound:
   - application: bidrag-gcp-proxy-feature
