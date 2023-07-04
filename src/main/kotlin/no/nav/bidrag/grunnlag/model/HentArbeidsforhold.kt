@@ -127,7 +127,7 @@ class HentArbeidsforhold(
 
     private fun finnArbeidsgiverinfo(arbeidssted: Arbeidssted?): Arbeidsgiverinfo? {
         return if (arbeidssted?.type == "Underenhet") {
-            val orgnr = arbeidssted.identer.filter { it.type == "ORGANISASJONSNUMMER" }[0].ident
+            val orgnr = arbeidssted.identer?.filter { it.type == "ORGANISASJONSNUMMER" }?.get(0)?.ident
             val navn: String? = null
 
             Arbeidsgiverinfo(

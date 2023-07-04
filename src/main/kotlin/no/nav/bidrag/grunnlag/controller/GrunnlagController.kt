@@ -117,7 +117,8 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
 
     @PostMapping(HENT_GRUNNLAG)
     @Operation(
-        security = [SecurityRequirement(name = "bearer-key")], summary = "Trigger innhenting av grunnlag for personer angitt i requesten"
+        security = [SecurityRequirement(name = "bearer-key")],
+        summary = "Trigger innhenting av grunnlag for personer angitt i requesten"
     )
     @ApiResponses(
         value = [
