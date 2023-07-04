@@ -4,17 +4,21 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.ArbeidsforholdDto
 import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidssted
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequest
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class HentArbeidsforhold(
-    private val arbeidsforholdConsumer: ArbeidsforholdConsumer
+    private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
+    private val enhetsregisterConsumer: EnhetsregisterConsumer
 ) : MutableList<HentGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -127,7 +131,19 @@ class HentArbeidsforhold(
     private fun finnArbeidsgiverinfo(arbeidssted: Arbeidssted?): Arbeidsgiverinfo? {
         return if (arbeidssted?.type == "Underenhet") {
             val orgnr = arbeidssted.identer?.filter { it.type == "ORGANISASJONSNUMMER" }?.get(0)?.ident
-            val navn: String? = null
+            var navn: String? = null
+
+            if (orgnr != null) {
+                when (val restResponseEnhetsregister = enhetsregisterConsumer.hentEnhetsinfo(HentEnhetsregisterRequest(orgnr))) {
+                    is RestResponse.Success -> {
+                        navn = restResponseEnhetsregister.body.navn?.navnelinje1
+                    }
+
+                    else -> {
+                        SECURE_LOGGER.info("Feil ved hent av arbeidsgrivernavn fra Enhetsregisteret for orgnr: $orgnr")
+                    }
+                }
+            }
 
             Arbeidsgiverinfo(
                 orgnr = orgnr,

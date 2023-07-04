@@ -7,12 +7,14 @@ import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
 import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.ARBEIDSFORHOLD
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.model.HentArbeidsforhold
 import org.springframework.stereotype.Service
 
 @Service
 class HentGrunnlagService(
-    private val arbeidsforholdConsumer: ArbeidsforholdConsumer
+    private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
+    private val enhetsregisterConsumer: EnhetsregisterConsumer
 ) {
     fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
         val hentGrunnlagDtoliste = HentGrunnlag()
@@ -47,7 +49,8 @@ class HentGrunnlagService(
         fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlag {
             this.addAll(
                 HentArbeidsforhold(
-                    arbeidsforholdConsumer
+                    arbeidsforholdConsumer,
+                    enhetsregisterConsumer
                 )
                     .hentArbeidsforhold(arbeidsforholdRequestListe)
             )

@@ -17,6 +17,7 @@ import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
@@ -90,6 +91,7 @@ class GrunnlagControllerTest(
     private val familieKsSakConsumer: FamilieKsSakConsumer = FamilieKsSakConsumer(restTemplate)
     private val familieEfSakConsumer: FamilieEfSakConsumer = FamilieEfSakConsumer(restTemplate)
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer = ArbeidsforholdConsumer(restTemplate)
+    private val enhetsregisterConsumer: EnhetsregisterConsumer = EnhetsregisterConsumer(restTemplate)
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(
         persistenceService,
         familieBaSakConsumer,
@@ -101,7 +103,7 @@ class GrunnlagControllerTest(
     )
     private val grunnlagspakkeService: GrunnlagspakkeService =
         GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
-    private val hentGrunnlagService: HentGrunnlagService = HentGrunnlagService(arbeidsforholdConsumer)
+    private val hentGrunnlagService: HentGrunnlagService = HentGrunnlagService(arbeidsforholdConsumer, enhetsregisterConsumer)
     private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
     private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagController)
         .setControllerAdvice(
