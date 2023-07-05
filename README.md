@@ -12,7 +12,15 @@ Støtter foreløpig følgende grunnlag:
 * Skattegrunnlag
 * Utvidet barnetrygd og småbarnstillegg
 * Barnetillegg fra Pensjon
-* ... resterende grunnlag legges til fortløpende
+* Kontantstøtte
+* Barnetilsyn
+* Overgangsstønad
+* Sivilstand
+* Husstandsmedlemmer og egne barn
+
+I tillegg er det laget et endepunkt for å hente grunnlag direkte, uten å bruke grunnlagspakke og lagring i bidrag-grunnlag.
+Følgende grunnlag kan hentes på denne måten:
+* Arbeidsforhold
 
 Miljøer:
 * DEV-GCP-FEATURE ([https://bidrag-grunnlag-feature.dev.intern.nav.no/](https://bidrag-grunnlag-feature.dev.intern.nav.no/))
