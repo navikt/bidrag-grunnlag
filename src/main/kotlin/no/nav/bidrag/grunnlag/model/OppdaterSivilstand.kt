@@ -99,9 +99,6 @@ class OppdaterSivilstand(
                 grunnlagspakkeId = grunnlagspakkeId,
                 personId = personId,
                 periodeFra = sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi,
-                // justerer frem tildato med én måned for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, måned.
-//        periodeTil = if (sivilstand.tom != null) si.tom.plusMonths(1)
-//          .withDayOfMonth(1) else null,
                 periodeTil = null,
                 sivilstand = sivilstand.type.toString(),
                 aktiv = true,
