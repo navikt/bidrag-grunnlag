@@ -118,13 +118,8 @@ class OppdaterAinntekt(
                                             AinntektspostBo(
                                                 utbetalingsperiode = inntektspost.utbetaltIMaaned,
                                                 opptjeningsperiodeFra = if (inntektspost.opptjeningsperiodeFom != null) inntektspost.opptjeningsperiodeFom else null,
-                                                opptjeningsperiodeTil =
-                                                if (inntektspost.opptjeningsperiodeTom != null) {
-                                                    inntektspost.opptjeningsperiodeTom
-                                                        .plusMonths(1)
-                                                } else {
-                                                    null
-                                                },
+                                                opptjeningsperiodeTil = if (inntektspost.opptjeningsperiodeTom != null)
+                                                    inntektspost.opptjeningsperiodeTom.plusMonths(1).withDayOfMonth(1) else null,
                                                 opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
                                                 virksomhetId = inntektspost.virksomhet?.identifikator,
                                                 inntektType = inntektspost.inntektType,
