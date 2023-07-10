@@ -1,17 +1,13 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.enums.BarnType
-import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.SkattegrunnlagType
-import no.nav.bidrag.behandling.felles.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domain.enums.BarnType
 import no.nav.bidrag.domain.enums.Familierelasjon
+import no.nav.bidrag.domain.enums.Formaal
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
 import no.nav.bidrag.domain.enums.Sivilstandstype
+import no.nav.bidrag.domain.enums.SkattegrunnlagType
+import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.domain.number.Fødselsår
 import no.nav.bidrag.domain.number.MatrikkelId
@@ -82,6 +78,10 @@ import no.nav.bidrag.grunnlag.persistence.entity.Overgangsstonad
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
+import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.person.ForelderBarnRelasjon
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.Husstand

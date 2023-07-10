@@ -1,19 +1,15 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.AINNTEKT
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILLEGG
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.BARNETILSYN
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.KONTANTSTOTTE
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.OVERGANGSSTONAD
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SIVILSTAND
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.SKATTEGRUNNLAG
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.AINNTEKT
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.BARNETILLEGG
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.BARNETILSYN
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.KONTANTSTOTTE
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.OVERGANGSSTONAD
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.SIVILSTAND
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.SKATTEGRUNNLAG
+import no.nav.bidrag.domain.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -28,6 +24,10 @@ import no.nav.bidrag.grunnlag.model.OppdaterRelatertePersoner
 import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
 import no.nav.bidrag.grunnlag.model.OppdaterSkattegrunnlag
 import no.nav.bidrag.grunnlag.model.OppdaterUtvidetBarnetrygdOgSmaabarnstillegg
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -214,6 +214,7 @@ class OppdaterGrunnlagspakkeService(
             )
             return this
         }
+
         fun oppdaterOvergangsstønad(overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterOvergangsstønad(

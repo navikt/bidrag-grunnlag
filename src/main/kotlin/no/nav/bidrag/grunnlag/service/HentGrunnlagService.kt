@@ -1,14 +1,13 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.ArbeidsforholdDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType.ARBEIDSFORHOLD
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.model.HentArbeidsforhold
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.ArbeidsforholdDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +18,7 @@ class HentGrunnlagService(
     fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
         val hentGrunnlagDtoliste = HentGrunnlag()
             .hentArbeidsforhold(
-                hentRequestListeFor(ARBEIDSFORHOLD, hentGrunnlagRequestDto)
+                hentRequestListeFor(GrunnlagRequestType.ARBEIDSFORHOLD, hentGrunnlagRequestDto)
             )
 
         return HentGrunnlagDto(hentGrunnlagDtoliste)

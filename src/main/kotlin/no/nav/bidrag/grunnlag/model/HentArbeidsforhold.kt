@@ -1,7 +1,5 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.ArbeidsforholdDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
@@ -10,6 +8,8 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequ
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.ArbeidsforholdDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -48,16 +48,16 @@ class HentArbeidsforhold(
 
                     arbeidsforholdResponse.forEach { arbeidsforhold ->
 
-                        val ansettelsesdetaljerListe = mutableListOf<no.nav.bidrag.behandling.felles.dto.grunnlag.Ansettelsesdetaljer>()
-                        val permisjonListe = mutableListOf<no.nav.bidrag.behandling.felles.dto.grunnlag.Permisjon>()
-                        val permitteringListe = mutableListOf<no.nav.bidrag.behandling.felles.dto.grunnlag.Permittering>()
+                        val ansettelsesdetaljerListe = mutableListOf<no.nav.bidrag.transport.behandling.grunnlag.reponse.Ansettelsesdetaljer>()
+                        val permisjonListe = mutableListOf<no.nav.bidrag.transport.behandling.grunnlag.reponse.Permisjon>()
+                        val permitteringListe = mutableListOf<no.nav.bidrag.transport.behandling.grunnlag.reponse.Permittering>()
                         val arbeidsgiverinfo = finnArbeidsgiverinfo(arbeidsforhold.arbeidssted)
                         val arbeidsgiverNavn = arbeidsgiverinfo?.navn
                         val orgnr = arbeidsgiverinfo?.orgnr
 
                         arbeidsforhold.ansettelsesdetaljer?.forEach {
                             ansettelsesdetaljerListe.add(
-                                no.nav.bidrag.behandling.felles.dto.grunnlag.Ansettelsesdetaljer(
+                                no.nav.bidrag.transport.behandling.grunnlag.reponse.Ansettelsesdetaljer(
                                     periodeFra = it.rapporteringsmaaneder?.fra,
                                     periodeTil = it.rapporteringsmaaneder?.til,
                                     arbeidsforholdType = it.type,
@@ -74,7 +74,7 @@ class HentArbeidsforhold(
 
                         arbeidsforhold.permisjoner?.forEach {
                             permisjonListe.add(
-                                no.nav.bidrag.behandling.felles.dto.grunnlag.Permisjon(
+                                no.nav.bidrag.transport.behandling.grunnlag.reponse.Permisjon(
                                     startdato = it.startdato,
                                     sluttdato = it.sluttdato,
                                     beskrivelse = it.type?.beskrivelse,
@@ -86,7 +86,7 @@ class HentArbeidsforhold(
 
                         arbeidsforhold.permitteringer?.forEach {
                             permitteringListe.add(
-                                no.nav.bidrag.behandling.felles.dto.grunnlag.Permittering(
+                                no.nav.bidrag.transport.behandling.grunnlag.reponse.Permittering(
                                     startdato = it.startdato,
                                     sluttdato = it.sluttdato,
                                     beskrivelse = it.type?.beskrivelse,

@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.behandling.felles.enums.BarnType
-import no.nav.bidrag.behandling.felles.enums.BarnetilleggType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domain.enums.BarnType
+import no.nav.bidrag.domain.enums.BarnetilleggType
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
+import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.domain.enums.Sivilstandstype
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.grunnlag.TestUtil

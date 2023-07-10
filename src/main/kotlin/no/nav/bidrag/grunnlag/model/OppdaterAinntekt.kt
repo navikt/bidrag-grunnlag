@@ -1,9 +1,8 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
-import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domain.enums.Formaal
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
+import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
@@ -15,6 +14,7 @@ import no.nav.bidrag.grunnlag.exception.custom.UgyldigInputException
 import no.nav.bidrag.grunnlag.service.InntektskomponentenService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.Logger
@@ -135,7 +135,7 @@ class OppdaterAinntekt(
                                     nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
                                 }
                             }
-                            if (antallPerioderFunnet.equals(0)) {
+                            if (antallPerioderFunnet == 0) {
                                 this.add(
                                     OppdaterGrunnlagDto(
                                         GrunnlagRequestType.AINNTEKT,

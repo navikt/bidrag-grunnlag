@@ -1,18 +1,10 @@
 package no.nav.bidrag.grunnlag.controller
 
-import no.nav.bidrag.behandling.felles.dto.grunnlag.GrunnlagRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.HentGrunnlagspakkeDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OppdaterGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.dto.grunnlag.OpprettGrunnlagspakkeRequestDto
-import no.nav.bidrag.behandling.felles.enums.Formaal
-import no.nav.bidrag.behandling.felles.enums.GrunnlagRequestType
-import no.nav.bidrag.behandling.felles.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.domain.enums.Formaal
+import no.nav.bidrag.domain.enums.GrunnlagRequestType
+import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
 import no.nav.bidrag.grunnlag.TestUtil
@@ -40,6 +32,14 @@ import no.nav.bidrag.grunnlag.service.HentGrunnlagService
 import no.nav.bidrag.grunnlag.service.InntektskomponentenService
 import no.nav.bidrag.grunnlag.service.OppdaterGrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.assertj.core.api.Assertions.assertThat
