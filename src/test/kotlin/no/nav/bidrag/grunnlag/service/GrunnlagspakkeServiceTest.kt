@@ -498,4 +498,84 @@ class GrunnlagspakkeServiceTest {
 
         )
     }
+
+    @Test
+    @Suppress("NonAsciiCharacters")
+    fun `Test på å hente husstandsmedlemmer for to ulik personer i samme grunnlagspakke`() {
+        val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(Formaal.FORSKUDD, "X123456")
+        val grunnlagspakkeIdOpprettet =
+            grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
+
+        // Legger først inn to barn med der kun det første er husstandsmedlem
+        persistenceService.opprettRelatertPerson(
+            RelatertPersonBo(
+                grunnlagspakkeId = grunnlagspakkeIdOpprettet,
+                partPersonId = "12345678901",
+                relatertPersonPersonId = "22233344455",
+                navn = "Svett Elefant",
+                fodselsdato = LocalDate.parse("2017-05-17"),
+                erBarnAvBmBp = true,
+                husstandsmedlemPeriodeFra = LocalDate.parse("2010-05-01"),
+                husstandsmedlemPeriodeTil = LocalDate.parse("2020-06-01"),
+                aktiv = true,
+                brukFra = LocalDateTime.now(),
+                brukTil = null,
+                hentetTidspunkt = LocalDateTime.now()
+            )
+        )
+
+        persistenceService.opprettRelatertPerson(
+            RelatertPersonBo(
+                grunnlagspakkeId = grunnlagspakkeIdOpprettet,
+                partPersonId = "23456789012",
+                relatertPersonPersonId = "98798798765",
+                navn = "Trang Poncho",
+                fodselsdato = LocalDate.parse("2000-12-02"),
+                erBarnAvBmBp = true,
+                husstandsmedlemPeriodeFra = LocalDate.parse("2020-09-01"),
+                husstandsmedlemPeriodeTil = LocalDate.parse("2020-11-01"),
+                aktiv = true,
+                brukFra = LocalDateTime.now(),
+                brukTil = null,
+                hentetTidspunkt = LocalDateTime.now()
+            )
+        )
+
+        persistenceService.opprettRelatertPerson(
+            RelatertPersonBo(
+                grunnlagspakkeId = grunnlagspakkeIdOpprettet,
+                partPersonId = "23456789012",
+                relatertPersonPersonId = "98798798765",
+                navn = "Trang Poncho",
+                fodselsdato = LocalDate.parse("2000-12-02"),
+                erBarnAvBmBp = true,
+                husstandsmedlemPeriodeFra = LocalDate.parse("2022-09-01"),
+                husstandsmedlemPeriodeTil = null,
+                aktiv = true,
+                brukFra = LocalDateTime.now(),
+                brukTil = null,
+                hentetTidspunkt = LocalDateTime.now()
+            )
+        )
+
+        val grunnlagspakkeFunnet =
+            grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeIdOpprettet)
+
+        assertAll(
+            Executable { assertThat(grunnlagspakkeFunnet).isNotNull },
+            Executable { assertThat(grunnlagspakkeFunnet.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe.size).isEqualTo(2) },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[0].partPersonId).isEqualTo("12345678901") },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].partPersonId).isEqualTo("23456789012") },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[0].relatertPersonPersonId).isEqualTo("22233344455") },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].relatertPersonPersonId).isEqualTo("98798798765") },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[0].borISammeHusstandDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2010-05-01")) },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[0].borISammeHusstandDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2020-06-01")) },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2020-09-01")) },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2020-11-01")) },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeFra).isEqualTo(LocalDate.parse("2022-09-01")) },
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeTil).isNull() }
+
+        )
+    }
 }

@@ -25,7 +25,7 @@
     <!-- dependencies -->
     <bidrag-commons.version>20230510130746_8b93e85</bidrag-commons.version>
     <bidrag-commons-test.version>1.20230511093912_dc35d81</bidrag-commons-test.version>
-    <bidrag-transport.version>20230620084134_9b2f4b6</bidrag-transport.version>
+    <bidrag-transport.version>20230705081501_68e71c7</bidrag-transport.version>
     <bidrag-tilgangskontroll.version>1.10.4</bidrag-tilgangskontroll.version>
     <mockito-kotlin.version>4.1.0</mockito-kotlin.version>
     <springdoc-openapi-ui.version>2.1.0</springdoc-openapi-ui.version>
@@ -33,8 +33,9 @@
     <springframework-cloud.version>4.0.2</springframework-cloud.version>
     <com.squareup.okhttp3.version>4.11.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
-<!--    <bidrag-behandling-felles.version>0.0.84</bidrag-behandling-felles.version>-->
-<!--    <bidrag-behandling-felles-dto.version>0.0.89</bidrag-behandling-felles-dto.version>-->
+    <bidrag-behandling-felles.version>0.0.85</bidrag-behandling-felles.version>
+    <bidrag-domain.version>20230621111817_df046e8</bidrag-domain.version>
+<!--    <bidrag-behandling-felles-dto.version>0.0.95</bidrag-behandling-felles-dto.version>-->
   </properties>
 
   <dependencyManagement>
@@ -110,6 +111,11 @@
       <groupId>no.nav.bidrag</groupId>
       <artifactId>bidrag-transport</artifactId>
       <version>${bidrag-transport.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>no.nav.bidrag</groupId>
+      <artifactId>bidrag-domain</artifactId>
+      <version>${bidrag-domain.version}</version>
     </dependency>
     <dependency>
       <groupId>no.nav.bidrag</groupId>

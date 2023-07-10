@@ -30,4 +30,19 @@ open class GrunnlagsConsumer {
         httpHeaders.add("Nav-Consumer-Id", "BIDRAG-GRUNNLAG")
         return HttpEntity(body, httpHeaders)
     }
+
+    fun <T> initHttpEntityAareg(body: T, ident: String): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+        httpHeaders.add("Nav-Call-Id", UUID.randomUUID().toString())
+        httpHeaders.add("Nav-Personident", ident)
+        return HttpEntity(body, httpHeaders)
+    }
+
+    fun <T> initHttpEntityEreg(body: T): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+        httpHeaders.add("Nav-Call-Id", UUID.randomUUID().toString())
+        return HttpEntity(body, httpHeaders)
+    }
 }

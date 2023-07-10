@@ -19,9 +19,9 @@ spec:
     inbound:
       rules:
       {{#each azureAccessInbound}}
-          - application: {{this.application}}
-            namespace: {{this.namespace}}
-            cluster: {{this.cluster}}
+         - application: {{this.application}}
+           namespace: {{this.namespace}}
+           cluster: {{this.cluster}}
       {{/each}}
     outbound:
       external:
@@ -31,6 +31,8 @@ spec:
         - host: {{ azure.bidragperson_url }}
         - host: {{ azure.familiekssak_url }}
         - host: {{ azure.inntektskomponenten_base_url }}
+        - host: {{ azure.aareg_url }}
+        - host: {{ azure.unsecure.ereg_url }}
   image: {{ image }}
   liveness:
     path: /actuator/health
@@ -87,6 +89,12 @@ spec:
       value: https://{{ azure.familiekssak_url }}
     - name: FAMILIEKSSAK_SCOPE
       value: {{ azure.familiekssak_scope }}
+    - name: AAREG_URL
+      value: https://{{ azure.aareg_url }}
+    - name: AAREG_SCOPE
+      value: {{ azure.aareg_scope }}
+    - name: EREG_URL
+      value: https://{{ azure.unsecure.ereg_url }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}

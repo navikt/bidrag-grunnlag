@@ -25,9 +25,9 @@ open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestT
 
     open fun hentInntekter(request: HentInntektListeRequest, abonnerteInntekterRequest: Boolean): RestResponse<HentInntektListeResponse> {
         if (abonnerteInntekterRequest) {
-            SECURE_LOGGER.info("Henter abonnerte inntekter fra Inntektskomponenten.")
+            LOGGER.info("Henter abonnerte inntekter fra Inntektskomponenten.")
         } else {
-            SECURE_LOGGER.info("Henter inntekter fra Inntektskomponenten.")
+            LOGGER.info("Henter inntekter fra Inntektskomponenten.")
         }
         SECURE_LOGGER.info("HentInntektListeRequest: $request")
         val url = if (abonnerteInntekterRequest) DETALJERTE_ABONNERTE_INNTEKTER_CONTEXT else INNTEKT_LISTE_CONTEXT
