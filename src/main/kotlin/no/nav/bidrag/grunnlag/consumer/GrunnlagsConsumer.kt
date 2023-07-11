@@ -26,23 +26,39 @@ open class GrunnlagsConsumer {
     fun <T> initHttpEntityInntektskomponenten(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
-        httpHeaders.add("Nav-Call-Id", UUID.randomUUID().toString())
-        httpHeaders.add("Nav-Consumer-Id", "BIDRAG-GRUNNLAG")
+        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
+        httpHeaders.add(NAV_CONSUMER_ID, NAV_CONSUMER_ID_VERDI)
+        return HttpEntity(body, httpHeaders)
+    }
+
+    fun <T> initHttpEntitySkattegrunnlag(body: T, ident: String): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
+        httpHeaders.add(NAV_CONSUMER_ID, NAV_CONSUMER_ID_VERDI)
+        httpHeaders.add(NAV_PERSONIDENT, ident)
         return HttpEntity(body, httpHeaders)
     }
 
     fun <T> initHttpEntityAareg(body: T, ident: String): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
-        httpHeaders.add("Nav-Call-Id", UUID.randomUUID().toString())
-        httpHeaders.add("Nav-Personident", ident)
+        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
+        httpHeaders.add(NAV_PERSONIDENT, ident)
         return HttpEntity(body, httpHeaders)
     }
 
     fun <T> initHttpEntityEreg(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
-        httpHeaders.add("Nav-Call-Id", UUID.randomUUID().toString())
+        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
         return HttpEntity(body, httpHeaders)
+    }
+
+    companion object {
+        const val NAV_CALL_ID = "Nav-Call-Id"
+        const val NAV_CONSUMER_ID = "Nav-Consumer-Id"
+        const val NAV_CONSUMER_ID_VERDI = "BIDRAG-GRUNNLAG"
+        const val NAV_PERSONIDENT = "Nav-Personident"
     }
 }

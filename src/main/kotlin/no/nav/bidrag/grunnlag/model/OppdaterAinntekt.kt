@@ -117,9 +117,12 @@ class OppdaterAinntekt(
                                         inntektsposter.add(
                                             AinntektspostBo(
                                                 utbetalingsperiode = inntektspost.utbetaltIMaaned,
-                                                opptjeningsperiodeFra = if (inntektspost.opptjeningsperiodeFom != null) inntektspost.opptjeningsperiodeFom else null,
-                                                opptjeningsperiodeTil = if (inntektspost.opptjeningsperiodeTom != null)
-                                                    inntektspost.opptjeningsperiodeTom.plusMonths(1).withDayOfMonth(1) else null,
+                                                opptjeningsperiodeFra = inntektspost.opptjeningsperiodeFom,
+                                                opptjeningsperiodeTil = if (inntektspost.opptjeningsperiodeTom != null) {
+                                                    inntektspost.opptjeningsperiodeTom.plusMonths(1).withDayOfMonth(1)
+                                                } else {
+                                                    null
+                                                },
                                                 opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
                                                 virksomhetId = inntektspost.virksomhet?.identifikator,
                                                 inntektType = inntektspost.inntektType,
@@ -189,7 +192,7 @@ class OppdaterAinntekt(
         return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
     }
 
-    fun lagInntektListeRequest(hentInntektRequest: HentInntektRequest): List<HentInntektListeRequest> {
+    private fun lagInntektListeRequest(hentInntektRequest: HentInntektRequest): List<HentInntektListeRequest> {
         var maanedFom = lagYearMonth(hentInntektRequest.maanedFom)
         var aarFom = maanedFom.year
         val aarTom = lagYearMonth(hentInntektRequest.maanedTom).year

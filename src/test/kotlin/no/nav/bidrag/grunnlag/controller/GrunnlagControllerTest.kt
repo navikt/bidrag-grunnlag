@@ -13,7 +13,6 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -23,6 +22,8 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -68,6 +69,7 @@ import org.springframework.test.web.servlet.result.StatusResultMatchersDsl
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDate
 
 @DisplayName("GrunnlagControllerTest")
@@ -86,6 +88,7 @@ class GrunnlagControllerTest(
     private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
     private val inntektskomponentenConsumer: InntektskomponentenConsumer = InntektskomponentenConsumer(restTemplate)
     private val inntektskomponentenService: InntektskomponentenService = InntektskomponentenService(inntektskomponentenConsumer)
+    private val sigrunConsumer: SigrunConsumer = SigrunConsumer(restTemplate)
     private val familieBaSakConsumer: FamilieBaSakConsumer = FamilieBaSakConsumer(restTemplate)
     private val bidragPersonConsumer: BidragPersonConsumer = BidragPersonConsumer(restTemplate)
     private val familieKsSakConsumer: FamilieKsSakConsumer = FamilieKsSakConsumer(restTemplate)
@@ -97,6 +100,7 @@ class GrunnlagControllerTest(
         familieBaSakConsumer,
         bidragGcpProxyConsumer,
         inntektskomponentenService,
+        sigrunConsumer,
         bidragPersonConsumer,
         familieKsSakConsumer,
         familieEfSakConsumer
@@ -134,11 +138,19 @@ class GrunnlagControllerTest(
                 any(),
                 any<Class<HentInntektListeResponse>>()
             )
-        ).thenReturn(
-            ResponseEntity(TestUtil.byggHentInntektListeResponse(), HttpStatus.OK)
         )
+            .thenReturn(
+                ResponseEntity(TestUtil.byggHentInntektListeResponse(), HttpStatus.OK)
+            )
 
-        Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq(uriBuilder("2021", "SummertSkattegrunnlagBidrag")),
+                eq(HttpMethod.GET),
+                any(),
+                any<Class<HentSummertSkattegrunnlagResponse>>()
+            )
+        )
             .thenReturn(
                 ResponseEntity(TestUtil.byggHentSkattegrunnlagResponse(), HttpStatus.OK)
             )
@@ -179,7 +191,14 @@ class GrunnlagControllerTest(
                 ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utbetalingsinfo"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/bisys/hent-utbetalingsinfo"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<BisysResponsDto>>()
+            )
+        )
             .thenReturn(
                 ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
             )
@@ -221,9 +240,10 @@ class GrunnlagControllerTest(
                 any(),
                 any<Class<HentInntektListeResponse>>()
             )
-        ).thenThrow(
-            HttpClientErrorException(HttpStatus.NOT_FOUND)
         )
+            .thenThrow(
+                HttpClientErrorException(HttpStatus.NOT_FOUND)
+            )
 
         Mockito.`when`(
             restTemplate.exchange(
@@ -232,11 +252,19 @@ class GrunnlagControllerTest(
                 any(),
                 any<Class<HentInntektListeResponse>>()
             )
-        ).thenThrow(
-            HttpClientErrorException(HttpStatus.NOT_FOUND)
         )
+            .thenThrow(
+                HttpClientErrorException(HttpStatus.NOT_FOUND)
+            )
 
-        Mockito.`when`(restTemplate.exchange(eq("/skattegrunnlag/hent"), eq(HttpMethod.POST), any(), any<Class<HentSkattegrunnlagResponse>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq(uriBuilder("2021", "SummertSkattegrunnlagBidrag")),
+                eq(HttpMethod.GET),
+                any(),
+                any<Class<HentSummertSkattegrunnlagResponse>>()
+            )
+        )
             .thenThrow(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
@@ -265,7 +293,14 @@ class GrunnlagControllerTest(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
 
-        Mockito.`when`(restTemplate.exchange(eq("/api/bisys/hent-utbetalingsinfo"), eq(HttpMethod.POST), any(), any<Class<BisysResponsDto>>()))
+        Mockito.`when`(
+            restTemplate.exchange(
+                eq("/api/bisys/hent-utbetalingsinfo"),
+                eq(HttpMethod.POST),
+                any(),
+                any<Class<BisysResponsDto>>()
+            )
+        )
             .thenThrow(
                 HttpClientErrorException(HttpStatus.NOT_FOUND)
             )
@@ -662,4 +697,11 @@ class GrunnlagControllerTest(
             responseType
         ) { expectedStatus() }
     }
+
+    fun uriBuilder(inntektsaar: String, inntektsfilter: String) =
+        UriComponentsBuilder.fromPath("/api/v1/summertskattegrunnlag")
+            .queryParam("inntektsaar", inntektsaar)
+            .queryParam("inntektsfilter", inntektsfilter)
+            .build()
+            .toUriString()
 }

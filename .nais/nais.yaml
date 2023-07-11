@@ -81,6 +81,10 @@ spec:
       value: https://{{ azure.inntektskomponenten_url }}
     - name: INNTEKTSKOMPONENTEN_SCOPE
       value: {{ azure.inntektskomponenten_scope }}
+    - name: SIGRUN_URL
+      value: https://{{ azure.sigrun_url }}
+    - name: SIGRUN_SCOPE
+      value: {{ azure.sigrun_scope }}
     - name: BIDRAGPERSON_URL
       value: https://{{ azure.bidragperson_url }}
     - name: BIDRAGPERSON_SCOPE

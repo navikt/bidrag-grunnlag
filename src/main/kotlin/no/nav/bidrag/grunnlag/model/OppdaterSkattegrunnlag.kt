@@ -7,9 +7,9 @@ import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.comparator.PeriodComparable
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.Skattegrunnlag
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
@@ -25,7 +25,7 @@ class OppdaterSkattegrunnlag(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val bidragGcpProxyConsumer: BidragGcpProxyConsumer
+    private val sigrunConsumer: SigrunConsumer
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -46,23 +46,23 @@ class OppdaterSkattegrunnlag(
                 mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
 
             while (inntektAar < sluttAar) {
-                val skattegrunnlagRequest = HentSkattegrunnlagRequest(
+                val skattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
                     inntektAar.toString(),
                     "SummertSkattegrunnlagBidrag",
                     personIdOgPeriode.personId
                 )
 
-                LOGGER.info("Kaller bidrag-gcp-proxy (Sigrun)")
-                SECURE_LOGGER.info("Kaller bidrag-gcp-proxy (Sigrun) med request: $skattegrunnlagRequest")
+                LOGGER.info("Kaller Sigrun (skattegrunnlag)")
+                SECURE_LOGGER.info("Kaller Sigrun (skattegrunnlag) med request: $skattegrunnlagRequest")
 
                 when (
                     val restResponseSkattegrunnlag =
-                        bidragGcpProxyConsumer.hentSkattegrunnlag(skattegrunnlagRequest)
+                        sigrunConsumer.hentSummertSkattegrunnlag(skattegrunnlagRequest)
                 ) {
                     is RestResponse.Success -> {
                         var antallSkattegrunnlagsposter = 0
                         val skattegrunnlagResponse = restResponseSkattegrunnlag.body
-                        SECURE_LOGGER.info("bidrag-gcp-proxy (Sigrun) ga følgende respons: $skattegrunnlagResponse")
+                        SECURE_LOGGER.info("Sigrun (skattegrunnlag) ga følgende respons: $skattegrunnlagResponse")
 
                         val skattegrunnlagsPosterOrdinaer = mutableListOf<Skattegrunnlag>()
                         val skattegrunnlagsPosterSvalbard = mutableListOf<Skattegrunnlag>()
@@ -84,7 +84,6 @@ class OppdaterSkattegrunnlag(
                                 antallSkattegrunnlagsposter++
                                 skattegrunnlagsposter.add(
                                     SkattegrunnlagspostBo(
-//                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                                         skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
                                         inntektType = skattegrunnlagsPost.tekniskNavn,
                                         belop = BigDecimal(skattegrunnlagsPost.beloep)
@@ -95,7 +94,6 @@ class OppdaterSkattegrunnlag(
                                 antallSkattegrunnlagsposter++
                                 skattegrunnlagsposter.add(
                                     SkattegrunnlagspostBo(
-//                    skattegrunnlagId = skattegrunnlag.skattegrunnlagId,
                                         skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
                                         inntektType = skattegrunnlagsPost.tekniskNavn,
                                         belop = BigDecimal(skattegrunnlagsPost.beloep)
@@ -117,7 +115,7 @@ class OppdaterSkattegrunnlag(
                                 GrunnlagRequestType.SKATTEGRUNNLAG,
                                 personIdOgPeriode.personId,
                                 GrunnlagsRequestStatus.HENTET,
-                                "Antall skattegrunnlagsposter funnet for innteksåret $inntektAar: $antallSkattegrunnlagsposter"
+                                "Antall skattegrunnlagsposter funnet for inntektsåret $inntektAar: $antallSkattegrunnlagsposter"
                             )
                         )
                     }

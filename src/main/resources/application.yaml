@@ -78,6 +78,12 @@ spring:
             client-secret: ${AZURE_APP_CLIENT_SECRET}
             authorization-grant-type: client_credentials
             scope: api://${INNTEKTSKOMPONENTEN_SCOPE}/.default
+          sigrun:
+            provider: aad
+            client-id: ${AZURE_APP_CLIENT_ID}
+            client-secret: ${AZURE_APP_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            scope: api://${SIGRUN_SCOPE}/.default
           kontantstotte:
             provider: aad
             client-id: ${AZURE_APP_CLIENT_ID}
