@@ -2,6 +2,7 @@ FAMILIEBASAK_URL: http://localhost:${wiremock.server.port}/familiebasak
 FAMILIEEFSAK_URL: http://localhost:${wiremock.server.port}/familieefsak
 BIDRAGGCPPROXY_URL: http://localhost:${wiremock.server.port}/bidraggcpproxy
 INNTEKTSKOMPONENTEN_URL: http://localhost:${wiremock.server.port}/inntektskomponenten
+SIGRUN_URL: http://localhost:${wiremock.server.port}/sigrun
 BIDRAGPERSON_URL: http://localhost:${wiremock.server.port}/bidragperson
 KONTANTSTOTTE_URL: http://localhost:${wiremock.server.port}/kontantstotte
 FAMILIEKSSAK_URL: http://localhost:${wiremock.server.port}/familiekssak
@@ -40,6 +41,12 @@ spring:
             client-secret: secret
             authorization-grant-type: client_credentials
             scope: api://inntektskomponenten/.default
+          sigrun:
+            provider: aad
+            client-id: someid
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope: api://sigrun/.default
         provider:
           aad:
             token-uri: http://localhost:${mock-oauth2-server.port}/azure/token

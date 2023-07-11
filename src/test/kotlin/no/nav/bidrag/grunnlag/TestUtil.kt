@@ -43,9 +43,6 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.Skattegrunnlag
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -72,6 +69,9 @@ import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.Opplysningsplikti
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonDetaljerIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.VirksomhetIntern
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.Skattegrunnlag
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntekt
 import no.nav.bidrag.grunnlag.persistence.entity.Ainntektspost
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
@@ -188,6 +188,17 @@ class TestUtil {
             grunnlagRequestDtoListe = listOf(
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.AINNTEKT,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2021-01-01"),
+                    periodeTil = LocalDate.parse("2022-01-01")
+                )
+            )
+        )
+
+        fun byggOppdaterGrunnlagspakkeRequestSkattegrunnlag() = OppdaterGrunnlagspakkeRequestDto(
+            grunnlagRequestDtoListe = listOf(
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.SKATTEGRUNNLAG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01")
@@ -731,9 +742,9 @@ class TestUtil {
         ): HentInntektListeResponseIntern {
             val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
-            eksternRespons.forEach() { arbeidsInntektMaaned ->
+            eksternRespons.forEach { arbeidsInntektMaaned ->
                 val inntektInternListe = mutableListOf<InntektIntern>()
-                arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach() { inntekt ->
+                arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach { inntekt ->
                     val inntektIntern = InntektIntern(
                         inntektType = inntekt.inntektType.toString(),
                         beloep = inntekt.beloep,
@@ -825,13 +836,13 @@ class TestUtil {
             )
         )
 
-        fun byggHentSkattegrunnlagRequest() = HentSkattegrunnlagRequest(
+        fun byggHentSkattegrunnlagRequest() = HentSummertSkattegrunnlagRequest(
             inntektsAar = "2021",
             inntektsFilter = "inntektsfilter",
             personId = "personId"
         )
 
-        fun byggHentSkattegrunnlagResponse() = HentSkattegrunnlagResponse(
+        fun byggHentSkattegrunnlagResponse() = HentSummertSkattegrunnlagResponse(
             grunnlag = byggSkattegrunnlagListe(),
             svalbardGrunnlag = byggSkattegrunnlagListe(),
             skatteoppgjoersdato = LocalDate.now().toString()

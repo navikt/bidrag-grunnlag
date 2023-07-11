@@ -19,6 +19,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetilsyn
@@ -37,6 +38,7 @@ class OppdaterGrunnlagspakkeService(
     private val familieBaSakConsumer: FamilieBaSakConsumer,
     private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
     private val inntektskomponentenService: InntektskomponentenService,
+    private val sigrunConsumer: SigrunConsumer,
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
     private val familieEfSakConsumer: FamilieEfSakConsumer
@@ -128,7 +130,7 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    bidragGcpProxyConsumer
+                    sigrunConsumer
                 )
                     .oppdaterSkattegrunnlag(skattegrunnlagRequestListe)
             )

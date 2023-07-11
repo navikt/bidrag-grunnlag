@@ -13,8 +13,6 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResp
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.skatt.HentSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -29,6 +27,9 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
+import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
@@ -48,6 +49,7 @@ import org.springframework.web.server.ResponseStatusException
 class IntegrasjonsController(
     private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
     private val inntektskomponentenConsumer: InntektskomponentenConsumer,
+    private val sigrunConsumer: SigrunConsumer,
     private val familieBaSakConsumer: FamilieBaSakConsumer,
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
@@ -70,8 +72,8 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_SKATTEGRUNNLAG)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter skattegrunnlag")
-    fun hentSkattegrunnlag(@RequestBody hentSkattegrunnlagRequest: HentSkattegrunnlagRequest): ResponseEntity<HentSkattegrunnlagResponse> {
-        return handleRestResponse(bidragGcpProxyConsumer.hentSkattegrunnlag(hentSkattegrunnlagRequest))
+    fun hentSkattegrunnlag(@RequestBody hentSkattegrunnlagRequest: HentSummertSkattegrunnlagRequest): ResponseEntity<HentSummertSkattegrunnlagResponse> {
+        return handleRestResponse(sigrunConsumer.hentSummertSkattegrunnlag(hentSkattegrunnlagRequest))
     }
 
     @PostMapping(HENT_BARNETILLEGG_PENSJON)

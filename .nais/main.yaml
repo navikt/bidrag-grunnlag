@@ -13,6 +13,9 @@ azure:
   inntektskomponenten_base_url: team-inntekt-proxy.dev-fss-pub.nais.io
   inntektskomponenten_url: team-inntekt-proxy.dev-fss-pub.nais.io/proxy/inntektskomponenten-q1
   inntektskomponenten_scope: dev-fss.team-inntekt.inntektskomponenten
+  sigrun_base_url: team-inntekt-proxy.dev-fss-pub.nais.io
+  sigrun_url: team-inntekt-proxy.dev-fss-pub.nais.io/proxy/sigrun-q1
+  sigrun_scope: dev-fss.team-inntekt.sigrun
   bidragperson_url: bidrag-person.dev-fss-pub.nais.io
   bidragperson_scope: dev-fss.bidrag.bidrag-person
   bidragperson_app: bidrag-person
