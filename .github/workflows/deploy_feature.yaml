@@ -1,7 +1,9 @@
-name: Deploy to dev
+name: Deploy feature
 on:
-  pull_request:
-    types: [ ready_for_review, opened, synchronize ]
+  push:
+    branches:
+      - '**'
+      - '!main'
 
 env:
   GITHUB_USERNAME: x-access-token
@@ -9,7 +11,6 @@ env:
 
 jobs:
   build:
-    if: github.event.pull_request.draft == false
     permissions:
       contents: "read"
       id-token: "write"
@@ -56,31 +57,32 @@ jobs:
             ${{ runner.os }}-maven-
       - run: mvn -B -e --settings .github/.m2/maven-settings.xml clean install
 
-  deploy-main:
+  deploy-feature:
     runs-on: ubuntu-latest
-    name: Deploy main
+    name: Deploy feature
     needs: build
+
     steps:
       - uses: actions/checkout@v3
         with:
           path: deploy
-      - name: Deploy main branch to dev-gcp
+      - name: Deploy to dev-gcp for feature.yaml
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: deploy/.nais/nais.yaml
-          VARS: deploy/.nais/main.yaml
+          VARS: deploy/.nais/feature.yaml
           IMAGE: ${{ needs.build.outputs.image }}
 
   run_cucumber_tests:
     runs-on: ubuntu-latest
     name: Run cucumber tests
-    needs: deploy-main
+    needs: deploy-feature
 
     env:
-      INGRESS_CUCUMBER: https://bidrag-cucumber-cloud.ekstern.dev.nav.no
-      INGRESS_GRUNNLAG: https://bidrag-grunnlag.intern.dev.nav.no
+      INGRESS_CUCUMBER: https://bidrag-cucumber-cloud-feature.ekstern.dev.nav.no
+      INGRESS_GRUNNLAG: https://bidrag-grunnlag-feature.intern.dev.nav.no
 
     steps:
       - run: |
