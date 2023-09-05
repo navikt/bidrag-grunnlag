@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - '**'
-      - '!main'
 
 env:
   GITHUB_USERNAME: x-access-token
@@ -28,7 +27,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - run: mvn -Dmaven.test.skip=true -B -e --settings .github/.m2/maven-settings.xml clean install
+      - run: mvn -Dmaven.test.skip=true -B -e --settings .m2/maven-settings.xml clean install
       - uses: nais/docker-build-push@v0
         id: docker-push
         with:
@@ -55,7 +54,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - run: mvn -B -e --settings .github/.m2/maven-settings.xml clean install
+      - run: mvn -B -e --settings .m2/maven-settings.xml clean install
 
   deploy-feature:
     runs-on: ubuntu-latest
@@ -74,7 +73,6 @@ jobs:
           RESOURCE: deploy/.nais/nais.yaml
           VARS: deploy/.nais/feature.yaml
           IMAGE: ${{ needs.build.outputs.image }}
-
   run_cucumber_tests:
     runs-on: ubuntu-latest
     name: Run cucumber tests
