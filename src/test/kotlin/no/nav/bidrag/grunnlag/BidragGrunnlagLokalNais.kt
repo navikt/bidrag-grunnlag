@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Profile
 
-@SpringBootApplication(exclude = [SecurityAutoConfiguration::class, ManagementWebSecurityAutoConfiguration::class])
+@SpringBootApplication
 @EnableJwtTokenValidation(ignore = ["org.springdoc", "org.springframework"])
 @ComponentScan(excludeFilters = [ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = [BidragGrunnlag::class])])
 @Profile("lokal-nais")
