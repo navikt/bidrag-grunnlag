@@ -73,3 +73,28 @@ Applikasjonen testes enklest i Swagger (for generering av gyldig token, se over)
 ```
 https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/swagger-ui/index.html?configUrl=/bidrag-grunnlag/v3/api-docs/swagger-config#/grunnlagspakke-controller
 ```
+
+### Kjøre lokalt mot nais med lokal database
+##### Start opp database
+Start opp lokal postgres database med følgende kommando på rotmappen. 
+```
+docker-compose up -d
+```
+Dette vil starte en tom postgres database. 
+Ved oppstart av appen vil flyway skriptene initialiseree alle tabeller som er nødvendig for lokal kjøring.
+
+Databasen er persistent. Det vil si at all data vil bli lagret lokalt og være tilgjengelig selv ved restart av PC eller docker.
+
+##### Initialiser miljøvariabler
+Kjør ```initLocalEnv.sh``` skriptet for å sette opp miljøvariabler for lokal kjøring.
+<br/>
+Dette vil hente Azure hemmeligheter og diverse miljøvariabler fra POD kjørende i dev
+
+Hvis du ikke får `permission denied` når du prøver å kjøre skriptet så må du gi deg selv tilgang til å kjøre shell skript med følgende kommand:
+```bash
+Kjør chmod +x ./initLocalEnv.sh
+```
+
+Du kan da starte opp applikasjonen ved å kjøre [BidragGrunnlagLokalNais.kt](src/test/kotlin/no/nav/bidrag/grunnlag/BidragGrunnlagLokalNais.kt)
+
+Gå til http://localhost:8086 for å åpne swagger-ui
