@@ -9,8 +9,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
-import no.nav.bidrag.transport.person.Sivilstand
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.person.SivilstandDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -45,13 +45,13 @@ class OppdaterSivilstand(
                     val sivilstandResponse = restResponseSivilstand.body
                     SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
 
-                    if (sivilstandResponse.sivilstand.isNotEmpty()) {
+                    if (sivilstandResponse.sivilstandDto.isNotEmpty()) {
                         persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
                             grunnlagspakkeId,
                             personIdOgPeriode.personId,
                             timestampOppdatering
                         )
-                        sivilstandResponse.sivilstand.forEach { sivilstand ->
+                        sivilstandResponse.sivilstandDto.forEach { sivilstand ->
                             // Pga vekslende datakvalitet fra PDL må det taes høyde for at begge disse datoene kan være null.
                             // Hvis de er det så kan ikke periodekontroll gjøres og sivilstanden må lagres uten fra-dato
                             val dato = sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato
@@ -88,8 +88,8 @@ class OppdaterSivilstand(
         return this
     }
 
-    fun lagreSivilstand(
-        sivilstand: Sivilstand,
+    private fun lagreSivilstand(
+        sivilstand: SivilstandDto,
         grunnlagspakkeId: Int,
         timestampOppdatering: LocalDateTime,
         personId: String

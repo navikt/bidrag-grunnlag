@@ -11,7 +11,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

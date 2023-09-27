@@ -33,10 +33,10 @@ import no.nav.bidrag.grunnlag.service.HentGrunnlagService
 import no.nav.bidrag.grunnlag.service.InntektskomponentenService
 import no.nav.bidrag.grunnlag.service.OppdaterGrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagspakkeDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto

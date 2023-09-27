@@ -9,9 +9,9 @@ import jakarta.validation.constraints.NotNull
 import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagspakkeDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
