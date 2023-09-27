@@ -89,8 +89,8 @@ import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
-import no.nav.bidrag.transport.person.Sivilstand
-import no.nav.bidrag.transport.person.Sivilstandshistorikk
+import no.nav.bidrag.transport.person.SivilstandDto
+import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
@@ -1011,22 +1011,31 @@ class TestUtil {
             )
         )
 
-        fun byggHentSivilstandResponse() = Sivilstandshistorikk(
+        fun byggHentSivilstandResponse() = SivilstandshistorikkDto(
             immutableListOf(
-                Sivilstand(
+                SivilstandDto(
                     type = Sivilstandstype.SEPARERT_PARTNER,
                     gyldigFraOgMed = null,
-                    bekreftelsesdato = null
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.now(),
+                    historisk = true
                 ),
-                Sivilstand(
+                SivilstandDto(
                     type = Sivilstandstype.ENKE_ELLER_ENKEMANN,
                     gyldigFraOgMed = null,
-                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2021-01-01"))
+                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2021-01-01")),
+                    master = "PDL",
+                    registrert = LocalDateTime.now(),
+                    historisk = true
                 ),
-                Sivilstand(
+                SivilstandDto(
                     type = Sivilstandstype.GJENLEVENDE_PARTNER,
                     gyldigFraOgMed = FomDato(LocalDate.parse("2021-09-01")),
-                    bekreftelsesdato = null
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.now(),
+                    historisk = false
                 )
             )
         )

@@ -61,6 +61,7 @@ import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagspostRepository
 import no.nav.bidrag.grunnlag.persistence.repository.UtvidetBarnetrygdOgSmaabarnstilleggRepository
+import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.AinntektDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.AinntektspostDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggDto
@@ -73,7 +74,6 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagspostDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdOgSmaabarnstilleggDto
-import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate

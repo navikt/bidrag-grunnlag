@@ -25,10 +25,10 @@ import no.nav.bidrag.grunnlag.model.OppdaterRelatertePersoner
 import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
 import no.nav.bidrag.grunnlag.model.OppdaterSkattegrunnlag
 import no.nav.bidrag.grunnlag.model.OppdaterUtvidetBarnetrygdOgSmaabarnstillegg
-import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagspakkeDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
