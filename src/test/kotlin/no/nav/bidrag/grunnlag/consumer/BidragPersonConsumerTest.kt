@@ -19,7 +19,7 @@ import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
-import no.nav.bidrag.transport.person.Sivilstandshistorikk
+import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertAll
@@ -157,7 +157,7 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<Sivilstandshistorikk>>()
+                any<Class<SivilstandshistorikkDto>>()
             )
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentSivilstandResponse(), HttpStatus.OK))
@@ -167,18 +167,18 @@ internal class BidragPersonConsumerTest {
                 val hentSivilstandResponse = restResponseSivilstand.body
                 assertAll(
                     Executable { assertThat(hentSivilstandResponse).isNotNull },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand.size).isEqualTo(3) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[0].type).isEqualTo(Sivilstandstype.SEPARERT_PARTNER) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[0].gyldigFraOgMed).isNull() },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[0].bekreftelsesdato).isNull() },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto.size).isEqualTo(3) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[0].type).isEqualTo(Sivilstandstype.SEPARERT_PARTNER) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[0].gyldigFraOgMed).isNull() },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[0].bekreftelsesdato).isNull() },
 
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[1].type).isEqualTo(Sivilstandstype.ENKE_ELLER_ENKEMANN) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[1].gyldigFraOgMed).isNull() },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[1].bekreftelsesdato).isEqualTo(Bekreftelsesdato(LocalDate.parse("2021-01-01"))) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].type).isEqualTo(Sivilstandstype.ENKE_ELLER_ENKEMANN) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].gyldigFraOgMed).isNull() },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].bekreftelsesdato).isEqualTo(Bekreftelsesdato(LocalDate.parse("2021-01-01"))) },
 
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[2].type).isEqualTo(Sivilstandstype.GJENLEVENDE_PARTNER) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[2].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2021-09-01"))) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstand[2].bekreftelsesdato).isNull() }
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].type).isEqualTo(Sivilstandstype.GJENLEVENDE_PARTNER) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2021-09-01"))) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].bekreftelsesdato).isNull() }
 
                 )
             }
@@ -197,7 +197,7 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<Sivilstandshistorikk>>()
+                any<Class<SivilstandshistorikkDto>>()
             )
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))

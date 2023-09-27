@@ -1,7 +1,6 @@
 name: bidrag-grunnlag-feature
 ingresses:
   - https://bidrag-grunnlag-feature.intern.dev.nav.no
-  - https://bidrag-grunnlag-feature.dev.intern.nav.no
 azure:
   tenant: trygdeetaten.no
   familiebasak_url: familie-ba-sak.intern.dev.nav.no

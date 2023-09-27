@@ -4,10 +4,10 @@ import no.nav.bidrag.domain.enums.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.model.HentArbeidsforhold
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.ArbeidsforholdDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagDto
 import org.springframework.stereotype.Service
 
 @Service

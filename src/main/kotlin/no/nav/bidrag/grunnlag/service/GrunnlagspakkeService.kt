@@ -1,11 +1,11 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.HentGrunnlagspakkeDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagDto
-import no.nav.bidrag.transport.behandling.grunnlag.reponse.OppdaterGrunnlagspakkeDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagspakkeDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
