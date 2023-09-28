@@ -11,9 +11,11 @@ import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandDto
+import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class OppdaterSivilstand(
@@ -51,27 +53,15 @@ class OppdaterSivilstand(
                             personIdOgPeriode.personId,
                             timestampOppdatering
                         )
-                        sivilstandResponse.sivilstandDto.forEach { sivilstand ->
-                            // Pga vekslende datakvalitet fra PDL må det taes høyde for at begge disse datoene kan være null.
-                            // Hvis de er det så kan ikke periodekontroll gjøres og sivilstanden må lagres uten fra-dato
-                            val dato = sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato
-                            if ((dato != null && dato.verdi.isBefore(personIdOgPeriode.periodeTil)) || (dato == null)) {
-                                antallPerioderFunnet++
-                                lagreSivilstand(
-                                    sivilstand,
-                                    grunnlagspakkeId,
-                                    timestampOppdatering,
-                                    personIdOgPeriode.personId
-                                )
-                            }
-                        }
+                        antallPerioderFunnet = behandleSivilstandResponse(sivilstandResponse, personIdOgPeriode)
+
                     }
                     this.add(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.SIVILSTAND,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet"
+                            "Antall sivilstandsforekomster funnet: $antallPerioderFunnet"
                         )
                     )
                 }
@@ -88,12 +78,33 @@ class OppdaterSivilstand(
         return this
     }
 
-    private fun lagreSivilstand(
-        sivilstand: SivilstandDto,
-        grunnlagspakkeId: Int,
-        timestampOppdatering: LocalDateTime,
-        personId: String
-    ) {
+    private fun behandleSivilstandResponse(sivilstandshistorikkDto: SivilstandshistorikkDto, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
+
+
+        var antallPerioderFunnet = 0
+
+
+        sivilstandshistorikkDto.sivilstandDto.forEach { sivilstand ->
+            // Pga vekslende datakvalitet fra PDL må det taes høyde for at begge disse datoene kan være null.
+            // Hvis de er det så kan ikke periodekontroll gjøres og sivilstanden må lagres uten fra-dato
+            val dato = sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato
+            if ((dato != null && dato.verdi.isBefore(personIdOgPeriodeRequest.periodeTil)) || (dato == null)) {
+                antallPerioderFunnet++
+                lagreSivilstand(
+                    sivilstand,
+                    grunnlagspakkeId,
+                    timestampOppdatering,
+                    personIdOgPeriodeRequest.personId
+                )
+            }
+        }
+
+
+        return antallPerioderFunnet
+
+    }
+
+    private fun lagreSivilstand(sivilstand: SivilstandDto, grunnlagspakkeId: Int, timestampOppdatering: LocalDateTime, personId: String) {
         persistenceService.opprettSivilstand(
             SivilstandBo(
                 grunnlagspakkeId = grunnlagspakkeId,
