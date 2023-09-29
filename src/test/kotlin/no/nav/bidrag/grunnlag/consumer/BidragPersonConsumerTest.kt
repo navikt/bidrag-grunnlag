@@ -174,7 +174,7 @@ internal class BidragPersonConsumerTest {
 
                     Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].type).isEqualTo(Sivilstandstype.ENKE_ELLER_ENKEMANN) },
                     Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].gyldigFraOgMed).isNull() },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].bekreftelsesdato).isEqualTo(Bekreftelsesdato(LocalDate.parse("2021-01-01"))) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].bekreftelsesdato).isEqualTo(Bekreftelsesdato(LocalDate.parse("2021-02-01"))) },
 
                     Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].type).isEqualTo(Sivilstandstype.GJENLEVENDE_PARTNER) },
                     Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2021-09-01"))) },

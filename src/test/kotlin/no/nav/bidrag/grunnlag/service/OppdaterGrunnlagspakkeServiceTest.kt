@@ -580,13 +580,13 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(sivilstandListe).isNotNull() },
             { Assertions.assertThat(sivilstandListe.size).isEqualTo(3) },
             { Assertions.assertThat(sivilstandListe[0].personId).isEqualTo("12345678910") },
-            { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
-            { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+            { Assertions.assertThat(sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-02-01")) },
             { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.SEPARERT_PARTNER.toString()) },
 
             { Assertions.assertThat(sivilstandListe[1].personId).isEqualTo("12345678910") },
-            { Assertions.assertThat(sivilstandListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-            { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-02-01")) },
+            { Assertions.assertThat(sivilstandListe[1].periodeTil).isEqualTo(LocalDate.parse("2021-09-01")) },
             { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.ENKE_ELLER_ENKEMANN.toString()) },
 
             { Assertions.assertThat(sivilstandListe[2].personId).isEqualTo("12345678910") },
@@ -600,11 +600,11 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 3") },
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 3") }
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") }
         )
     }
 

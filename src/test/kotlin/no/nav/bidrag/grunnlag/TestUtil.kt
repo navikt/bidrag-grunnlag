@@ -1018,15 +1018,15 @@ class TestUtil {
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
-                    registrert = LocalDateTime.now(),
+                    registrert = LocalDateTime.parse("2021-01-01T12:00:00"),
                     historisk = true
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.ENKE_ELLER_ENKEMANN,
                     gyldigFraOgMed = null,
-                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2021-01-01")),
+                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2021-02-01")),
                     master = "PDL",
-                    registrert = LocalDateTime.now(),
+                    registrert = LocalDateTime.parse("2021-02-01T12:00:00"),
                     historisk = true
                 ),
                 SivilstandDto(
@@ -1034,7 +1034,7 @@ class TestUtil {
                     gyldigFraOgMed = FomDato(LocalDate.parse("2021-09-01")),
                     bekreftelsesdato = null,
                     master = "PDL",
-                    registrert = LocalDateTime.now(),
+                    registrert = LocalDateTime.parse("2021-03-01T12:00:00"),
                     historisk = false
                 )
             )

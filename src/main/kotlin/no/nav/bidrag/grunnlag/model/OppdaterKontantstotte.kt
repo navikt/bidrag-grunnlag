@@ -59,7 +59,7 @@ class OppdaterKontantstotte(
 
                     // Kontantstøtte fra Infotrygd
                     kontantstotteResponse.infotrygdPerioder.forEach { ks ->
-                        val belopPerParn = ks.beløp.div(ks.barna.size.toInt())
+                        val belopPerParn = ks.beløp.div(ks.barna.size)
                         ks.barna.forEach { barnPersonId ->
                             antallPerioderFunnet++
                             persistenceService.opprettKontantstotte(
