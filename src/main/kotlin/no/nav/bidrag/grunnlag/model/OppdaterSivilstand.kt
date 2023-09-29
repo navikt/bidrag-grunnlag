@@ -11,7 +11,6 @@ import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandDto
-import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -53,8 +52,10 @@ class OppdaterSivilstand(
                             personIdOgPeriode.personId,
                             timestampOppdatering
                         )
-                        antallPerioderFunnet = behandleSivilstandResponse(sivilstandResponse, personIdOgPeriode)
-
+                        antallPerioderFunnet = behandleSivilstandResponse(
+                            sivilstandResponse.sivilstandDto.sortedWith(compareBy({ it.gyldigFraOgMed }, { it.bekreftelsesdato })),
+                            personIdOgPeriode
+                        )
                     }
                     this.add(
                         OppdaterGrunnlagDto(
@@ -65,6 +66,7 @@ class OppdaterSivilstand(
                         )
                     )
                 }
+
                 is RestResponse.Failure -> this.add(
                     OppdaterGrunnlagDto(
                         GrunnlagRequestType.SIVILSTAND,
@@ -78,39 +80,37 @@ class OppdaterSivilstand(
         return this
     }
 
-    private fun behandleSivilstandResponse(sivilstandshistorikkDto: SivilstandshistorikkDto, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
-
-
+    private fun behandleSivilstandResponse(sivilstandDtoListe: List<SivilstandDto>, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
         var antallPerioderFunnet = 0
 
-
-        sivilstandshistorikkDto.sivilstandDto.forEach { sivilstand ->
-            // Pga vekslende datakvalitet fra PDL må det taes høyde for at begge disse datoene kan være null.
-            // Hvis de er det så kan ikke periodekontroll gjøres og sivilstanden må lagres uten fra-dato
-            val dato = sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato
-            if ((dato != null && dato.verdi.isBefore(personIdOgPeriodeRequest.periodeTil)) || (dato == null)) {
-                antallPerioderFunnet++
-                lagreSivilstand(
-                    sivilstand,
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    personIdOgPeriodeRequest.personId
-                )
-            }
+        for (indeks in sivilstandDtoListe.indices) {
+            antallPerioderFunnet++
+            lagreSivilstand(
+                sivilstandDtoListe[indeks],
+                grunnlagspakkeId,
+                timestampOppdatering,
+                personIdOgPeriodeRequest.personId,
+                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
+                    ?: sivilstandDtoListe.getOrNull(indeks + 1)?.registrert?.toLocalDate()
+            )
         }
 
-
         return antallPerioderFunnet
-
     }
 
-    private fun lagreSivilstand(sivilstand: SivilstandDto, grunnlagspakkeId: Int, timestampOppdatering: LocalDateTime, personId: String) {
+    private fun lagreSivilstand(
+        sivilstand: SivilstandDto,
+        grunnlagspakkeId: Int,
+        timestampOppdatering: LocalDateTime,
+        personId: String,
+        periodeTil: LocalDate?
+    ) {
         persistenceService.opprettSivilstand(
             SivilstandBo(
                 grunnlagspakkeId = grunnlagspakkeId,
                 personId = personId,
-                periodeFra = sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi,
-                periodeTil = null,
+                periodeFra = sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi ?: sivilstand.registrert?.toLocalDate(),
+                periodeTil = periodeTil,
                 sivilstand = sivilstand.type.toString(),
                 aktiv = true,
                 brukFra = timestampOppdatering,

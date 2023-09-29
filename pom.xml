@@ -25,7 +25,7 @@
     <!-- dependencies -->
     <bidrag-commons.version>20230510130746_8b93e85</bidrag-commons.version>
     <bidrag-commons-test.version>1.20230511093912_dc35d81</bidrag-commons-test.version>
-    <bidrag-transport.version>20230926131902_5c70804</bidrag-transport.version>
+    <bidrag-transport.version>20230929134005_dfcb25d</bidrag-transport.version>
     <bidrag-tilgangskontroll.version>1.10.4</bidrag-tilgangskontroll.version>
     <mockito-kotlin.version>4.1.0</mockito-kotlin.version>
     <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
