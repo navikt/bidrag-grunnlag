@@ -52,8 +52,11 @@ class OppdaterSivilstand(
                             personIdOgPeriode.personId,
                             timestampOppdatering
                         )
+                        // Sorterer motta sivilstandforekomster etter. Forekomstene som er historiske skal komme først. Deretter sorteres det på
+                        // gyldigFraOgMed, bekreftelsesdato, registrert og til slutt på type.
                         antallPerioderFunnet = behandleSivilstandResponse(
-                            sivilstandResponse.sivilstandDto.sortedWith(compareBy({ it.gyldigFraOgMed }, { it.bekreftelsesdato })),
+                            sivilstandResponse.sivilstandDto.sortedWith(compareByDescending<SivilstandDto> { it.historisk }.thenBy { it.gyldigFraOgMed }
+                                .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() }),
                             personIdOgPeriode
                         )
                     }
@@ -83,15 +86,27 @@ class OppdaterSivilstand(
     private fun behandleSivilstandResponse(sivilstandDtoListe: List<SivilstandDto>, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
         var antallPerioderFunnet = 0
 
+        var periodeTil: LocalDate? = null
+
         for (indeks in sivilstandDtoListe.indices) {
+            // Setter periodeTil lik periodeFra for neste forekomst.
+            // Hvis det ikke finnes en neste forekomst så settes periodeTil lik null. Timestamp registrert brukes bare hvis neste forekomst ikke er historisk
+            if (sivilstandDtoListe.getOrNull(indeks + 1)?.historisk == true) {
+                periodeTil =
+                    sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
+                 ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
+            } else
+                periodeTil = sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
+                    ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
+                    ?: sivilstandDtoListe.getOrNull(indeks + 1)?.registrert?.toLocalDate()
+
             antallPerioderFunnet++
             lagreSivilstand(
                 sivilstandDtoListe[indeks],
                 grunnlagspakkeId,
                 timestampOppdatering,
                 personIdOgPeriodeRequest.personId,
-                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
-                    ?: sivilstandDtoListe.getOrNull(indeks + 1)?.registrert?.toLocalDate()
+                periodeTil
             )
         }
 
@@ -105,11 +120,20 @@ class OppdaterSivilstand(
         personId: String,
         periodeTil: LocalDate?
     ) {
+        // Hvis en forekomst er merket som historisk, altså ikke lenger aktiv, så skal periodeFra settes lik gyldgiFraOgMed evt bekreftelsesdato
+        // Hvis begge er null så settes periodeFra lik null
+        // Hvis forekomsten er aktiv så kan registrert timestamp også brukes til å finne periodeFra. Tanken er da at dette er en ny forekomst og
+        // at registrert kan bruukes til å anta riktig periodeFra.
+        val periodeFra = if (sivilstand.historisk == true) {
+            sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi
+        } else
+            sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi ?: sivilstand.registrert?.toLocalDate()
+
         persistenceService.opprettSivilstand(
             SivilstandBo(
                 grunnlagspakkeId = grunnlagspakkeId,
                 personId = personId,
-                periodeFra = sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi ?: sivilstand.registrert?.toLocalDate(),
+                periodeFra = periodeFra,
                 periodeTil = periodeTil,
                 sivilstand = sivilstand.type.toString(),
                 aktiv = true,
