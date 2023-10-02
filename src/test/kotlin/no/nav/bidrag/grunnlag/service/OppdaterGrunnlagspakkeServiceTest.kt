@@ -580,7 +580,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(sivilstandListe).isNotNull() },
             { Assertions.assertThat(sivilstandListe.size).isEqualTo(3) },
             { Assertions.assertThat(sivilstandListe[0].personId).isEqualTo("12345678910") },
-            { Assertions.assertThat(sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
             { Assertions.assertThat(sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-02-01")) },
             { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.SEPARERT_PARTNER.toString()) },
 
@@ -600,7 +600,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") },
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") }
         )
     }
 
@@ -663,7 +663,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 5") },
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 5") }
         )
     }
 
@@ -699,7 +699,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
             { Assertions.assertThat(sivilstandListe[1].periodeFra).isNull() },
             { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) },
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) }
         )
     }
 
@@ -735,7 +735,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
             { Assertions.assertThat(sivilstandListe[1].periodeFra).isEqualTo(LocalDate.parse("2020-05-12")) },
             { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) },
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) }
         )
     }
 

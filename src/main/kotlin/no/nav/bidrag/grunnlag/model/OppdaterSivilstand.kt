@@ -55,8 +55,10 @@ class OppdaterSivilstand(
                         // Sorterer motta sivilstandforekomster etter. Forekomstene som er historiske skal komme først. Deretter sorteres det på
                         // gyldigFraOgMed, bekreftelsesdato, registrert og til slutt på type.
                         antallPerioderFunnet = behandleSivilstandResponse(
-                            sivilstandResponse.sivilstandDto.sortedWith(compareByDescending<SivilstandDto> { it.historisk }.thenBy { it.gyldigFraOgMed }
-                                .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() }),
+                            sivilstandResponse.sivilstandDto.sortedWith(
+                                compareByDescending<SivilstandDto> { it.historisk }.thenBy { it.gyldigFraOgMed }
+                                    .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() }
+                            ),
                             personIdOgPeriode
                         )
                     }
@@ -94,11 +96,12 @@ class OppdaterSivilstand(
             if (sivilstandDtoListe.getOrNull(indeks + 1)?.historisk == true) {
                 periodeTil =
                     sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
-                 ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
-            } else
+                        ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
+            } else {
                 periodeTil = sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
                     ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
                     ?: sivilstandDtoListe.getOrNull(indeks + 1)?.registrert?.toLocalDate()
+            }
 
             antallPerioderFunnet++
             lagreSivilstand(
@@ -126,8 +129,9 @@ class OppdaterSivilstand(
         // at registrert kan bruukes til å anta riktig periodeFra.
         val periodeFra = if (sivilstand.historisk == true) {
             sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi
-        } else
+        } else {
             sivilstand.gyldigFraOgMed?.verdi ?: sivilstand.bekreftelsesdato?.verdi ?: sivilstand.registrert?.toLocalDate()
+        }
 
         persistenceService.opprettSivilstand(
             SivilstandBo(

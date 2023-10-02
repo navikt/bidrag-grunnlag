@@ -1104,7 +1104,7 @@ class TestUtil {
                     registrert = null,
 //                    registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
                     historisk = true
-                ),
+                )
 
             )
         )
@@ -1126,9 +1126,9 @@ class TestUtil {
                     master = "PDL",
                     registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
                     historisk = true
-                ),
-
                 )
+
+            )
         )
 
         fun <Request, Response> performRequest(
