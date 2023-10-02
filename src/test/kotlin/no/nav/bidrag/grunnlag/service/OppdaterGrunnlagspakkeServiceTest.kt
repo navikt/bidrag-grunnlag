@@ -740,6 +740,102 @@ class OppdaterGrunnlagspakkeServiceTest {
     }
 
     @Test
+    fun `Test sivilstand uten datoinformasjon med registrert timestamp kun én historisk forekomst`() {
+        Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
+            .thenReturn(
+                TestUtil.byggSivilstand()
+            )
+        Mockito.`when`(
+            bidragPersonConsumerMock.hentSivilstand(
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(
+                    PersonIdent::class.java
+                )
+            )
+        )
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk()))
+
+        val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now()
+        )
+
+        val sivilstandListe = sivilstandBoCaptor.allValues
+
+        assertAll(
+            // sjekk SivilstandBo
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) }
+        )
+    }
+
+    @Test
+    fun `Test sivilstand uten datoinformasjon med registrert timestamp kun én aktiv forekomst`() {
+        Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
+            .thenReturn(
+                TestUtil.byggSivilstand()
+            )
+        Mockito.`when`(
+            bidragPersonConsumerMock.hentSivilstand(
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(
+                    PersonIdent::class.java
+                )
+            )
+        )
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv()))
+
+        val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now()
+        )
+
+        val sivilstandListe = sivilstandBoCaptor.allValues
+
+        assertAll(
+            // sjekk SivilstandBo
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2017-03-01")) },
+            { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) }
+        )
+    }
+
+    @Test
+    fun `Test sivilstand uten datoinformasjon uten registrert timestamp kun én historisk forekomst`() {
+        Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
+            .thenReturn(
+                TestUtil.byggSivilstand()
+            )
+        Mockito.`when`(
+            bidragPersonConsumerMock.hentSivilstand(
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(
+                    PersonIdent::class.java
+                )
+            )
+        )
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk()))
+
+        val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now()
+        )
+
+        val sivilstandListe = sivilstandBoCaptor.allValues
+
+        assertAll(
+            // sjekk SivilstandBo
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) }
+        )
+    }
+
+    @Test
     fun `skal oppdatere grunnlagspakke med kontantstotte`() {
         Mockito.`when`(persistenceServiceMock.opprettKontantstotte(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(kontantstotteBoCaptor)))
             .thenReturn(

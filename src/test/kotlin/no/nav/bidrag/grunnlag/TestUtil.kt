@@ -1093,7 +1093,6 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = null,
-//                    registrert = LocalDateTime.parse("2020-05-12T11:30:00"),
                     historisk = true
                 ),
                 SivilstandDto(
@@ -1102,7 +1101,6 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = null,
-//                    registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
                     historisk = true
                 )
 
@@ -1128,6 +1126,45 @@ class TestUtil {
                     historisk = true
                 )
 
+            )
+        )
+
+        fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
+            immutableListOf(
+                SivilstandDto(
+                    type = Sivilstandstype.GIFT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
+                    historisk = true
+                )
+            )
+        )
+
+        fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv() = SivilstandshistorikkDto(
+            immutableListOf(
+                SivilstandDto(
+                    type = Sivilstandstype.GIFT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
+                    historisk = false
+                )
+            )
+        )
+
+        fun byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
+            immutableListOf(
+                SivilstandDto(
+                    type = Sivilstandstype.GIFT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = null,
+                    historisk = true
+                )
             )
         )
 
