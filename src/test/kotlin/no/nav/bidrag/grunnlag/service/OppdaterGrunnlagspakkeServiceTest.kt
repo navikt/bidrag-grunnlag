@@ -580,7 +580,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(sivilstandListe).isNotNull() },
             { Assertions.assertThat(sivilstandListe.size).isEqualTo(3) },
             { Assertions.assertThat(sivilstandListe[0].personId).isEqualTo("12345678910") },
-            { Assertions.assertThat(sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
             { Assertions.assertThat(sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-02-01")) },
             { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.SEPARERT_PARTNER.toString()) },
 
@@ -600,11 +600,142 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") },
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") }
+        )
+    }
+
+    @Test
+    fun `Test på sortering av mottatt sivilstand og logikk for periodisering`() {
+        Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
+            .thenReturn(
+                TestUtil.byggSivilstand()
+            )
+        Mockito.`when`(
+            bidragPersonConsumerMock.hentSivilstand(
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(
+                    PersonIdent::class.java
+                )
+            )
+        )
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestSortering()))
+
+        val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now()
+        )
+
+        val sivilstandListe = sivilstandBoCaptor.allValues
+
+        assertAll(
+            { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
+
+            // sjekk GrunnlagspakkeBo
+            { Assertions.assertThat(oppdatertGrunnlagspakke).isNotNull() },
+
+            // sjekk SivilstandBo
+            { Assertions.assertThat(sivilstandListe).isNotNull() },
+            { Assertions.assertThat(sivilstandListe.size).isEqualTo(5) },
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2001-05-01")) },
+            { Assertions.assertThat(sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2011-02-01")) },
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.UOPPGITT.toString()) },
+
+            { Assertions.assertThat(sivilstandListe[1].periodeFra).isEqualTo(LocalDate.parse("2011-02-01")) },
+            { Assertions.assertThat(sivilstandListe[1].periodeTil).isEqualTo(LocalDate.parse("2017-07-17")) },
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.UGIFT.toString()) },
+
+            { Assertions.assertThat(sivilstandListe[2].periodeFra).isEqualTo(LocalDate.parse("2017-07-17")) },
+            { Assertions.assertThat(sivilstandListe[2].periodeTil).isEqualTo(LocalDate.parse("2021-09-01")) },
+            { Assertions.assertThat(sivilstandListe[2].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) },
+
+            { Assertions.assertThat(sivilstandListe[3].periodeFra).isEqualTo(LocalDate.parse("2021-09-01")) },
+            { Assertions.assertThat(sivilstandListe[3].periodeTil).isEqualTo(LocalDate.parse("2022-03-01")) },
+            { Assertions.assertThat(sivilstandListe[3].sivilstand).isEqualTo(Sivilstandstype.SEPARERT.toString()) },
+
+            { Assertions.assertThat(sivilstandListe[4].periodeFra).isEqualTo(LocalDate.parse("2022-03-01")) },
+            { Assertions.assertThat(sivilstandListe[4].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[4].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) },
+
+            // sjekk oppdatertGrunnlagspakke
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") }
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 5") }
+        )
+    }
+
+    @Test
+    fun `Test på sortering av mottatt sivilstand uten datoinformasjon der alle er historiske`() {
+        Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
+            .thenReturn(
+                TestUtil.byggSivilstand()
+            )
+        Mockito.`when`(
+            bidragPersonConsumerMock.hentSivilstand(
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(
+                    PersonIdent::class.java
+                )
+            )
+        )
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerHistoriske()))
+
+        val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now()
+        )
+
+        val sivilstandListe = sivilstandBoCaptor.allValues
+
+        assertAll(
+            // sjekk SivilstandBo
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) },
+
+            { Assertions.assertThat(sivilstandListe[1].periodeFra).isNull() },
+            { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) }
+        )
+    }
+
+    @Test
+    fun `Test på sortering av mottatt sivilstand uten datoinformasjon med registrert timestamp og aktiv forekomst`() {
+        Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
+            .thenReturn(
+                TestUtil.byggSivilstand()
+            )
+        Mockito.`when`(
+            bidragPersonConsumerMock.hentSivilstand(
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(
+                    PersonIdent::class.java
+                )
+            )
+        )
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoer()))
+
+        val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now()
+        )
+
+        val sivilstandListe = sivilstandBoCaptor.allValues
+
+        assertAll(
+            // sjekk SivilstandBo
+            { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
+            { Assertions.assertThat(sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2020-05-12")) },
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) },
+
+            { Assertions.assertThat(sivilstandListe[1].periodeFra).isEqualTo(LocalDate.parse("2020-05-12")) },
+            { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) }
         )
     }
 

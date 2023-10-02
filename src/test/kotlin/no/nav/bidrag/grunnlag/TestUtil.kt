@@ -1040,6 +1040,97 @@ class TestUtil {
             )
         )
 
+        fun byggHentSivilstandResponseTestSortering() = SivilstandshistorikkDto(
+            immutableListOf(
+                SivilstandDto(
+                    type = Sivilstandstype.GIFT,
+                    gyldigFraOgMed = FomDato(LocalDate.parse("2017-07-17")),
+                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2016-06-16")),
+                    master = "PDL",
+                    registrert = LocalDateTime.now(),
+                    historisk = true
+                ),
+                SivilstandDto(
+                    type = Sivilstandstype.SKILT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2022-03-01T12:00:00"),
+                    historisk = false
+                ),
+                SivilstandDto(
+                    type = Sivilstandstype.UGIFT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2011-02-01")),
+                    master = "PDL",
+                    registrert = LocalDateTime.now(),
+                    historisk = true
+                ),
+                SivilstandDto(
+                    type = Sivilstandstype.UOPPGITT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2001-05-01")),
+                    master = "PDL",
+                    registrert = LocalDateTime.now(),
+                    historisk = true
+                ),
+                SivilstandDto(
+                    type = Sivilstandstype.SEPARERT,
+                    gyldigFraOgMed = FomDato(LocalDate.parse("2021-09-01")),
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2021-03-01T12:00:00"),
+                    historisk = true
+                )
+            )
+        )
+
+        fun byggHentSivilstandResponseTestUtenDatoerHistoriske() = SivilstandshistorikkDto(
+            immutableListOf(
+                SivilstandDto(
+                    type = Sivilstandstype.SKILT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = null,
+//                    registrert = LocalDateTime.parse("2020-05-12T11:30:00"),
+                    historisk = true
+                ),
+                SivilstandDto(
+                    type = Sivilstandstype.GIFT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = null,
+//                    registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
+                    historisk = true
+                )
+
+            )
+        )
+
+        fun byggHentSivilstandResponseTestUtenDatoer() = SivilstandshistorikkDto(
+            immutableListOf(
+                SivilstandDto(
+                    type = Sivilstandstype.SKILT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2020-05-12T11:30:00"),
+                    historisk = false
+                ),
+                SivilstandDto(
+                    type = Sivilstandstype.GIFT,
+                    gyldigFraOgMed = null,
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
+                    historisk = true
+                )
+
+            )
+        )
+
         fun <Request, Response> performRequest(
             mockMvc: MockMvc,
             method: HttpMethod,
