@@ -1,5 +1,9 @@
 package no.nav.bidrag.grunnlag.service
 
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
+import no.nav.bidrag.commons.security.utils.TokenUtils
+import no.nav.bidrag.domain.enums.Formaal
 import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
@@ -15,12 +19,19 @@ import java.time.LocalDateTime
 @Transactional
 class GrunnlagspakkeService(
     private val persistenceService: PersistenceService,
-    private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService
+    private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService,
+    private val meterRegistry: MeterRegistry
 ) {
+
+    fun opprettGrunnlagspakkeCounter(formaal: Formaal) = Counter.builder("opprett_grunnlagspakke")
+        .tag("formaal", formaal.name)
+        .tag("opprettetAvApp", TokenUtils.hentApplikasjonsnavn() ?: "UKJENT")
+        .register(meterRegistry)
 
     fun opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Int {
         val opprettetGrunnlagspakke =
             persistenceService.opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
+        opprettGrunnlagspakkeCounter(opprettGrunnlagspakkeRequestDto.formaal).increment()
         return opprettetGrunnlagspakke.grunnlagspakkeId
     }
 
@@ -74,6 +85,8 @@ class GrunnlagspakkeService(
         persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
         return persistenceService.lukkGrunnlagspakke(grunnlagspakkeId)
     }
+
+
 }
 
 data class PersonIdOgPeriodeRequest(

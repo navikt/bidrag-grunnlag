@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.controller
 
+import io.micrometer.core.instrument.MeterRegistry
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.domain.enums.Formaal
@@ -81,7 +82,8 @@ import java.time.LocalDate
 class GrunnlagControllerTest(
     @Autowired val grunnlagspakkeRepository: GrunnlagspakkeRepository,
     @Autowired val persistenceService: PersistenceService,
-    @Autowired val exceptionLogger: ExceptionLogger
+    @Autowired val exceptionLogger: ExceptionLogger,
+    @Autowired val meterRegistry: MeterRegistry
 ) {
 
     private val restTemplate: HttpHeaderRestTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
@@ -106,7 +108,7 @@ class GrunnlagControllerTest(
         familieEfSakConsumer
     )
     private val grunnlagspakkeService: GrunnlagspakkeService =
-        GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService)
+        GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService, meterRegistry)
     private val hentGrunnlagService: HentGrunnlagService = HentGrunnlagService(arbeidsforholdConsumer, enhetsregisterConsumer)
     private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
     private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagController)
