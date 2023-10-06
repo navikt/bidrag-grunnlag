@@ -1,5 +1,8 @@
 package no.nav.bidrag.grunnlag.service
 
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.bidrag.domain.enums.BarnType
 import no.nav.bidrag.domain.enums.Formaal
 import no.nav.bidrag.domain.enums.Sivilstandstype
@@ -49,7 +52,9 @@ import org.mockito.Captor
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -62,6 +67,9 @@ class GrunnlagspakkeServiceMockTest {
 
     @Mock
     private lateinit var persistenceServiceMock: PersistenceService
+
+    @Spy
+    private var meterRegistry: MeterRegistry = SimpleMeterRegistry()
 
     @Mock
     private lateinit var oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService
