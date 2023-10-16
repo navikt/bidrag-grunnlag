@@ -85,8 +85,6 @@ class GrunnlagspakkeService(
         persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
         return persistenceService.lukkGrunnlagspakke(grunnlagspakkeId)
     }
-
-
 }
 
 data class PersonIdOgPeriodeRequest(
