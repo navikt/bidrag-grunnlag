@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import no.nav.bidrag.grunnlag.ISSUER
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
@@ -70,6 +71,7 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
         ResponseEntity<OppdaterGrunnlagspakkeDto>? {
         val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(grunnlagspakkeId, request)
         LOGGER.info("Følgende grunnlagspakke ble oppdatert: $grunnlagspakkeId")
+        SECURE_LOGGER.info("Oppdater grunnlagspakkeId: $grunnlagspakkeId med request: $request")
         return ResponseEntity(grunnlagspakkeOppdatert, HttpStatus.OK)
     }
 

@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.bidrag.domain.enums.BarnType
