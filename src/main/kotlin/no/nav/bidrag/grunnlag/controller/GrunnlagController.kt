@@ -93,6 +93,8 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
     ): ResponseEntity<HentGrunnlagspakkeDto>? {
         val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeId)
         LOGGER.info("Følgende grunnlagspakke ble hentet: ${grunnlagspakkeFunnet.grunnlagspakkeId}")
+        SECURE_LOGGER.info("Hent grunnlagspakke med id: $grunnlagspakkeId ga følgende response: $grunnlagspakkeFunnet")
+
         return ResponseEntity(grunnlagspakkeFunnet, HttpStatus.OK)
     }
 
