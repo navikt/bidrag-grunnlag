@@ -13,8 +13,8 @@ azure:
   sigrun_base_url: team-inntekt-proxy.dev-fss-pub.nais.io
   sigrun_url: team-inntekt-proxy.dev-fss-pub.nais.io/proxy/sigrun-q1
   sigrun_scope: dev-fss.team-inntekt.sigrun-q1
-  pensjon_base_url: https://pensjon-pen-q1.dev-fss-pub.nais.io
-  pensjon_url: https://pensjon-pen-q1.dev-fss-pub.nais.io/pen/api/barnetillegg/search
+  pensjon_base_url: pensjon-pen-q1.dev-fss-pub.nais.io
+  pensjon_url: pensjon-pen-q1.dev-fss-pub.nais.io/pen/api/barnetillegg/search
   pensjon_scope: dev-fss.teampensjon.pensjon-pen-q1
   bidragperson_url: bidrag-person-feature.dev-fss-pub.nais.io
   bidragperson_scope: dev-fss.bidrag.bidrag-person-feature
