@@ -1,6 +1,6 @@
 FAMILIEBASAK_URL: http://localhost:${wiremock.server.port}/familiebasak
 FAMILIEEFSAK_URL: http://localhost:${wiremock.server.port}/familieefsak
-BIDRAGGCPPROXY_URL: http://localhost:${wiremock.server.port}/bidraggcpproxy
+PENSJON_URL: http://localhost:${wiremock.server.port}/pensjon
 INNTEKTSKOMPONENTEN_URL: http://localhost:${wiremock.server.port}/inntektskomponenten
 SIGRUN_URL: http://localhost:${wiremock.server.port}/sigrun
 BIDRAGPERSON_URL: http://localhost:${wiremock.server.port}/bidragperson
@@ -29,12 +29,12 @@ spring:
             client-secret: secret
             authorization-grant-type: client_credentials
             scope: api://familiebasak/.default
-          bidraggcpproxy:
+          pensjon:
             provider: aad
             client-id: someid
             client-secret: secret
             authorization-grant-type: client_credentials
-            scope: api://bidraggcpproxy/.default
+            scope: api://pensjon/.default
           inntektskomponenten:
             provider: aad
             client-id: someid

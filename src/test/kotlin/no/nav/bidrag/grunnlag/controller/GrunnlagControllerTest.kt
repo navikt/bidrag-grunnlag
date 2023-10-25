@@ -12,8 +12,6 @@ import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -23,6 +21,8 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
+import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
@@ -50,7 +50,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -87,7 +86,7 @@ class GrunnlagControllerTest(
 ) {
 
     private val restTemplate: HttpHeaderRestTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
-    private val bidragGcpProxyConsumer: BidragGcpProxyConsumer = BidragGcpProxyConsumer(restTemplate)
+    private val pensjonConsumer: PensjonConsumer = PensjonConsumer(restTemplate)
     private val inntektskomponentenConsumer: InntektskomponentenConsumer = InntektskomponentenConsumer(restTemplate)
     private val inntektskomponentenService: InntektskomponentenService = InntektskomponentenService(inntektskomponentenConsumer)
     private val sigrunConsumer: SigrunConsumer = SigrunConsumer(restTemplate)
@@ -100,7 +99,7 @@ class GrunnlagControllerTest(
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService = OppdaterGrunnlagspakkeService(
         persistenceService,
         familieBaSakConsumer,
-        bidragGcpProxyConsumer,
+        pensjonConsumer,
         inntektskomponentenService,
         sigrunConsumer,
         bidragPersonConsumer,
@@ -159,7 +158,7 @@ class GrunnlagControllerTest(
 
         Mockito.`when`(
             restTemplate.exchange(
-                eq("/barnetillegg/pensjon/hent"),
+                eq("/pen/api/barnetillegg/search"),
                 eq(HttpMethod.POST),
                 any(),
                 any<Class<HentBarnetilleggPensjonResponse>>()
@@ -273,7 +272,7 @@ class GrunnlagControllerTest(
 
         Mockito.`when`(
             restTemplate.exchange(
-                eq("/barnetillegg/pensjon/hent"),
+                eq("/pen/api/barnetillegg/search"),
                 eq(HttpMethod.POST),
                 any(),
                 any<Class<HentBarnetilleggPensjonResponse>>()
@@ -608,7 +607,6 @@ class GrunnlagControllerTest(
         assertNotNull(okResult)
     }
 
-    @Disabled
     @Test
     fun `skal hente grunnlag direkte uten å gå via grunnlagspakke`() {
         val responseType = object : ParameterizedTypeReference<List<Arbeidsforhold>>() {}
@@ -616,7 +614,7 @@ class GrunnlagControllerTest(
         Mockito.`when`(
             restTemplate.exchange(
                 eq("/api/v2/arbeidstaker/arbeidsforhold"),
-                eq(HttpMethod.POST),
+                eq(HttpMethod.GET),
                 any(),
                 eq(responseType)
             )

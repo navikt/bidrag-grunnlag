@@ -36,9 +36,6 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Ansettelsesperiode
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.BarnetilleggPensjon
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -65,6 +62,9 @@ import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.Opplysningsplikti
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonDetaljerIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.VirksomhetIntern
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonRequest
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonResponse
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.Skattegrunnlag

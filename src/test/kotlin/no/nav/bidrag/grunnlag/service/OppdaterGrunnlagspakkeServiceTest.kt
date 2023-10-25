@@ -14,8 +14,6 @@ import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
@@ -26,6 +24,8 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
+import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -58,7 +58,7 @@ class OppdaterGrunnlagspakkeServiceTest {
     private lateinit var familieBaSakConsumerMock: FamilieBaSakConsumer
 
     @Mock
-    private lateinit var bidragGcpProxyConsumerMock: BidragGcpProxyConsumer
+    private lateinit var pensjonConsumerMock: PensjonConsumer
 
     @Mock
     private lateinit var inntektskomponentenServiceMock: InntektskomponentenService
@@ -286,7 +286,7 @@ class OppdaterGrunnlagspakkeServiceTest {
                 TestUtil.byggBarnetillegg()
             )
         Mockito.`when`(
-            bidragGcpProxyConsumerMock.hentBarnetilleggPensjon(
+            pensjonConsumerMock.hentBarnetilleggPensjon(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
                     HentBarnetilleggPensjonRequest::class.java
                 )

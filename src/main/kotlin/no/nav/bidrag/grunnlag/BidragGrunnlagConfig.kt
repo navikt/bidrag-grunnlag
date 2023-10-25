@@ -13,12 +13,12 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.commons.web.UserMdcFilter
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
+import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.service.SecurityTokenService
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
@@ -93,19 +93,6 @@ class BidragGrunnlagConfig {
     }
 
     @Bean
-    fun bidragGcpProxyConsumer(
-        @Value("\${BIDRAGGCPPROXY_URL}") url: String,
-        restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
-    ): BidragGcpProxyConsumer {
-        LOGGER.info("Url satt i config: $url")
-        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidraggcpproxy"))
-        return BidragGcpProxyConsumer(restTemplate)
-    }
-
-    @Bean
     fun inntektskomponentenConsumer(
         @Value("\${INNTEKTSKOMPONENTEN_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
@@ -129,6 +116,19 @@ class BidragGrunnlagConfig {
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
         restTemplate.interceptors.add(securityTokenService.generateBearerToken("sigrun"))
         return SigrunConsumer(restTemplate)
+    }
+
+    @Bean
+    fun pensjonConsumer(
+        @Value("\${PENSJON_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        securityTokenService: SecurityTokenService,
+        exceptionLogger: ExceptionLogger
+    ): PensjonConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(securityTokenService.generateBearerToken("pensjon"))
+        return PensjonConsumer(restTemplate)
     }
 
     @Bean

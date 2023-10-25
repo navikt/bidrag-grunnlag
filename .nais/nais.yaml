@@ -27,11 +27,11 @@ spec:
       external:
         - host: {{ azure.familiebasak_url }}
         - host: {{ azure.familieefsak_url }}
-        - host: {{ azure.bidraggcpproxy_url }}
         - host: {{ azure.bidragperson_url }}
         - host: {{ azure.familiekssak_url }}
         - host: {{ azure.inntektskomponenten_base_url }}
         - host: {{ azure.sigrun_base_url }}
+        - host: {{ azure.pensjon_base_url }}
         - host: {{ azure.aareg_url }}
         - host: {{ azure.unsecure.ereg_url }}
   image: {{ image }}
@@ -86,6 +86,10 @@ spec:
       value: https://{{ azure.sigrun_url }}
     - name: SIGRUN_SCOPE
       value: {{ azure.sigrun_scope }}
+    - name: PENSJON_URL
+      value: https://{{ azure.pensjon_url }}
+    - name: PENSJON_SCOPE
+      value: {{ azure.pensjon_scope }}
     - name: BIDRAGPERSON_URL
       value: https://{{ azure.bidragperson_url }}
     - name: BIDRAGPERSON_SCOPE

@@ -7,14 +7,15 @@ azure:
   familiebasak_scope: prod-gcp.teamfamilie.familie-ba-sak
   familieefsak_url: familie-ef-sak.intern.nav.no
   familieefsak_scope: prod-gcp.teamfamilie.familie-ef-sak
-  bidraggcpproxy_url: bidrag-gcp-proxy.prod-fss-pub.nais.io
-  bidraggcpproxy_scope: prod-fss.bidrag.bidrag-gcp-proxy
   inntektskomponenten_base_url: team-inntekt-proxy.prod-fss-pub.nais.io
   inntektskomponenten_url: team-inntekt-proxy.prod-fss-pub.nais.io/proxy/inntektskomponenten
   inntektskomponenten_scope: prod-fss.team-inntekt.inntektskomponenten
   sigrun_base_url: team-inntekt-proxy.prod-fss-pub.nais.io
   sigrun_url: team-inntekt-proxy.prod-fss-pub.nais.io/proxy/sigrun
   sigrun_scope: prod-fss.team-inntekt.sigrun
+  pensjon_base_url: https://pensjon-pen.prod-fss-pub.nais.io
+  pensjon_url: https://pensjon-pen.prod-fss-pub.nais.io/pen/api/barnetillegg/search
+  pensjon_scope: prod-fss.pensjondeployer.pensjon-pen
   bidragperson_scope: prod-fss.bidrag.bidrag-person
   bidragperson_url: bidrag-person.prod-fss-pub.nais.io
   bidragperson_app: bidrag-person
@@ -30,9 +31,6 @@ azure:
     ereg_url: ereg-services.prod-fss-pub.nais.io
 dbname: bidrag-grunnlag-prod
 azureAccessInbound:
-  - application: bidrag-gcp-proxy
-    namespace: bidrag
-    cluster: prod-fss
   - application: bisys
     namespace: bidrag
     cluster: prod-fss
