@@ -55,7 +55,7 @@ class OppdaterBarnetillegg(
                         personIdOgPeriode.personId,
                         timestampOppdatering
                     )
-                    barnetilleggPensjonResponse.barnetilleggPensjonListe?.forEach { bt ->
+                    barnetilleggPensjonResponse.forEach { bt ->
                         antallPerioderFunnet++
                         persistenceService.opprettBarnetillegg(
                             BarnetilleggBo(

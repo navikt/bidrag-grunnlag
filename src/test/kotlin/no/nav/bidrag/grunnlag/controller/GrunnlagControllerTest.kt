@@ -22,7 +22,7 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
-import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonResponse
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
@@ -161,7 +161,8 @@ class GrunnlagControllerTest(
                 eq("/pen/api/barnetillegg/search"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<HentBarnetilleggPensjonResponse>>()
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
+
             )
         )
             .thenReturn(
@@ -275,7 +276,7 @@ class GrunnlagControllerTest(
                 eq("/pen/api/barnetillegg/search"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<HentBarnetilleggPensjonResponse>>()
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
             )
         )
             .thenThrow(

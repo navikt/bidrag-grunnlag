@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.consumer
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
-import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonResponse
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -16,6 +16,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.eq
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -43,7 +44,7 @@ internal class PensjonConsumerTest {
                 eq(BARNETILLEGG_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<HentBarnetilleggPensjonResponse>>()
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
             )
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentBarnetilleggPensjonResponse(), HttpStatus.OK))
@@ -53,11 +54,11 @@ internal class PensjonConsumerTest {
                 val hentBarnetilleggPensjonResponse = restResponseBarnetillegg.body
                 assertAll(
                     { assertThat(hentBarnetilleggPensjonResponse).isNotNull },
-                    { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!!.size).isEqualTo(2) },
-                    { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![0].barn).isEqualTo("barnIdent") },
-                    { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![0].beloep).isEqualTo(BigDecimal.valueOf(1000.11)) },
-                    { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![1].barn).isEqualTo("barnIdent") },
-                    { assertThat(hentBarnetilleggPensjonResponse.barnetilleggPensjonListe!![1].beloep).isEqualTo(BigDecimal.valueOf(2000.22)) }
+                    { assertThat(hentBarnetilleggPensjonResponse.size).isEqualTo(2) },
+                    { assertThat(hentBarnetilleggPensjonResponse[0].barn).isEqualTo("barnIdent") },
+                    { assertThat(hentBarnetilleggPensjonResponse[0].beloep).isEqualTo(BigDecimal.valueOf(1000.11)) },
+                    { assertThat(hentBarnetilleggPensjonResponse[1].barn).isEqualTo("barnIdent") },
+                    { assertThat(hentBarnetilleggPensjonResponse[1].beloep).isEqualTo(BigDecimal.valueOf(2000.22)) }
                 )
             }
 
@@ -77,7 +78,7 @@ internal class PensjonConsumerTest {
                 eq(BARNETILLEGG_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<HentBarnetilleggPensjonResponse>>()
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
             )
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
