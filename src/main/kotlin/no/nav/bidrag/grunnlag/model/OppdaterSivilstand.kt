@@ -88,17 +88,16 @@ class OppdaterSivilstand(
     private fun behandleSivilstandResponse(sivilstandDtoListe: List<SivilstandDto>, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
         var antallPerioderFunnet = 0
 
-        var periodeTil: LocalDate? = null
+        var periodeTil: LocalDate?
 
         for (indeks in sivilstandDtoListe.indices) {
             // Setter periodeTil lik periodeFra for neste forekomst.
             // Hvis det ikke finnes en neste forekomst så settes periodeTil lik null. Timestamp registrert brukes bare hvis neste forekomst ikke er historisk
-            if (sivilstandDtoListe.getOrNull(indeks + 1)?.historisk == true) {
-                periodeTil =
-                    sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
-                        ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
+            periodeTil = if (sivilstandDtoListe.getOrNull(indeks + 1)?.historisk == true) {
+                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
+                    ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
             } else {
-                periodeTil = sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
+                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed?.verdi
                     ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato?.verdi
                     ?: sivilstandDtoListe.getOrNull(indeks + 1)?.registrert?.toLocalDate()
             }

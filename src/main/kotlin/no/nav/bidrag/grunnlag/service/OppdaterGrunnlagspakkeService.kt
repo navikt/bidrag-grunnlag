@@ -10,11 +10,11 @@ import no.nav.bidrag.domain.enums.GrunnlagRequestType.OVERGANGSSTONAD
 import no.nav.bidrag.domain.enums.GrunnlagRequestType.SIVILSTAND
 import no.nav.bidrag.domain.enums.GrunnlagRequestType.SKATTEGRUNNLAG
 import no.nav.bidrag.domain.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
+import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
@@ -36,7 +36,7 @@ import java.time.LocalDateTime
 class OppdaterGrunnlagspakkeService(
     private val persistenceService: PersistenceService,
     private val familieBaSakConsumer: FamilieBaSakConsumer,
-    private val bidragGcpProxyConsumer: BidragGcpProxyConsumer,
+    private val pensjonConsumer: PensjonConsumer,
     private val inntektskomponentenService: InntektskomponentenService,
     private val sigrunConsumer: SigrunConsumer,
     private val bidragPersonConsumer: BidragPersonConsumer,
@@ -158,7 +158,7 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    bidragGcpProxyConsumer
+                    pensjonConsumer
                 )
                     .oppdaterBarnetillegg(barnetilleggRequestListe)
             )

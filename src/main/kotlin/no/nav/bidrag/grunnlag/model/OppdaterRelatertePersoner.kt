@@ -113,7 +113,7 @@ class OppdaterRelatertePersoner(
                 val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
                 SECURE_LOGGER.info("Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: $husstandsmedlemmerResponseDto")
 
-                if (!husstandsmedlemmerResponseDto.husstandListe.isNullOrEmpty()) {
+                if (husstandsmedlemmerResponseDto.husstandListe.isNotEmpty()) {
                     husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
                         husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
                             husstandsmedlemListe.add(
@@ -165,25 +165,23 @@ class OppdaterRelatertePersoner(
             is RestResponse.Success -> {
                 val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
 
-                if (!forelderBarnRelasjonResponse.forelderBarnRelasjon.isNullOrEmpty()) {
+                if (forelderBarnRelasjonResponse.forelderBarnRelasjon.isNotEmpty()) {
                     SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
                     forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { forelderBarnRelasjon ->
-                        if (forelderBarnRelasjon.relatertPersonsRolle == Familierelasjon.BARN) {
-                            // Kaller bidrag-person for å hente info om fødselsdato og navn
-                            if (forelderBarnRelasjon.relatertPersonsIdent != null) {
-                                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(PersonIdent(forelderBarnRelasjon.relatertPersonsIdent!!.verdi))
-                                // Lager en liste over fnr for alle barn som er funnet
-                                barnListe.add(
-                                    PersonBo(
-                                        forelderBarnRelasjon.relatertPersonsIdent?.verdi,
-                                        navnFoedselDoedResponseDto?.navn?.verdi,
-                                        navnFoedselDoedResponseDto?.fødselsdato?.verdi,
-                                        null,
-                                        null
-                                    )
+                        // Kaller bidrag-person for å hente info om fødselsdato og navn
+                        if (forelderBarnRelasjon.relatertPersonsRolle == Familierelasjon.BARN && forelderBarnRelasjon.relatertPersonsIdent != null) {
+                            val navnFoedselDoedResponseDto = hentNavnFoedselDoed(PersonIdent(forelderBarnRelasjon.relatertPersonsIdent!!.verdi))
+                            // Lager en liste over fnr for alle barn som er funnet
+                            barnListe.add(
+                                PersonBo(
+                                    forelderBarnRelasjon.relatertPersonsIdent?.verdi,
+                                    navnFoedselDoedResponseDto?.navn?.verdi,
+                                    navnFoedselDoedResponseDto?.fødselsdato?.verdi,
+                                    null,
+                                    null
                                 )
-                            }
+                            )
                         }
                     }
                     return barnListe

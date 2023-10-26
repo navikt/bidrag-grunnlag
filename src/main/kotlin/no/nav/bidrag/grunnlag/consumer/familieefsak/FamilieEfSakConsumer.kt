@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.consumer.familieefsak
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
@@ -36,7 +37,7 @@ open class FamilieEfSakConsumer(
             BarnetilsynResponse(emptyList())
         )
 
-        logResponse(logger, restResponse)
+        logResponse(SECURE_LOGGER, restResponse)
 
         return restResponse
     }
@@ -52,7 +53,7 @@ open class FamilieEfSakConsumer(
             Ressurs(EksternePerioderMedBeløpResponse(emptyList()))
         )
 
-        logResponse(logger, restResponse)
+        logResponse(SECURE_LOGGER, restResponse)
 
         return restResponse
     }

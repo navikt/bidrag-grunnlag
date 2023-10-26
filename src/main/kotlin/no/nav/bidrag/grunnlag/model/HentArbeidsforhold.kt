@@ -29,7 +29,6 @@ class HentArbeidsforhold(
         val arbeidsforholdListe = mutableListOf<ArbeidsforholdDto>()
 
         arbeidsforholdRequestListe.forEach { personIdOgPeriode ->
-            var antallPerioderFunnet = 0
             val hentArbeidsforholdRequest = HentArbeidsforholdRequest(
                 arbeidstakerId = personIdOgPeriode.personId
             )
@@ -110,10 +109,6 @@ class HentArbeidsforhold(
                         )
                     }
                     return arbeidsforholdListe
-
-//                    this.add(
-//                        HentGrunnlagDto(arbeidsforholdListe)
-//                    )
                 }
 
                 is RestResponse.Failure -> {

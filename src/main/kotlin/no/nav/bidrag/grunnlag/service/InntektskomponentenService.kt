@@ -71,9 +71,9 @@ class InntektskomponentenService(
     private fun mapResponsTilInternStruktur(httpStatus: HttpStatusCode, eksternRespons: List<ArbeidsInntektMaaned>): HentInntektListeResponseIntern {
         val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
-        eksternRespons.forEach() { arbeidsInntektMaaned ->
+        eksternRespons.forEach { arbeidsInntektMaaned ->
             val inntektInternListe = mutableListOf<InntektIntern>()
-            arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach() { inntekt ->
+            arbeidsInntektMaaned.arbeidsInntektInformasjon?.inntektListe?.forEach { inntekt ->
                 val inntektIntern = InntektIntern(
                     inntektType = inntekt.inntektType.toString(),
                     beloep = inntekt.beloep,

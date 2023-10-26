@@ -25,7 +25,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDate
-import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 @DisplayName("SigrunConsumerTest")
@@ -38,7 +37,7 @@ internal class SigrunConsumerTest {
     private val restTemplateMock: HttpHeaderRestTemplate? = null
 
     @Test
-    fun `Sjekk at ok respons fra BidragGcpProxy skattegrunnlag-endepunkt mappes korrekt`() {
+    fun `Sjekk at ok respons fra skattegrunnlag-endepunkt mappes korrekt`() {
         val request = TestUtil.byggHentSkattegrunnlagRequest()
 
         Mockito.`when`(
@@ -73,7 +72,7 @@ internal class SigrunConsumerTest {
     }
 
     @Test
-    fun `Sjekk at exception fra BidragGcpProxy skattegrunnlag-endepunkt håndteres korrekt`() {
+    fun `Sjekk at exception fra skattegrunnlag-endepunkt håndteres korrekt`() {
         val request = TestUtil.byggHentSkattegrunnlagRequest()
 
         Mockito.`when`(

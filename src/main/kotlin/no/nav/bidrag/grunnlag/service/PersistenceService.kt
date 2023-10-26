@@ -74,7 +74,6 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagspostDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdOgSmaabarnstilleggDto
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -94,8 +93,6 @@ class PersistenceService(
     val barnetilsynRepository: BarnetilsynRepository,
     val overgangsstønadRepository: OvergangsstonadRepository
 ) {
-
-    private val LOGGER = LoggerFactory.getLogger(PersistenceService::class.java)
 
     fun opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Grunnlagspakke {
         val nyGrunnlagspakke = opprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity()
@@ -287,7 +284,7 @@ class PersistenceService(
 
         // Setter utløpte Ainntekter til utløpt.
         SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende Ainntekter til utløpt.")
-        comparatorResult.expiredEntities.forEach() { expiredEntity ->
+        comparatorResult.expiredEntities.forEach { expiredEntity ->
             val expiredAinntekt =
                 expiredEntity.periodEntity.copy(brukTil = timestampOppdatering, aktiv = false)
                     .toAinntektEntity()
@@ -295,7 +292,7 @@ class PersistenceService(
         }
         // Oppdaterer hentet tidspunkt for uendrede Ainntekter.
         SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende Ainntekter med nytt hentet tidspunkt.")
-        comparatorResult.equalEntities.forEach() { equalEntity ->
+        comparatorResult.equalEntities.forEach { equalEntity ->
             val unchangedAinntekt =
                 equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering).toAinntektEntity()
             SECURE_LOGGER.debug("Oppdaterer for inntektId = ${unchangedAinntekt.inntektId}")
@@ -303,9 +300,9 @@ class PersistenceService(
         }
         // Lagrer nye Ainntekter og Ainntektsposter.
         SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye Ainntekter med underliggende inntektsposter")
-        comparatorResult.updatedEntities.forEach() { updatedEntity ->
+        comparatorResult.updatedEntities.forEach { updatedEntity ->
             val ainntekt = ainntektRepository.save(updatedEntity.periodEntity.toAinntektEntity())
-            updatedEntity.children?.forEach() { ainntektspostDto ->
+            updatedEntity.children?.forEach { ainntektspostDto ->
                 val updatedAinntekt =
                     ainntektspostDto.copy(inntektId = ainntekt.inntektId).toAinntektspostEntity()
                 ainntektspostRepository.save(updatedAinntekt)
@@ -335,7 +332,7 @@ class PersistenceService(
 
         // Setter utløpte skattegrunnlag til utløpt.
         SECURE_LOGGER.debug("Setter ${comparatorResult.expiredEntities.size} eksisterende skattegrunnlag til utløpt.")
-        comparatorResult.expiredEntities.forEach() { expiredEntity ->
+        comparatorResult.expiredEntities.forEach { expiredEntity ->
             val expiredSkattegrunnlag =
                 expiredEntity.periodEntity.copy(aktiv = false, brukTil = timestampOppdatering)
                     .toSkattegrunnlagEntity()
@@ -343,7 +340,7 @@ class PersistenceService(
         }
         // Oppdaterer hentet tidspunkt for uendrede skattegrunnlag.
         SECURE_LOGGER.debug("Oppdaterer ${comparatorResult.equalEntities.size} uendrede eksisterende skattegrunnlag med nytt hentet tidspunkt.")
-        comparatorResult.equalEntities.forEach() { equalEntity ->
+        comparatorResult.equalEntities.forEach { equalEntity ->
             val unchangedSkattegrunnlag =
                 equalEntity.periodEntity.copy(hentetTidspunkt = timestampOppdatering)
                     .toSkattegrunnlagEntity()
@@ -351,10 +348,10 @@ class PersistenceService(
         }
         // Lagrer nye skattegrunnlag og skattegrunnlagsposter.
         SECURE_LOGGER.debug("Oppretter ${comparatorResult.updatedEntities.size} nye skattegrunnlag med underliggende skattegrunnlagsposter")
-        comparatorResult.updatedEntities.forEach() { updatedEntity ->
+        comparatorResult.updatedEntities.forEach { updatedEntity ->
             val updatedSkattegrunnlag =
                 skattegrunnlagRepository.save(updatedEntity.periodEntity.toSkattegrunnlagEntity())
-            updatedEntity.children?.forEach() { ainntektspostDto ->
+            updatedEntity.children?.forEach { ainntektspostDto ->
                 val skattegrunnlagspost =
                     ainntektspostDto.copy(skattegrunnlagId = updatedSkattegrunnlag.skattegrunnlagId)
                         .toSkattegrunnlagspostEntity()
@@ -414,7 +411,7 @@ class PersistenceService(
                 if (inntekt.personId == personId) {
                     val ainntektspostListe = mutableListOf<AinntektspostBo>()
                     ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
-                        .forEach() { ainntektspost ->
+                        .forEach { ainntektspost ->
                             ainntektspostListe.add(ainntektspost.toAinntektspostBo())
                         }
                     ainntektForPersonIdListe.add(
@@ -437,7 +434,7 @@ class PersistenceService(
                 if (skattegrunnlag.personId == personId) {
                     val skattegrunnlagpostListe = mutableListOf<SkattegrunnlagspostBo>()
                     skattegrunnlagspostRepository.hentSkattegrunnlagsposter(skattegrunnlag.skattegrunnlagId)
-                        .forEach() { skattegrunnlagspost -> skattegrunnlagpostListe.add(skattegrunnlagspost.toSkattegrunnlagspostBo()) }
+                        .forEach { skattegrunnlagspost -> skattegrunnlagpostListe.add(skattegrunnlagspost.toSkattegrunnlagspostBo()) }
                     skattegrunnlagForPersonIdListe.add(
                         PeriodComparable(skattegrunnlag.toSkattegrunnlagBo(), skattegrunnlagpostListe)
                     )

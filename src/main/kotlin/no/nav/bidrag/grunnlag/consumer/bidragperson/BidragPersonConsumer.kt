@@ -4,6 +4,7 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.domain.number.Fødselsår
 import no.nav.bidrag.domain.string.FulltNavn
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
@@ -40,7 +41,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null)
         )
 
-        logResponse(logger, restResponse)
+        logResponse(SECURE_LOGGER, restResponse)
 
         return restResponse
     }
@@ -56,7 +57,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             ForelderBarnRelasjonDto(emptyList())
         )
 
-        logResponse(logger, restResponse)
+        logResponse(SECURE_LOGGER, restResponse)
 
         return restResponse
     }
@@ -75,7 +76,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             HusstandsmedlemmerDto(emptyList())
         )
 
-        logResponse(logger, restResponse)
+        logResponse(SECURE_LOGGER, restResponse)
 
         return restResponse
     }
@@ -91,7 +92,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             SivilstandshistorikkDto(emptyList())
         )
 
-        logResponse(logger, restResponse)
+        logResponse(SECURE_LOGGER, restResponse)
 
         return restResponse
     }

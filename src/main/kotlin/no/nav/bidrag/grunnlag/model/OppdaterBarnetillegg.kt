@@ -6,8 +6,8 @@ import no.nav.bidrag.domain.enums.GrunnlagRequestType
 import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.BidragGcpProxyConsumer
-import no.nav.bidrag.grunnlag.consumer.bidraggcpproxy.api.barnetillegg.HentBarnetilleggPensjonRequest
+import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
+import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
@@ -21,7 +21,7 @@ class OppdaterBarnetillegg(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val bidragGcpProxyConsumer: BidragGcpProxyConsumer
+    private val pensjonConsumer: PensjonConsumer
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -43,7 +43,7 @@ class OppdaterBarnetillegg(
 
             when (
                 val restResponseBarnetilleggPensjon =
-                    bidragGcpProxyConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)
+                    pensjonConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)
             ) {
                 is RestResponse.Success -> {
                     val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
@@ -55,7 +55,7 @@ class OppdaterBarnetillegg(
                         personIdOgPeriode.personId,
                         timestampOppdatering
                     )
-                    barnetilleggPensjonResponse.barnetilleggPensjonListe?.forEach { bt ->
+                    barnetilleggPensjonResponse.forEach { bt ->
                         antallPerioderFunnet++
                         persistenceService.opprettBarnetillegg(
                             BarnetilleggBo(
@@ -65,7 +65,7 @@ class OppdaterBarnetillegg(
                                 barnetilleggType = BarnetilleggType.PENSJON.toString(),
                                 periodeFra = bt.fom,
                                 // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                periodeTil = bt.tom?.plusMonths(1)?.withDayOfMonth(1),
+                                periodeTil = bt.tom.plusMonths(1)?.withDayOfMonth(1),
                                 aktiv = true,
                                 brukFra = timestampOppdatering,
                                 brukTil = null,
