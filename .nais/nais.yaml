@@ -31,7 +31,7 @@ spec:
         - host: {{ azure.familiekssak_url }}
         - host: {{ azure.inntektskomponenten_base_url }}
         - host: {{ azure.sigrun_base_url }}
-        - host: {{ azure.pensjon_base_url }}
+        - host: {{ azure.pensjon_url }}
         - host: {{ azure.aareg_url }}
         - host: {{ azure.unsecure.ereg_url }}
   image: {{ image }}

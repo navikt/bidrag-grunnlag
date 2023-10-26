@@ -13,8 +13,7 @@ azure:
   sigrun_base_url: team-inntekt-proxy.prod-fss-pub.nais.io
   sigrun_url: team-inntekt-proxy.prod-fss-pub.nais.io/proxy/sigrun
   sigrun_scope: prod-fss.team-inntekt.sigrun
-  pensjon_base_url: pensjon-pen.prod-fss-pub.nais.io
-  pensjon_url: pensjon-pen.prod-fss-pub.nais.io/pen/api/barnetillegg/search
+  pensjon_url: pensjon-pen.prod-fss-pub.nais.io
   pensjon_scope: prod-fss.pensjondeployer.pensjon-pen
   bidragperson_scope: prod-fss.bidrag.bidrag-person
   bidragperson_url: bidrag-person.prod-fss-pub.nais.io
