@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.consumer.familiekssak
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
@@ -29,7 +30,7 @@ open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate
             BisysResponsDto(emptyList(), emptyList())
         )
 
-        logResponse(logger, restResponse)
+        logResponse(SECURE_LOGGER, restResponse)
 
         return restResponse
     }

@@ -44,7 +44,7 @@ class HentGrunnlagService(
             periodeTil = grunnlagRequestDto.periodeTil
         )
 
-    inner class HentGrunnlag() : MutableList<ArbeidsforholdDto> by mutableListOf() {
+    inner class HentGrunnlag : MutableList<ArbeidsforholdDto> by mutableListOf() {
         fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlag {
             this.addAll(
                 HentArbeidsforhold(
