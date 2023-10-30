@@ -21,16 +21,16 @@
     <!-- build/language -->
     <kotlin.version>1.9.10</kotlin.version>
     <build-helper-maven.version>3.2.0</build-helper-maven.version>
-    <token-support.version>3.1.2</token-support.version>
+    <token-support.version>3.1.7</token-support.version>
     <!-- dependencies -->
     <bidrag-commons.version>20231002151454_eab4a7b</bidrag-commons.version>
     <bidrag-commons-test.version>1.20230511093912_dc35d81</bidrag-commons-test.version>
     <bidrag-transport.version>20230929134005_dfcb25d</bidrag-transport.version>
     <bidrag-tilgangskontroll.version>1.10.4</bidrag-tilgangskontroll.version>
-    <mockito-kotlin.version>4.1.0</mockito-kotlin.version>
+    <mockito-kotlin.version>5.1.0</mockito-kotlin.version>
     <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
     <nimbus-jose-jwt.version>9.31</nimbus-jose-jwt.version>
-    <springframework-cloud.version>4.0.2</springframework-cloud.version>
+    <springframework-cloud.version>4.0.4</springframework-cloud.version>
     <com.squareup.okhttp3.version>4.11.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <bidrag-behandling-felles.version>0.0.85</bidrag-behandling-felles.version>
@@ -88,7 +88,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.15.1</version>
+      <version>2.15.3</version>
     </dependency>
 
     <!-- nav -->
@@ -331,7 +331,7 @@
           <dependency>
             <groupId>com.pinterest</groupId>
             <artifactId>ktlint</artifactId>
-            <version>0.47.1</version>
+            <version>0.50.0</version>
           </dependency>
           <!-- additional 3rd party ruleset(s) can be specified here -->
         </dependencies>
