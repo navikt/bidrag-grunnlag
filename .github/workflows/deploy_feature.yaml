@@ -10,17 +10,18 @@ env:
 
 jobs:
   build-deploy:
-    name: "Build and deploy to feature"
+    name: "Build and deploy"
     permissions:
       contents: "read"
       id-token: "write"
-    uses: navikt/bidrag-workflow/.github/workflows/deploy_feature.yaml@main
+    uses: navikt/bidrag-workflow/.github/workflows/deploy.yaml@main
     secrets: inherit
 
   run_cucumber_tests:
     runs-on: ubuntu-latest
     name: Run cucumber tests
     needs: build-deploy
+    if: ${{ always() && needs.build-deploy.outputs.deploy_suksess == 'true' }}
 
     env:
       INGRESS_CUCUMBER: https://bidrag-cucumber-cloud-feature.ekstern.dev.nav.no
