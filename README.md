@@ -71,7 +71,7 @@ Kan vurdere å sette opp wiremocks for de eksterne tjenestene for å kunne kjør
 ## Testing i Swagger
 Applikasjonen testes enklest i Swagger (for generering av gyldig token, se over):
 ```
-https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/swagger-ui/index.html?configUrl=/bidrag-grunnlag/v3/api-docs/swagger-config#/grunnlagspakke-controller
+https://bidrag-grunnlag.intern.dev.nav.no/swagger-ui/index.html
 ```
 
 ### Kjøre lokalt mot nais med lokal database
