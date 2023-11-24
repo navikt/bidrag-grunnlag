@@ -45,7 +45,7 @@ data class Kontantstotte(
     val belop: Int = 0,
 
     @Column(nullable = false, name = "hentet_tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
 
 fun Kontantstotte.toKontantstotteBo() = with(::KontantstotteBo) {
@@ -55,6 +55,6 @@ fun Kontantstotte.toKontantstotteBo() = with(::KontantstotteBo) {
             when (parameters.name) {
                 else -> propertiesByName[parameters.name]?.get(this@toKontantstotteBo)
             }
-        }
+        },
     )
 }

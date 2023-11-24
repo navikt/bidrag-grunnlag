@@ -21,7 +21,7 @@ class OppdaterBarnetillegg(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val pensjonConsumer: PensjonConsumer
+    private val pensjonConsumer: PensjonConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -35,7 +35,7 @@ class OppdaterBarnetillegg(
             val hentBarnetilleggPensjonRequest = HentBarnetilleggPensjonRequest(
                 mottaker = personIdOgPeriode.personId,
                 fom = personIdOgPeriode.periodeFra,
-                tom = personIdOgPeriode.periodeTil.minusDays(1)
+                tom = personIdOgPeriode.periodeTil.minusDays(1),
             )
 
             LOGGER.info("Kaller barnetillegg pensjon")
@@ -53,7 +53,7 @@ class OppdaterBarnetillegg(
                     persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
                         grunnlagspakkeId,
                         personIdOgPeriode.personId,
-                        timestampOppdatering
+                        timestampOppdatering,
                     )
                     barnetilleggPensjonResponse.forEach { bt ->
                         antallPerioderFunnet++
@@ -71,8 +71,8 @@ class OppdaterBarnetillegg(
                                 brukTil = null,
                                 belopBrutto = bt.beloep,
                                 barnType = if (bt.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
-                                hentetTidspunkt = timestampOppdatering
-                            )
+                                hentetTidspunkt = timestampOppdatering,
+                            ),
                         )
                     }
                     this.add(
@@ -80,8 +80,8 @@ class OppdaterBarnetillegg(
                             GrunnlagRequestType.BARNETILLEGG,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet"
-                        )
+                            "Antall perioder funnet: $antallPerioderFunnet",
+                        ),
                     )
                 }
 
@@ -90,8 +90,8 @@ class OppdaterBarnetillegg(
                         GrunnlagRequestType.BARNETILLEGG,
                         personIdOgPeriode.personId,
                         if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                        "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
-                    )
+                        "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                    ),
                 )
             }
         }

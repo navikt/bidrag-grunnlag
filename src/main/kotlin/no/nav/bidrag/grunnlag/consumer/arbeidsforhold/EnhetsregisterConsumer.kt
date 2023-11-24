@@ -28,7 +28,7 @@ open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTempla
             HttpMethod.GET,
             initHttpEntityEreg(request),
             HentEnhetsregisterResponse::class.java,
-            HentEnhetsregisterResponse()
+            HentEnhetsregisterResponse(),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

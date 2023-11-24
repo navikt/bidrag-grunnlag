@@ -21,7 +21,7 @@ data class GrunnlagspakkeBo(
     val gyldigTil: LocalDate?,
 
     @Schema(description = "Til hvilket formål skal grunnlagspakken benyttes. Bidrag, Forskudd, Særtilskudd")
-    val formaal: String
+    val formaal: String,
 )
 
 fun GrunnlagspakkeBo.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
@@ -32,6 +32,6 @@ fun GrunnlagspakkeBo.toGrunnlagspakkeEntity() = with(::Grunnlagspakke) {
                 Grunnlagspakke::grunnlagspakkeId.name -> 0
                 else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeEntity)
             }
-        }
+        },
     )
 }

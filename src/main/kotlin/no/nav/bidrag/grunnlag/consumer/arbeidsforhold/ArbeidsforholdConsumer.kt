@@ -33,7 +33,7 @@ open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTempla
             HttpMethod.GET,
             initHttpEntityAareg(request, request.arbeidstakerId),
             responseType,
-            emptyList()
+            emptyList(),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

@@ -52,5 +52,5 @@ data class Barnetilsyn(
     val skolealder: Skolealder?,
 
     @Column(nullable = false, name = "hentet_tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )

@@ -22,7 +22,7 @@ class OppdaterRelatertePersoner(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val bidragPersonConsumer: BidragPersonConsumer
+    private val bidragPersonConsumer: BidragPersonConsumer,
 
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
@@ -41,7 +41,7 @@ class OppdaterRelatertePersoner(
             persistenceService.oppdaterEksisterendeRelatertPersonTilInaktiv(
                 grunnlagspakkeId,
                 personIdOgPeriode.personId,
-                timestampOppdatering
+                timestampOppdatering,
             )
 
             // henter alle husstandsmedlemmer til BM/BP
@@ -67,8 +67,8 @@ class OppdaterRelatertePersoner(
                             aktiv = true,
                             brukFra = timestampOppdatering,
                             brukTil = null,
-                            hentetTidspunkt = timestampOppdatering
-                        )
+                            hentetTidspunkt = timestampOppdatering,
+                        ),
                     )
                 }
             }
@@ -91,8 +91,8 @@ class OppdaterRelatertePersoner(
                         aktiv = true,
                         brukFra = timestampOppdatering,
                         brukTil = null,
-                        hentetTidspunkt = timestampOppdatering
-                    )
+                        hentetTidspunkt = timestampOppdatering,
+                    ),
                 )
             }
         }
@@ -122,8 +122,8 @@ class OppdaterRelatertePersoner(
                                     husstandsmedlem.navn.verdi,
                                     husstandsmedlem.fødselsdato?.verdi,
                                     husstandsmedlem.gyldigFraOgMed?.verdi,
-                                    husstandsmedlem.gyldigTilOgMed?.verdi
-                                )
+                                    husstandsmedlem.gyldigTilOgMed?.verdi,
+                                ),
                             )
                         }
                     }
@@ -133,10 +133,10 @@ class OppdaterRelatertePersoner(
                         GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                         husstandsmedlemmerRequest,
                         GrunnlagsRequestStatus.HENTET,
-                        "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}"
-                    )
+                        "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}",
+                    ),
                 )
-                return husstandsmedlemListe.sortedWith(compareBy({ it.personId }, { it.husstandsmedlemPeriodeFra }))
+                return slåSammenSammenhengendePerioder(husstandsmedlemListe.sortedWith(compareBy({ it.personId }, { it.husstandsmedlemPeriodeFra })))
             }
 
             is RestResponse.Failure -> this.add(
@@ -144,8 +144,8 @@ class OppdaterRelatertePersoner(
                     GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     husstandsmedlemmerRequest,
                     if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                    "Feil ved henting av husstandsmedlemmer og egne barn for: $husstandsmedlemmerRequest."
-                )
+                    "Feil ved henting av husstandsmedlemmer og egne barn for: $husstandsmedlemmerRequest.",
+                ),
             )
         }
         return emptyList()
@@ -179,8 +179,8 @@ class OppdaterRelatertePersoner(
                                     navnFoedselDoedResponseDto?.navn?.verdi,
                                     navnFoedselDoedResponseDto?.fødselsdato?.verdi,
                                     null,
-                                    null
-                                )
+                                    null,
+                                ),
                             )
                         }
                     }
@@ -193,8 +193,8 @@ class OppdaterRelatertePersoner(
                     GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     forelderBarnRequest.verdi,
                     if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                    "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.verdi} ."
-                )
+                    "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.verdi} .",
+                ),
             )
         }
         return emptyList()
@@ -216,12 +216,43 @@ class OppdaterRelatertePersoner(
                     foedselOgDoedResponse.navn,
                     foedselOgDoedResponse.fødselsdato,
                     foedselOgDoedResponse.fødselsår,
-                    foedselOgDoedResponse.dødsdato
+                    foedselOgDoedResponse.dødsdato,
                 )
             }
 
             is RestResponse.Failure ->
                 return null
         }
+    }
+
+    // Metode for å slå sammen sammenhengende perioder en person har vært husstandsmedlem. Responsen fra bidrag-person er gruppert per husstand,
+    // det kan derfor være flere perioder for samme person. Metoden slår sammen perioder som er sammenhengende.
+    private fun slåSammenSammenhengendePerioder(husstandsmedlemListe: List<PersonBo>): List<PersonBo> {
+        if (husstandsmedlemListe.size < 2) {
+            return husstandsmedlemListe
+        }
+
+        val resultatListe = mutableListOf<PersonBo>()
+        var gjeldendeForekomst = husstandsmedlemListe.first()
+
+        for (i in 1 until husstandsmedlemListe.size) {
+            val nesteForekomst = husstandsmedlemListe[i]
+
+            if (gjeldendeForekomst.personId == nesteForekomst.personId &&
+                gjeldendeForekomst.husstandsmedlemPeriodeTil == nesteForekomst.husstandsmedlemPeriodeFra
+            ) {
+                // Slår sammen periodene
+                gjeldendeForekomst = gjeldendeForekomst.copy(husstandsmedlemPeriodeTil = nesteForekomst.husstandsmedlemPeriodeTil)
+            } else {
+                // Det finnes ikke flere sammenhengende forekomster for person i listen, legg til gjeldende forekomst i resultatlisten
+                resultatListe.add(gjeldendeForekomst)
+                gjeldendeForekomst = nesteForekomst
+            }
+        }
+
+        // Legg til det siste objektet i resultatlisten
+        resultatListe.add(gjeldendeForekomst)
+
+        return resultatListe
     }
 }

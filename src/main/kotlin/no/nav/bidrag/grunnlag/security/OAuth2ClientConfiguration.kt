@@ -13,14 +13,14 @@ class OAuth2ClientConfiguration {
     @Bean
     fun authorizedClientManager(
         clientRegistrationRepository: ClientRegistrationRepository?,
-        authorizedClientService: OAuth2AuthorizedClientService?
+        authorizedClientService: OAuth2AuthorizedClientService?,
     ): OAuth2AuthorizedClientManager? {
         val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
             .clientCredentials()
             .build()
         val authorizedClientManager = AuthorizedClientServiceOAuth2AuthorizedClientManager(
             clientRegistrationRepository,
-            authorizedClientService
+            authorizedClientService,
         )
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
         return authorizedClientManager

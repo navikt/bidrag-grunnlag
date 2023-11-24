@@ -5,15 +5,15 @@ import java.time.LocalDate
 data class EksternePerioderRequest(
     val personIdent: String,
     val fomDato: LocalDate,
-    val tomDato: LocalDate
+    val tomDato: LocalDate,
 )
 
 data class Ressurs(
-    val data: EksternePerioderMedBeløpResponse
+    val data: EksternePerioderMedBeløpResponse,
 )
 
 data class EksternePerioderMedBeløpResponse(
-    val perioder: List<EksternPeriodeMedBeløp>
+    val perioder: List<EksternPeriodeMedBeløp>,
 )
 
 data class EksternPeriodeMedBeløp(
@@ -21,5 +21,5 @@ data class EksternPeriodeMedBeløp(
     val fomDato: LocalDate,
     val tomDato: LocalDate,
     val beløp: Int,
-    val datakilde: String
+    val datakilde: String,
 )

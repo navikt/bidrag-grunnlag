@@ -38,7 +38,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             HttpMethod.POST,
             initHttpEntity(PersonRequest(personIdent)),
             NavnFødselDødDto::class.java,
-            NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null)
+            NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null),
         )
 
         logResponse(SECURE_LOGGER, restResponse)
@@ -54,7 +54,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             HttpMethod.POST,
             initHttpEntity(PersonRequest(personIdent)),
             ForelderBarnRelasjonDto::class.java,
-            ForelderBarnRelasjonDto(emptyList())
+            ForelderBarnRelasjonDto(emptyList()),
         )
 
         logResponse(SECURE_LOGGER, restResponse)
@@ -65,7 +65,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     open fun hentHusstandsmedlemmer(personIdent: PersonIdent): RestResponse<HusstandsmedlemmerDto> {
         logger.info(
             "Kaller bidrag-person som igjen henter info om en persons bostedsadresser " +
-                "og personer som har bodd på samme adresse på samme tid fra PDL"
+                "og personer som har bodd på samme adresse på samme tid fra PDL",
         )
 
         val restResponse = restTemplate.tryExchange(
@@ -73,7 +73,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             HttpMethod.POST,
             initHttpEntity(PersonRequest(personIdent)),
             HusstandsmedlemmerDto::class.java,
-            HusstandsmedlemmerDto(emptyList())
+            HusstandsmedlemmerDto(emptyList()),
         )
 
         logResponse(SECURE_LOGGER, restResponse)
@@ -89,7 +89,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             HttpMethod.POST,
             initHttpEntity(PersonRequest(personIdent)),
             SivilstandshistorikkDto::class.java,
-            SivilstandshistorikkDto(emptyList())
+            SivilstandshistorikkDto(emptyList()),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

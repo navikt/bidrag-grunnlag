@@ -52,7 +52,7 @@ data class Barnetillegg(
     val barnType: String = "",
 
     @Column(nullable = false, name = "hentet_tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
 
 fun Barnetillegg.toBarnetilleggBo() = with(::BarnetilleggBo) {
@@ -62,6 +62,6 @@ fun Barnetillegg.toBarnetilleggBo() = with(::BarnetilleggBo) {
             when (parameter.name) {
                 else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggBo)
             }
-        }
+        },
     )
 }

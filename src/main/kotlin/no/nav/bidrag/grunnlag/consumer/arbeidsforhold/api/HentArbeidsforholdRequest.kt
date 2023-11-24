@@ -6,5 +6,5 @@ data class HentArbeidsforholdRequest(
     val rapporteringsordningFilter: String? = null,
     val arbeidsforholdstatusFilter: String? = null,
     val historikk: Boolean = true,
-    val sporingsinformasjon: Boolean = true
+    val sporingsinformasjon: Boolean = true,
 )

@@ -38,12 +38,12 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
             ApiResponse(responseCode = "400", description = "Feil opplysinger oppgitt"),
             ApiResponse(responseCode = "401", description = "Sikkerhetstoken mangler, er utløpt, eller av andre årsaker ugyldig"),
             ApiResponse(responseCode = "500", description = "Serverfeil"),
-            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
-        ]
+            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
+        ],
     )
     fun opprettNyGrunnlagspakke(
         @Valid @RequestBody
-        request: OpprettGrunnlagspakkeRequestDto
+        request: OpprettGrunnlagspakkeRequestDto,
     ): ResponseEntity<Int>? {
         val grunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(request)
         LOGGER.info("Følgende grunnlagspakke er opprettet: $grunnlagspakkeOpprettet")
@@ -59,16 +59,15 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
             ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
             ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
             ApiResponse(responseCode = "500", description = "Serverfeil"),
-            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
-        ]
+            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
+        ],
     )
     fun oppdaterGrunnlagspakke(
         @PathVariable @NotNull
         grunnlagspakkeId: Int,
         @Valid @RequestBody
-        request: OppdaterGrunnlagspakkeRequestDto
-    ):
-        ResponseEntity<OppdaterGrunnlagspakkeDto>? {
+        request: OppdaterGrunnlagspakkeRequestDto,
+    ): ResponseEntity<OppdaterGrunnlagspakkeDto>? {
         val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(grunnlagspakkeId, request)
         LOGGER.info("Følgende grunnlagspakke ble oppdatert: $grunnlagspakkeId")
         SECURE_LOGGER.info("Oppdater grunnlagspakkeId: $grunnlagspakkeId med request: $request")
@@ -84,12 +83,12 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
             ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
             ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
             ApiResponse(responseCode = "500", description = "Serverfeil"),
-            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
-        ]
+            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
+        ],
     )
     fun hentGrunnlagspakke(
         @PathVariable @NotNull
-        grunnlagspakkeId: Int
+        grunnlagspakkeId: Int,
     ): ResponseEntity<HentGrunnlagspakkeDto>? {
         val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeId)
         LOGGER.info("Følgende grunnlagspakke ble hentet: ${grunnlagspakkeFunnet.grunnlagspakkeId}")
@@ -107,12 +106,12 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
             ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data for aktuell grunnlagspakke"),
             ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
             ApiResponse(responseCode = "500", description = "Serverfeil"),
-            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
-        ]
+            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
+        ],
     )
     fun lukkGrunnlagspakke(
         @PathVariable @NotNull
-        grunnlagspakkeId: Int
+        grunnlagspakkeId: Int,
     ): ResponseEntity<Int>? {
         val oppdatertgrunnlagspakke = grunnlagspakkeService.lukkGrunnlagspakke(grunnlagspakkeId)
         LOGGER.info("Følgende grunnlagspakke ble oppdatert med gyldigTil-dato: $oppdatertgrunnlagspakke")
@@ -122,7 +121,7 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
     @PostMapping(HENT_GRUNNLAG)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
-        summary = "Trigger innhenting av grunnlag for personer angitt i requesten"
+        summary = "Trigger innhenting av grunnlag for personer angitt i requesten",
     )
     @ApiResponses(
         value = [
@@ -131,14 +130,13 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
             ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data"),
             ApiResponse(responseCode = "404", description = "Grunnlagspakke ikke funnet"),
             ApiResponse(responseCode = "500", description = "Serverfeil"),
-            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig")
-        ]
+            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
+        ],
     )
     fun hentGrunnlag(
         @Valid @RequestBody
-        request: HentGrunnlagRequestDto
-    ):
-        ResponseEntity<HentGrunnlagDto>? {
+        request: HentGrunnlagRequestDto,
+    ): ResponseEntity<HentGrunnlagDto>? {
         val hentGrunnlagDto = hentGrunnlagService.hentGrunnlag(request)
         LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
         return ResponseEntity(hentGrunnlagDto, HttpStatus.OK)

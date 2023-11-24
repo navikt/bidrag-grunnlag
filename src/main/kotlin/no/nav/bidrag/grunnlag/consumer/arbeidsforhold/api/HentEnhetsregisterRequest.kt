@@ -4,5 +4,5 @@ import java.time.LocalDate
 
 data class HentEnhetsregisterRequest(
     val organisasjonsnummer: String,
-    val gyldigDato: String? = LocalDate.now().toString()
+    val gyldigDato: String? = LocalDate.now().toString(),
 )

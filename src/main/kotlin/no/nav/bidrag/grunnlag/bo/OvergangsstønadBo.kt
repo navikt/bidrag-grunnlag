@@ -33,7 +33,7 @@ data class OvergangsstønadBo(
     val belop: Int,
 
     @Schema(description = "Hentet tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 
 )
 
@@ -45,6 +45,6 @@ fun OvergangsstønadBo.toOvergangsstønadEntity() = with(::Overgangsstonad) {
                 Overgangsstonad::overgangsstonadId.name -> 0
                 else -> propertiesByName[parameters.name]?.get(this@toOvergangsstønadEntity)
             }
-        }
+        },
     )
 }

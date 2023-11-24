@@ -41,46 +41,46 @@ class OppdaterGrunnlagspakkeService(
     private val sigrunConsumer: SigrunConsumer,
     private val bidragPersonConsumer: BidragPersonConsumer,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
-    private val familieEfSakConsumer: FamilieEfSakConsumer
+    private val familieEfSakConsumer: FamilieEfSakConsumer,
 ) {
     fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,
         oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ): OppdaterGrunnlagspakkeDto {
         val oppdaterGrunnlagDtoListe = OppdaterGrunnlagspakke(
             grunnlagspakkeId,
-            timestampOppdatering
+            timestampOppdatering,
         )
             .oppdaterAinntekt(
-                hentRequestListeFor(AINNTEKT, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(AINNTEKT, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterSkattegrunnlag(
-                hentRequestListeFor(SKATTEGRUNNLAG, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(SKATTEGRUNNLAG, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                 hentRequestListeFor(
                     UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
-                    oppdaterGrunnlagspakkeRequestDto
-                )
+                    oppdaterGrunnlagspakkeRequestDto,
+                ),
             )
             .oppdaterBarnetillegg(
-                hentRequestListeFor(BARNETILLEGG, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(BARNETILLEGG, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterKontantstotte(
-                hentRequestListeFor(KONTANTSTOTTE, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(KONTANTSTOTTE, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterHusstandsmedlemmerOgEgneBarn(
-                hentRequestListeFor(HUSSTANDSMEDLEMMER_OG_EGNE_BARN, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(HUSSTANDSMEDLEMMER_OG_EGNE_BARN, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterSivilstand(
-                hentRequestListeFor(SIVILSTAND, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(SIVILSTAND, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterBarnetilsyn(
-                hentRequestListeFor(BARNETILSYN, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(BARNETILSYN, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterOvergangsstønad(
-                hentRequestListeFor(OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto)
+                hentRequestListeFor(OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto),
             )
 
         return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
@@ -88,7 +88,7 @@ class OppdaterGrunnlagspakkeService(
 
     private fun hentRequestListeFor(
         type: GrunnlagRequestType,
-        oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto
+        oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
     ): List<PersonIdOgPeriodeRequest> {
         val grunnlagRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
         oppdaterGrunnlagspakkeRequestDto.grunnlagRequestDtoListe.forEach {
@@ -103,12 +103,12 @@ class OppdaterGrunnlagspakkeService(
         PersonIdOgPeriodeRequest(
             personId = grunnlagRequestDto.personId,
             periodeFra = grunnlagRequestDto.periodeFra,
-            periodeTil = grunnlagRequestDto.periodeTil
+            periodeTil = grunnlagRequestDto.periodeTil,
         )
 
     inner class OppdaterGrunnlagspakke(
         private val grunnlagspakkeId: Int,
-        private val timestampOppdatering: LocalDateTime
+        private val timestampOppdatering: LocalDateTime,
     ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
         fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
@@ -117,9 +117,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    inntektskomponentenService
+                    inntektskomponentenService,
                 )
-                    .oppdaterAinntekt(ainntektRequestListe)
+                    .oppdaterAinntekt(ainntektRequestListe),
             )
             return this
         }
@@ -130,9 +130,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    sigrunConsumer
+                    sigrunConsumer,
                 )
-                    .oppdaterSkattegrunnlag(skattegrunnlagRequestListe)
+                    .oppdaterSkattegrunnlag(skattegrunnlagRequestListe),
             )
             return this
         }
@@ -143,11 +143,11 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    familieBaSakConsumer
+                    familieBaSakConsumer,
                 )
                     .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-                        utvidetBarnetrygdOgSmaabarnstilleggRequestListe
-                    )
+                        utvidetBarnetrygdOgSmaabarnstilleggRequestListe,
+                    ),
             )
             return this
         }
@@ -158,9 +158,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    pensjonConsumer
+                    pensjonConsumer,
                 )
-                    .oppdaterBarnetillegg(barnetilleggRequestListe)
+                    .oppdaterBarnetillegg(barnetilleggRequestListe),
             )
             return this
         }
@@ -171,9 +171,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    familieKsSakConsumer
+                    familieKsSakConsumer,
                 )
-                    .oppdaterKontantstotte(kontantstotteRequestListe)
+                    .oppdaterKontantstotte(kontantstotteRequestListe),
             )
             return this
         }
@@ -184,9 +184,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    bidragPersonConsumer
+                    bidragPersonConsumer,
                 )
-                    .oppdaterRelatertePersoner(relatertePersonerRequestListe)
+                    .oppdaterRelatertePersoner(relatertePersonerRequestListe),
             )
             return this
         }
@@ -197,9 +197,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    bidragPersonConsumer
+                    bidragPersonConsumer,
                 )
-                    .oppdaterSivilstand(sivilstandRequestListe)
+                    .oppdaterSivilstand(sivilstandRequestListe),
             )
             return this
         }
@@ -210,9 +210,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    familieEfSakConsumer
+                    familieEfSakConsumer,
                 )
-                    .oppdaterBarnetilsyn(barnetilsynRequestListe)
+                    .oppdaterBarnetilsyn(barnetilsynRequestListe),
             )
             return this
         }
@@ -223,9 +223,9 @@ class OppdaterGrunnlagspakkeService(
                     grunnlagspakkeId,
                     timestampOppdatering,
                     persistenceService,
-                    familieEfSakConsumer
+                    familieEfSakConsumer,
                 )
-                    .oppdaterOvergangsstønad(overgangsstønadRequestListe)
+                    .oppdaterOvergangsstønad(overgangsstønadRequestListe),
             )
             return this
         }

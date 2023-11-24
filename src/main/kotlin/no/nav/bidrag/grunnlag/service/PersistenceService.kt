@@ -91,7 +91,7 @@ class PersistenceService(
     val sivilstandRepository: SivilstandRepository,
     val kontantstotteRepository: KontantstotteRepository,
     val barnetilsynRepository: BarnetilsynRepository,
-    val overgangsstønadRepository: OvergangsstonadRepository
+    val overgangsstønadRepository: OvergangsstonadRepository,
 ) {
 
     fun opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Grunnlagspakke {
@@ -157,85 +157,85 @@ class PersistenceService(
     fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
         grunnlagspakkeId: Int,
         partPersonId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
             timestampOppdatering,
-            BarnetilleggType.PENSJON.toString()
+            BarnetilleggType.PENSJON.toString(),
         )
     }
 
     fun oppdaterEksisterendeRelatertPersonTilInaktiv(
         grunnlagspakkeId: Int,
         partPersonId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         relatertPersonRepository.oppdaterEksisterendeRelatertPersonTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
-            timestampOppdatering
+            timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeSivilstandTilInaktiv(
         grunnlagspakkeId: Int,
         partPersonId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
-            timestampOppdatering
+            timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
         grunnlagspakkeId: Int,
         personId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
             grunnlagspakkeId,
             personId,
-            timestampOppdatering
+            timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeBarnetilsynTilInaktiv(
         grunnlagspakkeId: Int,
         partPersonId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
-            timestampOppdatering
+            timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeKontantstotteTilInaktiv(
         grunnlagspakkeId: Int,
         partPersonId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
-            timestampOppdatering
+            timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeOvergangsstønadTilInaktiv(
         grunnlagspakkeId: Int,
         partPersonId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         overgangsstønadRepository.oppdaterEksisterendeOvergangsstonadTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
-            timestampOppdatering
+            timestampOppdatering,
         )
     }
 
@@ -269,7 +269,7 @@ class PersistenceService(
         periodeFra: LocalDate,
         periodeTil: LocalDate,
         personId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
         val ainntektPeriodComparator = AinntektPeriodComparator()
@@ -279,7 +279,7 @@ class PersistenceService(
             ainntektPeriodComparator.comparePeriodEntities(
                 Period(periodeFra, periodeTil),
                 newAinntektForPersonId,
-                existingAinntektForPersonId
+                existingAinntektForPersonId,
             )
 
         // Setter utløpte Ainntekter til utløpt.
@@ -316,7 +316,7 @@ class PersistenceService(
         periodeFra: LocalDate,
         periodeTil: LocalDate,
         personId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     ) {
         val existingAinntektForPersonId =
             hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
@@ -327,7 +327,7 @@ class PersistenceService(
             ainntektPeriodComparator.comparePeriodEntities(
                 Period(periodeFra, periodeTil),
                 newSkattegrunnlagForPersonId,
-                existingAinntektForPersonId
+                existingAinntektForPersonId,
             )
 
         // Setter utløpte skattegrunnlag til utløpt.
@@ -379,8 +379,8 @@ class PersistenceService(
                                 inntektspost.beskrivelse,
                                 inntektspost.belop,
                                 inntektspost.etterbetalingsperiodeFra,
-                                inntektspost.etterbetalingsperiodeTil
-                            )
+                                inntektspost.etterbetalingsperiodeTil,
+                            ),
                         )
                     }
                 ainntektDtoListe.add(
@@ -392,8 +392,8 @@ class PersistenceService(
                         brukFra = inntekt.brukFra,
                         brukTil = inntekt.brukTil,
                         hentetTidspunkt = inntekt.hentetTidspunkt,
-                        ainntektspostListe = hentAinntektspostListe
-                    )
+                        ainntektspostListe = hentAinntektspostListe,
+                    ),
                 )
             }
 
@@ -402,7 +402,7 @@ class PersistenceService(
 
     fun hentAinntektForPersonIdToCompare(
         grunnlagspakkeId: Int,
-        personId: String
+        personId: String,
     ): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
         val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
         ainntektRepository.hentAinntekter(grunnlagspakkeId)
@@ -415,7 +415,7 @@ class PersistenceService(
                             ainntektspostListe.add(ainntektspost.toAinntektspostBo())
                         }
                     ainntektForPersonIdListe.add(
-                        PeriodComparable(inntekt.toAinntektBo(), ainntektspostListe)
+                        PeriodComparable(inntekt.toAinntektBo(), ainntektspostListe),
                     )
                 }
             }
@@ -425,7 +425,7 @@ class PersistenceService(
 
     fun hentSkattegrunnlagForPersonIdToCompare(
         grunnlagspakkeId: Int,
-        personId: String
+        personId: String,
     ): List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>> {
         val skattegrunnlagForPersonIdListe =
             mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
@@ -436,7 +436,7 @@ class PersistenceService(
                     skattegrunnlagspostRepository.hentSkattegrunnlagsposter(skattegrunnlag.skattegrunnlagId)
                         .forEach { skattegrunnlagspost -> skattegrunnlagpostListe.add(skattegrunnlagspost.toSkattegrunnlagspostBo()) }
                     skattegrunnlagForPersonIdListe.add(
-                        PeriodComparable(skattegrunnlag.toSkattegrunnlagBo(), skattegrunnlagpostListe)
+                        PeriodComparable(skattegrunnlag.toSkattegrunnlagBo(), skattegrunnlagpostListe),
                     )
                 }
             }
@@ -454,8 +454,8 @@ class PersistenceService(
                             SkattegrunnlagspostDto(
                                 skattegrunnlagType = inntektspost.skattegrunnlagType,
                                 inntektType = inntektspost.inntektType,
-                                belop = inntektspost.belop
-                            )
+                                belop = inntektspost.belop,
+                            ),
                         )
                     }
                 skattegrunnlagDtoListe.add(
@@ -467,8 +467,8 @@ class PersistenceService(
                         brukFra = inntekt.brukFra,
                         brukTil = inntekt.brukTil,
                         hentetTidspunkt = inntekt.hentetTidspunkt,
-                        hentSkattegrunnlagspostListe
-                    )
+                        hentSkattegrunnlagspostListe,
+                    ),
                 )
             }
 
@@ -491,8 +491,8 @@ class PersistenceService(
                         brukTil = ubst.brukTil,
                         belop = ubst.belop,
                         manueltBeregnet = ubst.manueltBeregnet,
-                        hentetTidspunkt = ubst.hentetTidspunkt
-                    )
+                        hentetTidspunkt = ubst.hentetTidspunkt,
+                    ),
                 )
             }
         return utvidetBarnetrygdOgSmaabarnstilleggDtoListe
@@ -514,8 +514,8 @@ class PersistenceService(
                         brukTil = barnetillegg.brukTil,
                         belopBrutto = barnetillegg.belopBrutto,
                         barnType = barnetillegg.barnType,
-                        hentetTidspunkt = barnetillegg.hentetTidspunkt
-                    )
+                        hentetTidspunkt = barnetillegg.hentetTidspunkt,
+                    ),
                 )
             }
         return barnetilleggDtoListe
@@ -535,8 +535,8 @@ class PersistenceService(
                         brukFra = kontantstotte.brukFra,
                         brukTil = kontantstotte.brukTil,
                         belop = kontantstotte.belop,
-                        hentetTidspunkt = kontantstotte.hentetTidspunkt
-                    )
+                        hentetTidspunkt = kontantstotte.hentetTidspunkt,
+                    ),
                 )
             }
         return kontantstotteDtoListe
@@ -585,8 +585,8 @@ class PersistenceService(
                                 brukFra = relatertPerson.brukFra,
                                 brukTil = relatertPerson.brukTil,
                                 hentetTidspunkt = relatertPerson.hentetTidspunkt,
-                                borISammeHusstandDtoListe = borISammeHusstandListe
-                            )
+                                borISammeHusstandDtoListe = borISammeHusstandListe,
+                            ),
                         )
                         behandletPerson = relatertPerson.relatertPersonPersonId
                     }
@@ -610,8 +610,8 @@ class PersistenceService(
                         aktiv = sivilstand.aktiv,
                         brukFra = sivilstand.brukFra,
                         brukTil = sivilstand.brukTil,
-                        hentetTidspunkt = sivilstand.hentetTidspunkt
-                    )
+                        hentetTidspunkt = sivilstand.hentetTidspunkt,
+                    ),
                 )
             }
         return sivilstandDtoListe
@@ -633,8 +633,8 @@ class PersistenceService(
                         belop = barnetilsyn.belop,
                         tilsynstype = barnetilsyn.tilsynstype ?: Tilsyntype.IKKE_ANGITT,
                         skolealder = barnetilsyn.skolealder ?: Skolealder.IKKE_ANGITT,
-                        hentetTidspunkt = barnetilsyn.hentetTidspunkt
-                    )
+                        hentetTidspunkt = barnetilsyn.hentetTidspunkt,
+                    ),
                 )
             }
         return barnetilsynDtoListe
@@ -653,8 +653,8 @@ class PersistenceService(
                         brukFra = overgangsstønad.brukFra,
                         brukTil = overgangsstønad.brukTil,
                         belop = overgangsstønad.belop,
-                        hentetTidspunkt = overgangsstønad.hentetTidspunkt
-                    )
+                        hentetTidspunkt = overgangsstønad.hentetTidspunkt,
+                    ),
                 )
             }
         return overgangsstønadDtoListe

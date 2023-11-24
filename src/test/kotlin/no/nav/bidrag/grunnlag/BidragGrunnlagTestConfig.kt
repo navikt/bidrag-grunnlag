@@ -19,7 +19,7 @@ import org.springframework.http.HttpHeaders
 @Configuration
 @OpenAPIDefinition(
     info = Info(title = "bidrag-grunnlag", version = "v1"),
-    security = [SecurityRequirement(name = "bearer-key")]
+    security = [SecurityRequirement(name = "bearer-key")],
 )
 @Profile(TEST_PROFILE, LOCAL_PROFILE)
 class BidragGrunnlagTestConfig {
@@ -46,8 +46,8 @@ class BidragGrunnlagTestConfig {
                 JOSEObjectType.JWT.type,
                 listOf("aud-localhost"),
                 mapOf("iss" to newIssuer.toString()),
-                3600
-            )
+                3600,
+            ),
         )
         return "Bearer " + token.serialize()
     }

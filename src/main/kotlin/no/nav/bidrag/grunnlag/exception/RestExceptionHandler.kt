@@ -64,10 +64,10 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
     @ResponseBody
     @ExceptionHandler(
-        MethodArgumentNotValidException::class
+        MethodArgumentNotValidException::class,
     )
     fun handleArgumentNotValidException(
-        e: MethodArgumentNotValidException
+        e: MethodArgumentNotValidException,
     ): ResponseEntity<*> {
         exceptionLogger.logException(e, "RestExceptionHandler")
         val errors: MutableMap<String, String?> = HashMap()
@@ -81,10 +81,10 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
     @ResponseBody
     @ExceptionHandler(
-        MethodArgumentTypeMismatchException::class
+        MethodArgumentTypeMismatchException::class,
     )
     fun handleArgumentTypeMismatchException(
-        e: MethodArgumentTypeMismatchException
+        e: MethodArgumentTypeMismatchException,
     ): ResponseEntity<*> {
         exceptionLogger.logException(e, "RestExceptionHandler")
         val errors: MutableMap<String, String?> = HashMap()
@@ -97,7 +97,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
     @ResponseBody
     @ExceptionHandler(
-        JacksonException::class
+        JacksonException::class,
     )
     fun handleJacksonExceptions(e: JacksonException): ResponseEntity<*> {
         val errors: MutableMap<String, String?> = HashMap()

@@ -46,14 +46,14 @@ class InntektskomponentenServiceMockTest {
             { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.isNotEmpty()) },
             {
                 assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.size).isEqualTo(
-                    1
+                    1,
                 )
             },
             {
                 assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.get(0)?.beloep).isEqualTo(
-                    BigDecimal.valueOf(10000)
+                    BigDecimal.valueOf(10000),
                 )
-            }
+            },
         )
     }
 
@@ -78,14 +78,14 @@ class InntektskomponentenServiceMockTest {
             { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.isNotEmpty()) },
             {
                 assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.size).isEqualTo(
-                    1
+                    1,
                 )
             },
             {
                 assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.get(0)?.beloep).isEqualTo(
-                    BigDecimal.valueOf(10000)
+                    BigDecimal.valueOf(10000),
                 )
-            }
+            },
         )
     }
 
@@ -104,7 +104,7 @@ class InntektskomponentenServiceMockTest {
         assertAll(
             { assertThat(hentInntektListeResponsIntern).isNotNull() },
             { assertThat(hentInntektListeResponsIntern.httpStatus.is4xxClientError) },
-            { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.isEmpty()) }
+            { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.isEmpty()) },
         )
     }
 }

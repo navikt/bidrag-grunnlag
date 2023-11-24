@@ -101,17 +101,17 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             persistenceServiceMock.hentFormaalGrunnlagspakke(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    Int::class.java
-                )
-            )
+                    Int::class.java,
+                ),
+            ),
         ).thenReturn("Bidrag")
 
         Mockito.`when`(
             inntektskomponentenServiceMock.hentInntekt(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    HentInntektListeRequest::class.java
-                )
-            )
+                    HentInntektListeRequest::class.java,
+                ),
+            ),
         )
             .thenReturn(TestUtil.byggHentInntektListeResponseIntern())
 
@@ -119,7 +119,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestAInntekt(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         Mockito.verify(persistenceServiceMock, Mockito.times(1))
@@ -129,7 +129,7 @@ class OppdaterGrunnlagspakkeServiceTest {
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(String::class.java),
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDateTime::class.java)
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDateTime::class.java),
             )
 
         assertAll(
@@ -142,7 +142,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(
-                    GrunnlagRequestType.AINNTEKT
+                    GrunnlagRequestType.AINNTEKT,
                 )
             },
             {
@@ -152,13 +152,13 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status)
                     .isEqualTo(
-                        GrunnlagsRequestStatus.HENTET
+                        GrunnlagsRequestStatus.HENTET,
                     )
             },
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall inntekter funnet for periode 2021-01 - 2021-12: 1")
-            }
+            },
         )
     }
 
@@ -167,9 +167,9 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             sigrunConsumerMock.hentSummertSkattegrunnlag(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    HentSummertSkattegrunnlagRequest::class.java
-                )
-            )
+                    HentSummertSkattegrunnlagRequest::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSkattegrunnlagResponse()))
 
@@ -177,7 +177,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSkattegrunnlag(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         Mockito.verify(persistenceServiceMock, Mockito.times(1))
@@ -187,7 +187,7 @@ class OppdaterGrunnlagspakkeServiceTest {
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(String::class.java),
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDateTime::class.java)
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDateTime::class.java),
             )
 
         assertAll(
@@ -202,7 +202,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall skattegrunnlagsposter funnet for inntektsåret 2021: 2")
-            }
+            },
         )
     }
 
@@ -210,15 +210,15 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Skal oppdatere grunnlagspakke med utvidet barnetrygd`() {
         Mockito.`when`(
             persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-                GrunnlagspakkeServiceMockTest.MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggBoCaptor)
-            )
+                GrunnlagspakkeServiceMockTest.MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggBoCaptor),
+            ),
         ).thenReturn(TestUtil.byggUtvidetBarnetrygdOgSmaabarnstillegg())
         Mockito.`when`(
             familieBaSakConsumerMock.hentFamilieBaSak(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    FamilieBaSakRequest::class.java
-                )
-            )
+                    FamilieBaSakRequest::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggFamilieBaSakResponse()))
 
@@ -226,7 +226,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
@@ -234,8 +234,8 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.verify(persistenceServiceMock, Mockito.times(2))
             .opprettUtvidetBarnetrygdOgSmaabarnstillegg(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    UtvidetBarnetrygdOgSmaabarnstilleggBo::class.java
-                )
+                    UtvidetBarnetrygdOgSmaabarnstilleggBo::class.java,
+                ),
             )
 
         assertAll(
@@ -259,7 +259,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(
-                    GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
+                    GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
                 )
             },
             {
@@ -269,13 +269,13 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status)
                     .isEqualTo(
-                        GrunnlagsRequestStatus.HENTET
+                        GrunnlagsRequestStatus.HENTET,
                     )
             },
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall perioder funnet: 2")
-            }
+            },
         )
     }
 
@@ -283,14 +283,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Skal oppdatere grunnlagspakke med barnetillegg fra Pensjon`() {
         Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(barnetilleggBoCaptor)))
             .thenReturn(
-                TestUtil.byggBarnetillegg()
+                TestUtil.byggBarnetillegg(),
             )
         Mockito.`when`(
             pensjonConsumerMock.hentBarnetilleggPensjon(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    HentBarnetilleggPensjonRequest::class.java
-                )
-            )
+                    HentBarnetilleggPensjonRequest::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentBarnetilleggPensjonResponse()))
 
@@ -298,13 +298,13 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val barnetilleggListe = barnetilleggBoCaptor.allValues
 
         Mockito.verify(persistenceServiceMock, Mockito.times(2)).opprettBarnetillegg(
-            GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilleggBo::class.java)
+            GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilleggBo::class.java),
         )
 
         assertAll(
@@ -354,7 +354,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall perioder funnet: 2")
-            }
+            },
         )
     }
 
@@ -362,33 +362,33 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Skal oppdatere grunnlagspakke med egne barn i husstanden fra PDL via bidrag-person`() {
         Mockito.`when`(persistenceServiceMock.opprettRelatertPerson(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(relatertPersonBoCaptor)))
             .thenReturn(
-                TestUtil.byggEgetBarnIHusstanden()
+                TestUtil.byggEgetBarnIHusstanden(),
             )
 
         Mockito.`when`(
             bidragPersonConsumerMock.hentForelderBarnRelasjon(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
         Mockito.`when`(
             bidragPersonConsumerMock.hentNavnFoedselOgDoed(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
 
         Mockito.`when`(
             bidragPersonConsumerMock.hentHusstandsmedlemmer(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
 
@@ -396,7 +396,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val relatertPersonListe = relatertPersonBoCaptor.allValues
@@ -408,7 +408,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke).isNotNull() },
 
             // sjekk relatertPersonBo
-            { Assertions.assertThat(relatertPersonListe.size).isEqualTo(9) },
+            { Assertions.assertThat(relatertPersonListe.size).isEqualTo(8) },
             { Assertions.assertThat(relatertPersonListe[0]?.partPersonId).isEqualTo("12345678910") },
             { Assertions.assertThat(relatertPersonListe[0]?.relatertPersonPersonId).isEqualTo("111") },
             { Assertions.assertThat(relatertPersonListe[0]?.aktiv).isTrue() },
@@ -434,7 +434,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall husstandsmedlemmer funnet: 6")
-            }
+            },
         )
     }
 
@@ -442,33 +442,33 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Skal oppdatere grunnlagspakke med husstandsmedlemmer fra PDL via bidrag-person`() {
         Mockito.`when`(persistenceServiceMock.opprettRelatertPerson(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(relatertPersonBoCaptor)))
             .thenReturn(
-                TestUtil.byggHusstandsmedlem()
+                TestUtil.byggHusstandsmedlem(),
             )
 
         Mockito.`when`(
             bidragPersonConsumerMock.hentForelderBarnRelasjon(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
         Mockito.`when`(
             bidragPersonConsumerMock.hentNavnFoedselOgDoed(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
 
         Mockito.`when`(
             bidragPersonConsumerMock.hentHusstandsmedlemmer(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
 
@@ -476,7 +476,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
 //    val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
@@ -502,30 +502,23 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(husstandsmedlemListe?.get(1)?.husstandsmedlemPeriodeTil).isNull() },
             { Assertions.assertThat(husstandsmedlemListe?.get(1)?.hentetTidspunkt).isNotNull() },
 
-            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.partPersonId).isEqualTo("12345678910") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.relatertPersonPersonId).isEqualTo("111") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.navn).isEqualTo("fornavn1 mellomnavn1 etternavn1") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2018-01-01")) },
-            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2018-02-01")) },
+            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.relatertPersonPersonId).isEqualTo("333") },
+            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.navn).isEqualTo("fornavn3 mellomnavn3 etternavn3") },
+            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
+            { Assertions.assertThat(husstandsmedlemListe?.get(2)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2011-12-01")) },
             { Assertions.assertThat(husstandsmedlemListe?.get(2)?.hentetTidspunkt).isNotNull() },
 
-            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.relatertPersonPersonId).isEqualTo("333") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.navn).isEqualTo("fornavn3 mellomnavn3 etternavn3") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2011-01-01")) },
-            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2011-12-01")) },
+            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.relatertPersonPersonId).isEqualTo("444") },
+            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.navn).isEqualTo("fornavn4 mellomnavn4 etternavn4") },
+            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2011-05-01")) },
+            { Assertions.assertThat(husstandsmedlemListe?.get(3)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2011-06-01")) },
             { Assertions.assertThat(husstandsmedlemListe?.get(3)?.hentetTidspunkt).isNotNull() },
 
-            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.relatertPersonPersonId).isEqualTo("444") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.navn).isEqualTo("fornavn4 mellomnavn4 etternavn4") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2011-05-01")) },
-            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.husstandsmedlemPeriodeTil).isEqualTo(LocalDate.parse("2011-06-01")) },
+            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.relatertPersonPersonId).isEqualTo("555") },
+            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.navn).isEqualTo("fornavn5 mellomnavn5 etternavn5") },
+            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2020-01-01")) },
+            { Assertions.assertThat(husstandsmedlemListe?.get(4)?.husstandsmedlemPeriodeTil).isNull() },
             { Assertions.assertThat(husstandsmedlemListe?.get(4)?.hentetTidspunkt).isNotNull() },
-
-            { Assertions.assertThat(husstandsmedlemListe?.get(5)?.relatertPersonPersonId).isEqualTo("555") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(5)?.navn).isEqualTo("fornavn5 mellomnavn5 etternavn5") },
-            { Assertions.assertThat(husstandsmedlemListe?.get(5)?.husstandsmedlemPeriodeFra).isEqualTo(LocalDate.parse("2020-01-01")) },
-            { Assertions.assertThat(husstandsmedlemListe?.get(5)?.husstandsmedlemPeriodeTil).isNull() },
-            { Assertions.assertThat(husstandsmedlemListe?.get(5)?.hentetTidspunkt).isNotNull() },
 
             // sjekk oppdatertGrunnlagspakke
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
@@ -541,7 +534,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status)
                     .isEqualTo(GrunnlagsRequestStatus.HENTET)
-            }
+            },
         )
     }
 
@@ -549,14 +542,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Skal oppdatere grunnlagspakke med sivilstand fra PDL via bidrag-person`() {
         Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
             .thenReturn(
-                TestUtil.byggSivilstand()
+                TestUtil.byggSivilstand(),
             )
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponse()))
 
@@ -564,7 +557,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
 //    val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
@@ -600,7 +593,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") }
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 3") },
         )
     }
 
@@ -608,14 +601,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Test på sortering av mottatt sivilstand og logikk for periodisering`() {
         Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
             .thenReturn(
-                TestUtil.byggSivilstand()
+                TestUtil.byggSivilstand(),
             )
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestSortering()))
 
@@ -623,7 +616,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -663,7 +656,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 5") }
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall sivilstandsforekomster funnet: 5") },
         )
     }
 
@@ -671,14 +664,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Test på sortering av mottatt sivilstand uten datoinformasjon der alle er historiske`() {
         Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
             .thenReturn(
-                TestUtil.byggSivilstand()
+                TestUtil.byggSivilstand(),
             )
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerHistoriske()))
 
@@ -686,7 +679,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -699,7 +692,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
             { Assertions.assertThat(sivilstandListe[1].periodeFra).isNull() },
             { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) }
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) },
         )
     }
 
@@ -707,14 +700,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Test på sortering av mottatt sivilstand uten datoinformasjon med registrert timestamp og aktiv forekomst`() {
         Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
             .thenReturn(
-                TestUtil.byggSivilstand()
+                TestUtil.byggSivilstand(),
             )
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoer()))
 
@@ -722,7 +715,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -735,7 +728,7 @@ class OppdaterGrunnlagspakkeServiceTest {
 
             { Assertions.assertThat(sivilstandListe[1].periodeFra).isEqualTo(LocalDate.parse("2020-05-12")) },
             { Assertions.assertThat(sivilstandListe[1].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) }
+            { Assertions.assertThat(sivilstandListe[1].sivilstand).isEqualTo(Sivilstandstype.SKILT.toString()) },
         )
     }
 
@@ -743,14 +736,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Test sivilstand uten datoinformasjon med registrert timestamp kun én historisk forekomst`() {
         Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
             .thenReturn(
-                TestUtil.byggSivilstand()
+                TestUtil.byggSivilstand(),
             )
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk()))
 
@@ -758,7 +751,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -767,7 +760,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             // sjekk SivilstandBo
             { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
             { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) }
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) },
         )
     }
 
@@ -775,14 +768,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Test sivilstand uten datoinformasjon med registrert timestamp kun én aktiv forekomst`() {
         Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
             .thenReturn(
-                TestUtil.byggSivilstand()
+                TestUtil.byggSivilstand(),
             )
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv()))
 
@@ -790,7 +783,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -799,7 +792,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             // sjekk SivilstandBo
             { Assertions.assertThat(sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2017-03-01")) },
             { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) }
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) },
         )
     }
 
@@ -807,14 +800,14 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `Test sivilstand uten datoinformasjon uten registrert timestamp kun én historisk forekomst`() {
         Mockito.`when`(persistenceServiceMock.opprettSivilstand(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(sivilstandBoCaptor)))
             .thenReturn(
-                TestUtil.byggSivilstand()
+                TestUtil.byggSivilstand(),
             )
         Mockito.`when`(
             bidragPersonConsumerMock.hentSivilstand(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    PersonIdent::class.java
-                )
-            )
+                    PersonIdent::class.java,
+                ),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk()))
 
@@ -822,7 +815,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -831,7 +824,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             // sjekk SivilstandBo
             { Assertions.assertThat(sivilstandListe[0].periodeFra).isNull() },
             { Assertions.assertThat(sivilstandListe[0].periodeTil).isNull() },
-            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) }
+            { Assertions.assertThat(sivilstandListe[0].sivilstand).isEqualTo(Sivilstandstype.GIFT.toString()) },
         )
     }
 
@@ -839,12 +832,12 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `skal oppdatere grunnlagspakke med kontantstotte`() {
         Mockito.`when`(persistenceServiceMock.opprettKontantstotte(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(kontantstotteBoCaptor)))
             .thenReturn(
-                TestUtil.byggKontantstotte()
+                TestUtil.byggKontantstotte(),
             )
         Mockito.`when`(
             familieKsSakConsumerMock.hentKontantstotte(
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(BisysDto::class.java)
-            )
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(BisysDto::class.java),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggKontantstotteResponse()))
 
@@ -852,13 +845,13 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestKontantstotte(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val kontantstotteListe = kontantstotteBoCaptor.allValues
 
         Mockito.verify(persistenceServiceMock, Mockito.times(3)).opprettKontantstotte(
-            GrunnlagspakkeServiceMockTest.MockitoHelper.any(KontantstotteBo::class.java)
+            GrunnlagspakkeServiceMockTest.MockitoHelper.any(KontantstotteBo::class.java),
         )
 
         assertAll(
@@ -900,7 +893,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall perioder funnet: 3")
-            }
+            },
         )
     }
 
@@ -908,12 +901,12 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `skal oppdatere grunnlagspakke med barnetilsyn`() {
         Mockito.`when`(persistenceServiceMock.opprettBarnetilsyn(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(barnetilsynBoCaptor)))
             .thenReturn(
-                TestUtil.byggBarnetilsyn()
+                TestUtil.byggBarnetilsyn(),
             )
         Mockito.`when`(
             familieEfSakConsumerMock.hentBarnetilsyn(
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilsynRequest::class.java)
-            )
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilsynRequest::class.java),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggBarnetilsynResponse()))
 
@@ -921,13 +914,13 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetilsyn(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val barnetilsynListe = barnetilsynBoCaptor.allValues
 
         Mockito.verify(persistenceServiceMock, Mockito.times(2)).opprettBarnetilsyn(
-            GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilsynBo::class.java)
+            GrunnlagspakkeServiceMockTest.MockitoHelper.any(BarnetilsynBo::class.java),
         )
 
         assertAll(
@@ -964,7 +957,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall perioder funnet: 1")
-            }
+            },
         )
     }
 
@@ -972,12 +965,12 @@ class OppdaterGrunnlagspakkeServiceTest {
     fun `skal oppdatere grunnlagspakke med overgangsstønad`() {
         Mockito.`when`(persistenceServiceMock.opprettOvergangsstønad(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(overgangsstønadBoCaptor)))
             .thenReturn(
-                TestUtil.byggOvergangsstønad()
+                TestUtil.byggOvergangsstønad(),
             )
         Mockito.`when`(
             familieEfSakConsumerMock.hentOvergangsstønad(
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(EksternePerioderRequest::class.java)
-            )
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(EksternePerioderRequest::class.java),
+            ),
         )
             .thenReturn(RestResponse.Success(TestUtil.byggOvergangsstønadResponse()))
 
@@ -985,13 +978,13 @@ class OppdaterGrunnlagspakkeServiceTest {
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestOvergangsstønad(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
         )
 
         val overgangsstønadListe = overgangsstønadBoCaptor.allValues
 
         Mockito.verify(persistenceServiceMock, Mockito.times(2)).opprettOvergangsstønad(
-            GrunnlagspakkeServiceMockTest.MockitoHelper.any(OvergangsstønadBo::class.java)
+            GrunnlagspakkeServiceMockTest.MockitoHelper.any(OvergangsstønadBo::class.java),
         )
 
         assertAll(
@@ -1014,7 +1007,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.OVERGANGSSTONAD) },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
             { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagsRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 2") }
+            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 2") },
         )
     }
 }

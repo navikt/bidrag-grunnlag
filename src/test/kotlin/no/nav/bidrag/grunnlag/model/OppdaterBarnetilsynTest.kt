@@ -23,7 +23,7 @@ class OppdaterBarnetilsynTest(
     @Mock
     val persistenceService: PersistenceService,
     @Mock
-    val familieEfSakConsumer: FamilieEfSakConsumer
+    val familieEfSakConsumer: FamilieEfSakConsumer,
 ) {
 
     companion object {
@@ -47,7 +47,7 @@ class OppdaterBarnetilsynTest(
             Arguments.of(opprettBarnIdentFraDato(LocalDate.now().minusYears(6)), LocalDate.of(2022, 8, 1), Skolealder.OVER),
             Arguments.of(opprettBarnIdentFraDato(LocalDate.now().minusYears(5)), LocalDate.of(2022, 8, 1), Skolealder.OVER),
             Arguments.of(opprettBarnIdentFraDato(LocalDate.now().minusYears(6)), LocalDate.of(2022, 1, 1), Skolealder.UNDER),
-            Arguments.of(opprettBarnIdentFraDato(LocalDate.now().minusYears(12)), LocalDate.of(2022, 1, 1), Skolealder.OVER)
+            Arguments.of(opprettBarnIdentFraDato(LocalDate.now().minusYears(12)), LocalDate.of(2022, 1, 1), Skolealder.OVER),
         )
     }
 

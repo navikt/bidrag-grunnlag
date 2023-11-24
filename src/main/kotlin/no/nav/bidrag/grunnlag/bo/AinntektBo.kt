@@ -34,7 +34,7 @@ data class AinntektBo(
     val brukTil: LocalDateTime? = null,
 
     @Schema(description = "Hentet tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 
 ) : IPeriod
 
@@ -45,6 +45,6 @@ fun AinntektBo.toAinntektEntity() = with(::Ainntekt) {
             when (parameter.name) {
                 else -> propertiesByName[parameter.name]?.get(this@toAinntektEntity)
             }
-        }
+        },
     )
 }

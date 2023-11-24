@@ -45,8 +45,8 @@ internal class SigrunConsumerTest {
                 eq(uriBuilder(request)),
                 eq(HttpMethod.GET),
                 any(),
-                eq(HentSummertSkattegrunnlagResponse::class.java)
-            )
+                eq(HentSummertSkattegrunnlagResponse::class.java),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentSkattegrunnlagResponse(), HttpStatus.OK))
 
@@ -61,7 +61,7 @@ internal class SigrunConsumerTest {
                     Executable { assertThat(hentSkattegrunnlagResponse.svalbardGrunnlag!!.size).isEqualTo(1) },
                     Executable { assertThat(hentSkattegrunnlagResponse.svalbardGrunnlag!![0].beloep).isEqualTo("100000") },
                     Executable { assertThat(hentSkattegrunnlagResponse.svalbardGrunnlag!![0].tekniskNavn).isEqualTo("tekniskNavn") },
-                    Executable { assertThat(hentSkattegrunnlagResponse.skatteoppgjoersdato).isEqualTo(LocalDate.now().toString()) }
+                    Executable { assertThat(hentSkattegrunnlagResponse.skatteoppgjoersdato).isEqualTo(LocalDate.now().toString()) },
                 )
             }
 
@@ -80,8 +80,8 @@ internal class SigrunConsumerTest {
                 eq(uriBuilder(request)),
                 eq(HttpMethod.GET),
                 any(),
-                eq(HentSummertSkattegrunnlagResponse::class.java)
-            )
+                eq(HentSummertSkattegrunnlagResponse::class.java),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -89,7 +89,7 @@ internal class SigrunConsumerTest {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseSkattegrunnlag.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseSkattegrunnlag.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+                    Executable { assertThat(restResponseSkattegrunnlag.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
                 )
             }
 

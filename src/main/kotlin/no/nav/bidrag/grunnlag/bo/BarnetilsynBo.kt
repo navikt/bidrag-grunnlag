@@ -44,7 +44,7 @@ data class BarnetilsynBo(
     val skolealder: Skolealder?,
 
     @Schema(description = "Hentet tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
 
 fun BarnetilsynBo.toBarnetilsynEntity() = with(::Barnetilsyn) {
@@ -55,6 +55,6 @@ fun BarnetilsynBo.toBarnetilsynEntity() = with(::Barnetilsyn) {
                 Barnetilsyn::barnetilsynId.name -> 0
                 else -> propertiesByName[parameters.name]?.get(this@toBarnetilsynEntity)
             }
-        }
+        },
     )
 }

@@ -122,7 +122,7 @@ class TestUtil {
 
         fun byggNyGrunnlagspakkeRequest() = OpprettGrunnlagspakkeRequestDto(
             opprettetAv = "RTV9999",
-            formaal = Formaal.BIDRAG
+            formaal = Formaal.BIDRAG,
         )
 
         fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequestDto(
@@ -131,45 +131,45 @@ class TestUtil {
                     type = GrunnlagRequestType.AINNTEKT,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
+                    periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.SKATTEGRUNNLAG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
+                    periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
+                    periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.BARNETILLEGG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
+                    periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.KONTANTSTOTTE,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
+                    periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.BARNETILSYN,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
+                    periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.OVERGANGSSTONAD,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-01-01"),
+                ),
+            ),
         )
 
         fun byggHentGrunnlagRequestKomplett() = HentGrunnlagRequestDto(
@@ -178,9 +178,9 @@ class TestUtil {
                     type = GrunnlagRequestType.ARBEIDSFORHOLD,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-01-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestAInntekt() = OppdaterGrunnlagspakkeRequestDto(
@@ -189,9 +189,9 @@ class TestUtil {
                     type = GrunnlagRequestType.AINNTEKT,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-01-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestSkattegrunnlag() = OppdaterGrunnlagspakkeRequestDto(
@@ -200,9 +200,9 @@ class TestUtil {
                     type = GrunnlagRequestType.SKATTEGRUNNLAG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-01-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequestDto(
@@ -211,9 +211,9 @@ class TestUtil {
                     type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-01-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestBarnetillegg() = OppdaterGrunnlagspakkeRequestDto(
@@ -222,9 +222,9 @@ class TestUtil {
                     type = GrunnlagRequestType.BARNETILLEGG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-02-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-02-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn() = OppdaterGrunnlagspakkeRequestDto(
@@ -233,9 +233,9 @@ class TestUtil {
                     type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-01-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestKontantstotte() = OppdaterGrunnlagspakkeRequestDto(
@@ -244,9 +244,9 @@ class TestUtil {
                     type = GrunnlagRequestType.KONTANTSTOTTE,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2022-01-01"),
-                    periodeTil = LocalDate.parse("2023-07-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestBarnetilsyn() = OppdaterGrunnlagspakkeRequestDto(
@@ -255,9 +255,9 @@ class TestUtil {
                     type = GrunnlagRequestType.BARNETILSYN,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2022-01-01"),
-                    periodeTil = LocalDate.parse("2023-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2023-01-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestSivilstand() = OppdaterGrunnlagspakkeRequestDto(
@@ -266,9 +266,9 @@ class TestUtil {
                     type = GrunnlagRequestType.SIVILSTAND,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2022-01-01"),
+                ),
+            ),
         )
 
         fun byggOppdaterGrunnlagspakkeRequestOvergangsstønad() = OppdaterGrunnlagspakkeRequestDto(
@@ -277,9 +277,9 @@ class TestUtil {
                     type = GrunnlagRequestType.OVERGANGSSTONAD,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2022-01-01"),
-                    periodeTil = LocalDate.parse("2023-07-01")
-                )
-            )
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+            ),
         )
 
         fun byggGrunnlagspakke() = Grunnlagspakke(
@@ -288,7 +288,7 @@ class TestUtil {
             opprettetTimestamp = LocalDateTime.now(),
             endretTimestamp = LocalDateTime.now(),
             gyldigTil = null,
-            formaal = Formaal.BIDRAG.toString()
+            formaal = Formaal.BIDRAG.toString(),
         )
 
         fun byggAinntektBo() = AinntektBo(
@@ -299,7 +299,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggAinntekt() = Ainntekt(
@@ -311,7 +311,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggAinntektspostBo() = AinntektspostBo(
@@ -326,7 +326,7 @@ class TestUtil {
             beskrivelse = "Loenn/ferieLoenn",
             belop = BigDecimal.valueOf(50000),
             etterbetalingsperiodeFra = LocalDate.of(2021, 10, 1),
-            etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1)
+            etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1),
         )
 
         fun byggAinntektspost() = Ainntektspost(
@@ -342,7 +342,7 @@ class TestUtil {
             beskrivelse = "Loenn/ferieLoenn",
             belop = BigDecimal.valueOf(50000),
             etterbetalingsperiodeFra = LocalDate.of(2021, 10, 1),
-            etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1)
+            etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1),
         )
 
         fun byggSkattegrunnlagSkattBo() = SkattegrunnlagBo(
@@ -353,7 +353,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggSkattegrunnlagSkatt() = no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
@@ -365,14 +365,14 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggSkattegrunnlagspostBo() = SkattegrunnlagspostBo(
             skattegrunnlagId = (1..100).random(),
             skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
             inntektType = "Loenn",
-            belop = BigDecimal.valueOf(171717)
+            belop = BigDecimal.valueOf(171717),
         )
 
         fun byggSkattegrunnlagspost() = Skattegrunnlagspost(
@@ -380,7 +380,7 @@ class TestUtil {
             skattegrunnlagId = (1..100).random(),
             skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
             inntektType = "Loenn",
-            belop = BigDecimal.valueOf(171717)
+            belop = BigDecimal.valueOf(171717),
         )
 
         fun byggUtvidetBarnetrygdOgSmaabarnstilleggBo() = UtvidetBarnetrygdOgSmaabarnstilleggBo(
@@ -395,7 +395,7 @@ class TestUtil {
             belop = BigDecimal.valueOf(12468.01),
             manueltBeregnet = false,
             deltBosted = false,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggUtvidetBarnetrygdOgSmaabarnstillegg() = UtvidetBarnetrygdOgSmaabarnstillegg(
@@ -411,7 +411,7 @@ class TestUtil {
             belop = BigDecimal.valueOf(12468.01),
             manueltBeregnet = false,
             deltBosted = false,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggBarnetilleggBo() = BarnetilleggBo(
@@ -426,7 +426,7 @@ class TestUtil {
             brukTil = null,
             belopBrutto = BigDecimal.valueOf(1000),
             barnType = BarnType.FELLES.toString(),
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggBarnetillegg() = Barnetillegg(
@@ -442,7 +442,7 @@ class TestUtil {
             brukTil = null,
             belopBrutto = BigDecimal.valueOf(1000),
             barnType = BarnType.FELLES.toString(),
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         // PDL-data
@@ -458,7 +458,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggEgetBarnIHusstanden() = RelatertPerson(
@@ -474,7 +474,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggHusstandsmedlem() = RelatertPerson(
@@ -490,7 +490,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggSivilstandBo() = SivilstandBo(
@@ -502,7 +502,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggSivilstand() = no.nav.bidrag.grunnlag.persistence.entity.Sivilstand(
@@ -515,7 +515,7 @@ class TestUtil {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggKontantstotteBo() = KontantstotteBo(
@@ -528,7 +528,7 @@ class TestUtil {
             brukFra = LocalDateTime.now(),
             brukTil = null,
             belop = 7500,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggKontantstotte() = Kontantstotte(
@@ -542,7 +542,7 @@ class TestUtil {
             brukFra = LocalDateTime.now(),
             brukTil = null,
             belop = 7500,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggBarnetilsynBo() = BarnetilsynBo(
@@ -557,7 +557,7 @@ class TestUtil {
             belop = 7500,
             tilsynstype = null,
             skolealder = Skolealder.UNDER,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggBarnetilsyn() = Barnetilsyn(
@@ -573,7 +573,7 @@ class TestUtil {
             belop = 7500,
             hentetTidspunkt = LocalDateTime.now(),
             tilsynstype = null,
-            skolealder = Skolealder.UNDER
+            skolealder = Skolealder.UNDER,
         )
 
         fun byggOvergangsstønadBo() = OvergangsstønadBo(
@@ -585,7 +585,7 @@ class TestUtil {
             brukFra = LocalDateTime.now(),
             brukTil = null,
             belop = 7500,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggOvergangsstønad() = Overgangsstonad(
@@ -598,7 +598,7 @@ class TestUtil {
             brukFra = LocalDateTime.now(),
             brukTil = null,
             belop = 7500,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
@@ -609,7 +609,7 @@ class TestUtil {
                     tomMåned = YearMonth.parse("2021-12"),
                     beløp = 1000.11,
                     manueltBeregnet = false,
-                    deltBosted = false
+                    deltBosted = false,
                 ),
                 UtvidetBarnetrygdPeriode(
                     stønadstype = BisysStønadstype.UTVIDET,
@@ -617,9 +617,9 @@ class TestUtil {
                     tomMåned = YearMonth.parse("2022-12"),
                     beløp = 2000.22,
                     manueltBeregnet = false,
-                    deltBosted = false
-                )
-            )
+                    deltBosted = false,
+                ),
+            ),
         )
 
         fun byggKontantstotteResponse() = BisysResponsDto(
@@ -630,9 +630,9 @@ class TestUtil {
                     beløp = 15001,
                     immutableListOf(
                         "11223344551",
-                        "15544332211"
-                    )
-                )
+                        "15544332211",
+                    ),
+                ),
             ),
             immutableListOf(
                 KsSakPeriode(
@@ -640,10 +640,10 @@ class TestUtil {
                     tomMåned = YearMonth.parse("2023-06"),
                     no.nav.bidrag.grunnlag.consumer.familiekssak.api.Barn(
                         5000,
-                        "11223344551"
-                    )
-                )
-            )
+                        "11223344551",
+                    ),
+                ),
+            ),
         )
 
         fun byggBarnetilsynResponse() = BarnetilsynResponse(
@@ -651,11 +651,11 @@ class TestUtil {
                 BarnetilsynBisysPerioder(
                     periode = Periode(
                         fom = LocalDate.parse("2021-01-01"),
-                        tom = LocalDate.parse("2021-07-31")
+                        tom = LocalDate.parse("2021-07-31"),
                     ),
-                    barnIdenter = immutableListOf("01012212345", "01011034543")
-                )
-            )
+                    barnIdenter = immutableListOf("01012212345", "01011034543"),
+                ),
+            ),
         )
 
         fun byggOvergangsstønadResponse() = Ressurs(
@@ -666,17 +666,17 @@ class TestUtil {
                         fomDato = LocalDate.parse("2020-01-01"),
                         tomDato = LocalDate.parse("2020-12-31"),
                         beløp = 111,
-                        datakilde = "Infotrygd"
+                        datakilde = "Infotrygd",
                     ),
                     EksternPeriodeMedBeløp(
                         personIdent = "12345678910",
                         fomDato = LocalDate.parse("2021-01-01"),
                         tomDato = LocalDate.parse("2021-07-31"),
                         beløp = 222,
-                        datakilde = "ef-sak"
-                    )
-                )
-            )
+                        datakilde = "ef-sak",
+                    ),
+                ),
+            ),
         )
 
         fun byggArbeidsforholdResponse() =
@@ -697,7 +697,7 @@ class TestUtil {
                     sistEndret = null,
                     type = null,
                     permisjoner = emptyList(),
-                    permitteringer = emptyList()
+                    permitteringer = emptyList(),
                 ),
 
                 Arbeidsforhold(
@@ -716,8 +716,8 @@ class TestUtil {
                     sistEndret = null,
                     type = null,
                     permisjoner = emptyList(),
-                    permitteringer = emptyList()
-                )
+                    permitteringer = emptyList(),
+                ),
             )
 
         fun byggHentInntektListeRequest() = HentInntektListeRequest(
@@ -725,12 +725,12 @@ class TestUtil {
             maanedFom = YearMonth.of(LocalDate.now().year, LocalDate.now().month),
             maanedTom = YearMonth.of(LocalDate.now().year, LocalDate.now().month),
             ainntektsfilter = "BidragA-Inntekt",
-            formaal = "Bidrag"
+            formaal = "Bidrag",
         )
 
         fun byggHentInntektListeResponse() = HentInntektListeResponse(
             byggArbeidsInntektMaanedListe(),
-            no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer("", AktoerType.NATURLIG_IDENT)
+            no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer("", AktoerType.NATURLIG_IDENT),
         )
 
         fun byggHentInntektListeResponseIntern() =
@@ -738,7 +738,7 @@ class TestUtil {
 
         private fun byggArbeidsInntektMaanedListeIntern(
             httpStatus: HttpStatus,
-            eksternRespons: List<ArbeidsInntektMaaned>
+            eksternRespons: List<ArbeidsInntektMaaned>,
         ): HentInntektListeResponseIntern {
             val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
@@ -755,11 +755,11 @@ class TestUtil {
                         utbetaltIMaaned = inntekt.utbetaltIMaaned?.toString(),
                         opplysningspliktig = OpplysningspliktigIntern(
                             inntekt.opplysningspliktig?.identifikator,
-                            inntekt.opplysningspliktig?.aktoerType.toString()
+                            inntekt.opplysningspliktig?.aktoerType.toString(),
                         ),
                         virksomhet = VirksomhetIntern(
                             inntekt.virksomhet?.identifikator,
-                            inntekt.virksomhet?.aktoerType.toString()
+                            inntekt.virksomhet?.aktoerType.toString(),
                         ),
                         tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE) {
                             TilleggsinformasjonIntern(
@@ -767,22 +767,22 @@ class TestUtil {
                                 TilleggsinformasjonDetaljerIntern(
                                     (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
                                     (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
-                                        1
-                                    )
-                                )
+                                        1,
+                                    ),
+                                ),
                             )
                         } else {
                             null
                         },
-                        beskrivelse = inntekt.beskrivelse
+                        beskrivelse = inntekt.beskrivelse,
                     )
                     inntektInternListe.add(inntektIntern)
                 }
                 arbeidsInntektMaanedListe.add(
                     ArbeidsInntektMaanedIntern(
                         arbeidsInntektMaaned.aarMaaned.toString(),
-                        ArbeidsInntektInformasjonIntern(inntektInternListe)
-                    )
+                        ArbeidsInntektInformasjonIntern(inntektInternListe),
+                    ),
                 )
             }
             return HentInntektListeResponseIntern(httpStatus, arbeidsInntektMaanedListe)
@@ -802,9 +802,9 @@ class TestUtil {
                         arbeidsforholdListe,
                         byggInntektListe(),
                         forskuddstrekkListe,
-                        fradragListe
-                    )
-                )
+                        fradragListe,
+                    ),
+                ),
             )
             return arbeidsinntektliste
         }
@@ -833,32 +833,32 @@ class TestUtil {
                 null,
                 null,
                 null,
-                null
-            )
+                null,
+            ),
         )
 
         fun byggHentSkattegrunnlagRequest() = HentSummertSkattegrunnlagRequest(
             inntektsAar = "2021",
             inntektsFilter = "inntektsfilter",
-            personId = "personId"
+            personId = "personId",
         )
 
         fun byggHentSkattegrunnlagResponse() = HentSummertSkattegrunnlagResponse(
             grunnlag = byggSkattegrunnlagListe(),
             svalbardGrunnlag = byggSkattegrunnlagListe(),
-            skatteoppgjoersdato = LocalDate.now().toString()
+            skatteoppgjoersdato = LocalDate.now().toString(),
         )
 
         private fun byggSkattegrunnlagListe() = immutableListOf(
             Skattegrunnlag(
                 beloep = "100000",
-                tekniskNavn = "tekniskNavn"
-            )
+                tekniskNavn = "tekniskNavn",
+            ),
         )
 
         fun byggFamilieBaSakRequest() = FamilieBaSakRequest(
             personIdent = "personIdent",
-            fraDato = LocalDate.now()
+            fraDato = LocalDate.now(),
         )
 
         fun byggHusstandsmedlemmerRequest() = PersonRequest(PersonIdent("personIdent"))
@@ -868,25 +868,25 @@ class TestUtil {
         fun byggKontantstotteRequest() = BisysDto(
             LocalDate.now(),
             listOf(
-                "123"
-            )
+                "123",
+            ),
         )
 
         fun byggBarnetilsynRequest() = BarnetilsynRequest(
             "123",
-            LocalDate.now()
+            LocalDate.now(),
         )
 
         fun byggOvergangsstønadRequest() = EksternePerioderRequest(
             "123",
             LocalDate.now(),
-            LocalDate.now()
+            LocalDate.now(),
         )
 
         fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(
             mottaker = "personIdent",
             fom = LocalDate.now(),
-            tom = LocalDate.now()
+            tom = LocalDate.now(),
         )
 
         fun byggHentBarnetilleggPensjonResponse() =
@@ -896,15 +896,15 @@ class TestUtil {
                     beloep = BigDecimal.valueOf(1000.11),
                     fom = LocalDate.parse("2021-01-01"),
                     tom = LocalDate.parse("2021-12-31"),
-                    erFellesbarn = true
+                    erFellesbarn = true,
                 ),
                 BarnetilleggPensjon(
                     barn = "barnIdent",
                     beloep = BigDecimal.valueOf(2000.22),
                     fom = LocalDate.parse("2022-01-01"),
                     tom = LocalDate.parse("2022-12-31"),
-                    erFellesbarn = true
-                )
+                    erFellesbarn = true,
+                ),
             )
 
         fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonDto(
@@ -912,26 +912,26 @@ class TestUtil {
                 ForelderBarnRelasjon(
                     relatertPersonsIdent = PersonIdent("111"),
                     relatertPersonsRolle = Familierelasjon.BARN,
-                    minRolleForPerson = Familierelasjon.FAR
+                    minRolleForPerson = Familierelasjon.FAR,
                 ),
                 ForelderBarnRelasjon(
                     relatertPersonsIdent = PersonIdent("222"),
                     relatertPersonsRolle = Familierelasjon.BARN,
-                    minRolleForPerson = Familierelasjon.FAR
+                    minRolleForPerson = Familierelasjon.FAR,
                 ),
                 ForelderBarnRelasjon(
                     relatertPersonsIdent = PersonIdent("333"),
                     relatertPersonsRolle = Familierelasjon.BARN,
-                    minRolleForPerson = Familierelasjon.FAR
-                )
-            )
+                    minRolleForPerson = Familierelasjon.FAR,
+                ),
+            ),
         )
 
         fun byggHentNavnFoedselOgDoedResponse() = NavnFødselDødDto(
             navn = FulltNavn("Dunkel Sol"),
             fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
             fødselsår = Fødselsår(2001),
-            dødsdato = null
+            dødsdato = null,
         )
 
         fun byggHentHusstandsmedlemmerResponse() = HusstandsmedlemmerDto(
@@ -953,30 +953,30 @@ class TestUtil {
                             gyldigTilOgMed = TomDato(LocalDate.parse("2011-02-01")),
                             personId = PersonIdent("111"),
                             navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
+                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
                         ),
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-17")),
-                            gyldigTilOgMed = null,
+                            gyldigTilOgMed = TomDato(LocalDate.parse("2018-01-01")),
                             personId = PersonIdent("111"),
                             navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
+                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
                         ),
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
                             gyldigTilOgMed = TomDato(LocalDate.parse("2011-12-01")),
                             personId = PersonIdent("333"),
                             navn = FulltNavn("fornavn3 mellomnavn3 etternavn3"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17"))
+                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
                         ),
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-01")),
                             gyldigTilOgMed = TomDato(LocalDate.parse("2011-06-01")),
                             personId = PersonIdent("444"),
                             navn = FulltNavn("fornavn4 mellomnavn4 etternavn4"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("1974-02-01"))
-                        )
-                    )
+                            fødselsdato = Fødselsdato(LocalDate.parse("1974-02-01")),
+                        ),
+                    ),
                 ),
                 Husstand(
                     gyldigFraOgMed = FomDato(LocalDate.parse("2011-10-01")),
@@ -992,11 +992,11 @@ class TestUtil {
                     immutableListOf(
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2018-01-01")),
-                            gyldigTilOgMed = TomDato(LocalDate.parse("2018-02-01")),
+                            gyldigTilOgMed = null,
                             personId = PersonIdent("111"),
                             navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
                             fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
-                            dødsdato = null
+                            dødsdato = null,
                         ),
                         Husstandsmedlem(
                             gyldigFraOgMed = FomDato(LocalDate.parse("2020-01-01")),
@@ -1004,11 +1004,11 @@ class TestUtil {
                             personId = PersonIdent("555"),
                             navn = FulltNavn("fornavn5 mellomnavn5 etternavn5"),
                             fødselsdato = Fødselsdato(LocalDate.parse("1985-07-17")),
-                            dødsdato = null
-                        )
-                    )
-                )
-            )
+                            dødsdato = null,
+                        ),
+                    ),
+                ),
+            ),
         )
 
         fun byggHentSivilstandResponse() = SivilstandshistorikkDto(
@@ -1019,7 +1019,7 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2021-01-01T12:00:00"),
-                    historisk = true
+                    historisk = true,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.ENKE_ELLER_ENKEMANN,
@@ -1027,7 +1027,7 @@ class TestUtil {
                     bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2021-02-01")),
                     master = "PDL",
                     registrert = LocalDateTime.parse("2021-02-01T12:00:00"),
-                    historisk = true
+                    historisk = true,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.GJENLEVENDE_PARTNER,
@@ -1035,9 +1035,9 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2021-03-01T12:00:00"),
-                    historisk = false
-                )
-            )
+                    historisk = false,
+                ),
+            ),
         )
 
         fun byggHentSivilstandResponseTestSortering() = SivilstandshistorikkDto(
@@ -1048,7 +1048,7 @@ class TestUtil {
                     bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2016-06-16")),
                     master = "PDL",
                     registrert = LocalDateTime.now(),
-                    historisk = true
+                    historisk = true,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.SKILT,
@@ -1056,7 +1056,7 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2022-03-01T12:00:00"),
-                    historisk = false
+                    historisk = false,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.UGIFT,
@@ -1064,7 +1064,7 @@ class TestUtil {
                     bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2011-02-01")),
                     master = "PDL",
                     registrert = LocalDateTime.now(),
-                    historisk = true
+                    historisk = true,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.UOPPGITT,
@@ -1072,7 +1072,7 @@ class TestUtil {
                     bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2001-05-01")),
                     master = "PDL",
                     registrert = LocalDateTime.now(),
-                    historisk = true
+                    historisk = true,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.SEPARERT,
@@ -1080,9 +1080,9 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2021-03-01T12:00:00"),
-                    historisk = true
-                )
-            )
+                    historisk = true,
+                ),
+            ),
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerHistoriske() = SivilstandshistorikkDto(
@@ -1093,7 +1093,7 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = null,
-                    historisk = true
+                    historisk = true,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.GIFT,
@@ -1101,10 +1101,10 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = null,
-                    historisk = true
-                )
+                    historisk = true,
+                ),
 
-            )
+            ),
         )
 
         fun byggHentSivilstandResponseTestUtenDatoer() = SivilstandshistorikkDto(
@@ -1115,7 +1115,7 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2020-05-12T11:30:00"),
-                    historisk = false
+                    historisk = false,
                 ),
                 SivilstandDto(
                     type = Sivilstandstype.GIFT,
@@ -1123,10 +1123,10 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
-                    historisk = true
-                )
+                    historisk = true,
+                ),
 
-            )
+            ),
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
@@ -1137,9 +1137,9 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
-                    historisk = true
-                )
-            )
+                    historisk = true,
+                ),
+            ),
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv() = SivilstandshistorikkDto(
@@ -1150,9 +1150,9 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2017-03-01T12:00:00"),
-                    historisk = false
-                )
-            )
+                    historisk = false,
+                ),
+            ),
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
@@ -1163,9 +1163,9 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = null,
-                    historisk = true
-                )
-            )
+                    historisk = true,
+                ),
+            ),
         )
 
         fun <Request, Response> performRequest(
@@ -1174,7 +1174,7 @@ class TestUtil {
             url: String,
             input: Request?,
             responseType: Class<Response>,
-            expectedStatus: StatusResultMatchersDsl.() -> Unit
+            expectedStatus: StatusResultMatchersDsl.() -> Unit,
         ): Response {
             val mockHttpServletRequestDsl: MockHttpServletRequestDsl.() -> Unit = {
                 contentType = MediaType.APPLICATION_JSON

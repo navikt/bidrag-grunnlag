@@ -18,7 +18,7 @@ private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn
 private const val OVERGANGSSTØNAD_CONTEXT = "/api/ekstern/perioder/overgangsstonad/med-belop"
 
 open class FamilieEfSakConsumer(
-    private val restTemplate: HttpHeaderRestTemplate
+    private val restTemplate: HttpHeaderRestTemplate,
 ) : GrunnlagsConsumer() {
 
     companion object {
@@ -34,7 +34,7 @@ open class FamilieEfSakConsumer(
             HttpMethod.POST,
             initHttpEntity(request),
             BarnetilsynResponse::class.java,
-            BarnetilsynResponse(emptyList())
+            BarnetilsynResponse(emptyList()),
         )
 
         logResponse(SECURE_LOGGER, restResponse)
@@ -50,7 +50,7 @@ open class FamilieEfSakConsumer(
             HttpMethod.POST,
             initHttpEntity(request),
             Ressurs::class.java,
-            Ressurs(EksternePerioderMedBeløpResponse(emptyList()))
+            Ressurs(EksternePerioderMedBeløpResponse(emptyList())),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

@@ -37,7 +37,7 @@ open class PensjonConsumer(private val restTemplate: HttpHeaderRestTemplate) : G
             HttpMethod.POST,
             initHttpEntity(request),
             responseType,
-            emptyList()
+            emptyList(),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

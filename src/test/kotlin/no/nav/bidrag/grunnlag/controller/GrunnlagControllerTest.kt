@@ -82,7 +82,7 @@ class GrunnlagControllerTest(
     @Autowired val grunnlagspakkeRepository: GrunnlagspakkeRepository,
     @Autowired val persistenceService: PersistenceService,
     @Autowired val exceptionLogger: ExceptionLogger,
-    @Autowired val meterRegistry: MeterRegistry
+    @Autowired val meterRegistry: MeterRegistry,
 ) {
 
     private val restTemplate: HttpHeaderRestTemplate = Mockito.mock(HttpHeaderRestTemplate::class.java)
@@ -104,7 +104,7 @@ class GrunnlagControllerTest(
         sigrunConsumer,
         bidragPersonConsumer,
         familieKsSakConsumer,
-        familieEfSakConsumer
+        familieEfSakConsumer,
     )
     private val grunnlagspakkeService: GrunnlagspakkeService =
         GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService, meterRegistry)
@@ -114,7 +114,7 @@ class GrunnlagControllerTest(
         .setControllerAdvice(
             RestExceptionHandler(exceptionLogger),
             CustomExceptionHandler(exceptionLogger),
-            HibernateExceptionHandler(exceptionLogger)
+            HibernateExceptionHandler(exceptionLogger),
         )
         .build()
 
@@ -137,11 +137,11 @@ class GrunnlagControllerTest(
                 eq("/rs/api/v1/hentdetaljerteabonnerteinntekter"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<HentInntektListeResponse>>()
-            )
+                any<Class<HentInntektListeResponse>>(),
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggHentInntektListeResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggHentInntektListeResponse(), HttpStatus.OK),
             )
 
         Mockito.`when`(
@@ -149,11 +149,11 @@ class GrunnlagControllerTest(
                 eq(uriBuilder("2021", "SummertSkattegrunnlagBidrag")),
                 eq(HttpMethod.GET),
                 any(),
-                any<Class<HentSummertSkattegrunnlagResponse>>()
-            )
+                any<Class<HentSummertSkattegrunnlagResponse>>(),
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggHentSkattegrunnlagResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggHentSkattegrunnlagResponse(), HttpStatus.OK),
             )
 
         Mockito.`when`(
@@ -161,12 +161,12 @@ class GrunnlagControllerTest(
                 eq("/pen/api/barnetillegg/search"),
                 eq(HttpMethod.POST),
                 any(),
-                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>(),
 
-            )
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggHentBarnetilleggPensjonResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggHentBarnetilleggPensjonResponse(), HttpStatus.OK),
             )
 
         Mockito.`when`(
@@ -174,11 +174,11 @@ class GrunnlagControllerTest(
                 eq("/api/bisys/hent-utvidet-barnetrygd"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<FamilieBaSakResponse>>()
-            )
+                any<Class<FamilieBaSakResponse>>(),
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK),
             )
 
         Mockito.`when`(
@@ -186,11 +186,11 @@ class GrunnlagControllerTest(
                 eq("/api/ekstern/bisys/perioder-barnetilsyn"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<BarnetilsynResponse>>()
-            )
+                any<Class<BarnetilsynResponse>>(),
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK),
             )
 
         Mockito.`when`(
@@ -198,11 +198,11 @@ class GrunnlagControllerTest(
                 eq("/api/bisys/hent-utbetalingsinfo"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<BisysResponsDto>>()
-            )
+                any<Class<BisysResponsDto>>(),
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK),
             )
 
         Mockito.`when`(
@@ -210,17 +210,17 @@ class GrunnlagControllerTest(
                 eq("/api/ekstern/perioder/overgangsstonad/med-belop"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<Ressurs>>()
-            )
+                any<Class<Ressurs>>(),
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggOvergangsstønadResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggOvergangsstønadResponse(), HttpStatus.OK),
             )
 
         val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
-            OppdaterGrunnlagspakkeDto::class.java
+            OppdaterGrunnlagspakkeDto::class.java,
         ) { isOk() }
 
         assertThat(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe.size).isEqualTo(7)
@@ -240,11 +240,11 @@ class GrunnlagControllerTest(
                 eq("/rs/api/v1/hentdetaljerteabonnerteinntekter"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<HentInntektListeResponse>>()
-            )
+                any<Class<HentInntektListeResponse>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         Mockito.`when`(
@@ -252,11 +252,11 @@ class GrunnlagControllerTest(
                 eq("/rs/api/v1/hentinntektliste"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<HentInntektListeResponse>>()
-            )
+                any<Class<HentInntektListeResponse>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         Mockito.`when`(
@@ -264,11 +264,11 @@ class GrunnlagControllerTest(
                 eq(uriBuilder("2021", "SummertSkattegrunnlagBidrag")),
                 eq(HttpMethod.GET),
                 any(),
-                any<Class<HentSummertSkattegrunnlagResponse>>()
-            )
+                any<Class<HentSummertSkattegrunnlagResponse>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         Mockito.`when`(
@@ -276,11 +276,11 @@ class GrunnlagControllerTest(
                 eq("/pen/api/barnetillegg/search"),
                 eq(HttpMethod.POST),
                 any(),
-                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
-            )
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         Mockito.`when`(
@@ -288,11 +288,11 @@ class GrunnlagControllerTest(
                 eq("/api/bisys/hent-utvidet-barnetrygd"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<FamilieBaSakResponse>>()
-            )
+                any<Class<FamilieBaSakResponse>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         Mockito.`when`(
@@ -300,11 +300,11 @@ class GrunnlagControllerTest(
                 eq("/api/bisys/hent-utbetalingsinfo"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<BisysResponsDto>>()
-            )
+                any<Class<BisysResponsDto>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         Mockito.`when`(
@@ -312,11 +312,11 @@ class GrunnlagControllerTest(
                 eq("/api/ekstern/bisys/perioder-barnetilsyn"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<BarnetilsynResponse>>()
-            )
+                any<Class<BarnetilsynResponse>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         Mockito.`when`(
@@ -324,17 +324,17 @@ class GrunnlagControllerTest(
                 eq("/api/ekstern/perioder/overgangsstonad/med-belop"),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<Ressurs>>()
-            )
+                any<Class<Ressurs>>(),
+            ),
         )
             .thenThrow(
-                HttpClientErrorException(HttpStatus.NOT_FOUND)
+                HttpClientErrorException(HttpStatus.NOT_FOUND),
             )
 
         val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakke(
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
-            OppdaterGrunnlagspakkeDto::class.java
+            OppdaterGrunnlagspakkeDto::class.java,
         ) { isOk() }
 
         assertThat(oppdaterGrunnlagspakkeDto).isNotNull
@@ -354,7 +354,7 @@ class GrunnlagControllerTest(
             HttpMethod.GET,
             "/grunnlagspakke/$grunnlagspakkeIdOpprettet",
             null,
-            HentGrunnlagspakkeDto::class.java
+            HentGrunnlagspakkeDto::class.java,
         ) { isOk() }
 
         assertNotNull(hentGrunnlagspakkeResponse)
@@ -374,8 +374,8 @@ class GrunnlagControllerTest(
         Mockito.`when`(
             grunnlagspakkeService.oppdaterGrunnlagspakke(
                 grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett()
-            )
+                TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
+            ),
         )
             .thenThrow(HibernateException("Test-melding"))
 
@@ -384,7 +384,7 @@ class GrunnlagControllerTest(
                 grunnlagspakkeIdOpprettet,
                 TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett(),
                 String::class.java,
-                mockMvc
+                mockMvc,
             ) { isInternalServerError() }
 
         assertNotNull(oppdaterGrunnlagspakkeResponse)
@@ -403,7 +403,7 @@ class GrunnlagControllerTest(
             HttpMethod.GET,
             "/grunnlagspakke/1",
             null,
-            String::class.java
+            String::class.java,
         ) { isNotFound() }
 
         assertNotNull(hentGrunnlagspakkeResponse)
@@ -413,7 +413,7 @@ class GrunnlagControllerTest(
             HttpMethod.POST,
             "/grunnlagspakke/1/lukk",
             null,
-            String::class.java
+            String::class.java,
         ) { isNotFound() }
 
         assertNotNull(lukkGrunnlagspakkeResponse)
@@ -443,7 +443,7 @@ class GrunnlagControllerTest(
             HttpMethod.POST,
             GrunnlagController.GRUNNLAGSPAKKE_NY,
             fileContent,
-            Int::class.java
+            Int::class.java,
         ) { isOk() }
 
         assertNotNull(okResult)
@@ -505,11 +505,11 @@ class GrunnlagControllerTest(
                             type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
                             personId = "12345678901",
                             periodeFra = LocalDate.parse("2021-11-01"),
-                            periodeTil = LocalDate.parse("2021-11-15")
-                        )
-                    )
-                )
-            )
+                            periodeTil = LocalDate.parse("2021-11-15"),
+                        ),
+                    ),
+                ),
+            ),
         )
             .thenReturn(
                 OppdaterGrunnlagspakkeDto(
@@ -520,10 +520,10 @@ class GrunnlagControllerTest(
                             type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
                             personId = "12345678901",
                             status = GrunnlagsRequestStatus.HENTET,
-                            statusMelding = "Ok"
-                        )
-                    )
-                )
+                            statusMelding = "Ok",
+                        ),
+                    ),
+                ),
             )
 
         val fileContent = getFileContent("/requests/oppdaterGrunnlagspakke10.json")
@@ -532,7 +532,7 @@ class GrunnlagControllerTest(
             HttpMethod.POST,
             "/grunnlagspakke/1/oppdater",
             fileContent,
-            OppdaterGrunnlagspakkeDto::class.java
+            OppdaterGrunnlagspakkeDto::class.java,
         ) { isOk() }
 
         assertNotNull(okResult)
@@ -557,7 +557,7 @@ class GrunnlagControllerTest(
             HttpMethod.POST,
             "/grunnlagspakke/1/lukk",
             null,
-            Int::class.java
+            Int::class.java,
         ) { isOk() }
 
         assertNotNull(okResult)
@@ -571,7 +571,7 @@ class GrunnlagControllerTest(
             HttpMethod.GET,
             "/grunnlagspakke/null",
             null,
-            MutableMap::class.java
+            MutableMap::class.java,
         ) { isBadRequest() }
 
         assertNotNull(errorResult)
@@ -593,8 +593,8 @@ class GrunnlagControllerTest(
                     husstandmedlemmerOgEgneBarnListe = emptyList(),
                     sivilstandListe = emptyList(),
                     barnetilsynListe = emptyList(),
-                    overgangsstonadListe = emptyList()
-                )
+                    overgangsstonadListe = emptyList(),
+                ),
             )
 
         val okResult = TestUtil.performRequest(
@@ -602,7 +602,7 @@ class GrunnlagControllerTest(
             HttpMethod.GET,
             "/grunnlagspakke/1",
             null,
-            HentGrunnlagspakkeDto::class.java
+            HentGrunnlagspakkeDto::class.java,
         ) { isOk() }
 
         assertNotNull(okResult)
@@ -617,16 +617,16 @@ class GrunnlagControllerTest(
                 eq("/api/v2/arbeidstaker/arbeidsforhold"),
                 eq(HttpMethod.GET),
                 any(),
-                eq(responseType)
-            )
+                eq(responseType),
+            ),
         )
             .thenReturn(
-                ResponseEntity(TestUtil.byggArbeidsforholdResponse(), HttpStatus.OK)
+                ResponseEntity(TestUtil.byggArbeidsforholdResponse(), HttpStatus.OK),
             )
 
         val hentGrunnlagDto = hentGrunnlag(
             TestUtil.byggHentGrunnlagRequestKomplett(),
-            HentGrunnlagDto::class.java
+            HentGrunnlagDto::class.java,
         ) { isOk() }
 
         assertThat(hentGrunnlagDto.arbeidsforholdListe.size).isEqualTo(2)
@@ -638,7 +638,7 @@ class GrunnlagControllerTest(
             HttpMethod.POST,
             GrunnlagController.GRUNNLAGSPAKKE_NY,
             opprettGrunnlagspakkeRequestDto,
-            Int::class.java
+            Int::class.java,
         ) { isOk() }
 
         assertNotNull(nyGrunnlagspakkeOpprettetResponse)
@@ -662,14 +662,14 @@ class GrunnlagControllerTest(
         oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
         responseType: Class<Response>,
         customMockMvc: MockMvc? = null,
-        expectedStatus: StatusResultMatchersDsl.() -> Unit
+        expectedStatus: StatusResultMatchersDsl.() -> Unit,
     ): Response {
         return TestUtil.performRequest(
             customMockMvc ?: mockMvc,
             HttpMethod.POST,
             "/grunnlagspakke/$grunnlagspakkeId/oppdater",
             oppdaterGrunnlagspakkeRequestDto,
-            responseType
+            responseType,
         ) { expectedStatus() }
     }
 
@@ -680,7 +680,7 @@ class GrunnlagControllerTest(
             HttpMethod.POST,
             url,
             json,
-            MutableMap::class.java
+            MutableMap::class.java,
         ) { isBadRequest() }
     }
 
@@ -688,14 +688,14 @@ class GrunnlagControllerTest(
         hentGrunnlagRequestDto: HentGrunnlagRequestDto,
         responseType: Class<Response>,
         customMockMvc: MockMvc? = null,
-        expectedStatus: StatusResultMatchersDsl.() -> Unit
+        expectedStatus: StatusResultMatchersDsl.() -> Unit,
     ): Response {
         return TestUtil.performRequest(
             customMockMvc ?: mockMvc,
             HttpMethod.POST,
             "/hentgrunnlag",
             hentGrunnlagRequestDto,
-            responseType
+            responseType,
         ) { expectedStatus() }
     }
 

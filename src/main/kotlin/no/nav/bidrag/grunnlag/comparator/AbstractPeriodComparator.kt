@@ -21,7 +21,7 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
     fun comparePeriodEntities(
         requestedPeriod: IPeriod,
         newEntities: List<T>,
-        existingEntities: List<T>
+        existingEntities: List<T>,
     ): ComparatorResult<T> {
         val expiredEntities = mutableListOf<T>()
         val updatedEntities = mutableListOf<T>()
@@ -39,8 +39,8 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
                 } else {
                     SECURE_LOGGER.debug(
                         "Ny og eksisterende entitet er ulike. Ny: ${
-                        toJsonString(newEntity)
-                        }, Eksisterende: ${toJsonString(existingEntityWithEqualPeriod)}."
+                            toJsonString(newEntity)
+                        }, Eksisterende: ${toJsonString(existingEntityWithEqualPeriod)}.",
                     )
                     expiredEntities.add(existingEntityWithEqualPeriod)
                     updatedEntities.add(newEntity)
@@ -67,11 +67,11 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
 
     private fun findEntityWithEqualPeriod(
         periodEntity: T,
-        periodEntities: List<T>
+        periodEntities: List<T>,
     ): T? {
         return periodEntities.find { t ->
             t.periodEntity.periodeFra.isEqual(periodEntity.periodEntity.periodeFra) && t.periodEntity.periodeTil.isEqual(
-                periodEntity.periodEntity.periodeTil
+                periodEntity.periodEntity.periodeTil,
             )
         }
     }
@@ -80,7 +80,7 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
         existingEntities: List<T>,
         newEntities: List<T>,
         requestedPeriod: IPeriod,
-        expiredEntities: MutableList<T>
+        expiredEntities: MutableList<T>,
     ): List<T> {
         val filteredEntities = mutableListOf<T>()
         existingEntities.forEach() { existingEntity ->
@@ -112,7 +112,7 @@ open class PeriodComparable<PeriodEntity : IPeriod, Child>(val periodEntity: Per
 class ComparatorResult<T : PeriodComparable<*, *>>(
     val expiredEntities: List<T>,
     val updatedEntities: List<T>,
-    val equalEntities: List<T>
+    val equalEntities: List<T>,
 )
 
 fun LocalDate.isAfterOrEqual(startDate: LocalDate): Boolean {

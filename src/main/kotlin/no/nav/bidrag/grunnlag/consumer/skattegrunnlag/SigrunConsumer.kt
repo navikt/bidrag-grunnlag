@@ -38,7 +38,7 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
             HttpMethod.GET,
             initHttpEntitySkattegrunnlag(request, request.personId),
             HentSummertSkattegrunnlagResponse::class.java,
-            HentSummertSkattegrunnlagResponse(emptyList(), emptyList(), null)
+            HentSummertSkattegrunnlagResponse(emptyList(), emptyList(), null),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

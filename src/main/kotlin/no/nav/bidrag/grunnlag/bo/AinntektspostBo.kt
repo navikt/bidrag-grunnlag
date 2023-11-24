@@ -42,7 +42,7 @@ data class AinntektspostBo(
     val etterbetalingsperiodeFra: LocalDate?,
 
     @Schema(description = "Til-dato etterbetaling")
-    val etterbetalingsperiodeTil: LocalDate?
+    val etterbetalingsperiodeTil: LocalDate?,
 )
 
 fun AinntektspostBo.toAinntektspostEntity() = with(::Ainntektspost) {
@@ -53,6 +53,6 @@ fun AinntektspostBo.toAinntektspostEntity() = with(::Ainntektspost) {
                 Ainntektspost::inntektspostId.name -> 0
                 else -> propertiesByName[parameter.name]?.get(this@toAinntektspostEntity)
             }
-        }
+        },
     )
 }

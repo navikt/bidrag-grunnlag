@@ -51,7 +51,7 @@ data class RelatertPerson(
     val brukTil: LocalDateTime? = null,
 
     @Column(nullable = false, name = "hentet_tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
 
 fun RelatertPerson.toRelatertPersonBo() = with(::RelatertPersonBo) {
@@ -61,6 +61,6 @@ fun RelatertPerson.toRelatertPersonBo() = with(::RelatertPersonBo) {
             when (parameter.name) {
                 else -> propertiesByName[parameter.name]?.get(this@toRelatertPersonBo)
             }
-        }
+        },
     )
 }

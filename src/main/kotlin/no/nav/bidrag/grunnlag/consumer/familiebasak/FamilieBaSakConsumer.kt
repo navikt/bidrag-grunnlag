@@ -29,7 +29,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
             HttpMethod.POST,
             initHttpEntity(request),
             FamilieBaSakResponse::class.java,
-            FamilieBaSakResponse(emptyList())
+            FamilieBaSakResponse(emptyList()),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

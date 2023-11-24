@@ -22,7 +22,7 @@ class OppdaterBarnetilsyn(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val familieEfSakConsumer: FamilieEfSakConsumer
+    private val familieEfSakConsumer: FamilieEfSakConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -36,7 +36,7 @@ class OppdaterBarnetilsyn(
 
             val barnetilsynRequest = BarnetilsynRequest(
                 personIdOgPeriode.personId,
-                personIdOgPeriode.periodeFra
+                personIdOgPeriode.periodeFra,
             )
 
             LOGGER.info("Henter barnetilsyn for enslig forsørger")
@@ -53,7 +53,7 @@ class OppdaterBarnetilsyn(
                     persistenceService.oppdaterEksisterendeBarnetilsynTilInaktiv(
                         grunnlagspakkeId,
                         personIdOgPeriode.personId,
-                        timestampOppdatering
+                        timestampOppdatering,
                     )
 
                     barnetilsynResponse.barnetilsynBisysPerioder.forEach { bts ->
@@ -73,8 +73,8 @@ class OppdaterBarnetilsyn(
                                     belop = null,
                                     tilsynstype = null,
                                     skolealder = null,
-                                    hentetTidspunkt = timestampOppdatering
-                                )
+                                    hentetTidspunkt = timestampOppdatering,
+                                ),
                             )
                         }
                     }
@@ -83,8 +83,8 @@ class OppdaterBarnetilsyn(
                             GrunnlagRequestType.BARNETILSYN,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet"
-                        )
+                            "Antall perioder funnet: $antallPerioderFunnet",
+                        ),
                     )
                 }
 
@@ -93,8 +93,8 @@ class OppdaterBarnetilsyn(
                         GrunnlagRequestType.BARNETILSYN,
                         personIdOgPeriode.personId,
                         GrunnlagsRequestStatus.IKKE_FUNNET,
-                        "Feil ved henting av barnetilsyn for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
-                    )
+                        "Feil ved henting av barnetilsyn for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                    ),
                 )
             }
         }
@@ -108,12 +108,12 @@ class OppdaterBarnetilsyn(
         val fodselsdato = LocalDate.parse(barnIdent.substring(IntRange(0, 5)), dateFormatter)
 
         if (alderErOver7Ar(fodselsdato) || (
-            alderEr6Ar(fodselsdato) || (
-                alderEr5Ar(fodselsdato) && fodtEtterForsteAugust(
-                        fodselsdato
+                alderEr6Ar(fodselsdato) || (
+                    alderEr5Ar(fodselsdato) && fodtEtterForsteAugust(
+                        fodselsdato,
                     )
-                )
-            ) && barnetilsynGjelderFraFomForsteAugust(fom)
+                    )
+                ) && barnetilsynGjelderFraFomForsteAugust(fom)
         ) {
             return Skolealder.OVER
         }

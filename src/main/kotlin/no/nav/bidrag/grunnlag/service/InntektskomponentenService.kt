@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class InntektskomponentenService(
-    private val inntektskomponentenConsumer: InntektskomponentenConsumer
+    private val inntektskomponentenConsumer: InntektskomponentenConsumer,
 ) {
     companion object {
         @JvmStatic
@@ -84,11 +84,11 @@ class InntektskomponentenService(
                     utbetaltIMaaned = inntekt.utbetaltIMaaned?.toString(),
                     opplysningspliktig = OpplysningspliktigIntern(
                         inntekt.opplysningspliktig?.identifikator,
-                        inntekt.opplysningspliktig?.aktoerType.toString()
+                        inntekt.opplysningspliktig?.aktoerType.toString(),
                     ),
                     virksomhet = VirksomhetIntern(
                         inntekt.virksomhet?.identifikator,
-                        inntekt.virksomhet?.aktoerType.toString()
+                        inntekt.virksomhet?.aktoerType.toString(),
                     ),
                     tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE) {
                         TilleggsinformasjonIntern(
@@ -96,22 +96,22 @@ class InntektskomponentenService(
                             TilleggsinformasjonDetaljerIntern(
                                 (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeFom,
                                 (inntekt.tilleggsinformasjon?.tilleggsinformasjonDetaljer as Etterbetalingsperiode).etterbetalingsperiodeTom.plusDays(
-                                    1
-                                )
-                            )
+                                    1,
+                                ),
+                            ),
                         )
                     } else {
                         null
                     },
-                    beskrivelse = inntekt.beskrivelse
+                    beskrivelse = inntekt.beskrivelse,
                 )
                 inntektInternListe.add(inntektIntern)
             }
             arbeidsInntektMaanedListe.add(
                 ArbeidsInntektMaanedIntern(
                     arbeidsInntektMaaned.aarMaaned.toString(),
-                    ArbeidsInntektInformasjonIntern(inntektInternListe)
-                )
+                    ArbeidsInntektInformasjonIntern(inntektInternListe),
+                ),
             )
         }
         return HentInntektListeResponseIntern(httpStatus, arbeidsInntektMaanedListe)

@@ -43,7 +43,7 @@ data class BarnetilleggBo(
     val barnType: String = "",
 
     @Schema(description = "Hentet tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
 
 fun BarnetilleggBo.toBarnetilleggEntity() = with(::Barnetillegg) {
@@ -54,6 +54,6 @@ fun BarnetilleggBo.toBarnetilleggEntity() = with(::Barnetillegg) {
                 Barnetillegg::barnetilleggId.name -> 0
                 else -> propertiesByName[parameter.name]?.get(this@toBarnetilleggEntity)
             }
-        }
+        },
     )
 }

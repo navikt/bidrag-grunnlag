@@ -48,8 +48,8 @@ internal class FamilieEfSakConsumerTest {
                 eq(BARNETILSYN_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                ArgumentMatchers.any<Class<BarnetilsynResponse>>()
-            )
+                ArgumentMatchers.any<Class<BarnetilsynResponse>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggBarnetilsynResponse(), HttpStatus.OK))
 
@@ -62,7 +62,7 @@ internal class FamilieEfSakConsumerTest {
                     { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.fom).isEqualTo(LocalDate.parse("2021-01-01")) },
                     { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.tom).isEqualTo(LocalDate.parse("2021-07-31")) },
                     { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[0]).isEqualTo("01012212345") },
-                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[1]).isEqualTo("01011034543") }
+                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[1]).isEqualTo("01011034543") },
                 )
             }
             else -> {
@@ -80,8 +80,8 @@ internal class FamilieEfSakConsumerTest {
                 eq(OVERGANGSSTØNAD_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                ArgumentMatchers.any<Class<Ressurs>>()
-            )
+                ArgumentMatchers.any<Class<Ressurs>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggOvergangsstønadResponse(), HttpStatus.OK))
 
@@ -94,7 +94,7 @@ internal class FamilieEfSakConsumerTest {
                     { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].fomDato).isEqualTo(LocalDate.parse("2020-01-01")) },
                     { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].tomDato).isEqualTo(LocalDate.parse("2020-12-31")) },
                     { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].beløp).isEqualTo(111) },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].datakilde).isEqualTo("Infotrygd") }
+                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].datakilde).isEqualTo("Infotrygd") },
                 )
             }
             else -> {
@@ -113,8 +113,8 @@ internal class FamilieEfSakConsumerTest {
                 eq(BARNETILSYN_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                ArgumentMatchers.any<Class<BarnetilsynResponse>>()
-            )
+                ArgumentMatchers.any<Class<BarnetilsynResponse>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -125,7 +125,7 @@ internal class FamilieEfSakConsumerTest {
                     {
                         Assertions.assertThat(restResponseBarnetilsyn.restClientException)
                             .isInstanceOf(HttpClientErrorException::class.java)
-                    }
+                    },
                 )
             }
             else -> {
@@ -144,8 +144,8 @@ internal class FamilieEfSakConsumerTest {
                 eq(OVERGANGSSTØNAD_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                ArgumentMatchers.any<Class<Ressurs>>()
-            )
+                ArgumentMatchers.any<Class<Ressurs>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -156,7 +156,7 @@ internal class FamilieEfSakConsumerTest {
                     {
                         Assertions.assertThat(restResponseOvergangsstønad.restClientException)
                             .isInstanceOf(HttpClientErrorException::class.java)
-                    }
+                    },
                 )
             }
             else -> {

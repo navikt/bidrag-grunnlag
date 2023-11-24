@@ -52,7 +52,7 @@ data class Ainntektspost(
     val etterbetalingsperiodeFra: LocalDate? = null,
 
     @Column(nullable = true, name = "etterbetalingsperiode_til")
-    val etterbetalingsperiodeTil: LocalDate? = null
+    val etterbetalingsperiodeTil: LocalDate? = null,
 )
 
 fun Ainntektspost.toAinntektspostBo() = with(::AinntektspostBo) {
@@ -62,6 +62,6 @@ fun Ainntektspost.toAinntektspostBo() = with(::AinntektspostBo) {
             when (parameter.name) {
                 else -> propertiesByName[parameter.name]?.get(this@toAinntektspostBo)
             }
-        }
+        },
     )
 }

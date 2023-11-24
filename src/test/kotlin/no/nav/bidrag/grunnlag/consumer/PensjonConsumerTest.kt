@@ -44,8 +44,8 @@ internal class PensjonConsumerTest {
                 eq(BARNETILLEGG_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
-            )
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentBarnetilleggPensjonResponse(), HttpStatus.OK))
 
@@ -58,7 +58,7 @@ internal class PensjonConsumerTest {
                     { assertThat(hentBarnetilleggPensjonResponse[0].barn).isEqualTo("barnIdent") },
                     { assertThat(hentBarnetilleggPensjonResponse[0].beloep).isEqualTo(BigDecimal.valueOf(1000.11)) },
                     { assertThat(hentBarnetilleggPensjonResponse[1].barn).isEqualTo("barnIdent") },
-                    { assertThat(hentBarnetilleggPensjonResponse[1].beloep).isEqualTo(BigDecimal.valueOf(2000.22)) }
+                    { assertThat(hentBarnetilleggPensjonResponse[1].beloep).isEqualTo(BigDecimal.valueOf(2000.22)) },
                 )
             }
 
@@ -78,8 +78,8 @@ internal class PensjonConsumerTest {
                 eq(BARNETILLEGG_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>()
-            )
+                any<ParameterizedTypeReference<List<BarnetilleggPensjon>>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -87,7 +87,7 @@ internal class PensjonConsumerTest {
             is RestResponse.Failure -> {
                 assertAll(
                     { assertThat(restResponseBarnetilleggPensjon.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    { assertThat(restResponseBarnetilleggPensjon.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+                    { assertThat(restResponseBarnetilleggPensjon.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
                 )
             }
 

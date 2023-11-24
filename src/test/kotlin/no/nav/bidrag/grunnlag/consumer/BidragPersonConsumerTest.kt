@@ -61,8 +61,8 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<HusstandsmedlemmerDto>>()
-            )
+                any<Class<HusstandsmedlemmerDto>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentHusstandsmedlemmerResponse(), HttpStatus.OK))
 
@@ -91,7 +91,7 @@ internal class BidragPersonConsumerTest {
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].personId).isEqualTo(PersonIdent("111")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].navn).isEqualTo(FulltNavn("fornavn1 mellomnavn1 etternavn1")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2011-05-17"))) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].gyldigTilOgMed).isNull() },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].gyldigTilOgMed).isEqualTo(TomDato(LocalDate.parse("2018-01-01"))) },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].personId).isEqualTo(PersonIdent("333")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].navn).isEqualTo(FulltNavn("fornavn3 mellomnavn3 etternavn3")) },
@@ -106,12 +106,12 @@ internal class BidragPersonConsumerTest {
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].personId).isEqualTo(PersonIdent("111")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].navn).isEqualTo(FulltNavn("fornavn1 mellomnavn1 etternavn1")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2018-01-01"))) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].gyldigTilOgMed).isEqualTo(TomDato(LocalDate.parse("2018-02-01"))) },
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].gyldigTilOgMed).isNull() },
 
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].personId).isEqualTo(PersonIdent("555")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].navn).isEqualTo(FulltNavn("fornavn5 mellomnavn5 etternavn5")) },
                     Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2020-01-01"))) },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].gyldigTilOgMed).isNull() }
+                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].gyldigTilOgMed).isNull() },
 
                 )
             }
@@ -130,8 +130,8 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<HusstandsmedlemmerDto>>()
-            )
+                any<Class<HusstandsmedlemmerDto>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -139,7 +139,7 @@ internal class BidragPersonConsumerTest {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseHusstandsmedlemmer.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseHusstandsmedlemmer.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+                    Executable { assertThat(restResponseHusstandsmedlemmer.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
                 )
             }
             else -> {
@@ -157,8 +157,8 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<SivilstandshistorikkDto>>()
-            )
+                any<Class<SivilstandshistorikkDto>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentSivilstandResponse(), HttpStatus.OK))
 
@@ -178,7 +178,7 @@ internal class BidragPersonConsumerTest {
 
                     Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].type).isEqualTo(Sivilstandstype.GJENLEVENDE_PARTNER) },
                     Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].gyldigFraOgMed).isEqualTo(FomDato(LocalDate.parse("2021-09-01"))) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].bekreftelsesdato).isNull() }
+                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].bekreftelsesdato).isNull() },
 
                 )
             }
@@ -197,8 +197,8 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<SivilstandshistorikkDto>>()
-            )
+                any<Class<SivilstandshistorikkDto>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -206,7 +206,7 @@ internal class BidragPersonConsumerTest {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseSivilstand.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseSivilstand.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+                    Executable { assertThat(restResponseSivilstand.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
                 )
             }
             else -> {

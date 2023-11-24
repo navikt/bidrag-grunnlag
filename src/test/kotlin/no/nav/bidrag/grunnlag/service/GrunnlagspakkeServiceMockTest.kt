@@ -118,7 +118,7 @@ class GrunnlagspakkeServiceMockTest {
         assertAll(
             { assertThat(nyGrunnlagspakkeIdOpprettet).isNotNull() },
             // sjekk GrunnlagspakkeDto
-            { assertThat(grunnlagspakke).isNotNull() }
+            { assertThat(grunnlagspakke).isNotNull() },
         )
     }
 
@@ -137,8 +137,8 @@ class GrunnlagspakkeServiceMockTest {
             .thenReturn(byggSkattegrunnlagspost())
         Mockito.`when`(
             persistenceServiceMock.opprettUtvidetBarnetrygdOgSmaabarnstillegg(
-                MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggBoCaptor)
-            )
+                MockitoHelper.capture(utvidetBarnetrygdOgSmaabarnstilleggBoCaptor),
+            ),
         )
             .thenReturn(byggUtvidetBarnetrygdOgSmaabarnstillegg())
         Mockito.`when`(persistenceServiceMock.opprettBarnetillegg(MockitoHelper.capture(barnetilleggBoCaptor)))
@@ -339,7 +339,7 @@ class GrunnlagspakkeServiceMockTest {
             { assertThat(overgangsstønadListe[0].partPersonId).isEqualTo("1234567") },
             { assertThat(overgangsstønadListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { assertThat(overgangsstønadListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-            { assertThat(overgangsstønadListe[0].belop).isEqualTo(7500) }
+            { assertThat(overgangsstønadListe[0].belop).isEqualTo(7500) },
 
         )
     }
