@@ -21,7 +21,7 @@ class OppdaterSivilstand(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val bidragPersonConsumer: BidragPersonConsumer
+    private val bidragPersonConsumer: BidragPersonConsumer,
 
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
@@ -50,16 +50,16 @@ class OppdaterSivilstand(
                         persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
                             grunnlagspakkeId,
                             personIdOgPeriode.personId,
-                            timestampOppdatering
+                            timestampOppdatering,
                         )
                         // Sorterer motta sivilstandforekomster etter. Forekomstene som er historiske skal komme først. Deretter sorteres det på
                         // gyldigFraOgMed, bekreftelsesdato, registrert og til slutt på type.
                         antallPerioderFunnet = behandleSivilstandResponse(
                             sivilstandResponse.sivilstandDto.sortedWith(
                                 compareByDescending<SivilstandDto> { it.historisk }.thenBy { it.gyldigFraOgMed }
-                                    .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() }
+                                    .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() },
                             ),
-                            personIdOgPeriode
+                            personIdOgPeriode,
                         )
                     }
                     this.add(
@@ -67,8 +67,8 @@ class OppdaterSivilstand(
                             GrunnlagRequestType.SIVILSTAND,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
-                            "Antall sivilstandsforekomster funnet: $antallPerioderFunnet"
-                        )
+                            "Antall sivilstandsforekomster funnet: $antallPerioderFunnet",
+                        ),
                     )
                 }
 
@@ -77,8 +77,8 @@ class OppdaterSivilstand(
                         GrunnlagRequestType.SIVILSTAND,
                         personIdOgPeriode.personId,
                         if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                        "Feil ved henting av sivilstand fra bidrag-person/PDL for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
-                    )
+                        "Feil ved henting av sivilstand fra bidrag-person/PDL for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                    ),
                 )
             }
         }
@@ -108,7 +108,7 @@ class OppdaterSivilstand(
                 grunnlagspakkeId,
                 timestampOppdatering,
                 personIdOgPeriodeRequest.personId,
-                periodeTil
+                periodeTil,
             )
         }
 
@@ -120,7 +120,7 @@ class OppdaterSivilstand(
         grunnlagspakkeId: Int,
         timestampOppdatering: LocalDateTime,
         personId: String,
-        periodeTil: LocalDate?
+        periodeTil: LocalDate?,
     ) {
         // Hvis en forekomst er merket som historisk, altså ikke lenger aktiv, så skal periodeFra settes lik gyldgiFraOgMed evt bekreftelsesdato
         // Hvis begge er null så settes periodeFra lik null
@@ -142,8 +142,8 @@ class OppdaterSivilstand(
                 aktiv = true,
                 brukFra = timestampOppdatering,
                 brukTil = null,
-                hentetTidspunkt = timestampOppdatering
-            )
+                hentetTidspunkt = timestampOppdatering,
+            ),
         )
     }
 }

@@ -19,7 +19,7 @@ class OppdaterOvergangsstønad(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val familieEfSakConsumer: FamilieEfSakConsumer
+    private val familieEfSakConsumer: FamilieEfSakConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -36,7 +36,7 @@ class OppdaterOvergangsstønad(
             val innsynRequest = EksternePerioderRequest(
                 personIdOgPeriode.personId,
                 personIdOgPeriode.periodeFra,
-                personIdOgPeriode.periodeTil
+                personIdOgPeriode.periodeTil,
             )
 
             LOGGER.info("Kaller EF-sak og henter overgangsstønad")
@@ -53,7 +53,7 @@ class OppdaterOvergangsstønad(
                     persistenceService.oppdaterEksisterendeOvergangsstønadTilInaktiv(
                         grunnlagspakkeId,
                         personIdOgPeriode.personId,
-                        timestampOppdatering
+                        timestampOppdatering,
                     )
 
                     // Overgangsstønad fra ef-sak
@@ -71,8 +71,8 @@ class OppdaterOvergangsstønad(
                                     brukFra = timestampOppdatering,
                                     belop = periode.beløp,
                                     brukTil = null,
-                                    hentetTidspunkt = timestampOppdatering
-                                )
+                                    hentetTidspunkt = timestampOppdatering,
+                                ),
                             )
                         }
                     }
@@ -81,8 +81,8 @@ class OppdaterOvergangsstønad(
                             GrunnlagRequestType.OVERGANGSSTONAD,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet"
-                        )
+                            "Antall perioder funnet: $antallPerioderFunnet",
+                        ),
                     )
                 }
 
@@ -93,8 +93,8 @@ class OppdaterOvergangsstønad(
                             GrunnlagRequestType.OVERGANGSSTONAD,
                             personIdOgPeriode.personId,
                             if (restResponseOvergangsstønad.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                            "Feil ved henting av overgangsstønad for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
-                        )
+                            "Feil ved henting av overgangsstønad for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                        ),
                     )
                     SECURE_LOGGER.info("overgangsstønad familie-ef-sak svarer med feil, respons: $restResponseOvergangsstønad")
                 }

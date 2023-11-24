@@ -31,7 +31,7 @@ data class Grunnlagspakke(
     val gyldigTil: LocalDate? = null,
 
     @Column(nullable = true, name = "formaal")
-    val formaal: String? = null
+    val formaal: String? = null,
 )
 
 fun Grunnlagspakke.toGrunnlagspakkeBo() = with(::GrunnlagspakkeBo) {
@@ -41,7 +41,7 @@ fun Grunnlagspakke.toGrunnlagspakkeBo() = with(::GrunnlagspakkeBo) {
             when (parameter.name) {
                 else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeBo)
             }
-        }
+        },
     )
 }
 
@@ -55,6 +55,6 @@ fun OpprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity() = with(::Grunnlagsp
                 Grunnlagspakke::formaal.name -> formaal.toString()
                 else -> propertiesByName[parameter.name]?.get(this@toGrunnlagspakkeEntity)
             }
-        }
+        },
     )
 }

@@ -46,8 +46,8 @@ internal class InntektskomponentenConsumerTest {
                 eq(INNTEKT_LISTE_CONTEXT),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<HentInntektListeResponse>>()
-            )
+                any<Class<HentInntektListeResponse>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentInntektListeResponse(), HttpStatus.OK))
 
@@ -67,7 +67,7 @@ internal class InntektskomponentenConsumerTest {
                     Executable {
                         assertThat(hentInntektListeResponse.arbeidsInntektMaaned!![0].arbeidsInntektInformasjon.inntektListe!![0].beloep)
                             .isEqualTo(BigDecimal.valueOf(10000))
-                    }
+                    },
                 )
             }
 
@@ -86,8 +86,8 @@ internal class InntektskomponentenConsumerTest {
                 eq(INNTEKT_LISTE_CONTEXT),
                 eq(HttpMethod.POST),
                 any(),
-                any<Class<HentInntektListeResponse>>()
-            )
+                any<Class<HentInntektListeResponse>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -95,7 +95,7 @@ internal class InntektskomponentenConsumerTest {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseInntekt.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseInntekt.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+                    Executable { assertThat(restResponseInntekt.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
                 )
             }
 

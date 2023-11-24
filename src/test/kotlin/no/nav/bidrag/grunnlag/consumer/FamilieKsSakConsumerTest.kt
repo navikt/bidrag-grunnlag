@@ -45,8 +45,8 @@ internal class FamilieKsSakConsumerTest {
                 eq(FAMILIEKSSAK_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<BisysResponsDto>>()
-            )
+                any<Class<BisysResponsDto>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggKontantstotteResponse(), HttpStatus.OK))
 
@@ -67,7 +67,7 @@ internal class FamilieKsSakConsumerTest {
                     { assertThat(hentKontantstotteResponse.ksSakPerioder[0].fomMåned).isEqualTo(YearMonth.parse("2023-01")) },
                     { assertThat(hentKontantstotteResponse.ksSakPerioder[0].tomMåned).isEqualTo(YearMonth.parse("2023-06")) },
                     { assertThat(hentKontantstotteResponse.ksSakPerioder[0].barn.ident).isEqualTo("11223344551") },
-                    { assertThat(hentKontantstotteResponse.ksSakPerioder[0].barn.beløp).isEqualTo(5000) }
+                    { assertThat(hentKontantstotteResponse.ksSakPerioder[0].barn.beløp).isEqualTo(5000) },
                 )
             }
             else -> {
@@ -86,8 +86,8 @@ internal class FamilieKsSakConsumerTest {
                 eq(FAMILIEKSSAK_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<BisysResponsDto>>()
-            )
+                any<Class<BisysResponsDto>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -95,7 +95,7 @@ internal class FamilieKsSakConsumerTest {
             is RestResponse.Failure -> {
                 assertAll(
                     { assertThat(restResponseKontantstotte.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    { assertThat(restResponseKontantstotte.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+                    { assertThat(restResponseKontantstotte.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
                 )
             }
             else -> {

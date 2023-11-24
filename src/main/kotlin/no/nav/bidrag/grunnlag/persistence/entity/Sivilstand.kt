@@ -42,7 +42,7 @@ data class Sivilstand(
     val brukTil: LocalDateTime? = null,
 
     @Column(nullable = false, name = "hentet_tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 )
 
 fun Sivilstand.toSivilstandBo() = with(::SivilstandBo) {
@@ -52,6 +52,6 @@ fun Sivilstand.toSivilstandBo() = with(::SivilstandBo) {
             when (parameter.name) {
                 else -> propertiesByName[parameter.name]?.get(this@toSivilstandBo)
             }
-        }
+        },
     )
 }

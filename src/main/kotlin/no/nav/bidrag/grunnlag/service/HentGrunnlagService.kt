@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service
 @Service
 class HentGrunnlagService(
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
-    private val enhetsregisterConsumer: EnhetsregisterConsumer
+    private val enhetsregisterConsumer: EnhetsregisterConsumer,
 ) {
     fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
         val hentGrunnlagDtoliste = HentGrunnlag()
             .hentArbeidsforhold(
-                hentRequestListeFor(GrunnlagRequestType.ARBEIDSFORHOLD, hentGrunnlagRequestDto)
+                hentRequestListeFor(GrunnlagRequestType.ARBEIDSFORHOLD, hentGrunnlagRequestDto),
             )
 
         return HentGrunnlagDto(hentGrunnlagDtoliste)
@@ -26,7 +26,7 @@ class HentGrunnlagService(
 
     private fun hentRequestListeFor(
         type: GrunnlagRequestType,
-        hentGrunnlagRequestDto: HentGrunnlagRequestDto
+        hentGrunnlagRequestDto: HentGrunnlagRequestDto,
     ): List<PersonIdOgPeriodeRequest> {
         val grunnlagRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
         hentGrunnlagRequestDto.grunnlagRequestDtoListe.forEach {
@@ -41,7 +41,7 @@ class HentGrunnlagService(
         PersonIdOgPeriodeRequest(
             personId = grunnlagRequestDto.personId,
             periodeFra = grunnlagRequestDto.periodeFra,
-            periodeTil = grunnlagRequestDto.periodeTil
+            periodeTil = grunnlagRequestDto.periodeTil,
         )
 
     inner class HentGrunnlag : MutableList<ArbeidsforholdDto> by mutableListOf() {
@@ -49,9 +49,9 @@ class HentGrunnlagService(
             this.addAll(
                 HentArbeidsforhold(
                     arbeidsforholdConsumer,
-                    enhetsregisterConsumer
+                    enhetsregisterConsumer,
                 )
-                    .hentArbeidsforhold(arbeidsforholdRequestListe)
+                    .hentArbeidsforhold(arbeidsforholdRequestListe),
             )
             return this
         }

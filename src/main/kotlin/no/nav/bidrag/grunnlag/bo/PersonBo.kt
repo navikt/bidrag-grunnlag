@@ -7,5 +7,5 @@ data class PersonBo(
     var navn: String?,
     var fodselsdato: LocalDate?,
     val husstandsmedlemPeriodeFra: LocalDate? = null,
-    val husstandsmedlemPeriodeTil: LocalDate? = null
+    val husstandsmedlemPeriodeTil: LocalDate? = null,
 )

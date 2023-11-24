@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 
 class HentArbeidsforhold(
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
-    private val enhetsregisterConsumer: EnhetsregisterConsumer
+    private val enhetsregisterConsumer: EnhetsregisterConsumer,
 ) : MutableList<HentGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -30,7 +30,7 @@ class HentArbeidsforhold(
 
         arbeidsforholdRequestListe.forEach { personIdOgPeriode ->
             val hentArbeidsforholdRequest = HentArbeidsforholdRequest(
-                arbeidstakerId = personIdOgPeriode.personId
+                arbeidstakerId = personIdOgPeriode.personId,
             )
 
             LOGGER.info("Kaller Aareg for å hente arbeidsforhold")
@@ -66,8 +66,8 @@ class HentArbeidsforhold(
                                     antallTimerPrUke = it.antallTimerPrUke,
                                     avtaltStillingsprosent = it.avtaltStillingsprosent,
                                     sisteStillingsprosentendringDato = it.sisteStillingsprosentendring,
-                                    sisteLønnsendringDato = it.sisteLoennsendring
-                                )
+                                    sisteLønnsendringDato = it.sisteLoennsendring,
+                                ),
                             )
                         }
 
@@ -77,9 +77,9 @@ class HentArbeidsforhold(
                                     startdato = it.startdato,
                                     sluttdato = it.sluttdato,
                                     beskrivelse = it.type?.beskrivelse,
-                                    prosent = it.prosent
+                                    prosent = it.prosent,
 
-                                )
+                                ),
                             )
                         }
 
@@ -89,8 +89,8 @@ class HentArbeidsforhold(
                                     startdato = it.startdato,
                                     sluttdato = it.sluttdato,
                                     beskrivelse = it.type?.beskrivelse,
-                                    prosent = it.prosent
-                                )
+                                    prosent = it.prosent,
+                                ),
                             )
                         }
 
@@ -104,8 +104,8 @@ class HentArbeidsforhold(
                                 ansettelsesdetaljer = ansettelsesdetaljerListe,
                                 permisjoner = permisjonListe,
                                 permitteringer = permitteringListe,
-                                hentetTidspunkt = LocalDateTime.now()
-                            )
+                                hentetTidspunkt = LocalDateTime.now(),
+                            ),
                         )
                     }
                     return arbeidsforholdListe
@@ -141,7 +141,7 @@ class HentArbeidsforhold(
 
             Arbeidsgiverinfo(
                 orgnr = orgnr,
-                navn = navn
+                navn = navn,
             )
         } else {
             null
@@ -151,5 +151,5 @@ class HentArbeidsforhold(
 
 data class Arbeidsgiverinfo(
     val orgnr: String?,
-    val navn: String?
+    val navn: String?,
 )

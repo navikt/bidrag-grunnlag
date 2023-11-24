@@ -16,7 +16,7 @@ class SecurityTokenService(val authorizedClientManager: OAuth2AuthorizedClientMa
     private val ANONYMOUS_AUTHENTICATION: Authentication = AnonymousAuthenticationToken(
         "anonymous",
         "anonymousUser",
-        AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
+        AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"),
     )
 
     fun generateBearerToken(clientRegistrationId: String): ClientHttpRequestInterceptor? {
@@ -26,7 +26,7 @@ class SecurityTokenService(val authorizedClientManager: OAuth2AuthorizedClientMa
                     OAuth2AuthorizeRequest
                         .withClientRegistrationId(clientRegistrationId)
                         .principal(ANONYMOUS_AUTHENTICATION)
-                        .build()
+                        .build(),
                 )!!.accessToken
 
             request.headers.setBearerAuth(accessToken.tokenValue)

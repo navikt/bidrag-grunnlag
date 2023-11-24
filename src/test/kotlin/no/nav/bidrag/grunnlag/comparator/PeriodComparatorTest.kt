@@ -63,14 +63,14 @@ class PeriodComparatorTest {
         var newEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
             listOf(
-                createAinntektspost()
-            )
+                createAinntektspost(),
+            ),
         )
         var existingEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
             listOf(
-                createAinntektspost()
-            )
+                createAinntektspost(),
+            ),
         )
 
         assertTrue(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
@@ -80,8 +80,8 @@ class PeriodComparatorTest {
         existingEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
             listOf(
-                createAinntektspost(belop = BigDecimal(500.0))
-            )
+                createAinntektspost(belop = BigDecimal(500.0)),
+            ),
         )
 
         assertTrue(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
@@ -113,14 +113,14 @@ class PeriodComparatorTest {
 
         newEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
-            listOf(createAinntektspost(opptjeningsperiodeFra = LocalDate.of(2021, 8, 2)))
+            listOf(createAinntektspost(opptjeningsperiodeFra = LocalDate.of(2021, 8, 2))),
         )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
         newEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
-            listOf(createAinntektspost(opptjeningsperiodeTil = LocalDate.of(2021, 9, 2)))
+            listOf(createAinntektspost(opptjeningsperiodeTil = LocalDate.of(2021, 9, 2))),
         )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
@@ -164,7 +164,7 @@ class PeriodComparatorTest {
                     beskrivelse = "fastloenn",
                     belop = BigDecimal(500.0),
                     etterbetalingsperiodeFom = LocalDate.of(2022, 2, 1),
-                    etterbetalingsperiodeTom = LocalDate.of(2022, 3, 1)
+                    etterbetalingsperiodeTom = LocalDate.of(2022, 3, 1),
                 ),
                 createAinntektspost(
                     utbetalingsperiode = "2022-07",
@@ -177,9 +177,9 @@ class PeriodComparatorTest {
                     beskrivelse = "fastloenn",
                     belop = BigDecimal(500.0),
                     etterbetalingsperiodeFom = LocalDate.of(2022, 3, 1),
-                    etterbetalingsperiodeTom = LocalDate.of(2022, 4, 1)
-                )
-            )
+                    etterbetalingsperiodeTom = LocalDate.of(2022, 4, 1),
+                ),
+            ),
         )
 
         val newEntities = createPeriodEntities(
@@ -196,7 +196,7 @@ class PeriodComparatorTest {
                     beskrivelse = "fastloenn",
                     belop = BigDecimal(500.0),
                     etterbetalingsperiodeFom = LocalDate.of(2022, 3, 1),
-                    etterbetalingsperiodeTom = LocalDate.of(2022, 4, 1)
+                    etterbetalingsperiodeTom = LocalDate.of(2022, 4, 1),
                 ),
                 createAinntektspost(
                     utbetalingsperiode = "2022-07",
@@ -209,9 +209,9 @@ class PeriodComparatorTest {
                     beskrivelse = "fastloenn",
                     belop = BigDecimal(500.0),
                     etterbetalingsperiodeFom = LocalDate.of(2022, 2, 1),
-                    etterbetalingsperiodeTom = LocalDate.of(2022, 3, 1)
-                )
-            )
+                    etterbetalingsperiodeTom = LocalDate.of(2022, 3, 1),
+                ),
+            ),
         )
         assertTrue(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
     }
@@ -228,14 +228,14 @@ class PeriodComparatorTest {
                 createSkattegrunnlagspost(
                     skattegrunnlagType = "Svalbard",
                     inntektType = "LOENNSINNTEKT",
-                    belop = BigDecimal(500.0)
+                    belop = BigDecimal(500.0),
                 ),
                 createSkattegrunnlagspost(
                     skattegrunnlagType = "Svalbard",
                     inntektType = "LOENNSINNTEKT",
-                    belop = BigDecimal(600.0)
-                )
-            )
+                    belop = BigDecimal(600.0),
+                ),
+            ),
         )
 
         val newEntities = createPeriodEntitiesSkattegrunnlag(
@@ -244,14 +244,14 @@ class PeriodComparatorTest {
                 createSkattegrunnlagspost(
                     skattegrunnlagType = "Svalbard",
                     inntektType = "LOENNSINNTEKT",
-                    belop = BigDecimal(600.0)
+                    belop = BigDecimal(600.0),
                 ),
                 createSkattegrunnlagspost(
                     skattegrunnlagType = "Svalbard",
                     inntektType = "LOENNSINNTEKT",
-                    belop = BigDecimal(500.0)
-                )
-            )
+                    belop = BigDecimal(500.0),
+                ),
+            ),
         )
         assertTrue(skattegrunnlagPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
     }
@@ -266,15 +266,15 @@ class PeriodComparatorTest {
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1)),
             listOf(
                 createAinntektspost(),
-                createAinntektspost(beskrivelse = "Beskrivelse2", fordelType = "Fordeltype2")
-            )
+                createAinntektspost(beskrivelse = "Beskrivelse2", fordelType = "Fordeltype2"),
+            ),
         )
         val existingEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 12, 1)),
             listOf(
                 createAinntektspost(),
-                createAinntektspost()
-            )
+                createAinntektspost(),
+            ),
         )
         var ainntektPeriod = Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1))
         var comparatorResult = ainntektPeriodComparator.comparePeriodEntities(ainntektPeriod, newEntities, existingEntities)
@@ -292,23 +292,23 @@ class PeriodComparatorTest {
         var newEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
             listOf(
-                createAinntektspost()
-            )
+                createAinntektspost(),
+            ),
         )
 
         newEntities.addAll(
             createPeriodEntities(
                 Period(LocalDate.of(2021, 10, 1), LocalDate.of(2021, 11, 1)),
                 listOf(
-                    createAinntektspost()
-                )
-            )
+                    createAinntektspost(),
+                ),
+            ),
         )
         val existingEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1)),
             listOf(
-                createAinntektspost()
-            )
+                createAinntektspost(),
+            ),
         )
         var ainntektPeriod = Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1))
         val comparatorResult = ainntektPeriodComparator.comparePeriodEntities(ainntektPeriod, newEntities, existingEntities)
@@ -320,7 +320,7 @@ class PeriodComparatorTest {
 
     private fun createPeriodEntities(
         period: IPeriod,
-        inntektsposter: List<AinntektspostBo> = emptyList()
+        inntektsposter: List<AinntektspostBo> = emptyList(),
     ): MutableList<PeriodComparable<AinntektBo, AinntektspostBo>> {
         val existingEntities = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
         var currentStartDate = period.periodeFra
@@ -328,8 +328,8 @@ class PeriodComparatorTest {
             existingEntities.add(
                 PeriodComparable(
                     AinntektBo(periodeFra = currentStartDate, periodeTil = currentStartDate.plusMonths(1)),
-                    inntektsposter
-                )
+                    inntektsposter,
+                ),
             )
             currentStartDate = currentStartDate.plusMonths(1)
         }
@@ -348,7 +348,7 @@ class PeriodComparatorTest {
         beskrivelse: String = "Beskrivelse1",
         belop: BigDecimal = BigDecimal(1000),
         etterbetalingsperiodeFom: LocalDate? = null,
-        etterbetalingsperiodeTom: LocalDate? = null
+        etterbetalingsperiodeTom: LocalDate? = null,
     ): AinntektspostBo {
         return AinntektspostBo(
             utbetalingsperiode = utbetalingsperiode,
@@ -361,13 +361,13 @@ class PeriodComparatorTest {
             beskrivelse = beskrivelse,
             belop = belop,
             etterbetalingsperiodeFra = etterbetalingsperiodeFom,
-            etterbetalingsperiodeTil = etterbetalingsperiodeTom
+            etterbetalingsperiodeTil = etterbetalingsperiodeTom,
         )
     }
 
     private fun createPeriodEntitiesSkattegrunnlag(
         period: IPeriod,
-        inntektsposter: List<SkattegrunnlagspostBo> = emptyList()
+        inntektsposter: List<SkattegrunnlagspostBo> = emptyList(),
     ): MutableList<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>> {
         val existingEntities = mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
         var currentStartDate = period.periodeFra
@@ -375,8 +375,8 @@ class PeriodComparatorTest {
             existingEntities.add(
                 PeriodComparable(
                     SkattegrunnlagBo(periodeFra = currentStartDate, periodeTil = currentStartDate.plusMonths(1)),
-                    inntektsposter
-                )
+                    inntektsposter,
+                ),
             )
             currentStartDate = currentStartDate.plusMonths(1)
         }
@@ -387,12 +387,12 @@ class PeriodComparatorTest {
     private fun createSkattegrunnlagspost(
         skattegrunnlagType: String = "Svalbard",
         inntektType: String = "Lonnsinntekt",
-        belop: BigDecimal = BigDecimal(1000)
+        belop: BigDecimal = BigDecimal(1000),
     ): SkattegrunnlagspostBo {
         return SkattegrunnlagspostBo(
             skattegrunnlagType = skattegrunnlagType,
             inntektType = inntektType,
-            belop = belop
+            belop = belop,
         )
     }
 }

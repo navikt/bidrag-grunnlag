@@ -27,7 +27,7 @@ open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate
             HttpMethod.POST,
             initHttpEntity(request),
             BisysResponsDto::class.java,
-            BisysResponsDto(emptyList(), emptyList())
+            BisysResponsDto(emptyList(), emptyList()),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

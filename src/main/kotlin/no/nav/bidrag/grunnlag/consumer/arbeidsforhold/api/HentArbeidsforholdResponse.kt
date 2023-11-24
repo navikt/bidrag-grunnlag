@@ -20,7 +20,7 @@ data class Arbeidsforhold(
     val sistEndret: String? = null,
     val type: Kodeverksentitet? = null,
     val permisjoner: List<Permisjon>?,
-    val permitteringer: List<Permittering>?
+    val permitteringer: List<Permittering>?,
 )
 
 data class Ansettelsesdetaljer(
@@ -32,52 +32,52 @@ data class Ansettelsesdetaljer(
     val type: String?,
     val yrke: Kodeverksentitet?,
     val sisteStillingsprosentendring: LocalDate?,
-    val sisteLoennsendring: LocalDate?
+    val sisteLoennsendring: LocalDate?,
 )
 
 data class Ansettelsesperiode(
     val startdato: LocalDate?,
-    val sluttdato: LocalDate?
+    val sluttdato: LocalDate?,
 )
 
 data class Arbeidssted(
     val identer: List<Identer>?,
-    val type: String?
+    val type: String?,
 )
 
 data class Arbeidstaker(
-    val identer: List<ArbeidsgiverIdenter>?
+    val identer: List<ArbeidsgiverIdenter>?,
 )
 
 data class Bruksperiode(
     val fom: String?,
-    val tom: String?
+    val tom: String?,
 )
 
 data class Opplysningspliktig(
     val identer: List<Identer>?,
-    val type: String?
+    val type: String?,
 )
 
 data class Kodeverksentitet(
     val beskrivelse: String?,
-    val kode: String?
+    val kode: String?,
 )
 
 data class Rapporteringsmaaneder(
     val fra: YearMonth?,
-    val til: YearMonth?
+    val til: YearMonth?,
 )
 
 data class Identer(
     val ident: String?,
-    val type: String?
+    val type: String?,
 )
 
 data class ArbeidsgiverIdenter(
     val gjeldende: Boolean?,
     val ident: String?,
-    val type: String?
+    val type: String?,
 )
 
 data class Permisjon(
@@ -88,7 +88,7 @@ data class Permisjon(
     val prosent: Double?,
     val varsling: Kodeverksentitet?,
     val idHistorikk: List<IdHistorikk>?,
-    val sporingsinformasjon: Sporingsinformasjon?
+    val sporingsinformasjon: Sporingsinformasjon?,
 )
 
 data class Permittering(
@@ -99,13 +99,13 @@ data class Permittering(
     val prosent: Double?,
     val varsling: Kodeverksentitet?,
     val idHistorikk: List<IdHistorikk>?,
-    val sporingsinformasjon: Sporingsinformasjon?
+    val sporingsinformasjon: Sporingsinformasjon?,
 )
 
 data class IdHistorikk(
     val id: String?,
     val fom: LocalDate?,
-    val tom: LocalDate?
+    val tom: LocalDate?,
 )
 
 data class Sporingsinformasjon(
@@ -116,5 +116,5 @@ data class Sporingsinformasjon(
     val endretTidspunkt: LocalDateTime?,
     val endretAv: String?,
     val endretKilde: String?,
-    val endretKildereferanse: String?
+    val endretKildereferanse: String?,
 )

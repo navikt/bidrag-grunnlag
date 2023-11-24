@@ -21,7 +21,7 @@ class OppdaterKontantstotte(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val familieKsSakConsumer: FamilieKsSakConsumer
+    private val familieKsSakConsumer: FamilieKsSakConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -37,7 +37,7 @@ class OppdaterKontantstotte(
             // kall PDL for å hente historikk på fnr?
             val innsynRequest = BisysDto(
                 personIdOgPeriode.periodeFra,
-                listOf(personIdOgPeriode.personId)
+                listOf(personIdOgPeriode.personId),
             )
 
             LOGGER.info("Kaller kontantstøtte")
@@ -54,7 +54,7 @@ class OppdaterKontantstotte(
                     persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
                         grunnlagspakkeId,
                         personIdOgPeriode.personId,
-                        timestampOppdatering
+                        timestampOppdatering,
                     )
 
                     // Kontantstøtte fra Infotrygd
@@ -74,8 +74,8 @@ class OppdaterKontantstotte(
                                     brukFra = timestampOppdatering,
                                     belop = belopPerParn,
                                     brukTil = null,
-                                    hentetTidspunkt = timestampOppdatering
-                                )
+                                    hentetTidspunkt = timestampOppdatering,
+                                ),
                             )
                         }
                     }
@@ -96,8 +96,8 @@ class OppdaterKontantstotte(
                                     brukFra = timestampOppdatering,
                                     belop = ks.barn.beløp,
                                     brukTil = null,
-                                    hentetTidspunkt = timestampOppdatering
-                                )
+                                    hentetTidspunkt = timestampOppdatering,
+                                ),
                             )
                         }
                     }
@@ -106,8 +106,8 @@ class OppdaterKontantstotte(
                             GrunnlagRequestType.KONTANTSTOTTE,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet"
-                        )
+                            "Antall perioder funnet: $antallPerioderFunnet",
+                        ),
                     )
                 }
 
@@ -117,8 +117,8 @@ class OppdaterKontantstotte(
                             GrunnlagRequestType.KONTANTSTOTTE,
                             personIdOgPeriode.personId,
                             if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                            "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
-                        )
+                            "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                        ),
                     )
                     SECURE_LOGGER.info("kontantstøtte familie-ks-sak svarer med feil, respons: $restResponseKontantstotte")
                 }

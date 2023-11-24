@@ -34,8 +34,6 @@
     <com.squareup.okhttp3.version>4.12.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <bidrag-behandling-felles.version>0.0.85</bidrag-behandling-felles.version>
-    <bidrag-domain.version>20230621111817_df046e8</bidrag-domain.version>
-<!--    <bidrag-behandling-felles-dto.version>0.0.95</bidrag-behandling-felles-dto.version>-->
   </properties>
 
   <dependencyManagement>
@@ -116,11 +114,6 @@
       <groupId>no.nav.bidrag</groupId>
       <artifactId>bidrag-transport</artifactId>
       <version>${bidrag-transport.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>no.nav.bidrag</groupId>
-      <artifactId>bidrag-domain</artifactId>
-      <version>${bidrag-domain.version}</version>
     </dependency>
     <dependency>
       <groupId>no.nav.bidrag</groupId>

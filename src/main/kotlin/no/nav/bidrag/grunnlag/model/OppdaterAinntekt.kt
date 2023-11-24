@@ -28,7 +28,7 @@ class OppdaterAinntekt(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val inntektskomponentenService: InntektskomponentenService
+    private val inntektskomponentenService: InntektskomponentenService,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -69,7 +69,7 @@ class OppdaterAinntekt(
                     maanedFom = periodeFra,
                     maanedTom = personIdOgPeriode.periodeTil.minusDays(1).toString().substring(0, 7),
                     ainntektsfilter = finnFilter(formaal),
-                    formaal = finnFormaal(formaal)
+                    formaal = finnFormaal(formaal),
                 )
 
                 val hentInntektListeRequestListe = lagInntektListeRequest(hentInntektRequest)
@@ -92,8 +92,8 @@ class OppdaterAinntekt(
                                     GrunnlagRequestType.AINNTEKT,
                                     hentInntektListeRequest.ident.identifikator,
                                     GrunnlagsRequestStatus.HENTET,
-                                    "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive."
-                                )
+                                    "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
+                                ),
                             )
                         } else {
                             hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
@@ -109,7 +109,7 @@ class OppdaterAinntekt(
                                         aktiv = true,
                                         brukFra = timestampOppdatering,
                                         brukTil = null,
-                                        hentetTidspunkt = timestampOppdatering
+                                        hentetTidspunkt = timestampOppdatering,
                                     )
 
                                     val inntektsposter = mutableListOf<AinntektspostBo>()
@@ -130,9 +130,9 @@ class OppdaterAinntekt(
                                                 beskrivelse = inntektspost.beskrivelse,
                                                 belop = inntektspost.beloep,
                                                 etterbetalingsperiodeFra = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
-                                                etterbetalingsperiodeTil = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom
+                                                etterbetalingsperiodeTil = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom,
 
-                                            )
+                                            ),
                                         )
                                     }
                                     nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
@@ -144,8 +144,8 @@ class OppdaterAinntekt(
                                         GrunnlagRequestType.AINNTEKT,
                                         hentInntektListeRequest.ident.identifikator,
                                         GrunnlagsRequestStatus.HENTET,
-                                        "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive."
-                                    )
+                                        "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
+                                    ),
                                 )
                             } else {
                                 this.add(
@@ -153,8 +153,8 @@ class OppdaterAinntekt(
                                         GrunnlagRequestType.AINNTEKT,
                                         hentInntektListeRequest.ident.identifikator,
                                         GrunnlagsRequestStatus.HENTET,
-                                        "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet"
-                                    )
+                                        "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet",
+                                    ),
                                 )
                             }
                         }
@@ -164,8 +164,8 @@ class OppdaterAinntekt(
                                 GrunnlagRequestType.AINNTEKT,
                                 hentInntektListeRequest.ident.identifikator,
                                 if (hentInntektListeResponseIntern.httpStatus == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                                "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}."
-                            )
+                                "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}.",
+                            ),
                         )
                     }
                 }
@@ -177,7 +177,7 @@ class OppdaterAinntekt(
                     personIdOgPeriode.periodeFra,
                     personIdOgPeriode.periodeTil,
                     personIdOgPeriode.personId,
-                    timestampOppdatering
+                    timestampOppdatering,
                 )
             }
         }
@@ -204,8 +204,8 @@ class OppdaterAinntekt(
                     maanedFom,
                     YearMonth.of(maanedFom.year, 12),
                     hentInntektRequest.ainntektsfilter,
-                    hentInntektRequest.formaal
-                )
+                    hentInntektRequest.formaal,
+                ),
             )
             aarFom++
             maanedFom = YearMonth.of(aarFom, 1)
@@ -216,8 +216,8 @@ class OppdaterAinntekt(
                 maanedFom,
                 lagYearMonth(hentInntektRequest.maanedTom),
                 hentInntektRequest.ainntektsfilter,
-                hentInntektRequest.formaal
-            )
+                hentInntektRequest.formaal,
+            ),
         )
         return requestListe
     }

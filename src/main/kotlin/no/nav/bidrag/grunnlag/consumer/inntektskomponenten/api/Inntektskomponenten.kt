@@ -10,7 +10,7 @@ data class HentInntektRequest(
     val maanedFom: String,
     val maanedTom: String,
     val ainntektsfilter: String,
-    val formaal: String
+    val formaal: String,
 )
 
 data class HentInntektListeRequest(
@@ -18,26 +18,26 @@ data class HentInntektListeRequest(
     val maanedFom: YearMonth,
     val maanedTom: YearMonth,
     val ainntektsfilter: String,
-    val formaal: String
+    val formaal: String,
 )
 
 data class Aktoer(
     val identifikator: String,
-    val aktoerType: String = "NATURLIG_IDENT"
+    val aktoerType: String = "NATURLIG_IDENT",
 )
 
 data class HentInntektListeResponseIntern(
     val httpStatus: HttpStatusCode,
-    val arbeidsInntektMaanedIntern: List<ArbeidsInntektMaanedIntern>?
+    val arbeidsInntektMaanedIntern: List<ArbeidsInntektMaanedIntern>?,
 )
 
 data class ArbeidsInntektMaanedIntern(
     val aarMaaned: String,
-    var arbeidsInntektInformasjonIntern: ArbeidsInntektInformasjonIntern
+    var arbeidsInntektInformasjonIntern: ArbeidsInntektInformasjonIntern,
 )
 
 data class ArbeidsInntektInformasjonIntern(
-    val inntektIntern: List<InntektIntern>?
+    val inntektIntern: List<InntektIntern>?,
 )
 
 data class InntektIntern(
@@ -51,25 +51,25 @@ data class InntektIntern(
     val opplysningspliktig: OpplysningspliktigIntern?,
     val virksomhet: VirksomhetIntern?,
     val tilleggsinformasjon: TilleggsinformasjonIntern?,
-    val beskrivelse: String?
+    val beskrivelse: String?,
 )
 
 data class OpplysningspliktigIntern(
     val identifikator: String?,
-    val aktoerType: String?
+    val aktoerType: String?,
 )
 
 data class VirksomhetIntern(
     val identifikator: String?,
-    val aktoerType: String?
+    val aktoerType: String?,
 )
 
 data class TilleggsinformasjonIntern(
     val kategori: String,
-    val tilleggsinformasjonDetaljer: TilleggsinformasjonDetaljerIntern
+    val tilleggsinformasjonDetaljer: TilleggsinformasjonDetaljerIntern,
 )
 
 data class TilleggsinformasjonDetaljerIntern(
     val etterbetalingsperiodeFom: LocalDate?,
-    val etterbetalingsperiodeTom: LocalDate?
+    val etterbetalingsperiodeTom: LocalDate?,
 )

@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 interface RelatertPersonRepository : JpaRepository<RelatertPerson, Int?> {
 
     @Query(
-        "select hm from RelatertPerson hm where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.aktiv = true order by hm.partPersonId, hm.relatertPersonPersonId, hm.navn, hm.fodselsdato, hm.husstandsmedlemPeriodeFra"
+        "select hm from RelatertPerson hm where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.aktiv = true order by hm.partPersonId, hm.relatertPersonPersonId, hm.navn, hm.fodselsdato, hm.husstandsmedlemPeriodeFra",
     )
     fun hentRelatertePersoner(grunnlagspakkeId: Int): List<RelatertPerson>
 
@@ -17,7 +17,7 @@ interface RelatertPersonRepository : JpaRepository<RelatertPerson, Int?> {
     @Query(
         "update RelatertPerson hm " +
             "set hm.aktiv = false, hm.brukTil = :timestampOppdatering " +
-            "where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.partPersonId = :personId and hm.aktiv = true"
+            "where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.partPersonId = :personId and hm.aktiv = true",
     )
     fun oppdaterEksisterendeRelatertPersonTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
 }

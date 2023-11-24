@@ -37,7 +37,7 @@ open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestT
             HttpMethod.POST,
             initHttpEntityInntektskomponenten(request),
             HentInntektListeResponse::class.java,
-            HentInntektListeResponse(emptyList(), Aktoer(request.ident.identifikator, AktoerType.NATURLIG_IDENT))
+            HentInntektListeResponse(emptyList(), Aktoer(request.ident.identifikator, AktoerType.NATURLIG_IDENT)),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

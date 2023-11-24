@@ -15,11 +15,11 @@ data class HentBarnetilleggPensjonRequest(
     @JsonSerialize(using = LocalDateSerializer::class)
     val tom: LocalDate,
     val returnerFellesbarn: Boolean = true,
-    val returnerSaerkullsbarn: Boolean = true
+    val returnerSaerkullsbarn: Boolean = true,
 )
 
 data class HentBarnetilleggPensjonResponse(
-    val barnetilleggPensjonListe: List<BarnetilleggPensjon>? = emptyList()
+    val barnetilleggPensjonListe: List<BarnetilleggPensjon>? = emptyList(),
 )
 
 data class BarnetilleggPensjon(
@@ -27,5 +27,5 @@ data class BarnetilleggPensjon(
     val beloep: BigDecimal,
     val fom: LocalDate,
     val tom: LocalDate,
-    val erFellesbarn: Boolean
+    val erFellesbarn: Boolean,
 )

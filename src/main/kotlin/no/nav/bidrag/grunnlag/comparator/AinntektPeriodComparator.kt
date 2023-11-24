@@ -8,7 +8,7 @@ import no.nav.bidrag.grunnlag.util.toJsonString
 class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<AinntektBo, AinntektspostBo>>() {
     override fun isEntitiesEqual(
         newEntity: PeriodComparable<AinntektBo, AinntektspostBo>,
-        existingEntity: PeriodComparable<AinntektBo, AinntektspostBo>
+        existingEntity: PeriodComparable<AinntektBo, AinntektspostBo>,
     ): Boolean {
         val newAinntektsposter = sortAinntektsposter(newEntity.children!!)
         val existingAinntektsposter = sortAinntektsposter(existingEntity.children!!)
@@ -39,8 +39,8 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<Ainnt
         return ainntektsposter.sortedWith(
             compareBy(
                 { it.utbetalingsperiode }, { it.opptjeningsperiodeFra }, { it.opptjeningsperiodeTil }, { it.opplysningspliktigId }, { it.virksomhetId },
-                { it.inntektType }, { it.fordelType }, { it.beskrivelse }, { it.belop }, { it.etterbetalingsperiodeFra }, { it.etterbetalingsperiodeTil }
-            )
+                { it.inntektType }, { it.fordelType }, { it.beskrivelse }, { it.belop }, { it.etterbetalingsperiodeFra }, { it.etterbetalingsperiodeTil },
+            ),
         )
     }
 }

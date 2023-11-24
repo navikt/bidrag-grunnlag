@@ -4,19 +4,19 @@ import java.time.LocalDate
 
 data class BarnetilsynRequest(
     val ident: String,
-    val fomDato: LocalDate
+    val fomDato: LocalDate,
 )
 
 data class BarnetilsynResponse(
-    val barnetilsynBisysPerioder: List<BarnetilsynBisysPerioder>
+    val barnetilsynBisysPerioder: List<BarnetilsynBisysPerioder>,
 )
 
 data class BarnetilsynBisysPerioder(
     val periode: Periode,
-    val barnIdenter: List<String>
+    val barnIdenter: List<String>,
 )
 
 data class Periode(
     val fom: LocalDate,
-    val tom: LocalDate
+    val tom: LocalDate,
 )

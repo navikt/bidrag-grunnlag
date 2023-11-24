@@ -21,7 +21,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val familieBaSakConsumer: FamilieBaSakConsumer
+    private val familieBaSakConsumer: FamilieBaSakConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -35,7 +35,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
             var antallPerioderFunnet = 0
             val familieBaSakRequest = FamilieBaSakRequest(
                 personIdent = personIdOgPeriode.personId,
-                fraDato = personIdOgPeriode.periodeFra
+                fraDato = personIdOgPeriode.periodeFra,
             )
 
             LOGGER.info("Kaller familie-ba-sak")
@@ -51,7 +51,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                     persistenceService.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
                         grunnlagspakkeId,
                         personIdOgPeriode.personId,
-                        timestampOppdatering
+                        timestampOppdatering,
                     )
                     familieBaSakResponse.perioder.forEach { ubst ->
                         antallPerioderFunnet++
@@ -72,8 +72,8 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                                 belop = BigDecimal.valueOf(ubst.beløp),
                                 manueltBeregnet = ubst.manueltBeregnet,
                                 deltBosted = ubst.deltBosted,
-                                hentetTidspunkt = timestampOppdatering
-                            )
+                                hentetTidspunkt = timestampOppdatering,
+                            ),
                         )
                     }
                     this.add(
@@ -81,8 +81,8 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                             GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
                             personIdOgPeriode.personId,
                             GrunnlagsRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet"
-                        )
+                            "Antall perioder funnet: $antallPerioderFunnet",
+                        ),
                     )
                 }
 
@@ -91,8 +91,8 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                         GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
                         personIdOgPeriode.personId,
                         if (restResponseFamilieBaSak.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                        "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}."
-                    )
+                        "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                    ),
                 )
             }
         }

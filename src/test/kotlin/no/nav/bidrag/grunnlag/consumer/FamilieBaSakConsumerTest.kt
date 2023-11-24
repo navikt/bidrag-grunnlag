@@ -47,8 +47,8 @@ internal class FamilieBaSakConsumerTest {
                 eq(FAMILIEBASAK_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<FamilieBaSakResponse>>()
-            )
+                any<Class<FamilieBaSakResponse>>(),
+            ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggFamilieBaSakResponse(), HttpStatus.OK))
 
@@ -69,7 +69,7 @@ internal class FamilieBaSakConsumerTest {
                     Executable { assertThat(hentFamilieBaSakResponse.perioder[1].tomMåned).isEqualTo(YearMonth.parse("2022-12")) },
                     Executable { assertThat(hentFamilieBaSakResponse.perioder[1].beløp).isEqualTo(2000.22) },
                     Executable { assertThat(hentFamilieBaSakResponse.perioder[1].manueltBeregnet).isFalse() },
-                    Executable { assertThat(hentFamilieBaSakResponse.perioder[1].deltBosted).isFalse() }
+                    Executable { assertThat(hentFamilieBaSakResponse.perioder[1].deltBosted).isFalse() },
                 )
             }
             else -> {
@@ -87,8 +87,8 @@ internal class FamilieBaSakConsumerTest {
                 eq(FAMILIEBASAK_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<FamilieBaSakResponse>>()
-            )
+                any<Class<FamilieBaSakResponse>>(),
+            ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
@@ -96,7 +96,7 @@ internal class FamilieBaSakConsumerTest {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseFamilieBaSak.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseFamilieBaSak.restClientException).isInstanceOf(HttpClientErrorException::class.java) }
+                    Executable { assertThat(restResponseFamilieBaSak.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
                 )
             }
             else -> {

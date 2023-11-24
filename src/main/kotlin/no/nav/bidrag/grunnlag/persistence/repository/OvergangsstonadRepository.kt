@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 interface OvergangsstonadRepository : JpaRepository<Overgangsstonad, Int?> {
 
     @Query(
-        "select os from Overgangsstonad os where os.grunnlagspakkeId = :grunnlagspakkeId and os.aktiv = true order by os.partPersonId, os.periodeFra"
+        "select os from Overgangsstonad os where os.grunnlagspakkeId = :grunnlagspakkeId and os.aktiv = true order by os.partPersonId, os.periodeFra",
     )
     fun hentOvergangsstonad(grunnlagspakkeId: Int): List<Overgangsstonad>
 
@@ -17,11 +17,11 @@ interface OvergangsstonadRepository : JpaRepository<Overgangsstonad, Int?> {
     @Query(
         "update Overgangsstonad os " +
             "set os.aktiv = false, os.brukTil = :timestampOppdatering " +
-            "where os.grunnlagspakkeId = :grunnlagspakkeId and os.partPersonId = :partPersonId and os.aktiv = true"
+            "where os.grunnlagspakkeId = :grunnlagspakkeId and os.partPersonId = :partPersonId and os.aktiv = true",
     )
     fun oppdaterEksisterendeOvergangsstonadTilInaktiv(
         grunnlagspakkeId: Int,
         partPersonId: String,
-        timestampOppdatering: LocalDateTime
+        timestampOppdatering: LocalDateTime,
     )
 }

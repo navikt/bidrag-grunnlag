@@ -55,7 +55,7 @@ class IntegrasjonsController(
     private val familieKsSakConsumer: FamilieKsSakConsumer,
     private val familieEfSakConsumer: FamilieEfSakConsumer,
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
-    private val enhetsregisterConsumer: EnhetsregisterConsumer
+    private val enhetsregisterConsumer: EnhetsregisterConsumer,
 ) {
 
     @PostMapping(HENT_AINNTEKT)

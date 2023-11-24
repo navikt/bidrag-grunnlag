@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 class GrunnlagspakkeService(
     private val persistenceService: PersistenceService,
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService,
-    private val meterRegistry: MeterRegistry
+    private val meterRegistry: MeterRegistry,
 ) {
 
     fun opprettGrunnlagspakkeCounter(formaal: Formaal) = Counter.builder("opprett_grunnlagspakke")
@@ -37,7 +37,7 @@ class GrunnlagspakkeService(
 
     fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,
-        oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto
+        oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
     ): OppdaterGrunnlagspakkeDto {
         val timestampOppdatering = LocalDateTime.now()
 
@@ -47,7 +47,7 @@ class GrunnlagspakkeService(
         val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeId,
             oppdaterGrunnlagspakkeRequestDto,
-            timestampOppdatering
+            timestampOppdatering,
         )
 
         // Oppdaterer endret_timestamp på grunnlagspakke
@@ -76,7 +76,7 @@ class GrunnlagspakkeService(
 
             sivilstandListe = persistenceService.hentSivilstand(grunnlagspakkeId),
             barnetilsynListe = persistenceService.hentBarnetilsyn(grunnlagspakkeId),
-            overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId)
+            overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId),
         )
     }
 
@@ -90,5 +90,5 @@ class GrunnlagspakkeService(
 data class PersonIdOgPeriodeRequest(
     val personId: String,
     val periodeFra: LocalDate,
-    val periodeTil: LocalDate
+    val periodeTil: LocalDate,
 )

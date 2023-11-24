@@ -8,7 +8,7 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>() {
     override fun isEntitiesEqual(
         newEntity: PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>,
-        existingEntity: PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>
+        existingEntity: PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>,
     ): Boolean {
         val newSkattegrunnlagsposter = sortSkattegrunnlagsposter(newEntity.children!!)
         val existingSkattegrunnlagsposter = sortSkattegrunnlagsposter(existingEntity.children!!)

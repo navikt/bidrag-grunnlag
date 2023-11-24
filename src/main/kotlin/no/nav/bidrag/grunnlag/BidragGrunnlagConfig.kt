@@ -35,14 +35,14 @@ const val LIVE_PROFILE = "live"
 @Configuration
 @OpenAPIDefinition(
     info = Info(title = "bidrag-grunnlag", version = "v1"),
-    security = [SecurityRequirement(name = "bearer-key")]
+    security = [SecurityRequirement(name = "bearer-key")],
 )
 @EnableJwtTokenValidation
 @SecurityScheme(
     bearerFormat = "JWT",
     name = "bearer-key",
     scheme = "bearer",
-    type = SecuritySchemeType.HTTP
+    type = SecuritySchemeType.HTTP,
 )
 @Import(CorrelationIdFilter::class, UserMdcFilter::class, DefaultCorsFilter::class)
 class BidragGrunnlagConfig {
@@ -71,7 +71,7 @@ class BidragGrunnlagConfig {
         @Value("\${FAMILIEBASAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): FamilieBaSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -84,7 +84,7 @@ class BidragGrunnlagConfig {
         @Value("\${FAMILIEEFSAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): FamilieEfSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -97,7 +97,7 @@ class BidragGrunnlagConfig {
         @Value("\${INNTEKTSKOMPONENTEN_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): InntektskomponentenConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -110,7 +110,7 @@ class BidragGrunnlagConfig {
         @Value("\${SIGRUN_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): SigrunConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -123,7 +123,7 @@ class BidragGrunnlagConfig {
         @Value("\${PENSJON_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): PensjonConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -136,7 +136,7 @@ class BidragGrunnlagConfig {
         @Value("\${BIDRAGPERSON_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): BidragPersonConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -149,7 +149,7 @@ class BidragGrunnlagConfig {
         @Value("\${FAMILIEKSSAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): FamilieKsSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -162,7 +162,7 @@ class BidragGrunnlagConfig {
         @Value("\${AAREG_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         securityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): ArbeidsforholdConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -174,7 +174,7 @@ class BidragGrunnlagConfig {
     fun enhetsregisterConsumer(
         @Value("\${EREG_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        exceptionLogger: ExceptionLogger
+        exceptionLogger: ExceptionLogger,
     ): EnhetsregisterConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)

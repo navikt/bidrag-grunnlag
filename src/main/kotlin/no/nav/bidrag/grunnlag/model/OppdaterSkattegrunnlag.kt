@@ -25,7 +25,7 @@ class OppdaterSkattegrunnlag(
     private val grunnlagspakkeId: Int,
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
-    private val sigrunConsumer: SigrunConsumer
+    private val sigrunConsumer: SigrunConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -49,7 +49,7 @@ class OppdaterSkattegrunnlag(
                 val skattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
                     inntektAar.toString(),
                     "SummertSkattegrunnlagBidrag",
-                    personIdOgPeriode.personId
+                    personIdOgPeriode.personId,
                 )
 
                 LOGGER.info("Kaller Sigrun (skattegrunnlag)")
@@ -77,7 +77,7 @@ class OppdaterSkattegrunnlag(
                                 // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
                                 periodeTil = LocalDate.parse("$inntektAar-01-01").plusYears(1),
                                 brukFra = timestampOppdatering,
-                                hentetTidspunkt = timestampOppdatering
+                                hentetTidspunkt = timestampOppdatering,
                             )
                             val skattegrunnlagsposter = mutableListOf<SkattegrunnlagspostBo>()
                             skattegrunnlagsPosterOrdinaer.forEach { skattegrunnlagsPost ->
@@ -86,8 +86,8 @@ class OppdaterSkattegrunnlag(
                                     SkattegrunnlagspostBo(
                                         skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
                                         inntektType = skattegrunnlagsPost.tekniskNavn,
-                                        belop = BigDecimal(skattegrunnlagsPost.beloep)
-                                    )
+                                        belop = BigDecimal(skattegrunnlagsPost.beloep),
+                                    ),
                                 )
                             }
                             skattegrunnlagsPosterSvalbard.forEach { skattegrunnlagsPost ->
@@ -96,8 +96,8 @@ class OppdaterSkattegrunnlag(
                                     SkattegrunnlagspostBo(
                                         skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
                                         inntektType = skattegrunnlagsPost.tekniskNavn,
-                                        belop = BigDecimal(skattegrunnlagsPost.beloep)
-                                    )
+                                        belop = BigDecimal(skattegrunnlagsPost.beloep),
+                                    ),
                                 )
                             }
                             nyeSkattegrunnlag.add(PeriodComparable(skattegrunnlag, skattegrunnlagsposter))
@@ -108,15 +108,15 @@ class OppdaterSkattegrunnlag(
                             periodeFra,
                             periodeTil,
                             personIdOgPeriode.personId,
-                            timestampOppdatering
+                            timestampOppdatering,
                         )
                         this.add(
                             OppdaterGrunnlagDto(
                                 GrunnlagRequestType.SKATTEGRUNNLAG,
                                 personIdOgPeriode.personId,
                                 GrunnlagsRequestStatus.HENTET,
-                                "Antall skattegrunnlagsposter funnet for inntektsåret $inntektAar: $antallSkattegrunnlagsposter"
-                            )
+                                "Antall skattegrunnlagsposter funnet for inntektsåret $inntektAar: $antallSkattegrunnlagsposter",
+                            ),
                         )
                     }
 
@@ -125,8 +125,8 @@ class OppdaterSkattegrunnlag(
                             GrunnlagRequestType.SKATTEGRUNNLAG,
                             personIdOgPeriode.personId,
                             if (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                            "Feil ved henting av skattegrunnlag for inntektsåret $inntektAar."
-                        )
+                            "Feil ved henting av skattegrunnlag for inntektsåret $inntektAar.",
+                        ),
                     )
                 }
                 inntektAar++

@@ -42,7 +42,7 @@ data class RelatertPersonBo(
     val brukTil: LocalDateTime? = null,
 
     @Schema(description = "Opprettet tidspunkt")
-    val hentetTidspunkt: LocalDateTime
+    val hentetTidspunkt: LocalDateTime,
 )
 
 fun RelatertPersonBo.toRelatertPersonEntity() = with(::RelatertPerson) {
@@ -53,6 +53,6 @@ fun RelatertPersonBo.toRelatertPersonEntity() = with(::RelatertPerson) {
                 RelatertPerson::relatertPersonId.name -> 0
                 else -> propertiesByName[parameter.name]?.get(this@toRelatertPersonEntity)
             }
-        }
+        },
     )
 }

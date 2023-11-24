@@ -35,7 +35,7 @@ import java.time.LocalDateTime
 @ActiveProfiles(BidragGrunnlagTest.TEST_PROFILE)
 @SpringBootTest(
     classes = [BidragGrunnlagTest::class],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
@@ -61,14 +61,14 @@ class GrunnlagspakkeServiceTest {
     fun `Test på å opprette ny grunnlagspakke`() {
         val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(
             Formaal.FORSKUDD,
-            "X123456"
+            "X123456",
         )
 
         val nyGrunnlagspakkeOpprettet =
             grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
 
         assertAll(
-            Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull }
+            Executable { assertThat(nyGrunnlagspakkeOpprettet).isNotNull },
         )
     }
 
@@ -83,7 +83,7 @@ class GrunnlagspakkeServiceTest {
 
         assertAll(
             Executable { assertThat(grunnlagspakkeIdOpprettet).isNotNull },
-            Executable { assertThat(lukketGrunnlagspakke).isEqualTo(grunnlagspakkeIdOpprettet) }
+            Executable { assertThat(lukketGrunnlagspakke).isEqualTo(grunnlagspakkeIdOpprettet) },
         )
     }
 
@@ -103,7 +103,7 @@ class GrunnlagspakkeServiceTest {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         val opprettetAinntekt = persistenceService.opprettAinntekt(ainntektBo)
@@ -121,8 +121,8 @@ class GrunnlagspakkeServiceTest {
                 beskrivelse = "Loenn/fastloenn",
                 belop = BigDecimal.valueOf(17000.01),
                 etterbetalingsperiodeFra = LocalDate.of(2020, 9, 1),
-                etterbetalingsperiodeTil = LocalDate.of(2020, 10, 1)
-            )
+                etterbetalingsperiodeTil = LocalDate.of(2020, 10, 1),
+            ),
         )
         persistenceService.opprettAinntektspost(
             AinntektspostBo(
@@ -137,8 +137,8 @@ class GrunnlagspakkeServiceTest {
                 beskrivelse = "Loenn/ferieLoenn",
                 belop = BigDecimal.valueOf(50000.01),
                 etterbetalingsperiodeFra = LocalDate.of(2020, 10, 1),
-                etterbetalingsperiodeTil = LocalDate.of(2020, 11, 1)
-            )
+                etterbetalingsperiodeTil = LocalDate.of(2020, 11, 1),
+            ),
         )
 
         // tester at inntekt som er merket med aktiv = false ikke hentes
@@ -150,7 +150,7 @@ class GrunnlagspakkeServiceTest {
             aktiv = false,
             hentetTidspunkt = LocalDateTime.now(),
             brukFra = LocalDateTime.now(),
-            brukTil = null
+            brukTil = null,
         )
 
         val inaktivAinntekt = persistenceService.opprettAinntekt(inaktivInntektDto)
@@ -168,8 +168,8 @@ class GrunnlagspakkeServiceTest {
                 beskrivelse = "Loenn/fastloenn",
                 belop = BigDecimal.valueOf(50000.01),
                 etterbetalingsperiodeFra = LocalDate.of(2021, 10, 1),
-                etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1)
-            )
+                etterbetalingsperiodeTil = LocalDate.of(2021, 11, 1),
+            ),
         )
 
         // Legger inn inntekt for person nr 2
@@ -181,7 +181,7 @@ class GrunnlagspakkeServiceTest {
             aktiv = true,
             hentetTidspunkt = LocalDateTime.now(),
             brukFra = LocalDateTime.now(),
-            brukTil = null
+            brukTil = null,
         )
 
         val opprettetAinntekt2 = persistenceService.opprettAinntekt(inntektDto2)
@@ -199,8 +199,8 @@ class GrunnlagspakkeServiceTest {
                 beskrivelse = "Loenn/fastloenn",
                 belop = BigDecimal.valueOf(666000.01),
                 etterbetalingsperiodeFra = LocalDate.of(2021, 1, 1),
-                etterbetalingsperiodeTil = LocalDate.of(2021, 2, 1)
-            )
+                etterbetalingsperiodeTil = LocalDate.of(2021, 2, 1),
+            ),
         )
 
         // Legger inn inntekt fra Skatt
@@ -212,7 +212,7 @@ class GrunnlagspakkeServiceTest {
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
-            hentetTidspunkt = LocalDateTime.now()
+            hentetTidspunkt = LocalDateTime.now(),
         )
 
         val opprettetSkattegrunnlag = persistenceService.opprettSkattegrunnlag(skattegrunnlagBo)
@@ -222,8 +222,8 @@ class GrunnlagspakkeServiceTest {
                 skattegrunnlagId = opprettetSkattegrunnlag.skattegrunnlagId,
                 skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
                 inntektType = "Loenn",
-                belop = BigDecimal.valueOf(23456.01)
-            )
+                belop = BigDecimal.valueOf(23456.01),
+            ),
         )
 
         // Legger inn utvidet barnetrygd og småbarnstillegg
@@ -240,8 +240,8 @@ class GrunnlagspakkeServiceTest {
                 belop = BigDecimal.valueOf(12468.01),
                 manueltBeregnet = false,
                 deltBosted = false,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
 
         // Legger inn barnetillegg
@@ -253,8 +253,8 @@ class GrunnlagspakkeServiceTest {
                 barnetilleggType = BarnetilleggType.PENSJON.toString(),
                 periodeFra = LocalDate.parse("2021-05-01"),
                 periodeTil = LocalDate.parse("2021-06-01"),
-                belopBrutto = BigDecimal.valueOf(1000.01)
-            )
+                belopBrutto = BigDecimal.valueOf(1000.01),
+            ),
         )
 
         val grunnlagspakkeFunnet =
@@ -338,7 +338,7 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].brukTil).isNull() },
-            Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) }
+            Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) },
 
         )
     }
@@ -348,7 +348,7 @@ class GrunnlagspakkeServiceTest {
     fun `Test på å oppdatere en grunnlagspakke`() {
         val opprettGrunnlagspakkeRequestDto = OpprettGrunnlagspakkeRequestDto(
             Formaal.FORSKUDD,
-            "X123456"
+            "X123456",
         )
 
         val grunnlagspakkeId =
@@ -356,11 +356,11 @@ class GrunnlagspakkeServiceTest {
 
         val oppdatertGrunnlagspakke = grunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeId,
-            TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg()
+            TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg(),
         )
 
         assertAll(
-            { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeId) }
+            { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeId) },
         )
     }
 
@@ -385,8 +385,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
         persistenceService.opprettRelatertPerson(
             RelatertPersonBo(
@@ -401,8 +401,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
         persistenceService.opprettRelatertPerson(
             RelatertPersonBo(
@@ -417,8 +417,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
 
         // Legger inn voksent husstandsmedlem
@@ -435,8 +435,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
 
         // Legger inn sivilstand
@@ -450,8 +450,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
 
         val grunnlagspakkeFunnet =
@@ -494,7 +494,7 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].sivilstand).isEqualTo(SivilstandKode.ENSLIG) },
-            Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].hentetTidspunkt).isNotNull() }
+            Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].hentetTidspunkt).isNotNull() },
 
         )
     }
@@ -520,8 +520,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
 
         persistenceService.opprettRelatertPerson(
@@ -537,8 +537,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
 
         persistenceService.opprettRelatertPerson(
@@ -554,8 +554,8 @@ class GrunnlagspakkeServiceTest {
                 aktiv = true,
                 brukFra = LocalDateTime.now(),
                 brukTil = null,
-                hentetTidspunkt = LocalDateTime.now()
-            )
+                hentetTidspunkt = LocalDateTime.now(),
+            ),
         )
 
         val grunnlagspakkeFunnet =
@@ -574,7 +574,7 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[0].periodeFra).isEqualTo(LocalDate.parse("2020-09-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[0].periodeTil).isEqualTo(LocalDate.parse("2020-11-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeFra).isEqualTo(LocalDate.parse("2022-09-01")) },
-            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeTil).isNull() }
+            Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeTil).isNull() },
 
         )
     }

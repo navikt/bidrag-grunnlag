@@ -27,7 +27,7 @@ data class Skattegrunnlagspost(
     val inntektType: String = "",
 
     @Column(nullable = false, name = "belop")
-    val belop: BigDecimal = BigDecimal.ZERO
+    val belop: BigDecimal = BigDecimal.ZERO,
 )
 
 fun Skattegrunnlagspost.toSkattegrunnlagspostBo() = with(::SkattegrunnlagspostBo) {
@@ -37,6 +37,6 @@ fun Skattegrunnlagspost.toSkattegrunnlagspostBo() = with(::SkattegrunnlagspostBo
             when (parameter.name) {
                 else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostBo)
             }
-        }
+        },
     )
 }

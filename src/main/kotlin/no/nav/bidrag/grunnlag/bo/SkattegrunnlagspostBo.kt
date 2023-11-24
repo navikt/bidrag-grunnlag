@@ -17,7 +17,7 @@ data class SkattegrunnlagspostBo(
     val inntektType: String,
 
     @Schema(description = "Belop")
-    val belop: BigDecimal
+    val belop: BigDecimal,
 )
 
 fun SkattegrunnlagspostBo.toSkattegrunnlagspostEntity() = with(::Skattegrunnlagspost) {
@@ -28,6 +28,6 @@ fun SkattegrunnlagspostBo.toSkattegrunnlagspostEntity() = with(::Skattegrunnlags
                 Skattegrunnlagspost::skattegrunnlagspostId.name -> 0
                 else -> propertiesByName[parameter.name]?.get(this@toSkattegrunnlagspostEntity)
             }
-        }
+        },
     )
 }

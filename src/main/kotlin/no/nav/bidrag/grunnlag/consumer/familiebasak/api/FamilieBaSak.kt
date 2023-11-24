@@ -5,11 +5,11 @@ import java.time.YearMonth
 
 data class FamilieBaSakRequest(
     val personIdent: String,
-    val fraDato: LocalDate
+    val fraDato: LocalDate,
 )
 
 data class FamilieBaSakResponse(
-    val perioder: List<UtvidetBarnetrygdPeriode>
+    val perioder: List<UtvidetBarnetrygdPeriode>,
 )
 
 data class UtvidetBarnetrygdPeriode(
@@ -18,10 +18,10 @@ data class UtvidetBarnetrygdPeriode(
     val tomMåned: YearMonth?,
     val beløp: Double,
     val manueltBeregnet: Boolean,
-    val deltBosted: Boolean
+    val deltBosted: Boolean,
 )
 
 enum class BisysStønadstype {
     UTVIDET,
-    SMÅBARNSTILLEGG
+    SMÅBARNSTILLEGG,
 }

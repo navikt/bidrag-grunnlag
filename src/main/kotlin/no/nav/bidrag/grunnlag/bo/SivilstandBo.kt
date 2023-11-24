@@ -33,7 +33,7 @@ data class SivilstandBo(
     val brukTil: LocalDateTime? = null,
 
     @Schema(description = "Opprettet tidspunkt")
-    val hentetTidspunkt: LocalDateTime
+    val hentetTidspunkt: LocalDateTime,
 
 )
 
@@ -45,6 +45,6 @@ fun SivilstandBo.toSivilstandEntity() = with(::Sivilstand) {
                 Sivilstand::sivilstandId.name -> 0
                 else -> propertiesByName[parameter.name]?.get(this@toSivilstandEntity)
             }
-        }
+        },
     )
 }

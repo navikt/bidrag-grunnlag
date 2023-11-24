@@ -8,7 +8,7 @@ data class HentEnhetsregisterResponse(
     val navn: Navn? = null,
     val enhetstype: String? = null,
     val adresse: Adresse? = null,
-    val opphoersdato: String? = null
+    val opphoersdato: String? = null,
 )
 
 data class Navn(
@@ -19,7 +19,7 @@ data class Navn(
     val navnelinje2: String?,
     val navnelinje3: String?,
     val navnelinje4: String?,
-    val navnelinje5: String?
+    val navnelinje5: String?,
 )
 
 data class Adresse(
@@ -31,15 +31,15 @@ data class Adresse(
     val postnummer: String?,
     val poststed: String?,
     val kommunenummer: String?,
-    val landkode: String?
+    val landkode: String?,
 )
 
 data class BruksperiodeEreg(
     val fom: LocalDateTime?,
-    val tom: LocalDateTime?
+    val tom: LocalDateTime?,
 )
 
 data class Gyldighetsperiode(
     val fom: LocalDate?,
-    val tom: LocalDate?
+    val tom: LocalDate?,
 )

@@ -36,7 +36,7 @@ data class KontantstotteBo(
     val belop: Int,
 
     @Schema(description = "Hentet tidspunkt")
-    val hentetTidspunkt: LocalDateTime = LocalDateTime.now()
+    val hentetTidspunkt: LocalDateTime = LocalDateTime.now(),
 
 )
 
@@ -48,6 +48,6 @@ fun KontantstotteBo.toKontantstotteEntity() = with(::Kontantstotte) {
                 Kontantstotte::kontantstotteId.name -> 0
                 else -> propertiesByName[parameters.name]?.get(this@toKontantstotteEntity)
             }
-        }
+        },
     )
 }
