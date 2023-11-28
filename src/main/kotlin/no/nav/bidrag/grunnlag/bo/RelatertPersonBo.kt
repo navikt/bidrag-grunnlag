@@ -26,7 +26,10 @@ data class RelatertPersonBo(
     @Schema(description = "Angir om den relaterte personen er barn av BM eller BM")
     var erBarnAvBmBp: Boolean,
 
-    @Schema(description = "Den relaterte personen bor i husstanden fra- og med måned. Hvis periodeFra og periodeTil == null så er personen barn som ikke bor sammen med BM/BP")
+    @Schema(
+        description = "Den relaterte personen bor i husstanden fra- og med måned. Hvis periodeFra og periodeTil == null så er personen barn som " +
+            "ikke bor sammen med BM/BP",
+    )
     val husstandsmedlemPeriodeFra: LocalDate?,
 
     @Schema(description = "Den relaterte personen bor i husstanden til- og med måned")

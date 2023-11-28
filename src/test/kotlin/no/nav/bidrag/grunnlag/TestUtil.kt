@@ -1,28 +1,14 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.bidrag.domain.enums.BarnType
-import no.nav.bidrag.domain.enums.Familierelasjon
-import no.nav.bidrag.domain.enums.Formaal
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.Sivilstandstype
-import no.nav.bidrag.domain.enums.SkattegrunnlagType
-import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
-import no.nav.bidrag.domain.ident.PersonIdent
-import no.nav.bidrag.domain.number.Fødselsår
-import no.nav.bidrag.domain.number.MatrikkelId
-import no.nav.bidrag.domain.string.Adressenavn
-import no.nav.bidrag.domain.string.Bruksenhetsnummer
-import no.nav.bidrag.domain.string.Bydelsnummer
-import no.nav.bidrag.domain.string.FulltNavn
-import no.nav.bidrag.domain.string.Husbokstav
-import no.nav.bidrag.domain.string.Husnummer
-import no.nav.bidrag.domain.string.Kommunenummer
-import no.nav.bidrag.domain.string.Postnummer
-import no.nav.bidrag.domain.tid.Bekreftelsesdato
-import no.nav.bidrag.domain.tid.FomDato
-import no.nav.bidrag.domain.tid.Fødselsdato
-import no.nav.bidrag.domain.tid.TomDato
+import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
+import no.nav.bidrag.domene.enums.person.BarnType
+import no.nav.bidrag.domene.enums.person.Familierelasjon
+import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
+import no.nav.bidrag.domene.enums.vedtak.Formål
+import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
@@ -122,7 +108,7 @@ class TestUtil {
 
         fun byggNyGrunnlagspakkeRequest() = OpprettGrunnlagspakkeRequestDto(
             opprettetAv = "RTV9999",
-            formaal = Formaal.BIDRAG,
+            formaal = Formål.BIDRAG,
         )
 
         fun byggOppdaterGrunnlagspakkeRequestKomplett() = OppdaterGrunnlagspakkeRequestDto(
@@ -140,7 +126,7 @@ class TestUtil {
                     periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
-                    type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+                    type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01"),
@@ -152,7 +138,7 @@ class TestUtil {
                     periodeTil = LocalDate.parse("2022-01-01"),
                 ),
                 GrunnlagRequestDto(
-                    type = GrunnlagRequestType.KONTANTSTOTTE,
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01"),
@@ -208,7 +194,7 @@ class TestUtil {
         fun byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd() = OppdaterGrunnlagspakkeRequestDto(
             grunnlagRequestDtoListe = listOf(
                 GrunnlagRequestDto(
-                    type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+                    type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01"),
@@ -241,7 +227,7 @@ class TestUtil {
         fun byggOppdaterGrunnlagspakkeRequestKontantstotte() = OppdaterGrunnlagspakkeRequestDto(
             grunnlagRequestDtoListe = listOf(
                 GrunnlagRequestDto(
-                    type = GrunnlagRequestType.KONTANTSTOTTE,
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2022-01-01"),
                     periodeTil = LocalDate.parse("2023-07-01"),
@@ -288,7 +274,7 @@ class TestUtil {
             opprettetTimestamp = LocalDateTime.now(),
             endretTimestamp = LocalDateTime.now(),
             gyldigTil = null,
-            formaal = Formaal.BIDRAG.toString(),
+            formaal = Formål.BIDRAG.toString(),
         )
 
         fun byggAinntektBo() = AinntektBo(
@@ -370,7 +356,7 @@ class TestUtil {
 
         fun byggSkattegrunnlagspostBo() = SkattegrunnlagspostBo(
             skattegrunnlagId = (1..100).random(),
-            skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
+            skattegrunnlagType = Skattegrunnlagstype.ORDINÆR.toString(),
             inntektType = "Loenn",
             belop = BigDecimal.valueOf(171717),
         )
@@ -378,7 +364,7 @@ class TestUtil {
         fun byggSkattegrunnlagspost() = Skattegrunnlagspost(
             skattegrunnlagspostId = (1..100).random(),
             skattegrunnlagId = (1..100).random(),
-            skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
+            skattegrunnlagType = Skattegrunnlagstype.ORDINÆR.toString(),
             inntektType = "Loenn",
             belop = BigDecimal.valueOf(171717),
         )
@@ -498,7 +484,7 @@ class TestUtil {
             personId = "1234",
             periodeFra = LocalDate.parse("2021-01-01"),
             periodeTil = LocalDate.parse("2021-07-01"),
-            sivilstand = Sivilstandstype.SEPARERT_PARTNER.toString(),
+            sivilstand = SivilstandskodePDL.SEPARERT_PARTNER.toString(),
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
@@ -511,7 +497,7 @@ class TestUtil {
             personId = "1234",
             periodeFra = LocalDate.parse("2021-01-01"),
             periodeTil = LocalDate.parse("2021-07-01"),
-            sivilstand = Sivilstandstype.SEPARERT_PARTNER.toString(),
+            sivilstand = SivilstandskodePDL.SEPARERT_PARTNER.toString(),
             aktiv = true,
             brukFra = LocalDateTime.now(),
             brukTil = null,
@@ -679,46 +665,45 @@ class TestUtil {
             ),
         )
 
-        fun byggArbeidsforholdResponse() =
-            immutableListOf(
-                Arbeidsforhold(
-                    ansettelsesdetaljer = null,
-                    ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
-                    arbeidssted = null,
-                    arbeidstaker = null,
-                    bruksperiode = null,
-                    navArbeidsforholdId = null,
-                    id = null,
-                    navVersjon = null,
-                    opplysningspliktig = null,
-                    opprettet = null,
-                    rapporteringsordning = null,
-                    sistBekreftet = null,
-                    sistEndret = null,
-                    type = null,
-                    permisjoner = emptyList(),
-                    permitteringer = emptyList(),
-                ),
+        fun byggArbeidsforholdResponse() = immutableListOf(
+            Arbeidsforhold(
+                ansettelsesdetaljer = null,
+                ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
+                arbeidssted = null,
+                arbeidstaker = null,
+                bruksperiode = null,
+                navArbeidsforholdId = null,
+                id = null,
+                navVersjon = null,
+                opplysningspliktig = null,
+                opprettet = null,
+                rapporteringsordning = null,
+                sistBekreftet = null,
+                sistEndret = null,
+                type = null,
+                permisjoner = emptyList(),
+                permitteringer = emptyList(),
+            ),
 
-                Arbeidsforhold(
-                    ansettelsesdetaljer = null,
-                    ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
-                    arbeidssted = null,
-                    arbeidstaker = null,
-                    bruksperiode = null,
-                    navArbeidsforholdId = null,
-                    id = null,
-                    navVersjon = null,
-                    opplysningspliktig = null,
-                    opprettet = null,
-                    rapporteringsordning = null,
-                    sistBekreftet = null,
-                    sistEndret = null,
-                    type = null,
-                    permisjoner = emptyList(),
-                    permitteringer = emptyList(),
-                ),
-            )
+            Arbeidsforhold(
+                ansettelsesdetaljer = null,
+                ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
+                arbeidssted = null,
+                arbeidstaker = null,
+                bruksperiode = null,
+                navArbeidsforholdId = null,
+                id = null,
+                navVersjon = null,
+                opplysningspliktig = null,
+                opprettet = null,
+                rapporteringsordning = null,
+                sistBekreftet = null,
+                sistEndret = null,
+                type = null,
+                permisjoner = emptyList(),
+                permitteringer = emptyList(),
+            ),
+        )
 
         fun byggHentInntektListeRequest() = HentInntektListeRequest(
             ident = Aktoer(identifikator = "ident"),
@@ -733,8 +718,7 @@ class TestUtil {
             no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer("", AktoerType.NATURLIG_IDENT),
         )
 
-        fun byggHentInntektListeResponseIntern() =
-            byggArbeidsInntektMaanedListeIntern(HttpStatus.OK, byggArbeidsInntektMaanedListe())
+        fun byggHentInntektListeResponseIntern() = byggArbeidsInntektMaanedListeIntern(HttpStatus.OK, byggArbeidsInntektMaanedListe())
 
         private fun byggArbeidsInntektMaanedListeIntern(
             httpStatus: HttpStatus,
@@ -857,13 +841,13 @@ class TestUtil {
         )
 
         fun byggFamilieBaSakRequest() = FamilieBaSakRequest(
-            personIdent = "personIdent",
+            personIdent = "personident",
             fraDato = LocalDate.now(),
         )
 
-        fun byggHusstandsmedlemmerRequest() = PersonRequest(PersonIdent("personIdent"))
+        fun byggHusstandsmedlemmerRequest() = PersonRequest(Personident("personident"))
 
-        fun byggSivilstandRequest() = PersonRequest(PersonIdent("personIdent"))
+        fun byggSivilstandRequest() = PersonRequest(Personident("personident"))
 
         fun byggKontantstotteRequest() = BisysDto(
             LocalDate.now(),
@@ -884,43 +868,42 @@ class TestUtil {
         )
 
         fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(
-            mottaker = "personIdent",
+            mottaker = "personident",
             fom = LocalDate.now(),
             tom = LocalDate.now(),
         )
 
-        fun byggHentBarnetilleggPensjonResponse() =
-            listOf(
-                BarnetilleggPensjon(
-                    barn = "barnIdent",
-                    beloep = BigDecimal.valueOf(1000.11),
-                    fom = LocalDate.parse("2021-01-01"),
-                    tom = LocalDate.parse("2021-12-31"),
-                    erFellesbarn = true,
-                ),
-                BarnetilleggPensjon(
-                    barn = "barnIdent",
-                    beloep = BigDecimal.valueOf(2000.22),
-                    fom = LocalDate.parse("2022-01-01"),
-                    tom = LocalDate.parse("2022-12-31"),
-                    erFellesbarn = true,
-                ),
-            )
+        fun byggHentBarnetilleggPensjonResponse() = listOf(
+            BarnetilleggPensjon(
+                barn = "barnIdent",
+                beloep = BigDecimal.valueOf(1000.11),
+                fom = LocalDate.parse("2021-01-01"),
+                tom = LocalDate.parse("2021-12-31"),
+                erFellesbarn = true,
+            ),
+            BarnetilleggPensjon(
+                barn = "barnIdent",
+                beloep = BigDecimal.valueOf(2000.22),
+                fom = LocalDate.parse("2022-01-01"),
+                tom = LocalDate.parse("2022-12-31"),
+                erFellesbarn = true,
+            ),
+        )
 
         fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonDto(
             immutableListOf(
                 ForelderBarnRelasjon(
-                    relatertPersonsIdent = PersonIdent("111"),
+                    relatertPersonsIdent = Personident("111"),
                     relatertPersonsRolle = Familierelasjon.BARN,
                     minRolleForPerson = Familierelasjon.FAR,
                 ),
                 ForelderBarnRelasjon(
-                    relatertPersonsIdent = PersonIdent("222"),
+                    relatertPersonsIdent = Personident("222"),
                     relatertPersonsRolle = Familierelasjon.BARN,
                     minRolleForPerson = Familierelasjon.FAR,
                 ),
                 ForelderBarnRelasjon(
-                    relatertPersonsIdent = PersonIdent("333"),
+                    relatertPersonsIdent = Personident("333"),
                     relatertPersonsRolle = Familierelasjon.BARN,
                     minRolleForPerson = Familierelasjon.FAR,
                 ),
@@ -928,82 +911,82 @@ class TestUtil {
         )
 
         fun byggHentNavnFoedselOgDoedResponse() = NavnFødselDødDto(
-            navn = FulltNavn("Dunkel Sol"),
-            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
-            fødselsår = Fødselsår(2001),
+            navn = "Dunkel Sol",
+            fødselsdato = LocalDate.parse("2001-04-17"),
+            fødselsår = 2001,
             dødsdato = null,
         )
 
         fun byggHentHusstandsmedlemmerResponse() = HusstandsmedlemmerDto(
             immutableListOf(
                 Husstand(
-                    gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
-                    gyldigTilOgMed = TomDato(LocalDate.parse("2011-10-01")),
-                    adressenavn = Adressenavn("adressenavn1"),
-                    husnummer = Husnummer("husnummer1"),
-                    husbokstav = Husbokstav("husbokstav1"),
-                    bruksenhetsnummer = Bruksenhetsnummer("bruksenhetsnummer1"),
-                    postnummer = Postnummer("postnr1"),
-                    bydelsnummer = Bydelsnummer("bydelsnummer1"),
-                    kommunenummer = Kommunenummer("kommunenummer1"),
-                    matrikkelId = MatrikkelId(12345),
+                    gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+                    gyldigTilOgMed = LocalDate.parse("2011-10-01"),
+                    adressenavn = "adressenavn1",
+                    husnummer = "husnummer1",
+                    husbokstav = "husbokstav1",
+                    bruksenhetsnummer = "bruksenhetsnummer1",
+                    postnummer = "postnr1",
+                    bydelsnummer = "bydelsnummer1",
+                    kommunenummer = "kommunenummer1",
+                    matrikkelId = 12345,
                     immutableListOf(
                         Husstandsmedlem(
-                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
-                            gyldigTilOgMed = TomDato(LocalDate.parse("2011-02-01")),
-                            personId = PersonIdent("111"),
-                            navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
+                            gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+                            gyldigTilOgMed = LocalDate.parse("2011-02-01"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
                         ),
                         Husstandsmedlem(
-                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-17")),
-                            gyldigTilOgMed = TomDato(LocalDate.parse("2018-01-01")),
-                            personId = PersonIdent("111"),
-                            navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
+                            gyldigFraOgMed = LocalDate.parse("2011-05-17"),
+                            gyldigTilOgMed = LocalDate.parse("2018-01-01"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
                         ),
                         Husstandsmedlem(
-                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-01-01")),
-                            gyldigTilOgMed = TomDato(LocalDate.parse("2011-12-01")),
-                            personId = PersonIdent("333"),
-                            navn = FulltNavn("fornavn3 mellomnavn3 etternavn3"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
+                            gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+                            gyldigTilOgMed = LocalDate.parse("2011-12-01"),
+                            personId = Personident("333"),
+                            navn = "fornavn3 mellomnavn3 etternavn3",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
                         ),
                         Husstandsmedlem(
-                            gyldigFraOgMed = FomDato(LocalDate.parse("2011-05-01")),
-                            gyldigTilOgMed = TomDato(LocalDate.parse("2011-06-01")),
-                            personId = PersonIdent("444"),
-                            navn = FulltNavn("fornavn4 mellomnavn4 etternavn4"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("1974-02-01")),
+                            gyldigFraOgMed = LocalDate.parse("2011-05-01"),
+                            gyldigTilOgMed = LocalDate.parse("2011-06-01"),
+                            personId = Personident("444"),
+                            navn = "fornavn4 mellomnavn4 etternavn4",
+                            fødselsdato = LocalDate.parse("1974-02-01"),
                         ),
                     ),
                 ),
                 Husstand(
-                    gyldigFraOgMed = FomDato(LocalDate.parse("2011-10-01")),
+                    gyldigFraOgMed = LocalDate.parse("2011-10-01"),
                     gyldigTilOgMed = null,
-                    adressenavn = Adressenavn("adressenavn2"),
-                    husnummer = Husnummer("husnummer2"),
-                    husbokstav = Husbokstav("husbokstav2"),
-                    bruksenhetsnummer = Bruksenhetsnummer("bruksenhetsnummer2"),
-                    postnummer = Postnummer("postnr2"),
-                    bydelsnummer = Bydelsnummer("bydelsnummer2"),
-                    kommunenummer = Kommunenummer("kommunenummer2"),
-                    matrikkelId = MatrikkelId(54321),
+                    adressenavn = "adressenavn2",
+                    husnummer = "husnummer2",
+                    husbokstav = "husbokstav2",
+                    bruksenhetsnummer = "bruksenhetsnummer2",
+                    postnummer = "postnr2",
+                    bydelsnummer = "bydelsnummer2",
+                    kommunenummer = "kommunenummer2",
+                    matrikkelId = 54321,
                     immutableListOf(
                         Husstandsmedlem(
-                            gyldigFraOgMed = FomDato(LocalDate.parse("2018-01-01")),
+                            gyldigFraOgMed = LocalDate.parse("2018-01-01"),
                             gyldigTilOgMed = null,
-                            personId = PersonIdent("111"),
-                            navn = FulltNavn("fornavn1 mellomnavn1 etternavn1"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("2001-04-17")),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
                             dødsdato = null,
                         ),
                         Husstandsmedlem(
-                            gyldigFraOgMed = FomDato(LocalDate.parse("2020-01-01")),
+                            gyldigFraOgMed = LocalDate.parse("2020-01-01"),
                             gyldigTilOgMed = null,
-                            personId = PersonIdent("555"),
-                            navn = FulltNavn("fornavn5 mellomnavn5 etternavn5"),
-                            fødselsdato = Fødselsdato(LocalDate.parse("1985-07-17")),
+                            personId = Personident("555"),
+                            navn = "fornavn5 mellomnavn5 etternavn5",
+                            fødselsdato = LocalDate.parse("1985-07-17"),
                             dødsdato = null,
                         ),
                     ),
@@ -1014,7 +997,7 @@ class TestUtil {
         fun byggHentSivilstandResponse() = SivilstandshistorikkDto(
             immutableListOf(
                 SivilstandDto(
-                    type = Sivilstandstype.SEPARERT_PARTNER,
+                    type = SivilstandskodePDL.SEPARERT_PARTNER,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1022,16 +1005,16 @@ class TestUtil {
                     historisk = true,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.ENKE_ELLER_ENKEMANN,
+                    type = SivilstandskodePDL.ENKE_ELLER_ENKEMANN,
                     gyldigFraOgMed = null,
-                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2021-02-01")),
+                    bekreftelsesdato = LocalDate.parse("2021-02-01"),
                     master = "PDL",
                     registrert = LocalDateTime.parse("2021-02-01T12:00:00"),
                     historisk = true,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.GJENLEVENDE_PARTNER,
-                    gyldigFraOgMed = FomDato(LocalDate.parse("2021-09-01")),
+                    type = SivilstandskodePDL.GJENLEVENDE_PARTNER,
+                    gyldigFraOgMed = LocalDate.parse("2021-09-01"),
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2021-03-01T12:00:00"),
@@ -1043,15 +1026,15 @@ class TestUtil {
         fun byggHentSivilstandResponseTestSortering() = SivilstandshistorikkDto(
             immutableListOf(
                 SivilstandDto(
-                    type = Sivilstandstype.GIFT,
-                    gyldigFraOgMed = FomDato(LocalDate.parse("2017-07-17")),
-                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2016-06-16")),
+                    type = SivilstandskodePDL.GIFT,
+                    gyldigFraOgMed = LocalDate.parse("2017-07-17"),
+                    bekreftelsesdato = LocalDate.parse("2016-06-16"),
                     master = "PDL",
                     registrert = LocalDateTime.now(),
                     historisk = true,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.SKILT,
+                    type = SivilstandskodePDL.SKILT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1059,24 +1042,24 @@ class TestUtil {
                     historisk = false,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.UGIFT,
+                    type = SivilstandskodePDL.UGIFT,
                     gyldigFraOgMed = null,
-                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2011-02-01")),
+                    bekreftelsesdato = LocalDate.parse("2011-02-01"),
                     master = "PDL",
                     registrert = LocalDateTime.now(),
                     historisk = true,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.UOPPGITT,
+                    type = SivilstandskodePDL.UOPPGITT,
                     gyldigFraOgMed = null,
-                    bekreftelsesdato = Bekreftelsesdato(LocalDate.parse("2001-05-01")),
+                    bekreftelsesdato = LocalDate.parse("2001-05-01"),
                     master = "PDL",
                     registrert = LocalDateTime.now(),
                     historisk = true,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.SEPARERT,
-                    gyldigFraOgMed = FomDato(LocalDate.parse("2021-09-01")),
+                    type = SivilstandskodePDL.SEPARERT,
+                    gyldigFraOgMed = LocalDate.parse("2021-09-01"),
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = LocalDateTime.parse("2021-03-01T12:00:00"),
@@ -1088,7 +1071,7 @@ class TestUtil {
         fun byggHentSivilstandResponseTestUtenDatoerHistoriske() = SivilstandshistorikkDto(
             immutableListOf(
                 SivilstandDto(
-                    type = Sivilstandstype.SKILT,
+                    type = SivilstandskodePDL.SKILT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1096,7 +1079,7 @@ class TestUtil {
                     historisk = true,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.GIFT,
+                    type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1110,7 +1093,7 @@ class TestUtil {
         fun byggHentSivilstandResponseTestUtenDatoer() = SivilstandshistorikkDto(
             immutableListOf(
                 SivilstandDto(
-                    type = Sivilstandstype.SKILT,
+                    type = SivilstandskodePDL.SKILT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1118,7 +1101,7 @@ class TestUtil {
                     historisk = false,
                 ),
                 SivilstandDto(
-                    type = Sivilstandstype.GIFT,
+                    type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1132,7 +1115,7 @@ class TestUtil {
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
             immutableListOf(
                 SivilstandDto(
-                    type = Sivilstandstype.GIFT,
+                    type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1145,7 +1128,7 @@ class TestUtil {
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv() = SivilstandshistorikkDto(
             immutableListOf(
                 SivilstandDto(
-                    type = Sivilstandstype.GIFT,
+                    type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",
@@ -1158,7 +1141,7 @@ class TestUtil {
         fun byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
             immutableListOf(
                 SivilstandDto(
-                    type = Sivilstandstype.GIFT,
+                    type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
                     master = "PDL",

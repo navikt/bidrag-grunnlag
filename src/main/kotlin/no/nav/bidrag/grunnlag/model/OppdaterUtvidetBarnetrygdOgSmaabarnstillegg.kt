@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -30,7 +30,9 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
             LoggerFactory.getLogger(OppdaterUtvidetBarnetrygdOgSmaabarnstillegg::class.java)
     }
 
-    fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterUtvidetBarnetrygdOgSmaabarnstillegg {
+    fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
+        utvidetBarnetrygdOgSmaabarnstilleggRequestListe: List<PersonIdOgPeriodeRequest>,
+    ): OppdaterUtvidetBarnetrygdOgSmaabarnstillegg {
         utvidetBarnetrygdOgSmaabarnstilleggRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
             val familieBaSakRequest = FamilieBaSakRequest(
@@ -78,9 +80,9 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                     }
                     this.add(
                         OppdaterGrunnlagDto(
-                            GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+                            GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
                             personIdOgPeriode.personId,
-                            GrunnlagsRequestStatus.HENTET,
+                            GrunnlagRequestStatus.HENTET,
                             "Antall perioder funnet: $antallPerioderFunnet",
                         ),
                     )
@@ -88,10 +90,15 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
 
                 is RestResponse.Failure -> this.add(
                     OppdaterGrunnlagDto(
-                        GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+                        GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
                         personIdOgPeriode.personId,
-                        if (restResponseFamilieBaSak.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                        "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                        if (restResponseFamilieBaSak.statusCode == HttpStatus.NOT_FOUND) {
+                            GrunnlagRequestStatus.IKKE_FUNNET
+                        } else {
+                            GrunnlagRequestStatus.FEILET
+                        },
+                        "Feil ved henting av familie-ba-sak for perioden: ${personIdOgPeriode.periodeFra} - " +
+                            "${personIdOgPeriode.periodeTil}.",
                     ),
                 )
             }

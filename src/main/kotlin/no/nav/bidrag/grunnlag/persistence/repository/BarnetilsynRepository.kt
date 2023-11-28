@@ -9,7 +9,10 @@ import java.time.LocalDateTime
 interface BarnetilsynRepository : JpaRepository<Barnetilsyn, Int?> {
 
     @Query(
-        "select bts from Barnetilsyn bts where bts.grunnlagspakkeId = :grunnlagspakkeId and bts.aktiv = true order by bts.partPersonId, bts.periodeFra, bts.barnPersonId",
+        "select bts " +
+            "from Barnetilsyn bts " +
+            "where bts.grunnlagspakkeId = :grunnlagspakkeId and bts.aktiv = true " +
+            "order by bts.partPersonId, bts.periodeFra, bts.barnPersonId",
     )
     fun hentBarnetilsyn(grunnlagspakkeId: Int): List<Barnetilsyn>
 
@@ -19,9 +22,5 @@ interface BarnetilsynRepository : JpaRepository<Barnetilsyn, Int?> {
             "set bts.aktiv = false, bts.brukTil = :timestampOppdatering " +
             "where bts.grunnlagspakkeId = :grunnlagspakkeId and bts.partPersonId = :partPersonId and bts.aktiv = true",
     )
-    fun oppdaterEksisterendeBarnetilsynTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    )
+    fun oppdaterEksisterendeBarnetilsynTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime)
 }

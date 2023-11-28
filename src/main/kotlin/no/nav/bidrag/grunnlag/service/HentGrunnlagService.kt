@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.model.HentArbeidsforhold
@@ -24,10 +24,7 @@ class HentGrunnlagService(
         return HentGrunnlagDto(hentGrunnlagDtoliste)
     }
 
-    private fun hentRequestListeFor(
-        type: GrunnlagRequestType,
-        hentGrunnlagRequestDto: HentGrunnlagRequestDto,
-    ): List<PersonIdOgPeriodeRequest> {
+    private fun hentRequestListeFor(type: GrunnlagRequestType, hentGrunnlagRequestDto: HentGrunnlagRequestDto): List<PersonIdOgPeriodeRequest> {
         val grunnlagRequestListe = mutableListOf<PersonIdOgPeriodeRequest>()
         hentGrunnlagRequestDto.grunnlagRequestDtoListe.forEach {
             if (it.type == type) {
@@ -37,12 +34,11 @@ class HentGrunnlagService(
         return grunnlagRequestListe
     }
 
-    private fun nyPersonIdOgPeriode(grunnlagRequestDto: GrunnlagRequestDto) =
-        PersonIdOgPeriodeRequest(
-            personId = grunnlagRequestDto.personId,
-            periodeFra = grunnlagRequestDto.periodeFra,
-            periodeTil = grunnlagRequestDto.periodeTil,
-        )
+    private fun nyPersonIdOgPeriode(grunnlagRequestDto: GrunnlagRequestDto) = PersonIdOgPeriodeRequest(
+        personId = grunnlagRequestDto.personId,
+        periodeFra = grunnlagRequestDto.periodeFra,
+        periodeTil = grunnlagRequestDto.periodeTil,
+    )
 
     inner class HentGrunnlag : MutableList<ArbeidsforholdDto> by mutableListOf() {
         fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlag {

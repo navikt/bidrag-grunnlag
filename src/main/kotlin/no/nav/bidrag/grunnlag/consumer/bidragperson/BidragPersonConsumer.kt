@@ -1,9 +1,7 @@
 package no.nav.bidrag.grunnlag.consumer.bidragperson
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.domain.ident.PersonIdent
-import no.nav.bidrag.domain.number.Fødselsår
-import no.nav.bidrag.domain.string.FulltNavn
+import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -30,15 +28,15 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
     }
 
-    open fun hentNavnFoedselOgDoed(personIdent: PersonIdent): RestResponse<NavnFødselDødDto> {
+    open fun hentNavnFoedselOgDoed(personident: Personident): RestResponse<NavnFødselDødDto> {
         logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
 
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_FOEDSEL_DOED,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(personIdent)),
+            initHttpEntity(PersonRequest(personident)),
             NavnFødselDødDto::class.java,
-            NavnFødselDødDto(FulltNavn(""), null, Fødselsår(0), null),
+            NavnFødselDødDto(navn = "", fødselsdato = null, fødselsår = 0, dødsdato = null),
         )
 
         logResponse(SECURE_LOGGER, restResponse)
@@ -46,13 +44,13 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    open fun hentForelderBarnRelasjon(personIdent: PersonIdent): RestResponse<ForelderBarnRelasjonDto> {
+    open fun hentForelderBarnRelasjon(personident: Personident): RestResponse<ForelderBarnRelasjonDto> {
         logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
 
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(personIdent)),
+            initHttpEntity(PersonRequest(personident)),
             ForelderBarnRelasjonDto::class.java,
             ForelderBarnRelasjonDto(emptyList()),
         )
@@ -62,7 +60,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    open fun hentHusstandsmedlemmer(personIdent: PersonIdent): RestResponse<HusstandsmedlemmerDto> {
+    open fun hentHusstandsmedlemmer(personident: Personident): RestResponse<HusstandsmedlemmerDto> {
         logger.info(
             "Kaller bidrag-person som igjen henter info om en persons bostedsadresser " +
                 "og personer som har bodd på samme adresse på samme tid fra PDL",
@@ -71,7 +69,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(personIdent)),
+            initHttpEntity(PersonRequest(personident)),
             HusstandsmedlemmerDto::class.java,
             HusstandsmedlemmerDto(emptyList()),
         )
@@ -81,13 +79,13 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    open fun hentSivilstand(personIdent: PersonIdent): RestResponse<SivilstandshistorikkDto> {
+    open fun hentSivilstand(personident: Personident): RestResponse<SivilstandshistorikkDto> {
         logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_SIVILSTAND,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(personIdent)),
+            initHttpEntity(PersonRequest(personident)),
             SivilstandshistorikkDto::class.java,
             SivilstandshistorikkDto(emptyList()),
         )

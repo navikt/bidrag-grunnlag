@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
@@ -80,7 +80,7 @@ class OppdaterOvergangsstønad(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.OVERGANGSSTONAD,
                             personIdOgPeriode.personId,
-                            GrunnlagsRequestStatus.HENTET,
+                            GrunnlagRequestStatus.HENTET,
                             "Antall perioder funnet: $antallPerioderFunnet",
                         ),
                     )
@@ -92,8 +92,13 @@ class OppdaterOvergangsstønad(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.OVERGANGSSTONAD,
                             personIdOgPeriode.personId,
-                            if (restResponseOvergangsstønad.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                            "Feil ved henting av overgangsstønad for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                            if (restResponseOvergangsstønad.statusCode == HttpStatus.NOT_FOUND) {
+                                GrunnlagRequestStatus.IKKE_FUNNET
+                            } else {
+                                GrunnlagRequestStatus.FEILET
+                            },
+                            "Feil ved henting av overgangsstønad for perioden: ${personIdOgPeriode.periodeFra} - " +
+                                "${personIdOgPeriode.periodeTil}.",
                         ),
                     )
                     SECURE_LOGGER.info("overgangsstønad familie-ef-sak svarer med feil, respons: $restResponseOvergangsstønad")

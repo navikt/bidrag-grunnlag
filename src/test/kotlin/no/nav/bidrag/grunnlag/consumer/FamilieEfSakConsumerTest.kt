@@ -59,8 +59,16 @@ internal class FamilieEfSakConsumerTest {
                 assertAll(
                     { Assertions.assertThat(hentBarnetilsynResponse).isNotNull },
                     { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder.size).isEqualTo(1) },
-                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.fom).isEqualTo(LocalDate.parse("2021-01-01")) },
-                    { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.tom).isEqualTo(LocalDate.parse("2021-07-31")) },
+                    {
+                        Assertions.assertThat(
+                            hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.fom,
+                        ).isEqualTo(LocalDate.parse("2021-01-01"))
+                    },
+                    {
+                        Assertions.assertThat(
+                            hentBarnetilsynResponse.barnetilsynBisysPerioder[0].periode.tom,
+                        ).isEqualTo(LocalDate.parse("2021-07-31"))
+                    },
                     { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[0]).isEqualTo("01012212345") },
                     { Assertions.assertThat(hentBarnetilsynResponse.barnetilsynBisysPerioder[0].barnIdenter[1]).isEqualTo("01011034543") },
                 )

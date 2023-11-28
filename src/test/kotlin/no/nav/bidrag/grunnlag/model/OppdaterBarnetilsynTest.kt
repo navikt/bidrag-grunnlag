@@ -1,10 +1,9 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -16,7 +15,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.stream.Stream
-@Disabled
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension::class)
 class OppdaterBarnetilsynTest(

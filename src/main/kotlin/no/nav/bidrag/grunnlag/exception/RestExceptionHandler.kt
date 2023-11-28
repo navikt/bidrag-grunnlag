@@ -25,7 +25,6 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
-import java.lang.NumberFormatException
 import java.time.format.DateTimeParseException
 
 @RestControllerAdvice
@@ -66,9 +65,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
     @ExceptionHandler(
         MethodArgumentNotValidException::class,
     )
-    fun handleArgumentNotValidException(
-        e: MethodArgumentNotValidException,
-    ): ResponseEntity<*> {
+    fun handleArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<*> {
         exceptionLogger.logException(e, "RestExceptionHandler")
         val errors: MutableMap<String, String?> = HashMap()
         e.bindingResult.allErrors.forEach { error: ObjectError ->
@@ -83,9 +80,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
     @ExceptionHandler(
         MethodArgumentTypeMismatchException::class,
     )
-    fun handleArgumentTypeMismatchException(
-        e: MethodArgumentTypeMismatchException,
-    ): ResponseEntity<*> {
+    fun handleArgumentTypeMismatchException(e: MethodArgumentTypeMismatchException): ResponseEntity<*> {
         exceptionLogger.logException(e, "RestExceptionHandler")
         val errors: MutableMap<String, String?> = HashMap()
         errors[e.name] = when (e.cause) {
@@ -108,7 +103,9 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
                     else -> e.originalMessage
                 }
             }
-            is MissingKotlinParameterException -> { errors[extractPath(e.path)] = "Må oppgi gyldig verdi av type (${e.parameter.type}). Kan ikke være null." }
+            is MissingKotlinParameterException -> {
+                errors[extractPath(e.path)] = "Må oppgi gyldig verdi av type (${e.parameter.type}). Kan ikke være null."
+            }
             else -> {
                 errors["Feil ved deserialisering"] = e.originalMessage
             }
@@ -118,7 +115,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
     private fun extractPath(paths: List<JsonMappingException.Reference>): String {
         val sb = StringBuilder()
-        paths.forEach() { jsonMappingException ->
+        paths.forEach { jsonMappingException ->
             if (jsonMappingException.index != -1) {
                 sb.append("[${jsonMappingException.index}]")
             } else {
@@ -137,7 +134,13 @@ sealed class RestResponse<T> {
     data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: RestClientException) : RestResponse<T>()
 }
 
-fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: Class<T>, fallbackBody: T): RestResponse<T> {
+fun <T> RestTemplate.tryExchange(
+    url: String,
+    httpMethod: HttpMethod,
+    httpEntity: HttpEntity<*>,
+    responseType: Class<T>,
+    fallbackBody: T,
+): RestResponse<T> {
     return try {
         val response = exchange(url, httpMethod, httpEntity, responseType)
         RestResponse.Success(response.body ?: fallbackBody)
@@ -149,7 +152,13 @@ fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity
 }
 
 // Brukes hvis responseType er en liste
-fun <T> RestTemplate.tryExchange(url: String, httpMethod: HttpMethod, httpEntity: HttpEntity<*>, responseType: ParameterizedTypeReference<T>, fallbackBody: T): RestResponse<T> {
+fun <T> RestTemplate.tryExchange(
+    url: String,
+    httpMethod: HttpMethod,
+    httpEntity: HttpEntity<*>,
+    responseType: ParameterizedTypeReference<T>,
+    fallbackBody: T,
+): RestResponse<T> {
     return try {
         val response = exchange(url, httpMethod, httpEntity, responseType)
         RestResponse.Success(response.body ?: fallbackBody)

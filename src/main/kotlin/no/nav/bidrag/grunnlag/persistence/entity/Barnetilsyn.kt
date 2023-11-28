@@ -5,8 +5,8 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
-import no.nav.bidrag.domain.enums.barnetilsyn.Tilsyntype
+import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domene.enums.barnetilsyn.Tilsynstype
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -46,7 +46,7 @@ data class Barnetilsyn(
     val belop: Int? = null,
 
     @Column(nullable = true, name = "tilsyntype")
-    val tilsynstype: Tilsyntype?,
+    val tilsynstype: Tilsynstype?,
 
     @Column(nullable = true, name = "skolealder")
     val skolealder: Skolealder?,

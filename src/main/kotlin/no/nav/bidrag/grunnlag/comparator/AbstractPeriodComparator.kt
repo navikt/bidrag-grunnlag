@@ -15,23 +15,23 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
     }
 
     private fun isInsidePeriod(requestedPeriod: IPeriod, existingPeriod: IPeriod): Boolean {
-        return existingPeriod.periodeFra.isAfterOrEqual(requestedPeriod.periodeFra) && existingPeriod.periodeTil.isBeforeOrEqual(requestedPeriod.periodeTil)
+        return existingPeriod.periodeFra.isAfterOrEqual(requestedPeriod.periodeFra) && existingPeriod.periodeTil
+            .isBeforeOrEqual(requestedPeriod.periodeTil)
     }
 
-    fun comparePeriodEntities(
-        requestedPeriod: IPeriod,
-        newEntities: List<T>,
-        existingEntities: List<T>,
-    ): ComparatorResult<T> {
+    fun comparePeriodEntities(requestedPeriod: IPeriod, newEntities: List<T>, existingEntities: List<T>): ComparatorResult<T> {
         val expiredEntities = mutableListOf<T>()
         val updatedEntities = mutableListOf<T>()
         val equalEntities = mutableListOf<T>()
 
         val existingEntitiesWithinRequestedPeriod = filterEntitiesByPeriod(existingEntities, newEntities, requestedPeriod, expiredEntities)
-        SECURE_LOGGER.debug("${existingEntitiesWithinRequestedPeriod.size} eksisterende entiteter innenfor forespurt periode (${requestedPeriod.periodeFra} - ${requestedPeriod.periodeTil}).")
+        SECURE_LOGGER.debug(
+            "${existingEntitiesWithinRequestedPeriod.size} eksisterende entiteter innenfor forespurt periode (${requestedPeriod.periodeFra} - " +
+                "${requestedPeriod.periodeTil}).",
+        )
         SECURE_LOGGER.debug("${expiredEntities.size} utløpte entiteter før sammenligning.")
 
-        newEntities.forEach() { newEntity ->
+        newEntities.forEach { newEntity ->
             val existingEntityWithEqualPeriod = findEntityWithEqualPeriod(newEntity, existingEntitiesWithinRequestedPeriod)
             if (existingEntityWithEqualPeriod != null) {
                 if (isEntitiesEqual(newEntity, existingEntityWithEqualPeriod)) {
@@ -46,7 +46,10 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
                     updatedEntities.add(newEntity)
                 }
             } else {
-                SECURE_LOGGER.debug("Kunne ikke finne eksisterede entitet for perioden (${newEntity.periodEntity.periodeFra} - ${newEntity.periodEntity.periodeTil}).")
+                SECURE_LOGGER.debug(
+                    "Kunne ikke finne eksisterede entitet for perioden (${newEntity.periodEntity.periodeFra} - " +
+                        "${newEntity.periodEntity.periodeTil}).",
+                )
                 updatedEntities.add(newEntity)
             }
         }
@@ -65,10 +68,7 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
         return differences
     }
 
-    private fun findEntityWithEqualPeriod(
-        periodEntity: T,
-        periodEntities: List<T>,
-    ): T? {
+    private fun findEntityWithEqualPeriod(periodEntity: T, periodEntities: List<T>): T? {
         return periodEntities.find { t ->
             t.periodEntity.periodeFra.isEqual(periodEntity.periodEntity.periodeFra) && t.periodEntity.periodeTil.isEqual(
                 periodEntity.periodEntity.periodeTil,
@@ -83,7 +83,7 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
         expiredEntities: MutableList<T>,
     ): List<T> {
         val filteredEntities = mutableListOf<T>()
-        existingEntities.forEach() { existingEntity ->
+        existingEntities.forEach { existingEntity ->
             if (isInsidePeriod(requestedPeriod, existingEntity.periodEntity) && periodEntityStillExists(existingEntity, newEntities)) {
                 filteredEntities.add(existingEntity)
             } else {

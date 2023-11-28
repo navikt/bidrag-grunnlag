@@ -19,9 +19,5 @@ interface OvergangsstonadRepository : JpaRepository<Overgangsstonad, Int?> {
             "set os.aktiv = false, os.brukTil = :timestampOppdatering " +
             "where os.grunnlagspakkeId = :grunnlagspakkeId and os.partPersonId = :partPersonId and os.aktiv = true",
     )
-    fun oppdaterEksisterendeOvergangsstonadTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    )
+    fun oppdaterEksisterendeOvergangsstonadTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime)
 }

@@ -21,13 +21,33 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<Ainnt
             differences.putAll(compareFields(newAinntektsposter[i].beskrivelse, existingAinntektsposter[i].beskrivelse, "beskrivelse"))
             differences.putAll(compareFields(newAinntektsposter[i].belop, existingAinntektsposter[i].belop, "belop"))
             differences.putAll(compareFields(newAinntektsposter[i].fordelType, existingAinntektsposter[i].fordelType, "fordelType"))
-            differences.putAll(compareFields(newAinntektsposter[i].opplysningspliktigId, existingAinntektsposter[i].opplysningspliktigId, "opplysningspliktigId"))
-            differences.putAll(compareFields(newAinntektsposter[i].opptjeningsperiodeFra, existingAinntektsposter[i].opptjeningsperiodeFra, "opptjeningsperiodeFra"))
-            differences.putAll(compareFields(newAinntektsposter[i].opptjeningsperiodeTil, existingAinntektsposter[i].opptjeningsperiodeTil, "opptjeningsperiodeTil"))
-            differences.putAll(compareFields(newAinntektsposter[i].utbetalingsperiode, existingAinntektsposter[i].utbetalingsperiode, "utbetalingsperiode"))
+            differences.putAll(
+                compareFields(newAinntektsposter[i].opplysningspliktigId, existingAinntektsposter[i].opplysningspliktigId, "opplysningspliktigId"),
+            )
+            differences.putAll(
+                compareFields(newAinntektsposter[i].opptjeningsperiodeFra, existingAinntektsposter[i].opptjeningsperiodeFra, "opptjeningsperiodeFra"),
+            )
+            differences.putAll(
+                compareFields(newAinntektsposter[i].opptjeningsperiodeTil, existingAinntektsposter[i].opptjeningsperiodeTil, "opptjeningsperiodeTil"),
+            )
+            differences.putAll(
+                compareFields(newAinntektsposter[i].utbetalingsperiode, existingAinntektsposter[i].utbetalingsperiode, "utbetalingsperiode"),
+            )
             differences.putAll(compareFields(newAinntektsposter[i].virksomhetId, existingAinntektsposter[i].virksomhetId, "virksomhetId"))
-            differences.putAll(compareFields(newAinntektsposter[i].etterbetalingsperiodeFra, existingAinntektsposter[i].etterbetalingsperiodeFra, "etterbetalingsperiodeFom"))
-            differences.putAll(compareFields(newAinntektsposter[i].etterbetalingsperiodeTil, existingAinntektsposter[i].etterbetalingsperiodeTil, "etterbetalingsperiodeTom"))
+            differences.putAll(
+                compareFields(
+                    newAinntektsposter[i].etterbetalingsperiodeFra,
+                    existingAinntektsposter[i].etterbetalingsperiodeFra,
+                    "etterbetalingsperiodeFom",
+                ),
+            )
+            differences.putAll(
+                compareFields(
+                    newAinntektsposter[i].etterbetalingsperiodeTil,
+                    existingAinntektsposter[i].etterbetalingsperiodeTil,
+                    "etterbetalingsperiodeTom",
+                ),
+            )
         }
         if (differences.isNotEmpty()) {
             SECURE_LOGGER.debug(toJsonString(differences))
@@ -38,8 +58,17 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<Ainnt
     private fun sortAinntektsposter(ainntektsposter: List<AinntektspostBo>): List<AinntektspostBo> {
         return ainntektsposter.sortedWith(
             compareBy(
-                { it.utbetalingsperiode }, { it.opptjeningsperiodeFra }, { it.opptjeningsperiodeTil }, { it.opplysningspliktigId }, { it.virksomhetId },
-                { it.inntektType }, { it.fordelType }, { it.beskrivelse }, { it.belop }, { it.etterbetalingsperiodeFra }, { it.etterbetalingsperiodeTil },
+                { it.utbetalingsperiode },
+                { it.opptjeningsperiodeFra },
+                { it.opptjeningsperiodeTil },
+                { it.opplysningspliktigId },
+                { it.virksomhetId },
+                { it.inntektType },
+                { it.fordelType },
+                { it.beskrivelse },
+                { it.belop },
+                { it.etterbetalingsperiodeFra },
+                { it.etterbetalingsperiodeTil },
             ),
         )
     }

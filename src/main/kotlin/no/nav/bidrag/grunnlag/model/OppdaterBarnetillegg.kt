@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domain.enums.BarnType
-import no.nav.bidrag.domain.enums.BarnetilleggType
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.person.BarnType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
@@ -62,7 +62,7 @@ class OppdaterBarnetillegg(
                                 grunnlagspakkeId = grunnlagspakkeId,
                                 partPersonId = personIdOgPeriode.personId,
                                 barnPersonId = bt.barn,
-                                barnetilleggType = BarnetilleggType.PENSJON.toString(),
+                                barnetilleggType = Barnetilleggstype.PENSJON.toString(),
                                 periodeFra = bt.fom,
                                 // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
                                 periodeTil = bt.tom.plusMonths(1)?.withDayOfMonth(1),
@@ -79,7 +79,7 @@ class OppdaterBarnetillegg(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.BARNETILLEGG,
                             personIdOgPeriode.personId,
-                            GrunnlagsRequestStatus.HENTET,
+                            GrunnlagRequestStatus.HENTET,
                             "Antall perioder funnet: $antallPerioderFunnet",
                         ),
                     )
@@ -89,8 +89,13 @@ class OppdaterBarnetillegg(
                     OppdaterGrunnlagDto(
                         GrunnlagRequestType.BARNETILLEGG,
                         personIdOgPeriode.personId,
-                        if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                        "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                        if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) {
+                            GrunnlagRequestStatus.IKKE_FUNNET
+                        } else {
+                            GrunnlagRequestStatus.FEILET
+                        },
+                        "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - " +
+                            "${personIdOgPeriode.periodeTil}.",
                     ),
                 )
             }
