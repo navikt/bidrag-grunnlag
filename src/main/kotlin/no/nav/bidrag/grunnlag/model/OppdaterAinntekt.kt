@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domain.enums.Formaal
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
@@ -53,13 +53,18 @@ class OppdaterAinntekt(
             //
             if (personIdOgPeriode.periodeTil.isBefore(LocalDate.of(2015, 1, 1))) {
                 LOGGER.info("Ugyldig periode angitt i HentInntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere")
-                SECURE_LOGGER.info("Ugyldig periode angitt i HentInntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere: $personIdOgPeriode")
+                SECURE_LOGGER.info(
+                    "Ugyldig periode angitt i HentInntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere: " +
+                        "$personIdOgPeriode",
+                )
             } else {
                 val periodeFra: String
                 if (personIdOgPeriode.periodeFra.isBefore(LocalDate.parse("2015-01-01"))) {
                     periodeFra = JANUAR2015
                     LOGGER.info("For gammel periodeFra angitt i HentInntektRequest (Inntektskomponenten), overstyres til januar 2015")
-                    SECURE_LOGGER.info("For gammel periodeFra angitt i HentInntektRequest (Inntektskomponenten), overstyres til januar 2015: $personIdOgPeriode")
+                    SECURE_LOGGER.info(
+                        "For gammel periodeFra angitt i HentInntektRequest (Inntektskomponenten), overstyres til januar 2015: $personIdOgPeriode",
+                    )
                 } else {
                     periodeFra = personIdOgPeriode.periodeFra.toString().substring(0, 7)
                 }
@@ -91,8 +96,9 @@ class OppdaterAinntekt(
                                 OppdaterGrunnlagDto(
                                     GrunnlagRequestType.AINNTEKT,
                                     hentInntektListeRequest.ident.identifikator,
-                                    GrunnlagsRequestStatus.HENTET,
-                                    "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
+                                    GrunnlagRequestStatus.HENTET,
+                                    "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
+                                        "${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
                                 ),
                             )
                         } else {
@@ -129,8 +135,10 @@ class OppdaterAinntekt(
                                                 fordelType = inntektspost.fordel,
                                                 beskrivelse = inntektspost.beskrivelse,
                                                 belop = inntektspost.beloep,
-                                                etterbetalingsperiodeFra = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
-                                                etterbetalingsperiodeTil = inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom,
+                                                etterbetalingsperiodeFra =
+                                                inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
+                                                etterbetalingsperiodeTil =
+                                                inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom,
 
                                             ),
                                         )
@@ -143,8 +151,9 @@ class OppdaterAinntekt(
                                     OppdaterGrunnlagDto(
                                         GrunnlagRequestType.AINNTEKT,
                                         hentInntektListeRequest.ident.identifikator,
-                                        GrunnlagsRequestStatus.HENTET,
-                                        "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
+                                        GrunnlagRequestStatus.HENTET,
+                                        "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
+                                            "${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
                                     ),
                                 )
                             } else {
@@ -152,8 +161,9 @@ class OppdaterAinntekt(
                                     OppdaterGrunnlagDto(
                                         GrunnlagRequestType.AINNTEKT,
                                         hentInntektListeRequest.ident.identifikator,
-                                        GrunnlagsRequestStatus.HENTET,
-                                        "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet",
+                                        GrunnlagRequestStatus.HENTET,
+                                        "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
+                                            "${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet",
                                     ),
                                 )
                             }
@@ -163,8 +173,13 @@ class OppdaterAinntekt(
                             OppdaterGrunnlagDto(
                                 GrunnlagRequestType.AINNTEKT,
                                 hentInntektListeRequest.ident.identifikator,
-                                if (hentInntektListeResponseIntern.httpStatus == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
-                                "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - ${hentInntektListeRequest.maanedTom}.",
+                                if (hentInntektListeResponseIntern.httpStatus == HttpStatus.NOT_FOUND) {
+                                    GrunnlagRequestStatus.IKKE_FUNNET
+                                } else {
+                                    GrunnlagRequestStatus.FEILET
+                                },
+                                "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - " +
+                                    "${hentInntektListeRequest.maanedTom}.",
                             ),
                         )
                     }
@@ -185,11 +200,11 @@ class OppdaterAinntekt(
     }
 
     private fun finnFilter(formaal: String): String {
-        return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
+        return if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
     }
 
     private fun finnFormaal(formaal: String): String {
-        return if (formaal == Formaal.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
+        return if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
     }
 
     private fun lagInntektListeRequest(hentInntektRequest: HentInntektRequest): List<HentInntektListeRequest> {

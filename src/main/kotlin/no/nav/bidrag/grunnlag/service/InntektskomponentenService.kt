@@ -90,7 +90,9 @@ class InntektskomponentenService(
                         inntekt.virksomhet?.identifikator,
                         inntekt.virksomhet?.aktoerType.toString(),
                     ),
-                    tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE) {
+                    tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType ==
+                        TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE
+                    ) {
                         TilleggsinformasjonIntern(
                             inntekt.tilleggsinformasjon.kategori,
                             TilleggsinformasjonDetaljerIntern(

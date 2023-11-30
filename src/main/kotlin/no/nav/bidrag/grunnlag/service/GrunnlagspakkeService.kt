@@ -3,8 +3,8 @@ package no.nav.bidrag.grunnlag.service
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.bidrag.commons.security.utils.TokenUtils
-import no.nav.bidrag.domain.enums.Formaal
-import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
+import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
@@ -23,8 +23,8 @@ class GrunnlagspakkeService(
     private val meterRegistry: MeterRegistry,
 ) {
 
-    fun opprettGrunnlagspakkeCounter(formaal: Formaal) = Counter.builder("opprett_grunnlagspakke")
-        .tag("formaal", formaal.name)
+    fun opprettGrunnlagspakkeCounter(formål: Formål) = Counter.builder("opprett_grunnlagspakke")
+        .tag("formaal", formål.name)
         .tag("opprettetAvApp", TokenUtils.hentApplikasjonsnavn() ?: "UKJENT")
         .register(meterRegistry)
 
@@ -59,7 +59,7 @@ class GrunnlagspakkeService(
     }
 
     private fun harOppdatertGrunnlag(grunnlagTypeResponsListe: List<OppdaterGrunnlagDto>): Boolean {
-        return grunnlagTypeResponsListe.any { it.status == GrunnlagsRequestStatus.HENTET }
+        return grunnlagTypeResponsListe.any { it.status == GrunnlagRequestStatus.HENTET }
     }
 
     fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {

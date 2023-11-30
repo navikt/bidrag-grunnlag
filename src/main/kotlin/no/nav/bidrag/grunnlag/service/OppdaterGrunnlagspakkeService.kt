@@ -1,15 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.AINNTEKT
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.BARNETILLEGG
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.BARNETILSYN
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.KONTANTSTOTTE
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.OVERGANGSSTONAD
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.SIVILSTAND
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.SKATTEGRUNNLAG
-import no.nav.bidrag.domain.enums.GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
@@ -53,34 +44,34 @@ class OppdaterGrunnlagspakkeService(
             timestampOppdatering,
         )
             .oppdaterAinntekt(
-                hentRequestListeFor(AINNTEKT, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.AINNTEKT, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterSkattegrunnlag(
-                hentRequestListeFor(SKATTEGRUNNLAG, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.SKATTEGRUNNLAG, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                 hentRequestListeFor(
-                    UTVIDET_BARNETRYGD_OG_SMAABARNSTILLEGG,
+                    GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
                     oppdaterGrunnlagspakkeRequestDto,
                 ),
             )
             .oppdaterBarnetillegg(
-                hentRequestListeFor(BARNETILLEGG, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.BARNETILLEGG, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterKontantstotte(
-                hentRequestListeFor(KONTANTSTOTTE, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.KONTANTSTØTTE, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterHusstandsmedlemmerOgEgneBarn(
-                hentRequestListeFor(HUSSTANDSMEDLEMMER_OG_EGNE_BARN, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterSivilstand(
-                hentRequestListeFor(SIVILSTAND, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.SIVILSTAND, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterBarnetilsyn(
-                hentRequestListeFor(BARNETILSYN, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.BARNETILSYN, oppdaterGrunnlagspakkeRequestDto),
             )
             .oppdaterOvergangsstønad(
-                hentRequestListeFor(OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto),
+                hentRequestListeFor(GrunnlagRequestType.OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto),
             )
 
         return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
@@ -99,12 +90,11 @@ class OppdaterGrunnlagspakkeService(
         return grunnlagRequestListe
     }
 
-    private fun nyPersonIdOgPeriode(grunnlagRequestDto: GrunnlagRequestDto) =
-        PersonIdOgPeriodeRequest(
-            personId = grunnlagRequestDto.personId,
-            periodeFra = grunnlagRequestDto.periodeFra,
-            periodeTil = grunnlagRequestDto.periodeTil,
-        )
+    private fun nyPersonIdOgPeriode(grunnlagRequestDto: GrunnlagRequestDto) = PersonIdOgPeriodeRequest(
+        personId = grunnlagRequestDto.personId,
+        periodeFra = grunnlagRequestDto.periodeFra,
+        periodeTil = grunnlagRequestDto.periodeTil,
+    )
 
     inner class OppdaterGrunnlagspakke(
         private val grunnlagspakkeId: Int,
@@ -137,7 +127,9 @@ class OppdaterGrunnlagspakkeService(
             return this
         }
 
-        fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
+            utvidetBarnetrygdOgSmaabarnstilleggRequestListe: List<PersonIdOgPeriodeRequest>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                     grunnlagspakkeId,

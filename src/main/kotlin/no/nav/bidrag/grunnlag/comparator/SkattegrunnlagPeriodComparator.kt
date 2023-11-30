@@ -21,7 +21,9 @@ class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable
             val existingSkattegrunnlagspost = existingSkattegrunnlagsposter[i]
 
             differences.putAll(compareFields(newSkattegrunnlagspost.inntektType, existingSkattegrunnlagspost.inntektType, "inntektType"))
-            differences.putAll(compareFields(newSkattegrunnlagspost.skattegrunnlagType, existingSkattegrunnlagspost.skattegrunnlagType, "skattegrunnlagType"))
+            differences.putAll(
+                compareFields(newSkattegrunnlagspost.skattegrunnlagType, existingSkattegrunnlagspost.skattegrunnlagType, "skattegrunnlagType"),
+            )
             differences.putAll(compareFields(newSkattegrunnlagspost.belop, existingSkattegrunnlagspost.belop, "belop"))
         }
         if (differences.isNotEmpty()) {

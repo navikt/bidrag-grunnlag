@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
@@ -82,7 +82,7 @@ class OppdaterBarnetilsyn(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.BARNETILSYN,
                             personIdOgPeriode.personId,
-                            GrunnlagsRequestStatus.HENTET,
+                            GrunnlagRequestStatus.HENTET,
                             "Antall perioder funnet: $antallPerioderFunnet",
                         ),
                     )
@@ -92,7 +92,7 @@ class OppdaterBarnetilsyn(
                     OppdaterGrunnlagDto(
                         GrunnlagRequestType.BARNETILSYN,
                         personIdOgPeriode.personId,
-                        GrunnlagsRequestStatus.IKKE_FUNNET,
+                        GrunnlagRequestStatus.IKKE_FUNNET,
                         "Feil ved henting av barnetilsyn for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
                     ),
                 )
@@ -120,11 +120,9 @@ class OppdaterBarnetilsyn(
         return Skolealder.UNDER
     }
 
-    private fun barnetilsynGjelderFraFomForsteAugust(fom: LocalDate) =
-        fom.isAfter(LocalDate.of(fom.year, Month.JULY, 31))
+    private fun barnetilsynGjelderFraFomForsteAugust(fom: LocalDate) = fom.isAfter(LocalDate.of(fom.year, Month.JULY, 31))
 
-    private fun fodtEtterForsteAugust(fodselsdato: LocalDate) =
-        fodselsdato.isAfter(LocalDate.of(fodselsdato.year, Month.AUGUST, 1))
+    private fun fodtEtterForsteAugust(fodselsdato: LocalDate) = fodselsdato.isAfter(LocalDate.of(fodselsdato.year, Month.AUGUST, 1))
 
     private fun alderEr5Ar(fodselsdato: LocalDate) = hentAlderAr(fodselsdato) == 5
 

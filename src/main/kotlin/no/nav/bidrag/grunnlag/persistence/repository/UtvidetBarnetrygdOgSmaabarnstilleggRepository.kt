@@ -9,7 +9,10 @@ import java.time.LocalDateTime
 interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetBarnetrygdOgSmaabarnstillegg, Int?> {
 
     @Query(
-        "select ubst from UtvidetBarnetrygdOgSmaabarnstillegg ubst where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.aktiv = true order by ubst.personId, ubst.periodeFra",
+        "select ubst " +
+            "from UtvidetBarnetrygdOgSmaabarnstillegg ubst " +
+            "where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.aktiv = true " +
+            "order by ubst.personId, ubst.periodeFra",
     )
     fun hentUbst(grunnlagspakkeId: Int): List<UtvidetBarnetrygdOgSmaabarnstillegg>
 

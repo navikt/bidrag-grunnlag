@@ -43,14 +43,22 @@ class InntektskomponentenServiceMockTest {
             { assertThat(hentInntektListeResponsIntern.httpStatus.is2xxSuccessful) },
             { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.isNotEmpty()) },
             { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.size).isEqualTo(1) },
-            { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.isNotEmpty()) },
             {
-                assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.size).isEqualTo(
+                assertThat(
+                    hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.isNotEmpty(),
+                )
+            },
+            {
+                assertThat(
+                    hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.size,
+                ).isEqualTo(
                     1,
                 )
             },
             {
-                assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.get(0)?.beloep).isEqualTo(
+                assertThat(
+                    hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.get(0)?.beloep,
+                ).isEqualTo(
                     BigDecimal.valueOf(10000),
                 )
             },
@@ -75,14 +83,22 @@ class InntektskomponentenServiceMockTest {
             { assertThat(hentInntektListeResponsIntern.httpStatus.is2xxSuccessful) },
             { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.isNotEmpty()) },
             { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.size).isEqualTo(1) },
-            { assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.isNotEmpty()) },
             {
-                assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.size).isEqualTo(
+                assertThat(
+                    hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.isNotEmpty(),
+                )
+            },
+            {
+                assertThat(
+                    hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.size,
+                ).isEqualTo(
                     1,
                 )
             },
             {
-                assertThat(hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.get(0)?.beloep).isEqualTo(
+                assertThat(
+                    hentInntektListeResponsIntern.arbeidsInntektMaanedIntern?.get(0)?.arbeidsInntektInformasjonIntern?.inntektIntern?.get(0)?.beloep,
+                ).isEqualTo(
                     BigDecimal.valueOf(10000),
                 )
             },

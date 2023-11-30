@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class SecurityTokenService(val authorizedClientManager: OAuth2AuthorizedClientManager) {
 
-    private val ANONYMOUS_AUTHENTICATION: Authentication = AnonymousAuthenticationToken(
+    private val anonymousAuthentication: Authentication = AnonymousAuthenticationToken(
         "anonymous",
         "anonymousUser",
         AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"),
@@ -25,7 +25,7 @@ class SecurityTokenService(val authorizedClientManager: OAuth2AuthorizedClientMa
                 .authorize(
                     OAuth2AuthorizeRequest
                         .withClientRegistrationId(clientRegistrationId)
-                        .principal(ANONYMOUS_AUTHENTICATION)
+                        .principal(anonymousAuthentication)
                         .build(),
                 )!!.accessToken
 

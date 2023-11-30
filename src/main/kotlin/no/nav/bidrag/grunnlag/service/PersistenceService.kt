@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domain.enums.BarnetilleggType
-import no.nav.bidrag.domain.enums.SivilstandKode
-import no.nav.bidrag.domain.enums.barnetilsyn.Skolealder
-import no.nav.bidrag.domain.enums.barnetilsyn.Tilsyntype
+import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
+import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
+import no.nav.bidrag.domene.enums.barnetilsyn.Tilsynstype
+import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
@@ -119,7 +119,9 @@ class PersistenceService(
         return skattegrunnlagspostRepository.save(nyInntektspost)
     }
 
-    fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo): UtvidetBarnetrygdOgSmaabarnstillegg {
+    fun opprettUtvidetBarnetrygdOgSmaabarnstillegg(
+        utvidetBarnetrygdOgSmaabarnstilleggBo: UtvidetBarnetrygdOgSmaabarnstilleggBo,
+    ): UtvidetBarnetrygdOgSmaabarnstillegg {
         val nyUbst = utvidetBarnetrygdOgSmaabarnstilleggBo.toUtvidetBarnetrygdOgSmaabarnstilleggEntity()
         return utvidetBarnetrygdOgSmaabarnstilleggRepository.save(nyUbst)
     }
@@ -154,24 +156,16 @@ class PersistenceService(
         return overgangsstønadRepository.save(nyOvergangsstønad)
     }
 
-    fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    ) {
+    fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
         barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
             timestampOppdatering,
-            BarnetilleggType.PENSJON.toString(),
+            Barnetilleggstype.PENSJON.toString(),
         )
     }
 
-    fun oppdaterEksisterendeRelatertPersonTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    ) {
+    fun oppdaterEksisterendeRelatertPersonTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
         relatertPersonRepository.oppdaterEksisterendeRelatertPersonTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
@@ -179,11 +173,7 @@ class PersistenceService(
         )
     }
 
-    fun oppdaterEksisterendeSivilstandTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    ) {
+    fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
         sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
@@ -203,11 +193,7 @@ class PersistenceService(
         )
     }
 
-    fun oppdaterEksisterendeBarnetilsynTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    ) {
+    fun oppdaterEksisterendeBarnetilsynTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
         barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
@@ -215,11 +201,7 @@ class PersistenceService(
         )
     }
 
-    fun oppdaterEksisterendeKontantstotteTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    ) {
+    fun oppdaterEksisterendeKontantstotteTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
         kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
@@ -227,11 +209,7 @@ class PersistenceService(
         )
     }
 
-    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(
-        grunnlagspakkeId: Int,
-        partPersonId: String,
-        timestampOppdatering: LocalDateTime,
-    ) {
+    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
         overgangsstønadRepository.oppdaterEksisterendeOvergangsstonadTilInaktiv(
             grunnlagspakkeId,
             partPersonId,
@@ -400,10 +378,7 @@ class PersistenceService(
         return ainntektDtoListe
     }
 
-    fun hentAinntektForPersonIdToCompare(
-        grunnlagspakkeId: Int,
-        personId: String,
-    ): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
+    fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personId: String): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
         val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
         ainntektRepository.hentAinntekter(grunnlagspakkeId)
             .forEach { inntekt ->
@@ -606,7 +581,7 @@ class PersistenceService(
                         personId = sivilstand.personId,
                         periodeFra = sivilstand.periodeFra,
                         periodeTil = sivilstand.periodeTil,
-                        sivilstand = SivilstandKode.valueOf(sivilstand.sivilstand),
+                        sivilstand = SivilstandskodePDL.valueOf(sivilstand.sivilstand),
                         aktiv = sivilstand.aktiv,
                         brukFra = sivilstand.brukFra,
                         brukTil = sivilstand.brukTil,
@@ -631,7 +606,7 @@ class PersistenceService(
                         brukFra = barnetilsyn.brukFra,
                         brukTil = barnetilsyn.brukTil,
                         belop = barnetilsyn.belop,
-                        tilsynstype = barnetilsyn.tilsynstype ?: Tilsyntype.IKKE_ANGITT,
+                        tilsynstype = barnetilsyn.tilsynstype ?: Tilsynstype.IKKE_ANGITT,
                         skolealder = barnetilsyn.skolealder ?: Skolealder.IKKE_ANGITT,
                         hentetTidspunkt = barnetilsyn.hentetTidspunkt,
                     ),

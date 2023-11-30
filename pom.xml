@@ -19,21 +19,20 @@
 
   <properties>
     <!-- build/language -->
-    <kotlin.version>1.9.10</kotlin.version>
+    <kotlin.version>1.9.20</kotlin.version>
     <build-helper-maven.version>3.2.0</build-helper-maven.version>
-    <token-support.version>3.1.7</token-support.version>
+    <token-support.version>3.1.8</token-support.version>
     <!-- dependencies -->
     <bidrag-commons.version>20231002151454_eab4a7b</bidrag-commons.version>
     <bidrag-commons-test.version>1.20230511093912_dc35d81</bidrag-commons-test.version>
-    <bidrag-transport.version>20230929134005_dfcb25d</bidrag-transport.version>
+    <bidrag-transport.version>20231130133957_b66e902</bidrag-transport.version>
     <bidrag-tilgangskontroll.version>1.10.4</bidrag-tilgangskontroll.version>
     <mockito-kotlin.version>5.1.0</mockito-kotlin.version>
     <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
-    <nimbus-jose-jwt.version>9.31</nimbus-jose-jwt.version>
+    <nimbus-jose-jwt.version>9.37.1</nimbus-jose-jwt.version>
     <springframework-cloud.version>4.0.4</springframework-cloud.version>
     <com.squareup.okhttp3.version>4.12.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
-    <bidrag-behandling-felles.version>0.0.85</bidrag-behandling-felles.version>
   </properties>
 
   <dependencyManagement>
@@ -46,7 +45,7 @@
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-annotations</artifactId>
-        <version>2.2.15</version>
+        <version>2.2.19</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -86,20 +85,10 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.15.3</version>
+      <version>2.16.0</version>
     </dependency>
 
     <!-- nav -->
-<!--    <dependency>-->
-<!--      <groupId>no.nav.bidrag</groupId>-->
-<!--      <artifactId>bidrag-behandling-felles</artifactId>-->
-<!--      <version>${bidrag-behandling-felles.version}</version>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>no.nav.bidrag</groupId>-->
-<!--      <artifactId>bidrag-behandling-felles-dto</artifactId>-->
-<!--      <version>${bidrag-behandling-felles-dto.version}</version>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>nimbus-jose-jwt</artifactId>
@@ -227,18 +216,6 @@
       <version>${com.squareup.okhttp3.version}</version>
       <scope>test</scope>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>org.springframework.cloud</groupId>-->
-    <!--      <artifactId>spring-cloud-starter-contract-stub-runner</artifactId>-->
-    <!--      <version>${springframework-cloud.version}</version>-->
-    <!--      <scope>test</scope>-->
-    <!--      <exclusions>-->
-    <!--        <exclusion>-->
-    <!--          <groupId>com.google.guava</groupId>-->
-    <!--          <artifactId>guava</artifactId>-->
-    <!--        </exclusion>-->
-    <!--      </exclusions>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-contract-wiremock</artifactId>
@@ -322,9 +299,9 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>com.pinterest</groupId>
-            <artifactId>ktlint</artifactId>
-            <version>0.50.0</version>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-cli</artifactId>
+            <version>1.0.1</version>
           </dependency>
           <!-- additional 3rd party ruleset(s) can be specified here -->
         </dependencies>

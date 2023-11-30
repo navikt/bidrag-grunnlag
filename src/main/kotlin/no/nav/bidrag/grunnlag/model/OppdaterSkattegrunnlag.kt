@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domain.enums.GrunnlagRequestType
-import no.nav.bidrag.domain.enums.GrunnlagsRequestStatus
-import no.nav.bidrag.domain.enums.SkattegrunnlagType
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
@@ -69,7 +69,7 @@ class OppdaterSkattegrunnlag(
                         skattegrunnlagsPosterOrdinaer.addAll(skattegrunnlagResponse.grunnlag!!.toMutableList())
                         skattegrunnlagsPosterSvalbard.addAll(skattegrunnlagResponse.svalbardGrunnlag!!.toMutableList())
 
-                        if (skattegrunnlagsPosterOrdinaer.size > 0 || skattegrunnlagsPosterSvalbard.size > 0) {
+                        if (skattegrunnlagsPosterOrdinaer.isNotEmpty() || skattegrunnlagsPosterSvalbard.isNotEmpty()) {
                             val skattegrunnlag = SkattegrunnlagBo(
                                 grunnlagspakkeId = grunnlagspakkeId,
                                 personId = personIdOgPeriode.personId,
@@ -84,7 +84,7 @@ class OppdaterSkattegrunnlag(
                                 antallSkattegrunnlagsposter++
                                 skattegrunnlagsposter.add(
                                     SkattegrunnlagspostBo(
-                                        skattegrunnlagType = SkattegrunnlagType.ORDINAER.toString(),
+                                        skattegrunnlagType = Skattegrunnlagstype.ORDINÆR.toString(),
                                         inntektType = skattegrunnlagsPost.tekniskNavn,
                                         belop = BigDecimal(skattegrunnlagsPost.beloep),
                                     ),
@@ -94,7 +94,7 @@ class OppdaterSkattegrunnlag(
                                 antallSkattegrunnlagsposter++
                                 skattegrunnlagsposter.add(
                                     SkattegrunnlagspostBo(
-                                        skattegrunnlagType = SkattegrunnlagType.SVALBARD.toString(),
+                                        skattegrunnlagType = Skattegrunnlagstype.SVALBARD.toString(),
                                         inntektType = skattegrunnlagsPost.tekniskNavn,
                                         belop = BigDecimal(skattegrunnlagsPost.beloep),
                                     ),
@@ -114,7 +114,7 @@ class OppdaterSkattegrunnlag(
                             OppdaterGrunnlagDto(
                                 GrunnlagRequestType.SKATTEGRUNNLAG,
                                 personIdOgPeriode.personId,
-                                GrunnlagsRequestStatus.HENTET,
+                                GrunnlagRequestStatus.HENTET,
                                 "Antall skattegrunnlagsposter funnet for inntektsåret $inntektAar: $antallSkattegrunnlagsposter",
                             ),
                         )
@@ -124,7 +124,11 @@ class OppdaterSkattegrunnlag(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.SKATTEGRUNNLAG,
                             personIdOgPeriode.personId,
-                            if (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) GrunnlagsRequestStatus.IKKE_FUNNET else GrunnlagsRequestStatus.FEILET,
+                            if (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) {
+                                GrunnlagRequestStatus.IKKE_FUNNET
+                            } else {
+                                GrunnlagRequestStatus.FEILET
+                            },
                             "Feil ved henting av skattegrunnlag for inntektsåret $inntektAar.",
                         ),
                     )

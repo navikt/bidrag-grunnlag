@@ -9,7 +9,9 @@ import org.springframework.test.context.ActiveProfiles
 
 @SpringBootApplication
 @ActiveProfiles(TEST_PROFILE)
-@ComponentScan(excludeFilters = [ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = [BidragGrunnlag::class, BidragGrunnlagLocal::class])])
+@ComponentScan(
+    excludeFilters = [ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = [BidragGrunnlag::class, BidragGrunnlagLocal::class])],
+)
 class BidragGrunnlagTest {
 
     companion object {

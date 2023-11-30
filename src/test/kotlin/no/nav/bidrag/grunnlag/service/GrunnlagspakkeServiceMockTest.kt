@@ -2,9 +2,9 @@ package no.nav.bidrag.grunnlag.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
-import no.nav.bidrag.domain.enums.BarnType
-import no.nav.bidrag.domain.enums.Formaal
-import no.nav.bidrag.domain.enums.Sivilstandstype
+import no.nav.bidrag.domene.enums.person.BarnType
+import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
+import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntekt
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektBo
 import no.nav.bidrag.grunnlag.TestUtil.Companion.byggAinntektspost
@@ -114,7 +114,10 @@ class GrunnlagspakkeServiceMockTest {
             .thenReturn(byggGrunnlagspakke())
         val nyGrunnlagspakkeIdOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(byggNyGrunnlagspakkeRequest())
         val grunnlagspakke = opprettGrunnlagspakkeRequestDtoCaptor.value
-        Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
+        Mockito.verify(
+            persistenceServiceMock,
+            Mockito.times(1),
+        ).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
         assertAll(
             { assertThat(nyGrunnlagspakkeIdOpprettet).isNotNull() },
             // sjekk GrunnlagspakkeDto
@@ -182,7 +185,10 @@ class GrunnlagspakkeServiceMockTest {
         val barnetilsynListe = barnetilsynBoCaptor.allValues
         val overgangsstønadListe = overgangsstønadBoCaptor.allValues
 
-        Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
+        Mockito.verify(
+            persistenceServiceMock,
+            Mockito.times(1),
+        ).opprettNyGrunnlagspakke(MockitoHelper.any(OpprettGrunnlagspakkeRequestDto::class.java))
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntekt(MockitoHelper.any(AinntektBo::class.java))
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettAinntektspost(MockitoHelper.any(AinntektspostBo::class.java))
         Mockito.verify(persistenceServiceMock, Mockito.times(1)).opprettSkattegrunnlag(MockitoHelper.any(SkattegrunnlagBo::class.java))
@@ -237,7 +243,7 @@ class GrunnlagspakkeServiceMockTest {
             { assertThat(opprettGrunnlagspakkeRequestDto).isNotNull() },
             { assertThat(opprettGrunnlagspakkeRequestDto.opprettetAv).isNotNull() },
             { assertThat(opprettGrunnlagspakkeRequestDto.opprettetAv).isEqualTo("RTV9999") },
-            { assertThat(opprettGrunnlagspakkeRequestDto.formaal).isEqualTo(Formaal.BIDRAG) },
+            { assertThat(opprettGrunnlagspakkeRequestDto.formaal).isEqualTo(Formål.BIDRAG) },
 
             // sjekk AinntektBo
             { assertThat(ainntektBoListe[0].personId).isEqualTo("1234567") },
@@ -329,7 +335,7 @@ class GrunnlagspakkeServiceMockTest {
             { assertThat(sivilstandBoListe[0].personId).isEqualTo("1234") },
             { assertThat(sivilstandBoListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { assertThat(sivilstandBoListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-07-01")) },
-            { assertThat(sivilstandBoListe[0].sivilstand).isEqualTo(Sivilstandstype.SEPARERT_PARTNER.toString()) },
+            { assertThat(sivilstandBoListe[0].sivilstand).isEqualTo(SivilstandskodePDL.SEPARERT_PARTNER.toString()) },
             { assertThat(sivilstandBoListe[0].aktiv).isTrue },
             { assertThat(sivilstandBoListe[0].brukFra).isNotNull() },
             { assertThat(sivilstandBoListe[0].brukTil).isNull() },
