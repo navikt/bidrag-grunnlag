@@ -10,7 +10,7 @@ import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import no.nav.bidrag.transport.person.SivilstandDto
+import no.nav.bidrag.transport.person.SivilstandPersonDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -56,7 +56,7 @@ class OppdaterSivilstand(
                         // gyldigFraOgMed, bekreftelsesdato, registrert og til slutt på type.
                         antallPerioderFunnet = behandleSivilstandResponse(
                             sivilstandResponse.sivilstandDto.sortedWith(
-                                compareByDescending<SivilstandDto> { it.historisk }.thenBy { it.gyldigFraOgMed }
+                                compareByDescending<SivilstandPersonDto> { it.historisk }.thenBy { it.gyldigFraOgMed }
                                     .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() },
                             ),
                             personIdOgPeriode,
@@ -90,7 +90,7 @@ class OppdaterSivilstand(
         return this
     }
 
-    private fun behandleSivilstandResponse(sivilstandDtoListe: List<SivilstandDto>, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
+    private fun behandleSivilstandResponse(sivilstandDtoListe: List<SivilstandPersonDto>, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
         var antallPerioderFunnet = 0
 
         var periodeTil: LocalDate?
@@ -121,7 +121,7 @@ class OppdaterSivilstand(
     }
 
     private fun lagreSivilstand(
-        sivilstand: SivilstandDto,
+        sivilstand: SivilstandPersonDto,
         grunnlagspakkeId: Int,
         timestampOppdatering: LocalDateTime,
         personId: String,

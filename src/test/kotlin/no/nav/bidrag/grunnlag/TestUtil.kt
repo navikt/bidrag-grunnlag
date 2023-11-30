@@ -74,7 +74,7 @@ import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
-import no.nav.bidrag.transport.person.SivilstandDto
+import no.nav.bidrag.transport.person.SivilstandPersonDto
 import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektInformasjon
@@ -996,7 +996,7 @@ class TestUtil {
 
         fun byggHentSivilstandResponse() = SivilstandshistorikkDto(
             immutableListOf(
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.SEPARERT_PARTNER,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1004,7 +1004,7 @@ class TestUtil {
                     registrert = LocalDateTime.parse("2021-01-01T12:00:00"),
                     historisk = true,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.ENKE_ELLER_ENKEMANN,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = LocalDate.parse("2021-02-01"),
@@ -1012,7 +1012,7 @@ class TestUtil {
                     registrert = LocalDateTime.parse("2021-02-01T12:00:00"),
                     historisk = true,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.GJENLEVENDE_PARTNER,
                     gyldigFraOgMed = LocalDate.parse("2021-09-01"),
                     bekreftelsesdato = null,
@@ -1025,7 +1025,7 @@ class TestUtil {
 
         fun byggHentSivilstandResponseTestSortering() = SivilstandshistorikkDto(
             immutableListOf(
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = LocalDate.parse("2017-07-17"),
                     bekreftelsesdato = LocalDate.parse("2016-06-16"),
@@ -1033,7 +1033,7 @@ class TestUtil {
                     registrert = LocalDateTime.now(),
                     historisk = true,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.SKILT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1041,7 +1041,7 @@ class TestUtil {
                     registrert = LocalDateTime.parse("2022-03-01T12:00:00"),
                     historisk = false,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.UGIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = LocalDate.parse("2011-02-01"),
@@ -1049,7 +1049,7 @@ class TestUtil {
                     registrert = LocalDateTime.now(),
                     historisk = true,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.UOPPGITT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = LocalDate.parse("2001-05-01"),
@@ -1057,7 +1057,7 @@ class TestUtil {
                     registrert = LocalDateTime.now(),
                     historisk = true,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.SEPARERT,
                     gyldigFraOgMed = LocalDate.parse("2021-09-01"),
                     bekreftelsesdato = null,
@@ -1070,7 +1070,7 @@ class TestUtil {
 
         fun byggHentSivilstandResponseTestUtenDatoerHistoriske() = SivilstandshistorikkDto(
             immutableListOf(
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.SKILT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1078,7 +1078,7 @@ class TestUtil {
                     registrert = null,
                     historisk = true,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1092,7 +1092,7 @@ class TestUtil {
 
         fun byggHentSivilstandResponseTestUtenDatoer() = SivilstandshistorikkDto(
             immutableListOf(
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.SKILT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1100,7 +1100,7 @@ class TestUtil {
                     registrert = LocalDateTime.parse("2020-05-12T11:30:00"),
                     historisk = false,
                 ),
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1114,7 +1114,7 @@ class TestUtil {
 
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
             immutableListOf(
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1127,7 +1127,7 @@ class TestUtil {
 
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv() = SivilstandshistorikkDto(
             immutableListOf(
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
@@ -1140,7 +1140,7 @@ class TestUtil {
 
         fun byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk() = SivilstandshistorikkDto(
             immutableListOf(
-                SivilstandDto(
+                SivilstandPersonDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFraOgMed = null,
                     bekreftelsesdato = null,
