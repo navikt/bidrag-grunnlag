@@ -70,12 +70,12 @@ class BidragGrunnlagConfig {
     fun familieBaSakConsumer(
         @Value("\${FAMILIEBASAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): FamilieBaSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiebasak"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("familiebasak"))
         return FamilieBaSakConsumer(restTemplate)
     }
 
@@ -83,12 +83,12 @@ class BidragGrunnlagConfig {
     fun familieEfSakConsumer(
         @Value("\${FAMILIEEFSAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): FamilieEfSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("familieefsak"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("familieefsak"))
         return FamilieEfSakConsumer(restTemplate)
     }
 
@@ -96,12 +96,12 @@ class BidragGrunnlagConfig {
     fun inntektskomponentenConsumer(
         @Value("\${INNTEKTSKOMPONENTEN_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): InntektskomponentenConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("inntektskomponenten"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("inntektskomponenten"))
         return InntektskomponentenConsumer(restTemplate)
     }
 
@@ -109,12 +109,12 @@ class BidragGrunnlagConfig {
     fun sigrunConsumer(
         @Value("\${SIGRUN_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): SigrunConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("sigrun"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("sigrun"))
         return SigrunConsumer(restTemplate)
     }
 
@@ -122,12 +122,12 @@ class BidragGrunnlagConfig {
     fun pensjonConsumer(
         @Value("\${PENSJON_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): PensjonConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("pensjon"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("pensjon"))
         return PensjonConsumer(restTemplate)
     }
 
@@ -135,12 +135,12 @@ class BidragGrunnlagConfig {
     fun bidragPersonConsumer(
         @Value("\${BIDRAGPERSON_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): BidragPersonConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("bidragperson"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("bidragperson"))
         return BidragPersonConsumer(restTemplate)
     }
 
@@ -148,12 +148,12 @@ class BidragGrunnlagConfig {
     fun familieKsSakConsumer(
         @Value("\${FAMILIEKSSAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): FamilieKsSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("familiekssak"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("familiekssak"))
         return FamilieKsSakConsumer(restTemplate)
     }
 
@@ -161,12 +161,12 @@ class BidragGrunnlagConfig {
     fun arbeidsforholdConsumer(
         @Value("\${AAREG_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
-        securityTokenService: SecurityTokenService,
+        grunnlagSecurityTokenService: SecurityTokenService,
         exceptionLogger: ExceptionLogger,
     ): ArbeidsforholdConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
-        restTemplate.interceptors.add(securityTokenService.generateBearerToken("aareg"))
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("aareg"))
         return ArbeidsforholdConsumer(restTemplate)
     }
 

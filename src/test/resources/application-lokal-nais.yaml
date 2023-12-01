@@ -1,10 +1,11 @@
 server.port: 8086
+NAIS_APP_NAME: bidrag-grunnlag-local
 spring:
   flyway:
     enabled: true
     locations: classpath:/db/migration
   datasource:
-    url: jdbc:postgresql://localhost:${DB_PORT:5455}/${DB_DATABASE:bidrag-grunnlag}?user=${DB_USERNAME:cloudsqliamuser}&password=${DB_PASSWORD:admin}
+    url: jdbc:postgresql://localhost:${DB_PORT:5454}/${DB_DATABASE:bidrag-grunnlag}?user=${DB_USERNAME:cloudsqliamuser}&password=${DB_PASSWORD:admin}
     type: com.zaxxer.hikari.HikariDataSource
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS}
