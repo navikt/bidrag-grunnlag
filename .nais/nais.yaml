@@ -103,6 +103,8 @@ spec:
       value: https://{{ azure.unsecure.ereg_url }}
     - name: BIDRAG_ORGANISASJON_URL
       value: https://{{ azure.bidrag_organisasjon_url }}/bidrag-organisasjon
+    - name: BIDRAG_ORGANISASJON_SCOPE
+      value: {{ azure.bidrag_organisasjon_scope }}
   gcp:
     sqlInstances:
       - name: {{ dbname }}
