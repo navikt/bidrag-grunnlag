@@ -276,7 +276,7 @@ class TestUtil {
             gyldigTil = null,
             formaal = Formål.BIDRAG.toString(),
             opprettetAvNavn = "",
-            kildeapplikasjon = "bisys"
+            kildeapplikasjon = "bisys",
         )
 
         fun byggAinntektBo() = AinntektBo(

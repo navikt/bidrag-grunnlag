@@ -57,7 +57,7 @@ fun OpprettGrunnlagspakkeRequestDto.toGrunnlagspakkeEntity() = with(::Grunnlagsp
         parameters.associateWith { parameter ->
             when (parameter.name) {
                 Grunnlagspakke::opprettetAv.name -> opprettetAvIdent
-                Grunnlagspakke::opprettetAvNavn.name ->  SaksbehandlernavnProvider.hentSaksbehandlernavn(opprettetAvIdent)
+                Grunnlagspakke::opprettetAvNavn.name -> SaksbehandlernavnProvider.hentSaksbehandlernavn(opprettetAvIdent)
                 Grunnlagspakke::kildeapplikasjon.name -> TokenUtils.hentApplikasjonsnavn() ?: "UKJENT"
                 Grunnlagspakke::grunnlagspakkeId.name -> 0
                 Grunnlagspakke::opprettetTimestamp.name -> LocalDateTime.now()
