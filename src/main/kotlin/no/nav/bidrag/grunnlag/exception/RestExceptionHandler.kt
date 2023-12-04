@@ -48,7 +48,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
             is HttpClientErrorException -> exceptionLogger.logException(e, "HttpClientErrorException")
             is HttpServerErrorException -> exceptionLogger.logException(e, "HttpServerErrorException")
         }
-        return ResponseEntity(e.message, e.statusCode)
+        return ResponseEntity.status(e.statusCode).body(e.responseBodyAsString.ifEmpty { e.message })
     }
 
     @ResponseBody
