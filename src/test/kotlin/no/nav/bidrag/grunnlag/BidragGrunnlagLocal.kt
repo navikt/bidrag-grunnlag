@@ -52,8 +52,8 @@ fun stubHentSaksbehandler() {
                 .withHeader(HttpHeaders.CONNECTION, "close")
                 .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                 .withStatus(HttpStatus.OK.value())
-                .withBody(jsonToString(SaksbehandlerInfoResponse("Z99999", "Fornavn Etternavn")))
-        )
+                .withBody(jsonToString(SaksbehandlerInfoResponse("Z99999", "Fornavn Etternavn"))),
+        ),
     )
 }
 private fun jsonToString(data: Any): String {

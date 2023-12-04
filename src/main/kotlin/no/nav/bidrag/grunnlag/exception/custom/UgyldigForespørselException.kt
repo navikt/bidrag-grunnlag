@@ -6,5 +6,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
 
 private val objectmapper = ObjectMapper().findAndRegisterModules()
-fun OpprettGrunnlagspakkeRequestDto.manglerOpprettetAv(): Nothing =
-    throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "Forespørsel mangler informasjon om hvem som forsøker å opprette grunnlagspakken", objectmapper.writeValueAsBytes(this.copy(opprettetAv = "Opprettet av kan ikke være tom. Må være null eller satt til en verdi")), null)
+fun OpprettGrunnlagspakkeRequestDto.manglerOpprettetAv(): Nothing = throw HttpClientErrorException(
+    HttpStatus.BAD_REQUEST,
+    "Forespørsel mangler informasjon om hvem som forsøker å opprette grunnlagspakken",
+    objectmapper.writeValueAsBytes(this.copy(opprettetAv = "Opprettet av kan ikke være tom. Må være null eller satt til en verdi")),
+    null,
+)
