@@ -275,6 +275,8 @@ class TestUtil {
             endretTimestamp = LocalDateTime.now(),
             gyldigTil = null,
             formaal = Formål.BIDRAG.toString(),
+            opprettetAvNavn = "",
+            kildeapplikasjon = "bisys",
         )
 
         fun byggAinntektBo() = AinntektBo(

@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
 import org.springframework.stereotype.Service
 
-@Service
+@Service("grunnlagSecurityTokenService")
 class SecurityTokenService(val authorizedClientManager: OAuth2AuthorizedClientManager) {
 
     private val anonymousAuthentication: Authentication = AnonymousAuthenticationToken(
