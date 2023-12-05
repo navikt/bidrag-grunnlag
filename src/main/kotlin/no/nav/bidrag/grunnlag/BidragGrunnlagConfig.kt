@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import no.nav.bidrag.commons.CorrelationId
 import no.nav.bidrag.commons.ExceptionLogger
+import no.nav.bidrag.commons.util.SjekkForNyIdentAspect
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.DefaultCorsFilter
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RootUriTemplateHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Scope
 
@@ -38,13 +40,14 @@ const val LIVE_PROFILE = "live"
     security = [SecurityRequirement(name = "bearer-key")],
 )
 @EnableJwtTokenValidation
+@EnableAspectJAutoProxy
 @SecurityScheme(
     bearerFormat = "JWT",
     name = "bearer-key",
     scheme = "bearer",
     type = SecuritySchemeType.HTTP,
 )
-@Import(CorrelationIdFilter::class, UserMdcFilter::class, DefaultCorsFilter::class)
+@Import(CorrelationIdFilter::class, UserMdcFilter::class, DefaultCorsFilter::class, SjekkForNyIdentAspect::class)
 class BidragGrunnlagConfig {
 
     companion object {
