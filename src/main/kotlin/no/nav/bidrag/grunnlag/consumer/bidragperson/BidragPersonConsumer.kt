@@ -7,18 +7,23 @@ import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
+import no.nav.bidrag.transport.person.HentePersonidenterRequest
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
+import no.nav.bidrag.transport.person.Identgruppe
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
+import no.nav.bidrag.transport.person.PersonidentDto
 import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 
 private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/navnfoedseldoed"
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
 private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER = "/bidrag-person/husstandsmedlemmer"
 private const val BIDRAGPERSON_CONTEXT_SIVILSTAND = "/bidrag-person/sivilstand"
+private const val BIDRAGPERSON_CONTEXT_PERSONIDENTER = "/bidrag-person/personidenter"
 
 open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate) :
     GrunnlagsConsumer() {
@@ -88,6 +93,24 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             initHttpEntity(PersonRequest(personident)),
             SivilstandshistorikkDto::class.java,
             SivilstandshistorikkDto(emptyList()),
+        )
+
+        logResponse(SECURE_LOGGER, restResponse)
+
+        return restResponse
+    }
+
+    open fun hentPersonidenter(personident: Personident): RestResponse<List<PersonidentDto>> {
+        logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons historiske identer")
+
+        val responseType = object : ParameterizedTypeReference<List<PersonidentDto>>() {}
+
+        val restResponse = restTemplate.tryExchange(
+            BIDRAGPERSON_CONTEXT_PERSONIDENTER,
+            HttpMethod.POST,
+            initHttpEntity(HentePersonidenterRequest(personident.verdi, setOf(Identgruppe.FOLKEREGISTERIDENT), true)),
+            responseType,
+            emptyList(),
         )
 
         logResponse(SECURE_LOGGER, restResponse)

@@ -7,6 +7,8 @@ import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
+import no.nav.bidrag.transport.person.Identgruppe
+import no.nav.bidrag.transport.person.PersonidentDto
 import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -21,6 +23,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.eq
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -299,6 +302,74 @@ internal class BidragPersonConsumerTest {
         }
     }
 
+    @Test
+    fun `Sjekk at ok respons fra Bidrag-person-endepunkt for personidenter mappes korrekt`() {
+        val request = TestUtil.byggHentPersonidenterRequest()
+        val response = TestUtil.byggHentPersonidenterResponse()
+        val responseType = object : ParameterizedTypeReference<List<PersonidentDto>>() {}
+
+        Mockito.`when`(
+            restTemplateMock?.exchange(
+                eq(BIDRAGPERSON_PERSONIDENTER_CONTEXT),
+                eq(HttpMethod.POST),
+                eq(initHttpEntity(request)),
+                eq(responseType),
+            ),
+        )
+            .thenReturn(ResponseEntity(response, HttpStatus.OK))
+
+        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"))) {
+            is RestResponse.Success -> {
+                val hentPersonidenterResponse = restResponseHentPersonidenter.body
+
+                assertAll(
+                    Executable { assertThat(hentPersonidenterResponse).isNotNull },
+                    Executable { assertThat(hentPersonidenterResponse.size).isEqualTo(2) },
+
+                    Executable { assertThat(hentPersonidenterResponse[0].ident).isEqualTo("personident") },
+                    Executable { assertThat(hentPersonidenterResponse[0].gruppe).isEqualTo(Identgruppe.FOLKEREGISTERIDENT) },
+                    Executable { assertThat(hentPersonidenterResponse[0].historisk).isFalse() },
+
+                    Executable { assertThat(hentPersonidenterResponse[1].ident).isEqualTo("personident_historisk") },
+                    Executable { assertThat(hentPersonidenterResponse[1].gruppe).isEqualTo(Identgruppe.FOLKEREGISTERIDENT) },
+                    Executable { assertThat(hentPersonidenterResponse[1].historisk).isTrue() },
+                )
+            }
+
+            else -> {
+                fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
+            }
+        }
+    }
+
+    @Test
+    fun `Sjekk at exception fra Bidrag-person-endepunkt for personidenter håndteres korrekt`() {
+        val request = TestUtil.byggHentPersonidenterRequest()
+        val responseType = object : ParameterizedTypeReference<List<PersonidentDto>>() {}
+
+        Mockito.`when`(
+            restTemplateMock?.exchange(
+                eq(BIDRAGPERSON_PERSONIDENTER_CONTEXT),
+                eq(HttpMethod.POST),
+                eq(initHttpEntity(request)),
+                eq(responseType),
+            ),
+        )
+            .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
+
+        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"))) {
+            is RestResponse.Failure -> {
+                assertAll(
+                    Executable { assertThat(restResponseHentPersonidenter.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
+                    Executable { assertThat(restResponseHentPersonidenter.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
+                )
+            }
+            else -> {
+                fail("Test returnerte med RestResponse.Success, som ikke var forventet")
+            }
+        }
+    }
+
     fun <T> initHttpEntity(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
@@ -311,5 +382,6 @@ internal class BidragPersonConsumerTest {
         private const val BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT = "/bidrag-person/husstandsmedlemmer"
         private const val BIDRAGPERSON_SIVILSTAND_CONTEXT = "/bidrag-person/sivilstand"
         private const val BIDRAGPERSON_PERSON_INFO_CONTEXT = "/bidrag-person/informasjon"
+        private const val BIDRAGPERSON_PERSONIDENTER_CONTEXT = "/bidrag-person/personidenter"
     }
 }

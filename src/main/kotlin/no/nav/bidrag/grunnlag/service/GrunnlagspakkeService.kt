@@ -3,8 +3,10 @@ package no.nav.bidrag.grunnlag.service
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.bidrag.commons.security.utils.TokenUtils
+import no.nav.bidrag.commons.util.SjekkForNyIdent
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.vedtak.Formål
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
@@ -44,15 +46,18 @@ class GrunnlagspakkeService(
         // Validerer at grunnlagspakke eksisterer
         persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
 
+        // Henter aktiv ident for personer i grunnlagspakken
+        val requestMedNyesteIdent = hentAktivIdent(oppdaterGrunnlagspakkeRequestDto)
+
         val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-            grunnlagspakkeId,
-            oppdaterGrunnlagspakkeRequestDto,
-            timestampOppdatering,
+            grunnlagspakkeId = grunnlagspakkeId,
+            oppdaterGrunnlagspakkeRequestDto = requestMedNyesteIdent,
+            timestampOppdatering = timestampOppdatering,
         )
 
         // Oppdaterer endret_timestamp på grunnlagspakke
         if (harOppdatertGrunnlag(oppdaterGrunnlagspakkeDto.grunnlagTypeResponsListe)) {
-            persistenceService.oppdaterEndretTimestamp(grunnlagspakkeId, timestampOppdatering)
+            persistenceService.oppdaterEndretTimestamp(grunnlagspakkeId = grunnlagspakkeId, timestampOppdatering = timestampOppdatering)
         }
 
         return oppdaterGrunnlagspakkeDto
@@ -60,6 +65,20 @@ class GrunnlagspakkeService(
 
     private fun harOppdatertGrunnlag(grunnlagTypeResponsListe: List<OppdaterGrunnlagDto>): Boolean {
         return grunnlagTypeResponsListe.any { it.status == GrunnlagRequestStatus.HENTET }
+    }
+
+    // TODO Endre til private etter at den er testet ok
+    fun hentAktivIdent(request: OppdaterGrunnlagspakkeRequestDto): OppdaterGrunnlagspakkeRequestDto {
+        val dtoListe = request.grunnlagRequestDtoListe.map {
+            val nyIdent = hentNyesteIdent(it.personId)
+            SECURE_LOGGER.info("Henter nyeste ident for personId: ${it.personId} og får tilbake: $nyIdent")
+            it.copy(personId = nyIdent)
+        }
+        return OppdaterGrunnlagspakkeRequestDto(gyldigTil = request.gyldigTil, grunnlagRequestDtoListe = dtoListe)
+    }
+
+    private fun hentNyesteIdent(@SjekkForNyIdent ident: String): String {
+        return ident
     }
 
     fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {
