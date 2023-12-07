@@ -43,7 +43,7 @@ spring:
             client-secret: secret
             authorization-grant-type: client_credentials
             scope: api://familiekssak/.default
-          åensjon:
+          pensjon:
             provider: aad
             client-id: someid
             client-secret: secret
