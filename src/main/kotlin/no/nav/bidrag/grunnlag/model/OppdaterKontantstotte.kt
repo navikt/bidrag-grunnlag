@@ -2,8 +2,10 @@ package no.nav.bidrag.grunnlag.model
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -22,6 +24,7 @@ class OppdaterKontantstotte(
     private val timestampOppdatering: LocalDateTime,
     private val persistenceService: PersistenceService,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
+    private val bidragPersonConsumer: BidragPersonConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
@@ -33,11 +36,12 @@ class OppdaterKontantstotte(
         kontantstotteRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
 
-            // Input til tjeneste er en liste over alle personnr for en person,
-            // kall PDL for å hente historikk på fnr?
+            // Input til tjeneste er en liste over alle (historiske) personnr for en person
+            val personIdListe = hentHistoriskeIdenterForPerson(personIdOgPeriode.personId)
+
             val innsynRequest = BisysDto(
-                personIdOgPeriode.periodeFra,
-                listOf(personIdOgPeriode.personId),
+                fom = personIdOgPeriode.periodeFra,
+                identer = personIdListe,
             )
 
             LOGGER.info("Kaller kontantstøtte")
@@ -52,9 +56,9 @@ class OppdaterKontantstotte(
                     SECURE_LOGGER.info("kontantstøtte ga følgende respons: $kontantstotteResponse")
 
                     persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
-                        grunnlagspakkeId,
-                        personIdOgPeriode.personId,
-                        timestampOppdatering,
+                        grunnlagspakkeId = grunnlagspakkeId,
+                        partPersonId = personIdOgPeriode.personId,
+                        timestampOppdatering = timestampOppdatering,
                     )
 
                     // Kontantstøtte fra Infotrygd
@@ -103,10 +107,10 @@ class OppdaterKontantstotte(
                     }
                     this.add(
                         OppdaterGrunnlagDto(
-                            GrunnlagRequestType.KONTANTSTØTTE,
-                            personIdOgPeriode.personId,
-                            GrunnlagRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet",
+                            type = GrunnlagRequestType.KONTANTSTØTTE,
+                            personId = personIdOgPeriode.personId,
+                            status = GrunnlagRequestStatus.HENTET,
+                            statusMelding = "Antall perioder funnet: $antallPerioderFunnet",
                         ),
                     )
                 }
@@ -130,5 +134,34 @@ class OppdaterKontantstotte(
             }
         }
         return this
+    }
+
+    // Kaller bidrag-person (som igjen kaller PDL) for å hente alle historiske identer for en person
+    private fun hentHistoriskeIdenterForPerson(personId: String): List<String> {
+        var historiskeIdenter = listOf<String>()
+
+        when (
+            val restResponsePersonidenter = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)
+        ) {
+            is RestResponse.Success -> {
+                val personidenterResponse = restResponsePersonidenter.body
+                SECURE_LOGGER.info("Kall til bidrag-person for å hente personidenter ga følgende respons: $personidenterResponse")
+
+                if (personidenterResponse.isNotEmpty()) {
+                    historiskeIdenter = personidenterResponse.map { it.ident }
+                }
+            }
+
+            is RestResponse.Failure -> {
+                SECURE_LOGGER.warn(
+                    "Feil ved kall til bidrag-person for å hente historiske identer for ident $personId. Respons = $restResponsePersonidenter",
+                )
+            }
+        }
+
+        if (historiskeIdenter.isEmpty()) {
+            historiskeIdenter = listOf(personId)
+        }
+        return historiskeIdenter
     }
 }

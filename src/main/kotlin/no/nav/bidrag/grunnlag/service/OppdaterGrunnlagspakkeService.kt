@@ -164,6 +164,7 @@ class OppdaterGrunnlagspakkeService(
                     timestampOppdatering,
                     persistenceService,
                     familieKsSakConsumer,
+                    bidragPersonConsumer,
                 )
                     .oppdaterKontantstotte(kontantstotteRequestListe),
             )

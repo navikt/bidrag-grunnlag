@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import no.nav.bidrag.commons.service.AppContext
 import no.nav.bidrag.commons.service.organisasjon.SaksbehandlerInfoResponse
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.LOCAL_PROFILE
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
@@ -46,7 +45,7 @@ fun main(args: Array<String>) {
 }
 
 fun stubHentSaksbehandler() {
-    AppContext.getBean(WireMockServer::class.java).stubFor(
+    WireMock.stubFor(
         WireMock.get(WireMock.urlMatching("/organisasjon/saksbehandler/info/(.*)")).willReturn(
             WireMock.aResponse()
                 .withHeader(HttpHeaders.CONNECTION, "close")

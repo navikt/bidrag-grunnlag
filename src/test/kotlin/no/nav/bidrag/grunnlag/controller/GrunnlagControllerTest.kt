@@ -25,6 +25,7 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.controller.GrunnlagControllerTest.MockitoHelper.any
 import no.nav.bidrag.grunnlag.exception.HibernateExceptionHandler
 import no.nav.bidrag.grunnlag.exception.RestExceptionHandler
 import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
@@ -54,7 +55,6 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -108,7 +108,7 @@ class GrunnlagControllerTest(
         familieEfSakConsumer,
     )
     private val grunnlagspakkeService: GrunnlagspakkeService =
-        GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService, meterRegistry)
+        GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService, meterRegistry, bidragPersonConsumer)
     private val hentGrunnlagService: HentGrunnlagService = HentGrunnlagService(arbeidsforholdConsumer, enhetsregisterConsumer)
     private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
     private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagController)
@@ -708,4 +708,9 @@ class GrunnlagControllerTest(
         .queryParam("inntektsfilter", inntektsfilter)
         .build()
         .toUriString()
+
+    object MockitoHelper {
+        fun <T> any(type: Class<T>): T = Mockito.any(type)
+        fun <T> any(): T = Mockito.any()
+    }
 }

@@ -69,11 +69,14 @@ import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakk
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.person.ForelderBarnRelasjon
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
+import no.nav.bidrag.transport.person.HentePersonidenterRequest
 import no.nav.bidrag.transport.person.Husstand
 import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
+import no.nav.bidrag.transport.person.Identgruppe
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
+import no.nav.bidrag.transport.person.PersonidentDto
 import no.nav.bidrag.transport.person.SivilstandPersonDto
 import no.nav.bidrag.transport.person.SivilstandshistorikkDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
@@ -229,6 +232,23 @@ class TestUtil {
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.KONTANTSTØTTE,
                     personId = "12345678910",
+                    periodeFra = LocalDate.parse("2022-01-01"),
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+            ),
+        )
+
+        fun byggOppdaterGrunnlagspakkeRequestKontantstotteForToPersoner() = OppdaterGrunnlagspakkeRequestDto(
+            grunnlagRequestDtoListe = listOf(
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2022-01-01"),
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
+                    personId = "22345678910",
                     periodeFra = LocalDate.parse("2022-01-01"),
                     periodeTil = LocalDate.parse("2023-07-01"),
                 ),
@@ -851,6 +871,8 @@ class TestUtil {
 
         fun byggSivilstandRequest() = PersonRequest(Personident("personident"))
 
+        fun byggHentPersonidenterRequest() = HentePersonidenterRequest("personident", setOf(Identgruppe.FOLKEREGISTERIDENT), true)
+
         fun byggKontantstotteRequest() = BisysDto(
             LocalDate.now(),
             listOf(
@@ -1150,6 +1172,19 @@ class TestUtil {
                     registrert = null,
                     historisk = true,
                 ),
+            ),
+        )
+
+        fun byggHentPersonidenterResponse() = immutableListOf(
+            PersonidentDto(
+                ident = "personident",
+                historisk = false,
+                gruppe = Identgruppe.FOLKEREGISTERIDENT,
+            ),
+            PersonidentDto(
+                ident = "personident_historisk",
+                historisk = true,
+                gruppe = Identgruppe.FOLKEREGISTERIDENT,
             ),
         )
 
