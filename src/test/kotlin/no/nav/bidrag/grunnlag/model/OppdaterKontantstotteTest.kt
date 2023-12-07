@@ -18,6 +18,7 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.eq
 import org.springframework.http.HttpStatusCode
 import org.springframework.web.client.RestClientException
 import java.lang.reflect.Method
@@ -53,7 +54,7 @@ class OppdaterKontantstotteTest {
         val personId = "12345678901"
         val forventedeIdenterReturnert = listOf("12345678901", "12345678902")
 
-        `when`(bidragPersonConsumer.hentPersonidenter(any())).thenReturn(
+        `when`(bidragPersonConsumer.hentPersonidenter(any(), eq(true))).thenReturn(
             RestResponse.Success(
                 listOf(
                     PersonidentDto("12345678901", false, Identgruppe.FOLKEREGISTERIDENT),
@@ -69,7 +70,7 @@ class OppdaterKontantstotteTest {
         assertEquals(forventedeIdenterReturnert, historiskeIdenter)
 
         // Verifiser at consumeren kalles med forventede argumenter
-        verify(bidragPersonConsumer, times(1)).hentPersonidenter(Personident(personId))
+        verify(bidragPersonConsumer, times(1)).hentPersonidenter(Personident(personId), true)
     }
 
     @Test
@@ -77,7 +78,7 @@ class OppdaterKontantstotteTest {
         val personId = "12345678901"
         val forventedeIdenterReturnert = listOf("12345678901")
 
-        `when`(bidragPersonConsumer.hentPersonidenter(any())).thenReturn(
+        `when`(bidragPersonConsumer.hentPersonidenter(any(), eq(true))).thenReturn(
             RestResponse.Success(emptyList()),
         )
 
@@ -88,7 +89,7 @@ class OppdaterKontantstotteTest {
         assertEquals(forventedeIdenterReturnert, historiskeIdenter)
 
         // Verifiser at consumeren kalles med forventede argumenter
-        verify(bidragPersonConsumer, times(1)).hentPersonidenter(Personident(personId))
+        verify(bidragPersonConsumer, times(1)).hentPersonidenter(Personident(personId), true)
     }
 
     @Test
@@ -96,7 +97,7 @@ class OppdaterKontantstotteTest {
         val personId = "12345678901"
         val forventedeIdenterReturnert = listOf("12345678901")
 
-        `when`(bidragPersonConsumer.hentPersonidenter(any())).thenReturn(
+        `when`(bidragPersonConsumer.hentPersonidenter(any(), eq(true))).thenReturn(
             RestResponse.Failure("Kall til tjenesten feilet", HttpStatusCode.valueOf(500), RestClientException("Kall til tjenesten feilet")),
         )
 
@@ -107,7 +108,7 @@ class OppdaterKontantstotteTest {
         assertEquals(forventedeIdenterReturnert, historiskeIdenter)
 
         // Verifiser at consumeren kalles med forventede argumenter
-        verify(bidragPersonConsumer, times(1)).hentPersonidenter(Personident(personId))
+        verify(bidragPersonConsumer, times(1)).hentPersonidenter(Personident(personId), true)
     }
 
     // Bruker reflection for å kalle private metoder
@@ -118,7 +119,6 @@ class OppdaterKontantstotteTest {
     }
 
     object MockitoHelper {
-        fun <T> any(type: Class<T>): T = Mockito.any(type)
         fun <T> any(): T = Mockito.any()
     }
 }

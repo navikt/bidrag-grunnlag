@@ -318,7 +318,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenReturn(ResponseEntity(response, HttpStatus.OK))
 
-        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"))) {
+        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"), true)) {
             is RestResponse.Success -> {
                 val hentPersonidenterResponse = restResponseHentPersonidenter.body
 
@@ -357,7 +357,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
-        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"))) {
+        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"), true)) {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseHentPersonidenter.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },

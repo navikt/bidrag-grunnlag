@@ -3,10 +3,12 @@ package no.nav.bidrag.grunnlag.service
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.bidrag.commons.security.utils.TokenUtils
-import no.nav.bidrag.commons.util.SjekkForNyIdent
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.vedtak.Formål
+import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
@@ -23,6 +25,7 @@ class GrunnlagspakkeService(
     private val persistenceService: PersistenceService,
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService,
     private val meterRegistry: MeterRegistry,
+    private val bidragPersonConsumer: BidragPersonConsumer,
 ) {
 
     fun opprettGrunnlagspakkeCounter(formål: Formål) = Counter.builder("opprett_grunnlagspakke")
@@ -47,7 +50,7 @@ class GrunnlagspakkeService(
         persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
 
         // Henter aktiv ident for personer i grunnlagspakken
-        val requestMedNyesteIdent = hentAktivIdent(oppdaterGrunnlagspakkeRequestDto)
+        val requestMedNyesteIdent = oppdaterAktivIdent(oppdaterGrunnlagspakkeRequestDto)
 
         val oppdaterGrunnlagspakkeDto = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
             grunnlagspakkeId = grunnlagspakkeId,
@@ -67,18 +70,31 @@ class GrunnlagspakkeService(
         return grunnlagTypeResponsListe.any { it.status == GrunnlagRequestStatus.HENTET }
     }
 
-    // TODO Endre til private etter at den er testet ok
-    fun hentAktivIdent(request: OppdaterGrunnlagspakkeRequestDto): OppdaterGrunnlagspakkeRequestDto {
+    // Henter aktiv ident for personer i requesten og bytter evt. ut innsendt ident med aktiv ident
+    private fun oppdaterAktivIdent(request: OppdaterGrunnlagspakkeRequestDto): OppdaterGrunnlagspakkeRequestDto {
         val dtoListe = request.grunnlagRequestDtoListe.map {
-            val nyIdent = hentNyesteIdent(it.personId)
-            SECURE_LOGGER.info("Henter nyeste ident for personId: ${it.personId} og får tilbake: $nyIdent")
-            it.copy(personId = nyIdent)
+            val aktivIdent = hentAktivIdentFraConsumer(it.personId)
+            SECURE_LOGGER.info("Hentet nyeste ident for personId: ${it.personId} og fikk tilbake: $aktivIdent")
+            it.copy(personId = aktivIdent)
         }
         return OppdaterGrunnlagspakkeRequestDto(gyldigTil = request.gyldigTil, grunnlagRequestDtoListe = dtoListe)
     }
 
-    private fun hentNyesteIdent(@SjekkForNyIdent ident: String): String {
-        return ident
+    private fun hentAktivIdentFraConsumer(personId: String): String {
+        return when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = false)) {
+            is RestResponse.Success -> {
+                val personidenterResponse = response.body
+                SECURE_LOGGER.info(
+                    "Kall til bidrag-person for å hente aktiv personident for ident $personId ga følgende respons: $personidenterResponse",
+                )
+
+                personidenterResponse.firstOrNull()?.ident ?: personId
+            }
+            is RestResponse.Failure -> {
+                SECURE_LOGGER.warn("Feil ved kall til bidrag-person for å hente aktiv personident for ident $personId. Respons = $response")
+                personId
+            }
+        }
     }
 
     fun hentGrunnlagspakke(grunnlagspakkeId: Int): HentGrunnlagspakkeDto {

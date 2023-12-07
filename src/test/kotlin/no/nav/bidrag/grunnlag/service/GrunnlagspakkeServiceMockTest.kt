@@ -40,6 +40,7 @@ import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
+import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
@@ -65,6 +66,9 @@ class GrunnlagspakkeServiceMockTest {
 
     @Mock
     private lateinit var persistenceServiceMock: PersistenceService
+
+    @Mock
+    private lateinit var bidragPersonConsumerMock: BidragPersonConsumer
 
     @Spy
     private var meterRegistry: MeterRegistry = SimpleMeterRegistry()

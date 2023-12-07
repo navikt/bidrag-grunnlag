@@ -100,7 +100,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    open fun hentPersonidenter(personident: Personident): RestResponse<List<PersonidentDto>> {
+    open fun hentPersonidenter(personident: Personident, inkludereHistoriske: Boolean): RestResponse<List<PersonidentDto>> {
         logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons historiske identer")
 
         val responseType = object : ParameterizedTypeReference<List<PersonidentDto>>() {}
@@ -108,7 +108,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_PERSONIDENTER,
             HttpMethod.POST,
-            initHttpEntity(HentePersonidenterRequest(personident.verdi, setOf(Identgruppe.FOLKEREGISTERIDENT), true)),
+            initHttpEntity(HentePersonidenterRequest(personident.verdi, setOf(Identgruppe.FOLKEREGISTERIDENT), inkludereHistoriske)),
             responseType,
             emptyList(),
         )

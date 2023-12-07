@@ -238,11 +238,17 @@ class TestUtil {
             ),
         )
 
-        fun byggOppdaterGrunnlagspakkeRequestKontantstotteIdentFraDolly() = OppdaterGrunnlagspakkeRequestDto(
+        fun byggOppdaterGrunnlagspakkeRequestKontantstotteForToPersoner() = OppdaterGrunnlagspakkeRequestDto(
             grunnlagRequestDtoListe = listOf(
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.KONTANTSTØTTE,
-                    personId = "14508708972",
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2022-01-01"),
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
+                    personId = "22345678910",
                     periodeFra = LocalDate.parse("2022-01-01"),
                     periodeTil = LocalDate.parse("2023-07-01"),
                 ),

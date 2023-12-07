@@ -108,7 +108,7 @@ class GrunnlagControllerTest(
         familieEfSakConsumer,
     )
     private val grunnlagspakkeService: GrunnlagspakkeService =
-        GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService, meterRegistry)
+        GrunnlagspakkeService(persistenceService, oppdaterGrunnlagspakkeService, meterRegistry, bidragPersonConsumer)
     private val hentGrunnlagService: HentGrunnlagService = HentGrunnlagService(arbeidsforholdConsumer, enhetsregisterConsumer)
     private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
     private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagController)

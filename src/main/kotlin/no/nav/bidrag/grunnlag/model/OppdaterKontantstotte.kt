@@ -36,10 +36,9 @@ class OppdaterKontantstotte(
         kontantstotteRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
 
+            // Input til tjeneste er en liste over alle (historiske) personnr for en person
             val personIdListe = hentHistoriskeIdenterForPerson(personIdOgPeriode.personId)
 
-            // Input til tjeneste er en liste over alle personnr for en person,
-            // kall PDL for å hente historikk på fnr?
             val innsynRequest = BisysDto(
                 fom = personIdOgPeriode.periodeFra,
                 identer = personIdListe,
@@ -137,11 +136,12 @@ class OppdaterKontantstotte(
         return this
     }
 
+    // Kaller bidrag-person (som igjen kaller PDL) for å hente alle historiske identer for en person
     private fun hentHistoriskeIdenterForPerson(personId: String): List<String> {
         var historiskeIdenter = listOf<String>()
 
         when (
-            val restResponsePersonidenter = bidragPersonConsumer.hentPersonidenter(Personident(personId))
+            val restResponsePersonidenter = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)
         ) {
             is RestResponse.Success -> {
                 val personidenterResponse = restResponsePersonidenter.body

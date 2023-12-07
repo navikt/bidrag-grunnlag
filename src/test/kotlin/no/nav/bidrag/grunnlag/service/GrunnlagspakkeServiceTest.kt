@@ -15,6 +15,7 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
+import no.nav.bidrag.grunnlag.stubHentSaksbehandler
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.assertj.core.api.Assertions.assertThat
@@ -54,6 +55,7 @@ class GrunnlagspakkeServiceTest {
     fun `init`() {
         // Sletter alle forekomster
         grunnlagspakkeRepository.deleteAll()
+        stubHentSaksbehandler()
     }
 
     @Test
