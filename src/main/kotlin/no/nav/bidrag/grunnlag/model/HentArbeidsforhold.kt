@@ -56,7 +56,8 @@ class HentArbeidsforhold(
                         val orgnr = arbeidsgiverinfo?.orgnr
 
                         arbeidsforhold.ansettelsesdetaljer?.forEach {
-                            ansettelsesdetaljerListe.add(Ansettelsesdetaljer(
+                            ansettelsesdetaljerListe.add(
+                                Ansettelsesdetaljer(
                                     periodeFra = it.rapporteringsmaaneder?.fra,
                                     periodeTil = it.rapporteringsmaaneder?.til,
                                     arbeidsforholdType = it.type,
