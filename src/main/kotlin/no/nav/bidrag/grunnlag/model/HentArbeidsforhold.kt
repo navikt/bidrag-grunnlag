@@ -8,6 +8,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequ
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.transport.behandling.grunnlag.response.Ansettelsesdetaljer
 import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagDto
 import org.slf4j.Logger
@@ -47,7 +48,7 @@ class HentArbeidsforhold(
 
                     arbeidsforholdResponse.forEach { arbeidsforhold ->
 
-                        val ansettelsesdetaljerListe = mutableListOf<no.nav.bidrag.transport.behandling.grunnlag.response.Ansettelsesdetaljer>()
+                        val ansettelsesdetaljerListe = mutableListOf<Ansettelsesdetaljer>()
                         val permisjonListe = mutableListOf<no.nav.bidrag.transport.behandling.grunnlag.response.Permisjon>()
                         val permitteringListe = mutableListOf<no.nav.bidrag.transport.behandling.grunnlag.response.Permittering>()
                         val arbeidsgiverinfo = finnArbeidsgiverinfo(arbeidsforhold.arbeidssted)
@@ -56,7 +57,7 @@ class HentArbeidsforhold(
 
                         arbeidsforhold.ansettelsesdetaljer?.forEach {
                             ansettelsesdetaljerListe.add(
-                                no.nav.bidrag.transport.behandling.grunnlag.response.Ansettelsesdetaljer(
+                                Ansettelsesdetaljer(
                                     periodeFra = it.rapporteringsmaaneder?.fra,
                                     periodeTil = it.rapporteringsmaaneder?.til,
                                     arbeidsforholdType = it.type,

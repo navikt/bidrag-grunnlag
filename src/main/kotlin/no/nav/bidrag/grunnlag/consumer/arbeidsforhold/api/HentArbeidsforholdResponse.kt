@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 
 data class Arbeidsforhold(
-    val ansettelsesdetaljer: List<Ansettelsesdetaljer>? = emptyList(),
+    val ansettelsesdetaljer: List<AnsettelsesdetaljerAareg>? = emptyList(),
     val ansettelsesperiode: Ansettelsesperiode? = null,
     val arbeidssted: Arbeidssted? = null,
     val arbeidstaker: Arbeidstaker? = null,
@@ -23,7 +23,7 @@ data class Arbeidsforhold(
     val permitteringer: List<Permittering>?,
 )
 
-data class Ansettelsesdetaljer(
+data class AnsettelsesdetaljerAareg(
     val antallTimerPrUke: Double?,
     val arbeidstidsordning: Kodeverksentitet?,
     val ansettelsesform: Kodeverksentitet?,
