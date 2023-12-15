@@ -20,12 +20,12 @@ interface BarnetilleggRepository : JpaRepository<Barnetillegg, Int?> {
     @Query(
         "update Barnetillegg bt " +
             "set bt.aktiv = false, bt.brukTil = :timestampOppdatering " +
-            "where bt.grunnlagspakkeId = :grunnlagspakkeId and bt.partPersonId = :partPersonId and bt.barnetilleggType = :barnetilleggType " +
+            "where bt.grunnlagspakkeId = :grunnlagspakkeId and bt.partPersonId in :personIdListe and bt.barnetilleggType = :barnetilleggType " +
             "and bt.aktiv = true",
     )
     fun oppdaterEksisterendeBarnetilleggTilInaktiv(
         grunnlagspakkeId: Int,
-        partPersonId: String,
+        personIdListe: List<String>,
         timestampOppdatering: LocalDateTime,
         barnetilleggType: String,
     )

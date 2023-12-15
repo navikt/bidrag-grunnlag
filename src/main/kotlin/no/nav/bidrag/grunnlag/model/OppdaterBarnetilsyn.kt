@@ -30,7 +30,10 @@ class OppdaterBarnetilsyn(
         private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterBarnetilsyn::class.java)
     }
 
-    fun oppdaterBarnetilsyn(barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterBarnetilsyn {
+    fun oppdaterBarnetilsyn(
+        barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>,
+        historiskeIdenterMap: Map<String, List<String>>,
+    ): OppdaterBarnetilsyn {
         barnetilsynRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
 
@@ -51,9 +54,9 @@ class OppdaterBarnetilsyn(
                     SECURE_LOGGER.info("Barnetilsyn ga følgende respons: $barnetilsynResponse")
 
                     persistenceService.oppdaterEksisterendeBarnetilsynTilInaktiv(
-                        grunnlagspakkeId,
-                        personIdOgPeriode.personId,
-                        timestampOppdatering,
+                        grunnlagspakkeId = grunnlagspakkeId,
+                        personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                        timestampOppdatering = timestampOppdatering,
                     )
 
                     barnetilsynResponse.barnetilsynBisysPerioder.forEach { bts ->

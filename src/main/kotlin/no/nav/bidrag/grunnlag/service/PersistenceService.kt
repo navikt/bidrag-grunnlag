@@ -156,63 +156,63 @@ class PersistenceService(
         return overgangsstønadRepository.save(nyOvergangsstønad)
     }
 
-    fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
             grunnlagspakkeId,
-            partPersonId,
+            personIdListe,
             timestampOppdatering,
             Barnetilleggstype.PENSJON.toString(),
         )
     }
 
-    fun oppdaterEksisterendeRelatertPersonTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    fun oppdaterEksisterendeRelatertPersonTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         relatertPersonRepository.oppdaterEksisterendeRelatertPersonTilInaktiv(
             grunnlagspakkeId,
-            partPersonId,
+            personIdListe,
             timestampOppdatering,
         )
     }
 
-    fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
             grunnlagspakkeId,
-            partPersonId,
+            personIdListe,
             timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
         grunnlagspakkeId: Int,
-        personId: String,
+        personIdListe: List<String>,
         timestampOppdatering: LocalDateTime,
     ) {
         utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
             grunnlagspakkeId,
-            personId,
+            personIdListe,
             timestampOppdatering,
         )
     }
 
-    fun oppdaterEksisterendeBarnetilsynTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    fun oppdaterEksisterendeBarnetilsynTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
             grunnlagspakkeId,
-            partPersonId,
+            personIdListe,
             timestampOppdatering,
         )
     }
 
-    fun oppdaterEksisterendeKontantstotteTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    fun oppdaterEksisterendeKontantstotteTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
             grunnlagspakkeId,
-            partPersonId,
+            personIdListe,
             timestampOppdatering,
         )
     }
 
-    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime) {
+    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         overgangsstønadRepository.oppdaterEksisterendeOvergangsstonadTilInaktiv(
             grunnlagspakkeId,
-            partPersonId,
+            personIdListe,
             timestampOppdatering,
         )
     }

@@ -120,6 +120,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestAInntekt(),
             LocalDateTime.now(),
+            emptyMap(),
         )
 
         Mockito.verify(persistenceServiceMock, Mockito.times(1))
@@ -178,6 +179,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSkattegrunnlag(),
             LocalDateTime.now(),
+            emptyMap(),
         )
 
         Mockito.verify(persistenceServiceMock, Mockito.times(1))
@@ -227,6 +229,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
@@ -299,6 +302,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val barnetilleggListe = barnetilleggBoCaptor.allValues
@@ -397,6 +401,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val relatertPersonListe = relatertPersonBoCaptor.allValues
@@ -477,9 +482,9 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
-//    val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
         val husstandsmedlemListe = relatertPersonBoCaptor.allValues
 
         assertAll(
@@ -558,9 +563,9 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
-//    val opprettGrunnlagspakkeRequestDto = opprettGrunnlagspakkeRequestDtoCaptor.value
         val sivilstandListe = sivilstandBoCaptor.allValues
 
         assertAll(
@@ -621,6 +626,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -688,6 +694,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -724,6 +731,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -760,6 +768,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -792,6 +801,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -824,6 +834,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
@@ -854,6 +865,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestKontantstotte(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val kontantstotteListe = kontantstotteBoCaptor.allValues
@@ -923,6 +935,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetilsyn(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val barnetilsynListe = barnetilsynBoCaptor.allValues
@@ -987,6 +1000,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             grunnlagspakkeIdOpprettet,
             TestUtil.byggOppdaterGrunnlagspakkeRequestOvergangsstønad(),
             LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
         )
 
         val overgangsstønadListe = overgangsstønadBoCaptor.allValues

@@ -20,7 +20,7 @@ interface KontantstotteRepository : JpaRepository<Kontantstotte, Int?> {
     @Query(
         "update Kontantstotte ks " +
             "set ks.aktiv = false, ks.brukTil = :timestampOppdatering " +
-            "where ks.grunnlagspakkeId = :grunnlagspakkeId and ks.partPersonId = :partPersonId and ks.aktiv = true",
+            "where ks.grunnlagspakkeId = :grunnlagspakkeId and ks.partPersonId in :personIdListe and ks.aktiv = true",
     )
-    fun oppdaterEksisterendeKontantstotteTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime)
+    fun oppdaterEksisterendeKontantstotteTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime)
 }

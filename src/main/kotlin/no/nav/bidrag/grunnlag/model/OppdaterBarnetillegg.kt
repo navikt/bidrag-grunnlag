@@ -29,7 +29,10 @@ class OppdaterBarnetillegg(
         private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterBarnetillegg::class.java)
     }
 
-    fun oppdaterBarnetillegg(barnetilleggRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterBarnetillegg {
+    fun oppdaterBarnetillegg(
+        barnetilleggRequestListe: List<PersonIdOgPeriodeRequest>,
+        historiskeIdenterMap: Map<String, List<String>>,
+    ): OppdaterBarnetillegg {
         barnetilleggRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
             val hentBarnetilleggPensjonRequest = HentBarnetilleggPensjonRequest(
@@ -51,9 +54,9 @@ class OppdaterBarnetillegg(
                     SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
 
                     persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
-                        grunnlagspakkeId,
-                        personIdOgPeriode.personId,
-                        timestampOppdatering,
+                        grunnlagspakkeId = grunnlagspakkeId,
+                        personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                        timestampOppdatering = timestampOppdatering,
                     )
                     barnetilleggPensjonResponse.forEach { bt ->
                         antallPerioderFunnet++

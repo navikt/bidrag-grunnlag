@@ -27,7 +27,10 @@ class OppdaterOvergangsstønad(
         private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterOvergangsstønad::class.java)
     }
 
-    fun oppdaterOvergangsstønad(overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterOvergangsstønad {
+    fun oppdaterOvergangsstønad(
+        overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>,
+        historiskeIdenterMap: Map<String, List<String>>,
+    ): OppdaterOvergangsstønad {
         overgangsstønadRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
 
@@ -51,9 +54,9 @@ class OppdaterOvergangsstønad(
                     SECURE_LOGGER.info("EF-sak overgangsstønad ga følgende respons: $overgangsstønadResponse")
 
                     persistenceService.oppdaterEksisterendeOvergangsstønadTilInaktiv(
-                        grunnlagspakkeId,
-                        personIdOgPeriode.personId,
-                        timestampOppdatering,
+                        grunnlagspakkeId = grunnlagspakkeId,
+                        personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                        timestampOppdatering = timestampOppdatering,
                     )
 
                     // Overgangsstønad fra ef-sak

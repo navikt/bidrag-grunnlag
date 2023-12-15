@@ -20,7 +20,11 @@ interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetB
     @Query(
         "update UtvidetBarnetrygdOgSmaabarnstillegg ubst " +
             "set ubst.aktiv = false, ubst.brukTil = :timestampOppdatering " +
-            "where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.personId = :personId and ubst.aktiv = true",
+            "where ubst.grunnlagspakkeId = :grunnlagspakkeId and ubst.personId in :personIdListe and ubst.aktiv = true",
     )
-    fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
+    fun oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
+        grunnlagspakkeId: Int,
+        personIdListe: List<String>,
+        timestampOppdatering: LocalDateTime,
+    )
 }

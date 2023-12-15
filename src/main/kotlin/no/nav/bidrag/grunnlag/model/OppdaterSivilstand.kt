@@ -30,7 +30,10 @@ class OppdaterSivilstand(
         private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterSivilstand::class.java)
     }
 
-    fun oppdaterSivilstand(sivilstandRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterSivilstand {
+    fun oppdaterSivilstand(
+        sivilstandRequestListe: List<PersonIdOgPeriodeRequest>,
+        historiskeIdenterMap: Map<String, List<String>>,
+    ): OppdaterSivilstand {
         sivilstandRequestListe.forEach { personIdOgPeriode ->
 
             var antallPerioderFunnet = 0
@@ -49,7 +52,7 @@ class OppdaterSivilstand(
                     if (sivilstandResponse.sivilstandDto.isNotEmpty()) {
                         persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
                             grunnlagspakkeId,
-                            personIdOgPeriode.personId,
+                            historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
                             timestampOppdatering,
                         )
                         // Sorterer motta sivilstandforekomster etter. Forekomstene som er historiske skal komme først. Deretter sorteres det på
