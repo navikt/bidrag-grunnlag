@@ -77,7 +77,6 @@ class GrunnlagspakkeService(
     // Henter historiske identer for personer i grunnlagspakke-requesten. Returnerer en map hvor key = aktiv ident og
     // value = liste med historiske identer (inklusiv den aktive identen)
     private fun hentHistoriskeOgAktiveIdenter(request: OppdaterGrunnlagspakkeRequestDto): Map<String, List<String>> {
-
         val historiskeIdenterMap = mutableMapOf<String, List<String>>()
 
         request.grunnlagRequestDtoListe.forEach { grunnlagDto ->

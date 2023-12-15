@@ -32,7 +32,7 @@ class OppdaterBarnetilsyn(
 
     fun oppdaterBarnetilsyn(
         barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>,
-        historiskeIdenterMap: Map<String, List<String>>
+        historiskeIdenterMap: Map<String, List<String>>,
     ): OppdaterBarnetilsyn {
         barnetilsynRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0

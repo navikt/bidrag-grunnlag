@@ -695,7 +695,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -732,7 +732,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -769,7 +769,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -802,7 +802,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -835,7 +835,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -866,7 +866,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestKontantstotte(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val kontantstotteListe = kontantstotteBoCaptor.allValues
 
@@ -936,7 +936,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetilsyn(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val barnetilsynListe = barnetilsynBoCaptor.allValues
 
@@ -1001,7 +1001,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             TestUtil.byggOppdaterGrunnlagspakkeRequestOvergangsstønad(),
             LocalDateTime.now(),
             mapOf("12345678910" to listOf("12345678910")),
-            )
+        )
 
         val overgangsstønadListe = overgangsstønadBoCaptor.allValues
 

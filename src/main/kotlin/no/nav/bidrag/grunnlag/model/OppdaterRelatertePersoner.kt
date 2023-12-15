@@ -24,7 +24,7 @@ class OppdaterRelatertePersoner(
     private val persistenceService: PersistenceService,
     private val bidragPersonConsumer: BidragPersonConsumer,
 
-    ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
+) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
         @JvmStatic

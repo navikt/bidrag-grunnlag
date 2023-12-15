@@ -313,7 +313,7 @@ class HentOgByttUtIdenterTest {
         val metodeSomSkalKalles = grunnlagspakkeService.javaClass.getDeclaredMethod(
             "byttUtIdentMedAktivIdent",
             OppdaterGrunnlagspakkeRequestDto::class.java,
-            Map::class.java
+            Map::class.java,
         )
         metodeSomSkalKalles.isAccessible = true
         val parameters = arrayOf(request, historiskeIdenterMap)
@@ -343,7 +343,7 @@ class HentOgByttUtIdenterTest {
         val metodeSomSkalKalles = grunnlagspakkeService.javaClass.getDeclaredMethod(
             "byttUtIdentMedAktivIdent",
             OppdaterGrunnlagspakkeRequestDto::class.java,
-            Map::class.java
+            Map::class.java,
         )
         metodeSomSkalKalles.isAccessible = true
         val parameters = arrayOf(request, historiskeIdenterMap)
@@ -372,14 +372,14 @@ class HentOgByttUtIdenterTest {
         val forventetAktivIdent2 = request.grunnlagRequestDtoListe[1].personId
         val historiskeIdenterMap = mapOf(
             forventetAktivIdent1 to listOf(innsendtIdent1, forventetAktivIdent1).sorted(),
-            forventetAktivIdent2 to listOf(forventetAktivIdent2).sorted()
+            forventetAktivIdent2 to listOf(forventetAktivIdent2).sorted(),
         )
 
         // Bruker reflection for å kalle privat metode
         val metodeSomSkalKalles = grunnlagspakkeService.javaClass.getDeclaredMethod(
             "byttUtIdentMedAktivIdent",
             OppdaterGrunnlagspakkeRequestDto::class.java,
-            Map::class.java
+            Map::class.java,
         )
         metodeSomSkalKalles.isAccessible = true
         val parameters = arrayOf(request, historiskeIdenterMap)
@@ -416,7 +416,7 @@ class HentOgByttUtIdenterTest {
         val metodeSomSkalKalles = grunnlagspakkeService.javaClass.getDeclaredMethod(
             "byttUtIdentMedAktivIdent",
             OppdaterGrunnlagspakkeRequestDto::class.java,
-            Map::class.java
+            Map::class.java,
         )
         metodeSomSkalKalles.isAccessible = true
         val parameters = arrayOf(request, historiskeIdenterMap)

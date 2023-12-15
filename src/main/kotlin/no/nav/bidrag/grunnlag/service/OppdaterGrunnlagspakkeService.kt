@@ -47,61 +47,61 @@ class OppdaterGrunnlagspakkeService(
             .oppdaterAinntekt(
                 ainntektRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.AINNTEKT,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
             )
             .oppdaterSkattegrunnlag(
                 skattegrunnlagRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.SKATTEGRUNNLAG,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
             )
             .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                 utvidetBarnetrygdOgSmaabarnstilleggRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
                 historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterBarnetillegg(
                 barnetilleggRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.BARNETILLEGG,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
-                historiskeIdenterMap = historiskeIdenterMap
+                historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterKontantstotte(
                 kontantstotteRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.KONTANTSTØTTE,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
                 historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterHusstandsmedlemmerOgEgneBarn(
                 relatertePersonerRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
                 historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterSivilstand(
                 sivilstandRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.SIVILSTAND,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
                 historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterBarnetilsyn(
                 barnetilsynRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.BARNETILSYN,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
                 historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterOvergangsstønad(
                 overgangsstønadRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.OVERGANGSSTONAD,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
                 historiskeIdenterMap = historiskeIdenterMap,
             )
@@ -172,7 +172,7 @@ class OppdaterGrunnlagspakkeService(
                 )
                     .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                         utvidetBarnetrygdOgSmaabarnstilleggRequestListe = utvidetBarnetrygdOgSmaabarnstilleggRequestListe,
-                        historiskeIdenterMap = historiskeIdenterMap
+                        historiskeIdenterMap = historiskeIdenterMap,
                     ),
             )
             return this
@@ -223,7 +223,7 @@ class OppdaterGrunnlagspakkeService(
                 )
                     .oppdaterRelatertePersoner(
                         relatertePersonerRequestListe = relatertePersonerRequestListe,
-                        historiskeIdenterMap = historiskeIdenterMap
+                        historiskeIdenterMap = historiskeIdenterMap,
                     ),
             )
             return this
@@ -244,7 +244,6 @@ class OppdaterGrunnlagspakkeService(
             )
             return this
         }
-
 
         fun oppdaterBarnetilsyn(
             barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>,
