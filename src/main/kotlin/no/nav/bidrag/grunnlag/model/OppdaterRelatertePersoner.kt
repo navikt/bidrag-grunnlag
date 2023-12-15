@@ -24,7 +24,7 @@ class OppdaterRelatertePersoner(
     private val persistenceService: PersistenceService,
     private val bidragPersonConsumer: BidragPersonConsumer,
 
-) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
+    ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
         @JvmStatic
@@ -34,14 +34,17 @@ class OppdaterRelatertePersoner(
     // Henter og lagrer først husstandsmedlemmer for så å hente forelder-barn-relasjoner.
     // Også barn som ikke bor i samme husstand som BM/BP skal være med i grunnlaget og lagres med null i husstandsmedlemPeriodeFra
     // og husstandsmedlemPeriodeTil.
-    fun oppdaterRelatertePersoner(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterRelatertePersoner {
+    fun oppdaterRelatertePersoner(
+        relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>,
+        historiskeIdenterMap: Map<String, List<String>>,
+    ): OppdaterRelatertePersoner {
         relatertePersonerRequestListe.forEach { personIdOgPeriode ->
 
             // Sett eksisterende forekomster av RelatertPerson til inaktiv
             persistenceService.oppdaterEksisterendeRelatertPersonTilInaktiv(
-                grunnlagspakkeId,
-                personIdOgPeriode.personId,
-                timestampOppdatering,
+                grunnlagspakkeId = grunnlagspakkeId,
+                personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                timestampOppdatering = timestampOppdatering,
             )
 
             // henter alle husstandsmedlemmer til BM/BP

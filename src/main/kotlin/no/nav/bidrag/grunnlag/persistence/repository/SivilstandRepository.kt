@@ -17,7 +17,7 @@ interface SivilstandRepository : JpaRepository<Sivilstand, Int?> {
     @Query(
         "update Sivilstand sst " +
             "set sst.aktiv = false, sst.brukTil = :timestampOppdatering " +
-            "where sst.grunnlagspakkeId = :grunnlagspakkeId and sst.personId = :personId and sst.aktiv = true",
+            "where sst.grunnlagspakkeId = :grunnlagspakkeId and sst.personId in :personIdListe and sst.aktiv = true",
     )
-    fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
+    fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime)
 }

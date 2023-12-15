@@ -38,43 +38,75 @@ class OppdaterGrunnlagspakkeService(
         grunnlagspakkeId: Int,
         oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
         timestampOppdatering: LocalDateTime,
+        historiskeIdenterMap: Map<String, List<String>>,
     ): OppdaterGrunnlagspakkeDto {
         val oppdaterGrunnlagDtoListe = OppdaterGrunnlagspakke(
-            grunnlagspakkeId,
-            timestampOppdatering,
+            grunnlagspakkeId = grunnlagspakkeId,
+            timestampOppdatering = timestampOppdatering,
         )
             .oppdaterAinntekt(
-                hentRequestListeFor(GrunnlagRequestType.AINNTEKT, oppdaterGrunnlagspakkeRequestDto),
-            )
-            .oppdaterSkattegrunnlag(
-                hentRequestListeFor(GrunnlagRequestType.SKATTEGRUNNLAG, oppdaterGrunnlagspakkeRequestDto),
-            )
-            .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-                hentRequestListeFor(
-                    GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
-                    oppdaterGrunnlagspakkeRequestDto,
+                ainntektRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.AINNTEKT,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
                 ),
             )
+            .oppdaterSkattegrunnlag(
+                skattegrunnlagRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.SKATTEGRUNNLAG,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+            )
+            .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
+                utvidetBarnetrygdOgSmaabarnstilleggRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+                historiskeIdenterMap = historiskeIdenterMap,
+            )
             .oppdaterBarnetillegg(
-                hentRequestListeFor(GrunnlagRequestType.BARNETILLEGG, oppdaterGrunnlagspakkeRequestDto),
+                barnetilleggRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.BARNETILLEGG,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+                historiskeIdenterMap = historiskeIdenterMap
             )
             .oppdaterKontantstotte(
-                hentRequestListeFor(GrunnlagRequestType.KONTANTSTØTTE, oppdaterGrunnlagspakkeRequestDto),
+                kontantstotteRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+                historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterHusstandsmedlemmerOgEgneBarn(
-                hentRequestListeFor(GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN, oppdaterGrunnlagspakkeRequestDto),
+                relatertePersonerRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+                historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterSivilstand(
-                hentRequestListeFor(GrunnlagRequestType.SIVILSTAND, oppdaterGrunnlagspakkeRequestDto),
+                sivilstandRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.SIVILSTAND,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+                historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterBarnetilsyn(
-                hentRequestListeFor(GrunnlagRequestType.BARNETILSYN, oppdaterGrunnlagspakkeRequestDto),
+                barnetilsynRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.BARNETILSYN,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+                historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterOvergangsstønad(
-                hentRequestListeFor(GrunnlagRequestType.OVERGANGSSTONAD, oppdaterGrunnlagspakkeRequestDto),
+                overgangsstønadRequestListe = hentRequestListeFor(
+                    type = GrunnlagRequestType.OVERGANGSSTONAD,
+                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto
+                ),
+                historiskeIdenterMap = historiskeIdenterMap,
             )
 
-        return OppdaterGrunnlagspakkeDto(grunnlagspakkeId, oppdaterGrunnlagDtoListe)
+        return OppdaterGrunnlagspakkeDto(grunnlagspakkeId = grunnlagspakkeId, grunnlagTypeResponsListe = oppdaterGrunnlagDtoListe)
     }
 
     private fun hentRequestListeFor(
@@ -104,10 +136,10 @@ class OppdaterGrunnlagspakkeService(
         fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterAinntekt(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    inntektskomponentenService,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    inntektskomponentenService = inntektskomponentenService,
                 )
                     .oppdaterAinntekt(ainntektRequestListe),
             )
@@ -117,10 +149,10 @@ class OppdaterGrunnlagspakkeService(
         fun oppdaterSkattegrunnlag(skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterSkattegrunnlag(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    sigrunConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    sigrunConsumer = sigrunConsumer,
                 )
                     .oppdaterSkattegrunnlag(skattegrunnlagRequestListe),
             )
@@ -129,96 +161,119 @@ class OppdaterGrunnlagspakkeService(
 
         fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
             utvidetBarnetrygdOgSmaabarnstilleggRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
         ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    familieBaSakConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    familieBaSakConsumer = familieBaSakConsumer,
                 )
                     .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-                        utvidetBarnetrygdOgSmaabarnstilleggRequestListe,
+                        utvidetBarnetrygdOgSmaabarnstilleggRequestListe = utvidetBarnetrygdOgSmaabarnstilleggRequestListe,
+                        historiskeIdenterMap = historiskeIdenterMap
                     ),
             )
             return this
         }
 
-        fun oppdaterBarnetillegg(barnetilleggRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterBarnetillegg(
+            barnetilleggRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterBarnetillegg(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    pensjonConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    pensjonConsumer = pensjonConsumer,
                 )
-                    .oppdaterBarnetillegg(barnetilleggRequestListe),
+                    .oppdaterBarnetillegg(barnetilleggRequestListe = barnetilleggRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }
 
-        fun oppdaterKontantstotte(kontantstotteRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterKontantstotte(
+            kontantstotteRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterKontantstotte(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    familieKsSakConsumer,
-                    bidragPersonConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    familieKsSakConsumer = familieKsSakConsumer,
                 )
-                    .oppdaterKontantstotte(kontantstotteRequestListe),
+                    .oppdaterKontantstotte(kontantstotteRequestListe = kontantstotteRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }
 
-        fun oppdaterHusstandsmedlemmerOgEgneBarn(relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterHusstandsmedlemmerOgEgneBarn(
+            relatertePersonerRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterRelatertePersoner(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    bidragPersonConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    bidragPersonConsumer = bidragPersonConsumer,
                 )
-                    .oppdaterRelatertePersoner(relatertePersonerRequestListe),
+                    .oppdaterRelatertePersoner(
+                        relatertePersonerRequestListe = relatertePersonerRequestListe,
+                        historiskeIdenterMap = historiskeIdenterMap
+                    ),
             )
             return this
         }
 
-        fun oppdaterSivilstand(sivilstandRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterSivilstand(
+            sivilstandRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterSivilstand(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    bidragPersonConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    bidragPersonConsumer = bidragPersonConsumer,
                 )
-                    .oppdaterSivilstand(sivilstandRequestListe),
+                    .oppdaterSivilstand(sivilstandRequestListe = sivilstandRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }
 
-        fun oppdaterBarnetilsyn(barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+
+        fun oppdaterBarnetilsyn(
+            barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterBarnetilsyn(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    familieEfSakConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    familieEfSakConsumer = familieEfSakConsumer,
                 )
-                    .oppdaterBarnetilsyn(barnetilsynRequestListe),
+                    .oppdaterBarnetilsyn(barnetilsynRequestListe = barnetilsynRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }
 
-        fun oppdaterOvergangsstønad(overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterOvergangsstønad(
+            overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterOvergangsstønad(
-                    grunnlagspakkeId,
-                    timestampOppdatering,
-                    persistenceService,
-                    familieEfSakConsumer,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    timestampOppdatering = timestampOppdatering,
+                    persistenceService = persistenceService,
+                    familieEfSakConsumer = familieEfSakConsumer,
                 )
-                    .oppdaterOvergangsstønad(overgangsstønadRequestListe),
+                    .oppdaterOvergangsstønad(overgangsstønadRequestListe = overgangsstønadRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }

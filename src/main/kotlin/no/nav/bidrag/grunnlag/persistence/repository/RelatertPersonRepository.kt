@@ -20,7 +20,7 @@ interface RelatertPersonRepository : JpaRepository<RelatertPerson, Int?> {
     @Query(
         "update RelatertPerson hm " +
             "set hm.aktiv = false, hm.brukTil = :timestampOppdatering " +
-            "where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.partPersonId = :personId and hm.aktiv = true",
+            "where hm.grunnlagspakkeId = :grunnlagspakkeId and hm.partPersonId in :personIdListe and hm.aktiv = true",
     )
-    fun oppdaterEksisterendeRelatertPersonTilInaktiv(grunnlagspakkeId: Int, personId: String, timestampOppdatering: LocalDateTime)
+    fun oppdaterEksisterendeRelatertPersonTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime)
 }

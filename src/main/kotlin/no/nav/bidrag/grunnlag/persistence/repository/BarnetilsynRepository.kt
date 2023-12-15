@@ -20,7 +20,7 @@ interface BarnetilsynRepository : JpaRepository<Barnetilsyn, Int?> {
     @Query(
         "update Barnetilsyn bts " +
             "set bts.aktiv = false, bts.brukTil = :timestampOppdatering " +
-            "where bts.grunnlagspakkeId = :grunnlagspakkeId and bts.partPersonId = :partPersonId and bts.aktiv = true",
+            "where bts.grunnlagspakkeId = :grunnlagspakkeId and bts.partPersonId in :personIdListe and bts.aktiv = true",
     )
-    fun oppdaterEksisterendeBarnetilsynTilInaktiv(grunnlagspakkeId: Int, partPersonId: String, timestampOppdatering: LocalDateTime)
+    fun oppdaterEksisterendeBarnetilsynTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime)
 }

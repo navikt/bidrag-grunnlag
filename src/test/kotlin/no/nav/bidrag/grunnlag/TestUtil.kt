@@ -255,6 +255,29 @@ class TestUtil {
             ),
         )
 
+        fun byggOppdaterGrunnlagspakkeRequestForTreIdenter() = OppdaterGrunnlagspakkeRequestDto(
+            grunnlagRequestDtoListe = listOf(
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2022-01-01"),
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.KONTANTSTØTTE,
+                    personId = "22345678910",
+                    periodeFra = LocalDate.parse("2022-01-01"),
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+                GrunnlagRequestDto(
+                    type = GrunnlagRequestType.BARNETILSYN,
+                    personId = "12345678910",
+                    periodeFra = LocalDate.parse("2022-01-01"),
+                    periodeTil = LocalDate.parse("2023-07-01"),
+                ),
+            ),
+        )
+
         fun byggOppdaterGrunnlagspakkeRequestBarnetilsyn() = OppdaterGrunnlagspakkeRequestDto(
             grunnlagRequestDtoListe = listOf(
                 GrunnlagRequestDto(

@@ -32,6 +32,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
 
     fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         utvidetBarnetrygdOgSmaabarnstilleggRequestListe: List<PersonIdOgPeriodeRequest>,
+        historiskeIdenterMap: Map<String, List<String>>,
     ): OppdaterUtvidetBarnetrygdOgSmaabarnstillegg {
         utvidetBarnetrygdOgSmaabarnstilleggRequestListe.forEach { personIdOgPeriode ->
             var antallPerioderFunnet = 0
@@ -51,9 +52,9 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                     val familieBaSakResponse = restResponseFamilieBaSak.body
                     SECURE_LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
                     persistenceService.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
-                        grunnlagspakkeId,
-                        personIdOgPeriode.personId,
-                        timestampOppdatering,
+                        grunnlagspakkeId = grunnlagspakkeId,
+                        personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                        timestampOppdatering = timestampOppdatering,
                     )
                     familieBaSakResponse.perioder.forEach { ubst ->
                         antallPerioderFunnet++
