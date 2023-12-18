@@ -146,7 +146,8 @@ class GrunnlagspakkeService(
 
             sivilstandListe = persistenceService.hentSivilstand(grunnlagspakkeId),
             barnetilsynListe = persistenceService.hentBarnetilsyn(grunnlagspakkeId),
-            overgangsstonadListe = persistenceService.hentOvergangsstønad(grunnlagspakkeId),
+            // TODO Fjernes (koordineres med Bisys)
+            overgangsstonadListe = emptyList(),
         )
     }
 

@@ -10,7 +10,6 @@ import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
-import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
@@ -20,7 +19,6 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.EksternePerioderRequest
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
@@ -92,9 +90,6 @@ class OppdaterGrunnlagspakkeServiceTest {
 
     @Captor
     private lateinit var barnetilsynBoCaptor: ArgumentCaptor<BarnetilsynBo>
-
-    @Captor
-    private lateinit var overgangsstønadBoCaptor: ArgumentCaptor<OvergangsstønadBo>
 
     @Test
     fun `Skal oppdatere grunnlagspakke med ainntekt`() {
@@ -979,57 +974,6 @@ class OppdaterGrunnlagspakkeServiceTest {
                 Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding)
                     .isEqualTo("Antall perioder funnet: 1")
             },
-        )
-    }
-
-    @Test
-    fun `skal oppdatere grunnlagspakke med overgangsstønad`() {
-        Mockito.`when`(persistenceServiceMock.opprettOvergangsstønad(GrunnlagspakkeServiceMockTest.MockitoHelper.capture(overgangsstønadBoCaptor)))
-            .thenReturn(
-                TestUtil.byggOvergangsstønad(),
-            )
-        Mockito.`when`(
-            familieEfSakConsumerMock.hentOvergangsstønad(
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(EksternePerioderRequest::class.java),
-            ),
-        )
-            .thenReturn(RestResponse.Success(TestUtil.byggOvergangsstønadResponse()))
-
-        val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-            grunnlagspakkeIdOpprettet,
-            TestUtil.byggOppdaterGrunnlagspakkeRequestOvergangsstønad(),
-            LocalDateTime.now(),
-            mapOf("12345678910" to listOf("12345678910")),
-        )
-
-        val overgangsstønadListe = overgangsstønadBoCaptor.allValues
-
-        Mockito.verify(persistenceServiceMock, Mockito.times(2)).opprettOvergangsstønad(
-            GrunnlagspakkeServiceMockTest.MockitoHelper.any(OvergangsstønadBo::class.java),
-        )
-
-        assertAll(
-            { Assertions.assertThat(grunnlagspakkeIdOpprettet).isNotNull() },
-
-            // sjekk Overgangsstønad
-            { Assertions.assertThat(overgangsstønadListe.size).isEqualTo(2) },
-            { Assertions.assertThat(overgangsstønadListe[0].partPersonId).isEqualTo("12345678910") },
-            { Assertions.assertThat(overgangsstønadListe[0].periodeFra).isEqualTo(LocalDate.parse("2020-01-01")) },
-            { Assertions.assertThat(overgangsstønadListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-01-01")) },
-            { Assertions.assertThat(overgangsstønadListe[0].belop).isEqualTo(111) },
-            { Assertions.assertThat(overgangsstønadListe[1].partPersonId).isEqualTo("12345678910") },
-            { Assertions.assertThat(overgangsstønadListe[1].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
-            { Assertions.assertThat(overgangsstønadListe[1].periodeTil).isEqualTo(LocalDate.parse("2021-08-01")) },
-            { Assertions.assertThat(overgangsstønadListe[1].belop).isEqualTo(222) },
-
-            // sjekk oppdatertGrunnlagspakke
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeIdOpprettet) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe.size).isEqualTo(1) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].type).isEqualTo(GrunnlagRequestType.OVERGANGSSTONAD) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].personId).isEqualTo("12345678910") },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].status).isEqualTo(GrunnlagRequestStatus.HENTET) },
-            { Assertions.assertThat(oppdatertGrunnlagspakke.grunnlagTypeResponsListe[0].statusMelding).isEqualTo("Antall perioder funnet: 2") },
         )
     }
 }

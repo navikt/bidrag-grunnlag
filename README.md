@@ -14,7 +14,6 @@ Støtter foreløpig følgende grunnlag:
 * Barnetillegg fra Pensjon
 * Kontantstøtte
 * Barnetilsyn
-* Overgangsstønad
 * Sivilstand
 * Husstandsmedlemmer og egne barn
 

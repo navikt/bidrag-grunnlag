@@ -11,7 +11,6 @@ import no.nav.bidrag.grunnlag.model.OppdaterAinntekt
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetillegg
 import no.nav.bidrag.grunnlag.model.OppdaterBarnetilsyn
 import no.nav.bidrag.grunnlag.model.OppdaterKontantstotte
-import no.nav.bidrag.grunnlag.model.OppdaterOvergangsstønad
 import no.nav.bidrag.grunnlag.model.OppdaterRelatertePersoner
 import no.nav.bidrag.grunnlag.model.OppdaterSivilstand
 import no.nav.bidrag.grunnlag.model.OppdaterSkattegrunnlag
@@ -94,13 +93,6 @@ class OppdaterGrunnlagspakkeService(
             .oppdaterBarnetilsyn(
                 barnetilsynRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.BARNETILSYN,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterOvergangsstønad(
-                overgangsstønadRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.OVERGANGSSTONAD,
                     oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
                 historiskeIdenterMap = historiskeIdenterMap,
@@ -257,22 +249,6 @@ class OppdaterGrunnlagspakkeService(
                     familieEfSakConsumer = familieEfSakConsumer,
                 )
                     .oppdaterBarnetilsyn(barnetilsynRequestListe = barnetilsynRequestListe, historiskeIdenterMap = historiskeIdenterMap),
-            )
-            return this
-        }
-
-        fun oppdaterOvergangsstønad(
-            overgangsstønadRequestListe: List<PersonIdOgPeriodeRequest>,
-            historiskeIdenterMap: Map<String, List<String>>,
-        ): OppdaterGrunnlagspakke {
-            this.addAll(
-                OppdaterOvergangsstønad(
-                    grunnlagspakkeId = grunnlagspakkeId,
-                    timestampOppdatering = timestampOppdatering,
-                    persistenceService = persistenceService,
-                    familieEfSakConsumer = familieEfSakConsumer,
-                )
-                    .oppdaterOvergangsstønad(overgangsstønadRequestListe = overgangsstønadRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }
