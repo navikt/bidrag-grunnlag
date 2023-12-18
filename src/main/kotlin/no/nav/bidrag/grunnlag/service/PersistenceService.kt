@@ -10,7 +10,6 @@ import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
-import no.nav.bidrag.grunnlag.bo.OvergangsstønadBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -21,7 +20,6 @@ import no.nav.bidrag.grunnlag.bo.toAinntektspostEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilleggEntity
 import no.nav.bidrag.grunnlag.bo.toBarnetilsynEntity
 import no.nav.bidrag.grunnlag.bo.toKontantstotteEntity
-import no.nav.bidrag.grunnlag.bo.toOvergangsstønadEntity
 import no.nav.bidrag.grunnlag.bo.toRelatertPersonEntity
 import no.nav.bidrag.grunnlag.bo.toSivilstandEntity
 import no.nav.bidrag.grunnlag.bo.toSkattegrunnlagEntity
@@ -38,7 +36,6 @@ import no.nav.bidrag.grunnlag.persistence.entity.Barnetillegg
 import no.nav.bidrag.grunnlag.persistence.entity.Barnetilsyn
 import no.nav.bidrag.grunnlag.persistence.entity.Grunnlagspakke
 import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
-import no.nav.bidrag.grunnlag.persistence.entity.Overgangsstonad
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Sivilstand
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag
@@ -55,7 +52,6 @@ import no.nav.bidrag.grunnlag.persistence.repository.BarnetilleggRepository
 import no.nav.bidrag.grunnlag.persistence.repository.BarnetilsynRepository
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.persistence.repository.KontantstotteRepository
-import no.nav.bidrag.grunnlag.persistence.repository.OvergangsstonadRepository
 import no.nav.bidrag.grunnlag.persistence.repository.RelatertPersonRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SivilstandRepository
 import no.nav.bidrag.grunnlag.persistence.repository.SkattegrunnlagRepository
@@ -68,7 +64,6 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstotteDto
-import no.nav.bidrag.transport.behandling.grunnlag.response.OvergangsstonadDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagDto
@@ -91,7 +86,6 @@ class PersistenceService(
     val sivilstandRepository: SivilstandRepository,
     val kontantstotteRepository: KontantstotteRepository,
     val barnetilsynRepository: BarnetilsynRepository,
-    val overgangsstønadRepository: OvergangsstonadRepository,
 ) {
 
     fun opprettNyGrunnlagspakke(opprettGrunnlagspakkeRequestDto: OpprettGrunnlagspakkeRequestDto): Grunnlagspakke {
@@ -151,11 +145,6 @@ class PersistenceService(
         return barnetilsynRepository.save(nyBarnetilsyn)
     }
 
-    fun opprettOvergangsstønad(overgangsstønadBo: OvergangsstønadBo): Overgangsstonad {
-        val nyOvergangsstønad = overgangsstønadBo.toOvergangsstønadEntity()
-        return overgangsstønadRepository.save(nyOvergangsstønad)
-    }
-
     fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
             grunnlagspakkeId,
@@ -203,14 +192,6 @@ class PersistenceService(
 
     fun oppdaterEksisterendeKontantstotteTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
-            grunnlagspakkeId,
-            personIdListe,
-            timestampOppdatering,
-        )
-    }
-
-    fun oppdaterEksisterendeOvergangsstønadTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
-        overgangsstønadRepository.oppdaterEksisterendeOvergangsstonadTilInaktiv(
             grunnlagspakkeId,
             personIdListe,
             timestampOppdatering,
@@ -613,25 +594,5 @@ class PersistenceService(
                 )
             }
         return barnetilsynDtoListe
-    }
-
-    fun hentOvergangsstønad(grunnlagspakkeId: Int): List<OvergangsstonadDto> {
-        val overgangsstønadDtoListe = mutableListOf<OvergangsstonadDto>()
-        overgangsstønadRepository.hentOvergangsstonad(grunnlagspakkeId)
-            .forEach { overgangsstønad ->
-                overgangsstønadDtoListe.add(
-                    OvergangsstonadDto(
-                        partPersonId = overgangsstønad.partPersonId,
-                        periodeFra = overgangsstønad.periodeFra,
-                        periodeTil = overgangsstønad.periodeTil,
-                        aktiv = overgangsstønad.aktiv,
-                        brukFra = overgangsstønad.brukFra,
-                        brukTil = overgangsstønad.brukTil,
-                        belop = overgangsstønad.belop,
-                        hentetTidspunkt = overgangsstønad.hentetTidspunkt,
-                    ),
-                )
-            }
-        return overgangsstønadDtoListe
     }
 }

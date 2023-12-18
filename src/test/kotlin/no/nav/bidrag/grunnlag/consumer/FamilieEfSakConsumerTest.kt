@@ -4,7 +4,6 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Ressurs
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertAll
@@ -30,7 +29,6 @@ internal class FamilieEfSakConsumerTest {
 
     companion object {
         private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
-        private const val OVERGANGSSTØNAD_CONTEXT = "/api/ekstern/perioder/overgangsstonad/med-belop"
     }
 
     @InjectMocks
@@ -80,38 +78,6 @@ internal class FamilieEfSakConsumerTest {
     }
 
     @Test
-    fun `Sjekk at ok respons fra Overgangsstønad-endepunkt mappes korrekt`() {
-        val request = TestUtil.byggOvergangsstønadRequest()
-
-        Mockito.`when`(
-            restTemplateMock.exchange(
-                eq(OVERGANGSSTØNAD_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                ArgumentMatchers.any<Class<Ressurs>>(),
-            ),
-        )
-            .thenReturn(ResponseEntity(TestUtil.byggOvergangsstønadResponse(), HttpStatus.OK))
-
-        when (val restResponseOvergangsstønad = familieEfSakConsumer.hentOvergangsstønad(request)) {
-            is RestResponse.Success -> {
-                val hentOvergangsstønadResponse = restResponseOvergangsstønad.body
-                assertAll(
-                    { Assertions.assertThat(hentOvergangsstønadResponse).isNotNull },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].personIdent).isEqualTo("12345678910") },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].fomDato).isEqualTo(LocalDate.parse("2020-01-01")) },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].tomDato).isEqualTo(LocalDate.parse("2020-12-31")) },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].beløp).isEqualTo(111) },
-                    { Assertions.assertThat(hentOvergangsstønadResponse.data.perioder[0].datakilde).isEqualTo("Infotrygd") },
-                )
-            }
-            else -> {
-                Assertions.fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
-            }
-        }
-    }
-
-    @Test
     @Suppress("NonAsciiCharacters")
     fun `Sjekk at exception fra Barnetilsyn-endepunkt håndteres korrekt`() {
         val request = TestUtil.byggBarnetilsynRequest()
@@ -142,38 +108,7 @@ internal class FamilieEfSakConsumerTest {
         }
     }
 
-    @Test
-    @Suppress("NonAsciiCharacters")
-    fun `Sjekk at exception fra Overgangsstønad-endepunkt håndteres korrekt`() {
-        val request = TestUtil.byggOvergangsstønadRequest()
-
-        Mockito.`when`(
-            restTemplateMock.exchange(
-                eq(OVERGANGSSTØNAD_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                ArgumentMatchers.any<Class<Ressurs>>(),
-            ),
-        )
-            .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
-
-        when (val restResponseOvergangsstønad = familieEfSakConsumer.hentOvergangsstønad(request)) {
-            is RestResponse.Failure -> {
-                assertAll(
-                    { Assertions.assertThat(restResponseOvergangsstønad.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    {
-                        Assertions.assertThat(restResponseOvergangsstønad.restClientException)
-                            .isInstanceOf(HttpClientErrorException::class.java)
-                    },
-                )
-            }
-            else -> {
-                Assertions.fail("Test returnerte med RestResponse.Success, som ikke var forventet")
-            }
-        }
-    }
-
-    fun <T> initHttpEntity(body: T): HttpEntity<T> {
+    private fun <T> initHttpEntity(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         return HttpEntity(body, httpHeaders)
