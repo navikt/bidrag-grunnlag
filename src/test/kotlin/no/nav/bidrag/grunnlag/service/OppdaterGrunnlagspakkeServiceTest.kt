@@ -124,7 +124,7 @@ class OppdaterGrunnlagspakkeServiceTest {
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(String::class.java),
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDateTime::class.java),
             )
 
@@ -183,7 +183,7 @@ class OppdaterGrunnlagspakkeServiceTest {
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDate::class.java),
-                GrunnlagspakkeServiceMockTest.MockitoHelper.any(String::class.java),
+                GrunnlagspakkeServiceMockTest.MockitoHelper.any(),
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(LocalDateTime::class.java),
             )
 

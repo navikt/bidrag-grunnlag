@@ -33,7 +33,10 @@ class OppdaterSkattegrunnlag(
         private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterSkattegrunnlag::class.java)
     }
 
-    fun oppdaterSkattegrunnlag(skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterSkattegrunnlag {
+    fun oppdaterSkattegrunnlag(
+        skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>,
+        historiskeIdenterMap: Map<String, List<String>>,
+    ): OppdaterSkattegrunnlag {
         skattegrunnlagRequestListe.forEach { personIdOgPeriode ->
 
             var inntektAar = personIdOgPeriode.periodeFra.year
@@ -47,9 +50,9 @@ class OppdaterSkattegrunnlag(
 
             while (inntektAar < sluttAar) {
                 val skattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
-                    inntektAar.toString(),
-                    "SummertSkattegrunnlagBidrag",
-                    personIdOgPeriode.personId,
+                    inntektsAar = inntektAar.toString(),
+                    inntektsFilter = "SummertSkattegrunnlagBidrag",
+                    personId = personIdOgPeriode.personId,
                 )
 
                 LOGGER.info("Kaller Sigrun (skattegrunnlag)")
@@ -103,33 +106,33 @@ class OppdaterSkattegrunnlag(
                             nyeSkattegrunnlag.add(PeriodComparable(skattegrunnlag, skattegrunnlagsposter))
                         }
                         persistenceService.oppdaterSkattegrunnlagForGrunnlagspakke(
-                            grunnlagspakkeId,
-                            nyeSkattegrunnlag,
-                            periodeFra,
-                            periodeTil,
-                            personIdOgPeriode.personId,
-                            timestampOppdatering,
+                            grunnlagspakkeId = grunnlagspakkeId,
+                            newSkattegrunnlagForPersonId = nyeSkattegrunnlag,
+                            periodeFra = periodeFra,
+                            periodeTil = periodeTil,
+                            personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                            timestampOppdatering = timestampOppdatering,
                         )
                         this.add(
                             OppdaterGrunnlagDto(
-                                GrunnlagRequestType.SKATTEGRUNNLAG,
-                                personIdOgPeriode.personId,
-                                GrunnlagRequestStatus.HENTET,
-                                "Antall skattegrunnlagsposter funnet for inntektsåret $inntektAar: $antallSkattegrunnlagsposter",
+                                type = GrunnlagRequestType.SKATTEGRUNNLAG,
+                                personId = personIdOgPeriode.personId,
+                                status = GrunnlagRequestStatus.HENTET,
+                                statusMelding = "Antall skattegrunnlagsposter funnet for inntektsåret $inntektAar: $antallSkattegrunnlagsposter",
                             ),
                         )
                     }
 
                     is RestResponse.Failure -> this.add(
                         OppdaterGrunnlagDto(
-                            GrunnlagRequestType.SKATTEGRUNNLAG,
-                            personIdOgPeriode.personId,
-                            if (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) {
+                            type = GrunnlagRequestType.SKATTEGRUNNLAG,
+                            personId = personIdOgPeriode.personId,
+                            status = if (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) {
                                 GrunnlagRequestStatus.IKKE_FUNNET
                             } else {
                                 GrunnlagRequestStatus.FEILET
                             },
-                            "Feil ved henting av skattegrunnlag for inntektsåret $inntektAar.",
+                            statusMelding = "Feil ved henting av skattegrunnlag for inntektsåret $inntektAar.",
                         ),
                     )
                 }

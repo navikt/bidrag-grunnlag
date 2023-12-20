@@ -48,12 +48,14 @@ class OppdaterGrunnlagspakkeService(
                     type = GrunnlagRequestType.AINNTEKT,
                     oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
+                historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterSkattegrunnlag(
                 skattegrunnlagRequestListe = hentRequestListeFor(
                     type = GrunnlagRequestType.SKATTEGRUNNLAG,
                     oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
                 ),
+                historiskeIdenterMap = historiskeIdenterMap,
             )
             .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                 utvidetBarnetrygdOgSmaabarnstilleggRequestListe = hentRequestListeFor(
@@ -125,7 +127,10 @@ class OppdaterGrunnlagspakkeService(
         private val timestampOppdatering: LocalDateTime,
     ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
-        fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterAinntekt(
+            ainntektRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterAinntekt(
                     grunnlagspakkeId = grunnlagspakkeId,
@@ -133,12 +138,15 @@ class OppdaterGrunnlagspakkeService(
                     persistenceService = persistenceService,
                     inntektskomponentenService = inntektskomponentenService,
                 )
-                    .oppdaterAinntekt(ainntektRequestListe),
+                    .oppdaterAinntekt(ainntektRequestListe = ainntektRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }
 
-        fun oppdaterSkattegrunnlag(skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterGrunnlagspakke {
+        fun oppdaterSkattegrunnlag(
+            skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>,
+            historiskeIdenterMap: Map<String, List<String>>,
+        ): OppdaterGrunnlagspakke {
             this.addAll(
                 OppdaterSkattegrunnlag(
                     grunnlagspakkeId = grunnlagspakkeId,
@@ -146,7 +154,7 @@ class OppdaterGrunnlagspakkeService(
                     persistenceService = persistenceService,
                     sigrunConsumer = sigrunConsumer,
                 )
-                    .oppdaterSkattegrunnlag(skattegrunnlagRequestListe),
+                    .oppdaterSkattegrunnlag(skattegrunnlagRequestListe = skattegrunnlagRequestListe, historiskeIdenterMap = historiskeIdenterMap),
             )
             return this
         }

@@ -83,7 +83,9 @@ class GrunnlagspakkeService(
             // Gjør ikke oppslag for personer som allerede er lagt til i map
             if (!historiskeIdenterMap.values.any { grunnlagDto.personId in it }) {
                 val historiskeIdenterListe = hentIdenterFraConsumer(grunnlagDto.personId)
-                SECURE_LOGGER.info("Hentet historiske identer for personId: ${grunnlagDto.personId} og fikk tilbake: $historiskeIdenterListe")
+                if (historiskeIdenterListe.size > 1) {
+                    SECURE_LOGGER.warn("Hentet historiske identer for personId: ${grunnlagDto.personId} og fikk tilbake: $historiskeIdenterListe")
+                }
 
                 val key = historiskeIdenterListe.find { !it.historisk }?.personId
                 val values = historiskeIdenterListe.map { it.personId }.sorted()
@@ -126,7 +128,9 @@ class GrunnlagspakkeService(
             // Søker gjennom value-listen og setter aktivIdent lik tilhørende key-verdi. Hvis personId ikke finnes i lista settes aktivIdent
             // lik personId.
             val aktivIdent = historiskeIdenterMap.entries.find { grunnlagRequestDto.personId in it.value }?.key ?: grunnlagRequestDto.personId
-            SECURE_LOGGER.info("Hentet nyeste ident for personId: ${grunnlagRequestDto.personId} og fikk tilbake: $aktivIdent")
+            if (aktivIdent != grunnlagRequestDto.personId) {
+                SECURE_LOGGER.info("Hentet nyeste ident for personId: ${grunnlagRequestDto.personId} og fikk tilbake: $aktivIdent")
+            }
             grunnlagRequestDto.copy(personId = aktivIdent)
         }
         return OppdaterGrunnlagspakkeRequestDto(gyldigTil = request.gyldigTil, grunnlagRequestDtoListe = dtoListe)
