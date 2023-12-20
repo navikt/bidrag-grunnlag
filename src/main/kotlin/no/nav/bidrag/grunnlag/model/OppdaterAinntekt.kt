@@ -43,7 +43,7 @@ class OppdaterAinntekt(
         const val JANUAR2015 = "2015-01"
     }
 
-    fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>): OppdaterAinntekt {
+    fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>, historiskeIdenterMap: Map<String, List<String>>): OppdaterAinntekt {
         val formaal = persistenceService.hentFormaalGrunnlagspakke(grunnlagspakkeId)
 
         ainntektRequestListe.forEach { personIdOgPeriode ->
@@ -94,10 +94,10 @@ class OppdaterAinntekt(
                         if (hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
                             this.add(
                                 OppdaterGrunnlagDto(
-                                    GrunnlagRequestType.AINNTEKT,
-                                    hentInntektListeRequest.ident.identifikator,
-                                    GrunnlagRequestStatus.HENTET,
-                                    "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
+                                    type = GrunnlagRequestType.AINNTEKT,
+                                    personId = hentInntektListeRequest.ident.identifikator,
+                                    status = GrunnlagRequestStatus.HENTET,
+                                    statusMelding = "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
                                         "${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
                                 ),
                             )
@@ -187,12 +187,12 @@ class OppdaterAinntekt(
 
                 // Evt. nye perioder opprettes og evt. eksisterende perioder som ikke finnes i den nye responsen vil bli satt til aktiv=false
                 persistenceService.oppdaterAinntektForGrunnlagspakke(
-                    grunnlagspakkeId,
-                    nyeAinntekter,
-                    personIdOgPeriode.periodeFra,
-                    personIdOgPeriode.periodeTil,
-                    personIdOgPeriode.personId,
-                    timestampOppdatering,
+                    grunnlagspakkeId = grunnlagspakkeId,
+                    newAinntektForPersonId = nyeAinntekter,
+                    periodeFra = personIdOgPeriode.periodeFra,
+                    periodeTil = personIdOgPeriode.periodeTil,
+                    personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                    timestampOppdatering = timestampOppdatering,
                 )
             }
         }

@@ -3,6 +3,7 @@ package no.nav.bidrag.grunnlag
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.domene.enums.person.BarnType
 import no.nav.bidrag.domene.enums.person.Familierelasjon
@@ -813,6 +814,37 @@ class TestUtil {
             Skattegrunnlag(
                 beloep = "100000",
                 tekniskNavn = "tekniskNavn",
+            ),
+        )
+
+        fun byggSkattegrunnlagRepositoryListeForEnIdent() = immutableListOf(
+            no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
+                skattegrunnlagId = 1,
+                grunnlagspakkeId = 1,
+                personId = "12345678901",
+            ),
+        )
+
+        fun byggSkattegrunnlagRepositoryListeForToIdenter() = immutableListOf(
+            no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
+                skattegrunnlagId = 1,
+                grunnlagspakkeId = 1,
+                personId = "12345678901",
+            ),
+            no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
+                skattegrunnlagId = 1,
+                grunnlagspakkeId = 1,
+                personId = "12345678902",
+            ),
+        )
+
+        fun byggSkattegrunnlagspostRepositoryListe() = immutableListOf(
+            Skattegrunnlagspost(
+                skattegrunnlagspostId = 1,
+                skattegrunnlagId = 1,
+                skattegrunnlagType = Skattegrunnlagstype.ORDINÆR.toString(),
+                inntektType = Inntektstype.LØNNSINNTEKT.toString(),
+                belop = BigDecimal.valueOf(10000),
             ),
         )
 

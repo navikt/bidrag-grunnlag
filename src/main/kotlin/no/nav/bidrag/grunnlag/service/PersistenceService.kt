@@ -147,26 +147,26 @@ class PersistenceService(
 
     fun oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         barnetilleggRepository.oppdaterEksisterendeBarnetilleggTilInaktiv(
-            grunnlagspakkeId,
-            personIdListe,
-            timestampOppdatering,
-            Barnetilleggstype.PENSJON.toString(),
+            grunnlagspakkeId = grunnlagspakkeId,
+            personIdListe = personIdListe,
+            timestampOppdatering = timestampOppdatering,
+            barnetilleggType = Barnetilleggstype.PENSJON.toString(),
         )
     }
 
     fun oppdaterEksisterendeRelatertPersonTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         relatertPersonRepository.oppdaterEksisterendeRelatertPersonTilInaktiv(
-            grunnlagspakkeId,
-            personIdListe,
-            timestampOppdatering,
+            grunnlagspakkeId = grunnlagspakkeId,
+            personIdListe = personIdListe,
+            timestampOppdatering = timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeSivilstandTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         sivilstandRepository.oppdaterEksisterendeSivilstandTilInaktiv(
-            grunnlagspakkeId,
-            personIdListe,
-            timestampOppdatering,
+            grunnlagspakkeId = grunnlagspakkeId,
+            personIdListe = personIdListe,
+            timestampOppdatering = timestampOppdatering,
         )
     }
 
@@ -176,25 +176,25 @@ class PersistenceService(
         timestampOppdatering: LocalDateTime,
     ) {
         utvidetBarnetrygdOgSmaabarnstilleggRepository.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
-            grunnlagspakkeId,
-            personIdListe,
-            timestampOppdatering,
+            grunnlagspakkeId = grunnlagspakkeId,
+            personIdListe = personIdListe,
+            timestampOppdatering = timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeBarnetilsynTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         barnetilsynRepository.oppdaterEksisterendeBarnetilsynTilInaktiv(
-            grunnlagspakkeId,
-            personIdListe,
-            timestampOppdatering,
+            grunnlagspakkeId = grunnlagspakkeId,
+            personIdListe = personIdListe,
+            timestampOppdatering = timestampOppdatering,
         )
     }
 
     fun oppdaterEksisterendeKontantstotteTilInaktiv(grunnlagspakkeId: Int, personIdListe: List<String>, timestampOppdatering: LocalDateTime) {
         kontantstotteRepository.oppdaterEksisterendeKontantstotteTilInaktiv(
-            grunnlagspakkeId,
-            personIdListe,
-            timestampOppdatering,
+            grunnlagspakkeId = grunnlagspakkeId,
+            personIdListe = personIdListe,
+            timestampOppdatering = timestampOppdatering,
         )
     }
 
@@ -227,18 +227,18 @@ class PersistenceService(
         newAinntektForPersonId: List<PeriodComparable<AinntektBo, AinntektspostBo>>,
         periodeFra: LocalDate,
         periodeTil: LocalDate,
-        personId: String,
+        personIdListe: List<String>,
         timestampOppdatering: LocalDateTime,
     ) {
-        val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId, personId)
+        val existingAinntektForPersonId = hentAinntektForPersonIdToCompare(grunnlagspakkeId = grunnlagspakkeId, personIdListe = personIdListe)
         val ainntektPeriodComparator = AinntektPeriodComparator()
 
         // Finner ut hvilke inntekter som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
         val comparatorResult =
             ainntektPeriodComparator.comparePeriodEntities(
-                Period(periodeFra, periodeTil),
-                newAinntektForPersonId,
-                existingAinntektForPersonId,
+                requestedPeriod = Period(periodeFra = periodeFra, periodeTil = periodeTil),
+                newEntities = newAinntektForPersonId,
+                existingEntities = existingAinntektForPersonId,
             )
 
         // Setter utløpte Ainntekter til utløpt.
@@ -274,19 +274,19 @@ class PersistenceService(
         newSkattegrunnlagForPersonId: List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>,
         periodeFra: LocalDate,
         periodeTil: LocalDate,
-        personId: String,
+        personIdListe: List<String>,
         timestampOppdatering: LocalDateTime,
     ) {
-        val existingAinntektForPersonId =
-            hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId, personId)
-        val ainntektPeriodComparator = SkattegrunnlagPeriodComparator()
+        val eksisterendeSkattegrunnlagForPersonId =
+            hentSkattegrunnlagForPersonIdToCompare(grunnlagspakkeId = grunnlagspakkeId, personIdListe = personIdListe)
+        val skattegrunnlagPeriodComparator = SkattegrunnlagPeriodComparator()
 
         // Finner ut hvilke skattegrunnlag som er oppdatert/nye siden sist, hvilke som ikke er endret og hvilke som er utløpt.
         val comparatorResult =
-            ainntektPeriodComparator.comparePeriodEntities(
-                Period(periodeFra, periodeTil),
-                newSkattegrunnlagForPersonId,
-                existingAinntektForPersonId,
+            skattegrunnlagPeriodComparator.comparePeriodEntities(
+                requestedPeriod = Period(periodeFra = periodeFra, periodeTil = periodeTil),
+                newEntities = newSkattegrunnlagForPersonId,
+                existingEntities = eksisterendeSkattegrunnlagForPersonId,
             )
 
         // Setter utløpte skattegrunnlag til utløpt.
@@ -328,17 +328,17 @@ class PersistenceService(
                     .forEach { inntektspost ->
                         hentAinntektspostListe.add(
                             AinntektspostDto(
-                                inntektspost.utbetalingsperiode,
-                                inntektspost.opptjeningsperiodeFra,
-                                inntektspost.opptjeningsperiodeTil,
-                                inntektspost.opplysningspliktigId,
-                                inntektspost.virksomhetId,
-                                inntektspost.inntektType,
-                                inntektspost.fordelType,
-                                inntektspost.beskrivelse,
-                                inntektspost.belop,
-                                inntektspost.etterbetalingsperiodeFra,
-                                inntektspost.etterbetalingsperiodeTil,
+                                utbetalingsperiode = inntektspost.utbetalingsperiode,
+                                opptjeningsperiodeFra = inntektspost.opptjeningsperiodeFra,
+                                opptjeningsperiodeTil = inntektspost.opptjeningsperiodeTil,
+                                opplysningspliktigId = inntektspost.opplysningspliktigId,
+                                virksomhetId = inntektspost.virksomhetId,
+                                inntektType = inntektspost.inntektType,
+                                fordelType = inntektspost.fordelType,
+                                beskrivelse = inntektspost.beskrivelse,
+                                belop = inntektspost.belop,
+                                etterbetalingsperiodeFra = inntektspost.etterbetalingsperiodeFra,
+                                etterbetalingsperiodeTil = inntektspost.etterbetalingsperiodeTil,
                             ),
                         )
                     }
@@ -359,19 +359,19 @@ class PersistenceService(
         return ainntektDtoListe
     }
 
-    fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personId: String): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
+    fun hentAinntektForPersonIdToCompare(grunnlagspakkeId: Int, personIdListe: List<String>): List<PeriodComparable<AinntektBo, AinntektspostBo>> {
         val ainntektForPersonIdListe = mutableListOf<PeriodComparable<AinntektBo, AinntektspostBo>>()
         ainntektRepository.hentAinntekter(grunnlagspakkeId)
             .forEach { inntekt ->
                 SECURE_LOGGER.debug("Hentet eksisterende ainntekter med id ${inntekt.inntektId}")
-                if (inntekt.personId == personId) {
+                if (inntekt.personId in personIdListe) {
                     val ainntektspostListe = mutableListOf<AinntektspostBo>()
                     ainntektspostRepository.hentInntektsposter(inntekt.inntektId)
                         .forEach { ainntektspost ->
                             ainntektspostListe.add(ainntektspost.toAinntektspostBo())
                         }
                     ainntektForPersonIdListe.add(
-                        PeriodComparable(inntekt.toAinntektBo(), ainntektspostListe),
+                        PeriodComparable(periodEntity = inntekt.toAinntektBo(), children = ainntektspostListe),
                     )
                 }
             }
@@ -381,18 +381,18 @@ class PersistenceService(
 
     fun hentSkattegrunnlagForPersonIdToCompare(
         grunnlagspakkeId: Int,
-        personId: String,
+        personIdListe: List<String>,
     ): List<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>> {
         val skattegrunnlagForPersonIdListe =
             mutableListOf<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>()
         skattegrunnlagRepository.hentSkattegrunnlag(grunnlagspakkeId)
             .forEach { skattegrunnlag ->
-                if (skattegrunnlag.personId == personId) {
+                if (skattegrunnlag.personId in personIdListe) {
                     val skattegrunnlagpostListe = mutableListOf<SkattegrunnlagspostBo>()
                     skattegrunnlagspostRepository.hentSkattegrunnlagsposter(skattegrunnlag.skattegrunnlagId)
                         .forEach { skattegrunnlagspost -> skattegrunnlagpostListe.add(skattegrunnlagspost.toSkattegrunnlagspostBo()) }
                     skattegrunnlagForPersonIdListe.add(
-                        PeriodComparable(skattegrunnlag.toSkattegrunnlagBo(), skattegrunnlagpostListe),
+                        PeriodComparable(periodEntity = skattegrunnlag.toSkattegrunnlagBo(), children = skattegrunnlagpostListe),
                     )
                 }
             }

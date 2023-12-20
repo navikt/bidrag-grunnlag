@@ -3,7 +3,6 @@ package no.nav.bidrag.grunnlag.exception
 import com.fasterxml.jackson.core.JacksonException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import no.nav.bidrag.commons.ExceptionLogger
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -102,9 +101,6 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
                     is DateTimeParseException -> "Ugyldig datoformat på oppgitt dato: '${cause.parsedString}'. Dato må oppgis på formatet yyyy-MM-dd."
                     else -> e.originalMessage
                 }
-            }
-            is MissingKotlinParameterException -> {
-                errors[extractPath(e.path)] = "Må oppgi gyldig verdi av type (${e.parameter.type}). Kan ikke være null."
             }
             else -> {
                 errors["Feil ved deserialisering"] = e.originalMessage

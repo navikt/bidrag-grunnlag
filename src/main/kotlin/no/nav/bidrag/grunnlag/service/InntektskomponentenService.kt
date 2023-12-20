@@ -49,17 +49,17 @@ class InntektskomponentenService(
             is RestResponse.Failure -> {
                 LOGGER.info("Feil ved hent av abonnerte inntekter. Prøver å hente inntekter uten abonnement")
                 // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
-                when (val restResponseInntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
+                when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
                     is RestResponse.Success -> {
                         // Respons OK
-                        val inntekter = restResponseInntekt.body
+                        val inntekter = restResponse2Inntekt.body
                         if (null != inntekter.arbeidsInntektMaaned) {
                             hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
                         }
                     }
 
                     is RestResponse.Failure -> {
-                        httpStatus = restResponseInntekt.statusCode
+                        httpStatus = restResponse2Inntekt.statusCode
                     }
                 }
             }
