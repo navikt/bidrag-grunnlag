@@ -8,7 +8,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.bidrag.commons.service.organisasjon.SaksbehandlerInfoResponse
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.LOCAL_PROFILE
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.Assert
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootApplication
-@EnableMockOAuth2Server
 @EnableJwtTokenValidation(ignore = ["org.springdoc", "org.springframework"])
 @ActiveProfiles(LOCAL_PROFILE)
 @ComponentScan(excludeFilters = [ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = [BidragGrunnlag::class, BidragGrunnlagTest::class])])

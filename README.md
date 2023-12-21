@@ -22,8 +22,8 @@ Følgende grunnlag kan hentes på denne måten:
 * Arbeidsforhold
 
 Miljøer:
-* DEV-GCP-FEATURE ([https://bidrag-grunnlag-feature.dev.intern.nav.no/](https://bidrag-grunnlag-feature.dev.intern.nav.no/))
-* DEV-GCP ([https://bidrag-grunnlag.dev.intern.nav.no/](https://bidrag-grunnlag.dev.intern.nav.no/))
+* DEV-GCP-FEATURE ([https://bidrag-grunnlag-feature.intern.dev.nav.no/](https://bidrag-grunnlag-feature.dev.intern.nav.no/))
+* DEV-GCP ([https://bidrag-grunnlag.intern.dev.nav.no/](https://bidrag-grunnlag.dev.intern.nav.no/))
 * PROD-GCP ([https://bidrag-grunnlag.intern.nav.no/](https://bidrag-grunnlag.intern.nav.no/))
 
 ## Utstede gyldig token i dev-gcp
@@ -70,7 +70,7 @@ Kan vurdere å sette opp wiremocks for de eksterne tjenestene for å kunne kjør
 ## Testing i Swagger
 Applikasjonen testes enklest i Swagger (for generering av gyldig token, se over):
 ```
-https://bidrag-grunnlag.dev.intern.nav.no/bidrag-grunnlag/swagger-ui/index.html?configUrl=/bidrag-grunnlag/v3/api-docs/swagger-config#/grunnlagspakke-controller
+https://bidrag-grunnlag.intern.dev.nav.no/swagger-ui/index.html
 ```
 
 ### Kjøre lokalt mot nais med lokal database
