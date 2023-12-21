@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootApplication
-@EnableMockOAuth2Server
 @EnableJwtTokenValidation(ignore = ["org.springdoc", "org.springframework"])
 @ActiveProfiles(LOCAL_PROFILE)
 @ComponentScan(excludeFilters = [ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = [BidragGrunnlag::class, BidragGrunnlagTest::class])])
