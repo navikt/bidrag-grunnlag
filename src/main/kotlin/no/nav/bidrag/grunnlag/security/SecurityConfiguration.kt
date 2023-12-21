@@ -21,6 +21,7 @@ class SecurityConfiguration {
             .authorizeHttpRequests { auth ->
                 auth.anyRequest().permitAll()
             }
+            .cors { it.disable() }
             .csrf { it.disable() }
         return http.build()
     }
