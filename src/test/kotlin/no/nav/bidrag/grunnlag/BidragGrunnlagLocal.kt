@@ -8,7 +8,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.bidrag.commons.service.organisasjon.SaksbehandlerInfoResponse
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.LOCAL_PROFILE
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.Assert
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
