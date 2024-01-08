@@ -10,7 +10,7 @@ import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import no.nav.bidrag.transport.person.SivilstandPersonDto
+import no.nav.bidrag.transport.person.SivilstandPdlDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -49,7 +49,7 @@ class OppdaterSivilstand(
                     val sivilstandResponse = restResponseSivilstand.body
                     SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
 
-                    if (sivilstandResponse.sivilstandDto.isNotEmpty()) {
+                    if (sivilstandResponse.sivilstandPdlDto.isNotEmpty()) {
                         persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
                             grunnlagspakkeId,
                             historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
@@ -58,8 +58,8 @@ class OppdaterSivilstand(
                         // Sorterer motta sivilstandforekomster etter. Forekomstene som er historiske skal komme først. Deretter sorteres det på
                         // gyldigFraOgMed, bekreftelsesdato, registrert og til slutt på type.
                         antallPerioderFunnet = behandleSivilstandResponse(
-                            sivilstandResponse.sivilstandDto.sortedWith(
-                                compareByDescending<SivilstandPersonDto> { it.historisk }.thenBy { it.gyldigFraOgMed }
+                            sivilstandResponse.sivilstandPdlDto.sortedWith(
+                                compareByDescending<SivilstandPdlDto> { it.historisk }.thenBy { it.gyldigFom }
                                     .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() },
                             ),
                             personIdOgPeriode,
@@ -93,7 +93,7 @@ class OppdaterSivilstand(
         return this
     }
 
-    private fun behandleSivilstandResponse(sivilstandDtoListe: List<SivilstandPersonDto>, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
+    private fun behandleSivilstandResponse(sivilstandDtoListe: List<SivilstandPdlDto>, personIdOgPeriodeRequest: PersonIdOgPeriodeRequest): Int {
         var antallPerioderFunnet = 0
 
         var periodeTil: LocalDate?
@@ -102,10 +102,10 @@ class OppdaterSivilstand(
             // Setter periodeTil lik periodeFra for neste forekomst.
             // Hvis det ikke finnes en neste forekomst så settes periodeTil lik null. Timestamp registrert brukes bare hvis neste forekomst ikke er historisk
             periodeTil = if (sivilstandDtoListe.getOrNull(indeks + 1)?.historisk == true) {
-                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed
+                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFom
                     ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato
             } else {
-                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFraOgMed
+                sivilstandDtoListe.getOrNull(indeks + 1)?.gyldigFom
                     ?: sivilstandDtoListe.getOrNull(indeks + 1)?.bekreftelsesdato
                     ?: sivilstandDtoListe.getOrNull(indeks + 1)?.registrert?.toLocalDate()
             }
@@ -124,7 +124,7 @@ class OppdaterSivilstand(
     }
 
     private fun lagreSivilstand(
-        sivilstand: SivilstandPersonDto,
+        sivilstand: SivilstandPdlDto,
         grunnlagspakkeId: Int,
         timestampOppdatering: LocalDateTime,
         personId: String,
@@ -135,9 +135,9 @@ class OppdaterSivilstand(
         // Hvis forekomsten er aktiv så kan registrert timestamp også brukes til å finne periodeFra. Tanken er da at dette er en ny forekomst og
         // at registrert kan bruukes til å anta riktig periodeFra.
         val periodeFra = if (sivilstand.historisk == true) {
-            sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato
+            sivilstand.gyldigFom ?: sivilstand.bekreftelsesdato
         } else {
-            sivilstand.gyldigFraOgMed ?: sivilstand.bekreftelsesdato ?: sivilstand.registrert?.toLocalDate()
+            sivilstand.gyldigFom ?: sivilstand.bekreftelsesdato ?: sivilstand.registrert?.toLocalDate()
         }
 
         persistenceService.opprettSivilstand(

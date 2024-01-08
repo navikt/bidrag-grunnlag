@@ -32,7 +32,7 @@ import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
-import no.nav.bidrag.transport.person.SivilstandshistorikkDto
+import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.springframework.http.HttpStatus
@@ -123,7 +123,7 @@ class IntegrasjonsController(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand",
     )
-    fun hentSivilstand(@RequestBody sivilstandRequest: Personident): ResponseEntity<SivilstandshistorikkDto> {
+    fun hentSivilstand(@RequestBody sivilstandRequest: Personident): ResponseEntity<SivilstandPdlHistorikkDto> {
         return handleRestResponse(bidragPersonConsumer.hentSivilstand(sivilstandRequest))
     }
 
