@@ -9,7 +9,7 @@ import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.Identgruppe
 import no.nav.bidrag.transport.person.PersonidentDto
-import no.nav.bidrag.transport.person.SivilstandshistorikkDto
+import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertAll
@@ -244,7 +244,7 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<SivilstandshistorikkDto>>(),
+                any<Class<SivilstandPdlHistorikkDto>>(),
             ),
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentSivilstandResponse(), HttpStatus.OK))
@@ -254,18 +254,18 @@ internal class BidragPersonConsumerTest {
                 val hentSivilstandResponse = restResponseSivilstand.body
                 assertAll(
                     Executable { assertThat(hentSivilstandResponse).isNotNull },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto.size).isEqualTo(3) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[0].type).isEqualTo(SivilstandskodePDL.SEPARERT_PARTNER) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[0].gyldigFraOgMed).isNull() },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[0].bekreftelsesdato).isNull() },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto.size).isEqualTo(3) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[0].type).isEqualTo(SivilstandskodePDL.SEPARERT_PARTNER) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[0].gyldigFom).isNull() },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[0].bekreftelsesdato).isNull() },
 
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].type).isEqualTo(SivilstandskodePDL.ENKE_ELLER_ENKEMANN) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].gyldigFraOgMed).isNull() },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[1].bekreftelsesdato).isEqualTo(LocalDate.parse("2021-02-01")) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[1].type).isEqualTo(SivilstandskodePDL.ENKE_ELLER_ENKEMANN) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[1].gyldigFom).isNull() },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[1].bekreftelsesdato).isEqualTo(LocalDate.parse("2021-02-01")) },
 
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].type).isEqualTo(SivilstandskodePDL.GJENLEVENDE_PARTNER) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].gyldigFraOgMed).isEqualTo(LocalDate.parse("2021-09-01")) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandDto[2].bekreftelsesdato).isNull() },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[2].type).isEqualTo(SivilstandskodePDL.GJENLEVENDE_PARTNER) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[2].gyldigFom).isEqualTo(LocalDate.parse("2021-09-01")) },
+                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[2].bekreftelsesdato).isNull() },
 
                 )
             }
@@ -284,7 +284,7 @@ internal class BidragPersonConsumerTest {
                 eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
-                any<Class<SivilstandshistorikkDto>>(),
+                any<Class<SivilstandPdlHistorikkDto>>(),
             ),
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
