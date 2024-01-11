@@ -108,7 +108,7 @@ class HentGrunnlagService(
             familieEfSakConsumer = familieEfSakConsumer,
         ).hentBarnetilsyn(
             barnetilsynRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.ARBEIDSFORHOLD,
+                type = GrunnlagRequestType.BARNETILSYN,
                 hentGrunnlagRequestDto = requestMedNyesteIdenter,
             ),
         )
