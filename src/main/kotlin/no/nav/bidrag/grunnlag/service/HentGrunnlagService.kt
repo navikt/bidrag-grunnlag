@@ -33,10 +33,10 @@ class HentGrunnlagService(
     fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
         val hentetTidspunkt = LocalDateTime.now()
 
-        // Henter aktiv ident for personer i grunnlagspakken
+        // Henter aktiv ident for personer i requesten
         val historiskeIdenterMap = hentHistoriskeOgAktiveIdenter(hentGrunnlagRequestDto)
 
-        // Oppdaterer aktiv ident for personer i grunnlagspakken
+        // Oppdaterer aktiv ident for personer i requesten
         val requestMedNyesteIdenter = byttUtIdentMedAktivIdent(hentGrunnlagRequestDto, historiskeIdenterMap)
 
         val ainntektListe = HentAinntektService(
@@ -182,7 +182,7 @@ class HentGrunnlagService(
         }
     }
 
-    // Bytter ut identer i grunnlagspakke-requesten med aktiv ident for personen
+    // Bytter ut identer i requesten med aktiv ident for personen
     private fun byttUtIdentMedAktivIdent(request: HentGrunnlagRequestDto, historiskeIdenterMap: Map<String, List<String>>): HentGrunnlagRequestDto {
         val dtoListe = request.grunnlagRequestDtoListe.map { grunnlagRequestDto ->
             // Søker gjennom value-listen og setter aktivIdent lik tilhørende key-verdi. Hvis personId ikke finnes i lista settes aktivIdent
