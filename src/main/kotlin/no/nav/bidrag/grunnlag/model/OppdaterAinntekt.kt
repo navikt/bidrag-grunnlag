@@ -2,7 +2,6 @@ package no.nav.bidrag.grunnlag.model
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
-import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
@@ -14,6 +13,9 @@ import no.nav.bidrag.grunnlag.exception.custom.UgyldigInputException
 import no.nav.bidrag.grunnlag.service.InntektskomponentenService
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.JANUAR2015
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFilter
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFormaal
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import org.apache.commons.lang3.StringUtils
@@ -32,15 +34,8 @@ class OppdaterAinntekt(
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
     companion object {
-
         @JvmStatic
         val LOGGER: Logger = LoggerFactory.getLogger(OppdaterAinntekt::class.java)
-
-        const val BIDRAG_FILTER = "BidragA-Inntekt"
-        const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
-        const val BIDRAG_FORMAAL = "Bidrag"
-        const val FORSKUDD_FORMAAL = "Bidragsforskudd"
-        const val JANUAR2015 = "2015-01"
     }
 
     fun oppdaterAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>, historiskeIdenterMap: Map<String, List<String>>): OppdaterAinntekt {
@@ -197,14 +192,6 @@ class OppdaterAinntekt(
             }
         }
         return this
-    }
-
-    private fun finnFilter(formaal: String): String {
-        return if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
-    }
-
-    private fun finnFormaal(formaal: String): String {
-        return if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
     }
 
     private fun lagInntektListeRequest(hentInntektRequest: HentInntektRequest): List<HentInntektListeRequest> {

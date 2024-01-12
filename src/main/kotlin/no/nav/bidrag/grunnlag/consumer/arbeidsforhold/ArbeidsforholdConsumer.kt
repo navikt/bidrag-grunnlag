@@ -23,7 +23,6 @@ open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTempla
     }
 
     open fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<List<Arbeidsforhold>> {
-        LOGGER.info("Henter arbeidsforhold fra Aareg")
         SECURE_LOGGER.info("Henter arbeidsforhold fra Aareg med request: $request")
 
         val responseType = object : ParameterizedTypeReference<List<Arbeidsforhold>>() {}

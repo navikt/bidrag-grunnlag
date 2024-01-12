@@ -19,6 +19,14 @@ Støtter foreløpig følgende grunnlag:
 
 I tillegg er det laget et endepunkt for å hente grunnlag direkte, uten å bruke grunnlagspakke og lagring i bidrag-grunnlag.
 Følgende grunnlag kan hentes på denne måten:
+* A-inntekt
+* Skattegrunnlag
+* Utvidet barnetrygd og småbarnstillegg
+* Barnetillegg fra Pensjon
+* Kontantstøtte
+* Barnetilsyn
+* Sivilstand
+* Husstandsmedlemmer og egne barn
 * Arbeidsforhold
 
 Miljøer:

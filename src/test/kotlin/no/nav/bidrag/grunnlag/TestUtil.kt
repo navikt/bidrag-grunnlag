@@ -58,6 +58,7 @@ import no.nav.bidrag.grunnlag.persistence.entity.Kontantstotte
 import no.nav.bidrag.grunnlag.persistence.entity.RelatertPerson
 import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
+import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
@@ -151,6 +152,7 @@ class TestUtil {
         )
 
         fun byggHentGrunnlagRequestKomplett() = HentGrunnlagRequestDto(
+            formaal = Formål.BIDRAG,
             grunnlagRequestDtoListe = listOf(
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.ARBEIDSFORHOLD,
@@ -644,7 +646,7 @@ class TestUtil {
 
         fun byggArbeidsforholdResponse() = immutableListOf(
             Arbeidsforhold(
-                ansettelsesdetaljer = null,
+                ansettelsesdetaljer = emptyList(),
                 ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
                 arbeidssted = null,
                 arbeidstaker = null,
@@ -663,7 +665,7 @@ class TestUtil {
             ),
 
             Arbeidsforhold(
-                ansettelsesdetaljer = null,
+                ansettelsesdetaljer = emptyList(),
                 ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
                 arbeidssted = null,
                 arbeidstaker = null,
@@ -1166,6 +1168,12 @@ class TestUtil {
                 historisk = true,
                 gruppe = Identgruppe.FOLKEREGISTERIDENT,
             ),
+        )
+
+        fun byggPersonIdOgPeriodeRequest() = PersonIdOgPeriodeRequest(
+            personId = "personident",
+            periodeFra = LocalDate.parse("2023-01-01"),
+            periodeTil = LocalDate.parse("2024-01-01"),
         )
 
         fun <Request, Response> performRequest(
