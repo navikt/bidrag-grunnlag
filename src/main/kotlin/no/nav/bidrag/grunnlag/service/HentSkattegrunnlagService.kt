@@ -20,12 +20,12 @@ class HentSkattegrunnlagService(
         val skattegrunnlagListe = mutableListOf<SkattegrunnlagGrunnlagDto>()
 
         skattegrunnlagRequestListe.forEach {
-            var inntektAar = it.periodeFra.year
-            val sluttAar = it.periodeTil.year
+            var inntektÅr = it.periodeFra.year
+            val sluttÅr = it.periodeTil.year
 
-            while (inntektAar < sluttAar) {
+            while (inntektÅr < sluttÅr) {
                 val hentSkattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
-                    inntektsAar = inntektAar.toString(),
+                    inntektsAar = inntektÅr.toString(),
                     inntektsFilter = "SummertSkattegrunnlagBidrag",
                     personId = it.personId,
                 )
@@ -34,15 +34,17 @@ class HentSkattegrunnlagService(
                     val restResponseSkattegrunnlag = sigrunConsumer.hentSummertSkattegrunnlag(hentSkattegrunnlagRequest)
                 ) {
                     is RestResponse.Success -> {
-                        SECURE_LOGGER.info("Sigrun (skattegrunnlag) ga følgende respons for ${it.personId}: ${restResponseSkattegrunnlag.body}")
-                        leggTilSkattegrunnlag(skattegrunnlagListe, restResponseSkattegrunnlag.body, it.personId, inntektAar)
+                        SECURE_LOGGER.info(
+                            "Sigrun (skattegrunnlag) ga følgende respons for ${it.personId} og år $inntektÅr: ${restResponseSkattegrunnlag.body}",
+                        )
+                        leggTilSkattegrunnlag(skattegrunnlagListe, restResponseSkattegrunnlag.body, it.personId, inntektÅr)
                     }
 
                     is RestResponse.Failure -> {
                         return emptyList()
                     }
                 }
-                inntektAar++
+                inntektÅr++
             }
         }
         return skattegrunnlagListe
