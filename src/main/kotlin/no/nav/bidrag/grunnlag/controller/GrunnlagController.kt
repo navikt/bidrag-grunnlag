@@ -138,7 +138,7 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
         request: HentGrunnlagRequestDto,
     ): ResponseEntity<HentGrunnlagDto>? {
         val hentGrunnlagDto = hentGrunnlagService.hentGrunnlag(request)
-        LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
+        SECURE_LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
         return ResponseEntity(hentGrunnlagDto, HttpStatus.OK)
     }
 
