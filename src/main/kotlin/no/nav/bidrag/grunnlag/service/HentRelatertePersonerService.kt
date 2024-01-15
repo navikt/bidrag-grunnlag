@@ -112,6 +112,7 @@ class HentRelatertePersonerService(
             }
 
             is RestResponse.Failure -> {
+                SECURE_LOGGER.warn("Feil ved henting av husstandsmedlemmer for $ident")
                 return emptyList()
             }
         }
@@ -119,17 +120,17 @@ class HentRelatertePersonerService(
     }
 
     // Henter alle barn av BM/BP
-    private fun hentBarn(personIdent: Personident): List<PersonBo> {
+    private fun hentBarn(personident: Personident): List<PersonBo> {
         val barnListe = mutableListOf<PersonBo>()
 
         // Henter en liste over BMs/BPs barn og henter så info om fødselsdag og navn for disse
         when (
-            val restResponseForelderBarnRelasjon = bidragPersonConsumer.hentForelderBarnRelasjon(personIdent)
+            val restResponseForelderBarnRelasjon = bidragPersonConsumer.hentForelderBarnRelasjon(personident)
         ) {
             is RestResponse.Success -> {
                 val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
                 SECURE_LOGGER.info(
-                    "Bidrag-person ga følgende respons på forelder-barn-relasjoner for ${personIdent.verdi}: $forelderBarnRelasjonResponse",
+                    "Bidrag-person ga følgende respons på forelder-barn-relasjoner for ${personident.verdi}: $forelderBarnRelasjonResponse",
                 )
 
                 forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach {
@@ -151,6 +152,7 @@ class HentRelatertePersonerService(
             }
 
             is RestResponse.Failure -> {
+                SECURE_LOGGER.warn("Feil ved henting av forelder-barn-relasjoner for ${personident.verdi}")
                 return emptyList()
             }
         }
@@ -176,8 +178,10 @@ class HentRelatertePersonerService(
                 )
             }
 
-            is RestResponse.Failure ->
+            is RestResponse.Failure -> {
+                SECURE_LOGGER.warn("Feil ved henting av navn og fødselsdato for ${personident.verdi}")
                 return null
+            }
         }
         return navnFødselDødDto
     }

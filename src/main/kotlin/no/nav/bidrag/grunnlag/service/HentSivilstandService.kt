@@ -21,13 +21,13 @@ class HentSivilstandService(
             ) {
                 is RestResponse.Success -> {
                     SECURE_LOGGER.info(
-                        "Kall til bidrag-person for å hente sivilstand ga følgende respons for {${it.personId}: ${restResponseSivilstand.body}",
+                        "Kall til bidrag-person for å hente sivilstand ga følgende respons for ${it.personId}: ${restResponseSivilstand.body}",
                     )
                     leggTilSivilstand(sivilstandListe, restResponseSivilstand.body, it.personId)
                 }
 
                 is RestResponse.Failure -> {
-                    return emptyList()
+                    SECURE_LOGGER.warn("Feil ved henting av sivilstand for ${it.personId}")
                 }
             }
         }

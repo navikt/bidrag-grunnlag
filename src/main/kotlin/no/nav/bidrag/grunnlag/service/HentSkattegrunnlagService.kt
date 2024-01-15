@@ -41,7 +41,7 @@ class HentSkattegrunnlagService(
                     }
 
                     is RestResponse.Failure -> {
-                        return emptyList()
+                        SECURE_LOGGER.warn("Feil ved henting av skattegrunnlag for ${it.personId} og år $inntektÅr")
                     }
                 }
                 inntektÅr++

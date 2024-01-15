@@ -37,7 +37,7 @@ class HentArbeidsforholdService(
                 }
 
                 is RestResponse.Failure -> {
-                    return emptyList()
+                    SECURE_LOGGER.warn("Feil ved hent av arbeidsforhold for ${it.personId}")
                 }
             }
         }
@@ -122,7 +122,7 @@ class HentArbeidsforholdService(
                     }
 
                     else -> {
-                        SECURE_LOGGER.info("Feil ved hent av arbeidsgivernavn fra Enhetsregisteret for orgnr: $orgnr")
+                        SECURE_LOGGER.warn("Feil ved hent av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr")
                     }
                 }
             }
