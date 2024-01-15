@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 
 @Configuration
 @OpenAPIDefinition(
@@ -33,6 +34,9 @@ class BidragGrunnlagTestConfig {
         httpHeaderTestRestTemplate.add(HttpHeaders.AUTHORIZATION) { generateTestToken() }
         return httpHeaderTestRestTemplate
     }
+
+    @Bean
+    fun clientRequestObservationConvention() = DefaultClientRequestObservationConvention()
 
     fun generateTestToken(): String {
         val iss = mockOAuth2Server.issuerUrl("aad")
