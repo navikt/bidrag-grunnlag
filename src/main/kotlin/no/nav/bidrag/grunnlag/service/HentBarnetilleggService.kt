@@ -33,7 +33,7 @@ class HentBarnetilleggService(
                 }
 
                 is RestResponse.Failure -> {
-                    return emptyList()
+                    SECURE_LOGGER.warn("Feil ved henting av barnetillegg pensjon for ${it.personId}")
                 }
             }
         }

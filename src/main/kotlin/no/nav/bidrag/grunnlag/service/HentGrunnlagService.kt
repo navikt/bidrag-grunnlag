@@ -14,7 +14,16 @@ import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.AinntektGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -124,15 +133,28 @@ class HentGrunnlagService(
         )
 
         return HentGrunnlagDto(
-            ainntektListe = ainntektListe,
-            skattegrunnlagListe = skattegrunnlagListe,
-            ubstListe = utvidetBarnetrygdOgKontantstøtteListe,
-            barnetilleggListe = barnetilleggPensjonListe,
-            kontantstøtteListe = kontantstøtteListe,
-            husstandsmedlemmerOgEgneBarnListe = husstandsmedlemmerOgEgneBarnListe,
-            sivilstandListe = sivilstandListe,
-            barnetilsynListe = barnetilsynListe,
-            arbeidsforholdListe = arbeidsforholdListe,
+            ainntektListe = ainntektListe
+                .sortedWith(compareBy<AinntektGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
+            skattegrunnlagListe = skattegrunnlagListe
+                .sortedWith(compareBy<SkattegrunnlagGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
+            ubstListe = utvidetBarnetrygdOgKontantstøtteListe
+                .sortedWith(compareBy<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.periodeFra }),
+            barnetilleggListe = barnetilleggPensjonListe
+                .sortedWith(
+                    compareBy<BarnetilleggGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.barnetilleggType }
+                        .thenBy { it.periodeFra },
+                ),
+            kontantstøtteListe = kontantstøtteListe
+                .sortedWith(compareBy<KontantstøtteGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
+            husstandsmedlemmerOgEgneBarnListe = husstandsmedlemmerOgEgneBarnListe
+                .sortedWith(compareBy<RelatertPersonGrunnlagDto> { it.partPersonId }.thenBy { it.relatertPersonPersonId })
+                .distinct(),
+            sivilstandListe = sivilstandListe
+                .sortedWith(compareBy<SivilstandGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.gyldigFom }),
+            barnetilsynListe = barnetilsynListe
+                .sortedWith(compareBy<BarnetilsynGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
+            arbeidsforholdListe = arbeidsforholdListe
+                .sortedWith(compareBy<ArbeidsforholdGrunnlagDto> { it.partPersonId }.thenBy { it.startdato }),
             hentetTidspunkt = hentetTidspunkt,
         )
     }

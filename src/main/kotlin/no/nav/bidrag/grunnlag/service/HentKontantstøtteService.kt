@@ -37,7 +37,7 @@ class HentKontantstøtteService(
                 }
 
                 is RestResponse.Failure -> {
-                    return emptyList()
+                    SECURE_LOGGER.warn("Feil ved henting av kontantstøtte for $personIdListe")
                 }
             }
         }

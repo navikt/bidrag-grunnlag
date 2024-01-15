@@ -47,7 +47,7 @@ class InntektskomponentenService(
             }
 
             is RestResponse.Failure -> {
-                LOGGER.info("Feil ved hent av abonnerte inntekter. Prøver å hente inntekter uten abonnement")
+                LOGGER.warn("Feil ved hent av abonnerte inntekter. Prøver å hente inntekter uten abonnement")
                 // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
                 when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
                     is RestResponse.Success -> {

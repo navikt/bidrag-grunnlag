@@ -27,12 +27,12 @@ class HentBarnetilsynService(
                 val restResponseBarnetilsyn = familieEfSakConsumer.hentBarnetilsyn(hentBarnetilsynRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Aareg hent arbeidsforhold ga følgende respons: ${restResponseBarnetilsyn.body}")
+                    SECURE_LOGGER.info("Barnetilsyn enslig forsørger ga følgende respons: ${restResponseBarnetilsyn.body}")
                     leggTilBarnetilsyn(barnetilsynListe, restResponseBarnetilsyn.body, it.personId)
                 }
 
                 is RestResponse.Failure -> {
-                    return emptyList()
+                    SECURE_LOGGER.warn("Feil ved henting av barnetilsyn enslig forsørger for ${it.personId}")
                 }
             }
         }
