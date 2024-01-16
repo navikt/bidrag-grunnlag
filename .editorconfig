@@ -2,7 +2,6 @@
 ktlint_code_style = intellij_idea
 max_line_length = 150
 tab_width = 4
-ktlint_standard_discouraged-comment-location = disabled
 
 [**/test/**/*.{kt,kts}]
 ktlint_standard_max-line-length = disabled

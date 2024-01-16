@@ -23,32 +23,18 @@
     <build-helper-maven.version>3.2.0</build-helper-maven.version>
     <token-support.version>3.2.0</token-support.version>
     <!-- dependencies -->
-    <bidrag-commons.version>20231201131246_f719b2b</bidrag-commons.version>
     <bidrag-commons-test.version>1.20230511093912_dc35d81</bidrag-commons-test.version>
-    <bidrag-transport.version>20240111084215_a364fb8</bidrag-transport.version>
+    <bidrag-felles.version>2024.0112.100957</bidrag-felles.version>
     <bidrag-tilgangskontroll.version>1.10.4</bidrag-tilgangskontroll.version>
     <mockito-kotlin.version>5.2.1</mockito-kotlin.version>
-    <springdoc-openapi-ui.version>2.2.0</springdoc-openapi-ui.version>
+    <springdoc-openapi-ui.version>2.3.0</springdoc-openapi-ui.version>
     <nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
-    <springframework-cloud.version>4.0.4</springframework-cloud.version>
+    <springframework-cloud.version>4.1.0</springframework-cloud.version>
     <com.squareup.okhttp3.version>4.12.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
+    <jackson-datatype.version>2.16.1</jackson-datatype.version>
+    <ktlint.version>1.1.1</ktlint.version>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-annotations</artifactId>
-        <version>2.2.19</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <!-- spring -->
@@ -85,7 +71,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.16.0</version>
+      <version>${jackson-datatype.version}</version>
     </dependency>
 
     <!-- nav -->
@@ -96,13 +82,13 @@
     </dependency>
     <dependency>
       <groupId>no.nav.bidrag</groupId>
-      <artifactId>bidrag-commons</artifactId>
-      <version>${bidrag-commons.version}</version>
+      <artifactId>bidrag-commons-felles</artifactId>
+      <version>${bidrag-felles.version}</version>
     </dependency>
     <dependency>
       <groupId>no.nav.bidrag</groupId>
-      <artifactId>bidrag-transport</artifactId>
-      <version>${bidrag-transport.version}</version>
+      <artifactId>bidrag-transport-felles</artifactId>
+      <version>${bidrag-felles.version}</version>
     </dependency>
     <dependency>
       <groupId>no.nav.bidrag</groupId>
@@ -291,7 +277,7 @@
           <dependency>
             <groupId>com.pinterest.ktlint</groupId>
             <artifactId>ktlint-cli</artifactId>
-            <version>1.1.0</version>
+            <version>${ktlint.version}</version>
           </dependency>
           <!-- additional 3rd party ruleset(s) can be specified here -->
         </dependencies>

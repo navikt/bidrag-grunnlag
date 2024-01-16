@@ -92,7 +92,10 @@ class PeriodComparatorTest {
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
         newEntities =
-            createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektspost(beskrivelse = "Beskrivelse2")))
+            createPeriodEntities(
+                Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+                listOf(createAinntektspost(beskrivelse = "Beskrivelse2")),
+            )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
@@ -102,12 +105,18 @@ class PeriodComparatorTest {
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
         newEntities =
-            createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektspost(inntektType = "Inntekttype2")))
+            createPeriodEntities(
+                Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+                listOf(createAinntektspost(inntektType = "Inntekttype2")),
+            )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
         newEntities =
-            createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektspost(opplysningspliktigId = "Opp2")))
+            createPeriodEntities(
+                Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+                listOf(createAinntektspost(opplysningspliktigId = "Opp2")),
+            )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
@@ -125,7 +134,10 @@ class PeriodComparatorTest {
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
-        newEntities = createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektspost(virksomhetId = "Virk2")))
+        newEntities = createPeriodEntities(
+            Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+            listOf(createAinntektspost(virksomhetId = "Virk2")),
+        )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
@@ -135,12 +147,18 @@ class PeriodComparatorTest {
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
         newEntities =
-            createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektspost(etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1))))
+            createPeriodEntities(
+                Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+                listOf(createAinntektspost(etterbetalingsperiodeFom = LocalDate.of(2021, 10, 1))),
+            )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
 
         newEntities =
-            createPeriodEntities(Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)), listOf(createAinntektspost(etterbetalingsperiodeTom = LocalDate.of(2021, 10, 1))))
+            createPeriodEntities(
+                Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
+                listOf(createAinntektspost(etterbetalingsperiodeTom = LocalDate.of(2021, 10, 1))),
+            )
 
         assertFalse(ainntektPeriodComparator.isEntitiesEqual(newEntities[0], existingEntities[0]))
     }
