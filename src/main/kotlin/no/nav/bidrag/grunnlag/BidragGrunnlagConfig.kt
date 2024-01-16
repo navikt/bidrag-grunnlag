@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Scope
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 
 const val LIVE_PROFILE = "live"
 
@@ -67,6 +68,9 @@ class BidragGrunnlagConfig {
         httpHeaderRestTemplate.addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER) { CorrelationId.fetchCorrelationIdForThread() }
         return httpHeaderRestTemplate
     }
+
+    @Bean
+    fun clientRequestObservationConvention() = DefaultClientRequestObservationConvention()
 
     @Bean
     fun familieBaSakConsumer(
