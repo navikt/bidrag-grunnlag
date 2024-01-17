@@ -24,6 +24,8 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnl
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -39,7 +41,15 @@ class HentGrunnlagService(
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
     private val enhetsregisterConsumer: EnhetsregisterConsumer,
 ) {
+
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LoggerFactory.getLogger(HentGrunnlagService::class.java)
+    }
+
     fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
+        LOGGER.info("*** Start HENT GRUNNLAG ***")
+
         val hentetTidspunkt = LocalDateTime.now()
 
         // Henter aktiv ident for personer i requesten
@@ -131,6 +141,7 @@ class HentGrunnlagService(
                 hentGrunnlagRequestDto = requestMedNyesteIdenter,
             ),
         )
+        LOGGER.info("*** Slutt HENT GRUNNLAG ***")
 
         return HentGrunnlagDto(
             ainntektListe = ainntektListe

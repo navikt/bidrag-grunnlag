@@ -34,6 +34,7 @@
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <jackson-datatype.version>2.16.1</jackson-datatype.version>
     <ktlint.version>1.1.1</ktlint.version>
+    <kotlin-coroutines.version>1.7.3</kotlin-coroutines.version>
   </properties>
 
   <dependencies>
@@ -72,6 +73,19 @@
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
       <version>${jackson-datatype.version}</version>
+    </dependency>
+
+    <!-- kotlin coroutines -->
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-core-jvm</artifactId>
+      <version>${kotlin-coroutines.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-reactor</artifactId>
+      <version>${kotlin-coroutines.version}</version>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- nav -->

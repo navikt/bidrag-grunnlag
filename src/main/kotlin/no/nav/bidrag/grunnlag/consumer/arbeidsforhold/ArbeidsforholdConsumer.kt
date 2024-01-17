@@ -11,6 +11,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 
 private const val AAREG_CONTEXT = "/api/v2/arbeidstaker/arbeidsforhold"
 
@@ -22,6 +24,7 @@ open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTempla
         val LOGGER: Logger = LoggerFactory.getLogger(ArbeidsforholdConsumer::class.java)
     }
 
+    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<List<Arbeidsforhold>> {
         SECURE_LOGGER.info("Henter arbeidsforhold fra Aareg med request: $request")
 

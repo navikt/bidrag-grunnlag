@@ -6,6 +6,8 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -14,7 +16,14 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
     private val familieBaSakConsumer: FamilieBaSakConsumer,
 ) : List<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> by listOf() {
 
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LoggerFactory.getLogger(HentUtvidetBarnetrygdOgSmåbarnstilleggService::class.java)
+    }
+
     fun hentUbst(ubstRequestListe: List<PersonIdOgPeriodeRequest>): List<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> {
+        LOGGER.info("Start UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG")
+
         val ubstListe = mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto>()
 
         ubstRequestListe.forEach {
@@ -38,6 +47,8 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
                 }
             }
         }
+
+        LOGGER.info("Slutt UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG")
         return ubstListe
     }
 

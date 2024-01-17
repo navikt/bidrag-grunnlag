@@ -11,6 +11,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.web.util.UriComponentsBuilder
 
 private const val BARNETILLEGG_URL = "/pen/api/barnetillegg/search"
@@ -22,6 +24,7 @@ open class PensjonConsumer(private val restTemplate: HttpHeaderRestTemplate) : G
         val LOGGER: Logger = LoggerFactory.getLogger(PensjonConsumer::class.java)
     }
 
+    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentBarnetilleggPensjon(request: HentBarnetilleggPensjonRequest): RestResponse<List<BarnetilleggPensjon>> {
         val uri = UriComponentsBuilder.fromPath(BARNETILLEGG_URL)
             .build()

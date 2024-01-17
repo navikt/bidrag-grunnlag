@@ -12,6 +12,8 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.Ansettelsesdetaljer
 import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.Permisjon
 import no.nav.bidrag.transport.behandling.grunnlag.response.Permittering
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 // @Service
 class HentArbeidsforholdService(
@@ -19,7 +21,14 @@ class HentArbeidsforholdService(
     private val enhetsregisterConsumer: EnhetsregisterConsumer,
 ) : List<ArbeidsforholdGrunnlagDto> by listOf() {
 
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LoggerFactory.getLogger(HentArbeidsforholdService::class.java)
+    }
+
     fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): List<ArbeidsforholdGrunnlagDto> {
+        LOGGER.info("Start ARBEIDSFORHOLD")
+
         val arbeidsforholdListe = mutableListOf<ArbeidsforholdGrunnlagDto>()
 
         arbeidsforholdRequestListe.forEach {
@@ -41,6 +50,8 @@ class HentArbeidsforholdService(
                 }
             }
         }
+
+        LOGGER.info("Slutt ARBEIDSFORHOLD")
         return arbeidsforholdListe
     }
 

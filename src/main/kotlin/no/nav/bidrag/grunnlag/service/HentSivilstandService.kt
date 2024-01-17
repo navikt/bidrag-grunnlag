@@ -6,13 +6,22 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 // @Service
 class HentSivilstandService(
     private val bidragPersonConsumer: BidragPersonConsumer,
 ) : List<SivilstandGrunnlagDto> by listOf() {
 
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LoggerFactory.getLogger(HentSivilstandService::class.java)
+    }
+
     fun hentSivilstand(sivilstandRequestListe: List<PersonIdOgPeriodeRequest>): List<SivilstandGrunnlagDto> {
+        LOGGER.info("Start SIVILSTAND")
+
         val sivilstandListe = mutableListOf<SivilstandGrunnlagDto>()
 
         sivilstandRequestListe.forEach {
@@ -31,6 +40,8 @@ class HentSivilstandService(
                 }
             }
         }
+
+        LOGGER.info("Slutt SIVILSTAND")
         return sivilstandListe
     }
 
