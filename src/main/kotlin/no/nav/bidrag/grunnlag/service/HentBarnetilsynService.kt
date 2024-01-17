@@ -8,13 +8,22 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynGrunnlagDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 // @Service
 class HentBarnetilsynService(
     private val familieEfSakConsumer: FamilieEfSakConsumer,
 ) : List<BarnetilsynGrunnlagDto> by listOf() {
 
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LoggerFactory.getLogger(HentBarnetilsynService::class.java)
+    }
+
     fun hentBarnetilsyn(barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>): List<BarnetilsynGrunnlagDto> {
+        LOGGER.info("Start BARNETILSYN")
+
         val barnetilsynListe = mutableListOf<BarnetilsynGrunnlagDto>()
 
         barnetilsynRequestListe.forEach {
@@ -36,6 +45,8 @@ class HentBarnetilsynService(
                 }
             }
         }
+
+        LOGGER.info("Slutt BARNETILSYN")
         return barnetilsynListe
     }
 

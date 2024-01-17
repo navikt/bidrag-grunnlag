@@ -9,6 +9,8 @@ import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
 // @Service
@@ -16,7 +18,14 @@ class HentRelatertePersonerService(
     private val bidragPersonConsumer: BidragPersonConsumer,
 ) : List<RelatertPersonGrunnlagDto> by listOf() {
 
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LoggerFactory.getLogger(HentRelatertePersonerService::class.java)
+    }
+
     fun hentRelatertePersoner(relatertPersonRequestListe: List<PersonIdOgPeriodeRequest>): List<RelatertPersonGrunnlagDto> {
+        LOGGER.info("Start HUSSTANDSMEDLEMMER_OG_EGNE_BARN")
+
         val relatertPersonListe = mutableListOf<RelatertPersonGrunnlagDto>()
         val relatertPersonInternListe = mutableListOf<RelatertPersonIntern>()
 
@@ -82,6 +91,7 @@ class HentRelatertePersonerService(
                 }
         }
 
+        LOGGER.info("Slutt HUSSTANDSMEDLEMMER_OG_EGNE_BARN")
         return relatertPersonListe
     }
 

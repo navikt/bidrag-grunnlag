@@ -29,6 +29,8 @@ class HentAinntektService(
     }
 
     fun hentAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>, formål: Formål): List<AinntektGrunnlagDto> {
+        LOGGER.info("Start AINNTEKT")
+
         val ainntektListe = mutableListOf<AinntektGrunnlagDto>()
 
         ainntektRequestListe.forEach {
@@ -48,6 +50,7 @@ class HentAinntektService(
             }
         }
 
+        LOGGER.info("Slutt AINNTEKT")
         return ainntektListe
     }
 

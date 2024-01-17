@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Scope
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
+import org.springframework.retry.annotation.EnableRetry
 
 const val LIVE_PROFILE = "live"
 
@@ -47,6 +48,7 @@ const val LIVE_PROFILE = "live"
     type = SecuritySchemeType.HTTP,
 )
 @EnableUserCache
+@EnableRetry
 @Import(CorrelationIdFilter::class, UserMdcFilter::class, DefaultCorsFilter::class)
 class BidragGrunnlagConfig {
 

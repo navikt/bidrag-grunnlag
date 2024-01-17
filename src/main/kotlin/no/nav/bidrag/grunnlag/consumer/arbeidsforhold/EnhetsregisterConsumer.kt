@@ -10,6 +10,8 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 
 open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTemplate) :
     GrunnlagsConsumer() {
@@ -19,6 +21,7 @@ open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTempla
         val LOGGER: Logger = LoggerFactory.getLogger(EnhetsregisterConsumer::class.java)
     }
 
+    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentEnhetsinfo(request: HentEnhetsregisterRequest): RestResponse<HentEnhetsregisterResponse> {
         LOGGER.info("Henter info om en organisasjon fra Ereg")
         SECURE_LOGGER.info("Henter info om en organisasjon fra Ereg med request: $request")

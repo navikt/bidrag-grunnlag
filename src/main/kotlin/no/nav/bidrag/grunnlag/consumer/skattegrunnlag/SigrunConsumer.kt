@@ -10,6 +10,8 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 import org.springframework.web.util.UriComponentsBuilder
 
 private const val SUMMERT_SKATTEGRUNNLAG_URL = "/api/v1/summertskattegrunnlag"
@@ -23,6 +25,7 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
         val LOGGER: Logger = LoggerFactory.getLogger(SigrunConsumer::class.java)
     }
 
+    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentSummertSkattegrunnlag(request: HentSummertSkattegrunnlagRequest): RestResponse<HentSummertSkattegrunnlagResponse> {
         val uri = UriComponentsBuilder.fromPath(SUMMERT_SKATTEGRUNNLAG_URL)
             .queryParam(INNTEKTSAAR, request.inntektsAar)

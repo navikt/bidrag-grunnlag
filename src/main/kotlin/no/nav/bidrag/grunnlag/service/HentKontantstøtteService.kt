@@ -6,6 +6,8 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -14,10 +16,17 @@ class HentKontantstøtteService(
     private val familieKsSakConsumer: FamilieKsSakConsumer,
 ) : List<KontantstøtteGrunnlagDto> by listOf() {
 
+    companion object {
+        @JvmStatic
+        val LOGGER: Logger = LoggerFactory.getLogger(HentKontantstøtteService::class.java)
+    }
+
     fun hentKontantstøtte(
         kontantstøtteRequestListe: List<PersonIdOgPeriodeRequest>,
         historiskeIdenterMap: Map<String, List<String>>,
     ): List<KontantstøtteGrunnlagDto> {
+        LOGGER.info("Start KONTANTSTØTTE")
+
         val kontantstøtteListe = mutableListOf<KontantstøtteGrunnlagDto>()
 
         kontantstøtteRequestListe.forEach {
@@ -41,6 +50,8 @@ class HentKontantstøtteService(
                 }
             }
         }
+
+        LOGGER.info("Slutt KONTANTSTØTTE")
         return kontantstøtteListe
     }
 
