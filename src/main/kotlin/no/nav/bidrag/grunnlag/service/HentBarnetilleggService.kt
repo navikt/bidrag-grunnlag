@@ -8,22 +8,12 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
-// @Service
 class HentBarnetilleggService(
     private val pensjonConsumer: PensjonConsumer,
 ) : List<BarnetilleggGrunnlagDto> by listOf() {
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(HentBarnetilleggService::class.java)
-    }
-
     fun hentBarnetilleggPensjon(barnetilleggPensjonRequestListe: List<PersonIdOgPeriodeRequest>): List<BarnetilleggGrunnlagDto> {
-        LOGGER.info("Start BARNETILLEGG")
-
         val barnetilleggPensjonListe = mutableListOf<BarnetilleggGrunnlagDto>()
 
         barnetilleggPensjonRequestListe.forEach {
@@ -37,7 +27,7 @@ class HentBarnetilleggService(
                 val restResponseBarnetillegg = pensjonConsumer.hentBarnetilleggPensjon(hentBarnetilleggRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: ${restResponseBarnetillegg.body}")
+                    SECURE_LOGGER.info("Henting av barnetillegg pensjon ga følgende respons for ${it.personId}: ${restResponseBarnetillegg.body}")
                     leggTilBarnetillegg(barnetilleggPensjonListe, restResponseBarnetillegg.body, it.personId)
                 }
 
@@ -47,7 +37,6 @@ class HentBarnetilleggService(
             }
         }
 
-        LOGGER.info("Slutt BARNETILLEGG")
         return barnetilleggPensjonListe
     }
 

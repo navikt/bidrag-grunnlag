@@ -8,24 +8,14 @@ import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunn
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagspostDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.time.LocalDate
 
-// @Service
 class HentSkattegrunnlagService(
     private val sigrunConsumer: SigrunConsumer,
 ) : List<SkattegrunnlagGrunnlagDto> by listOf() {
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(HentSkattegrunnlagService::class.java)
-    }
-
     fun hentSkattegrunnlag(skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>): List<SkattegrunnlagGrunnlagDto> {
-        LOGGER.info("Start SKATTEGRUNNLAG")
-
         val skattegrunnlagListe = mutableListOf<SkattegrunnlagGrunnlagDto>()
 
         skattegrunnlagRequestListe.forEach {
@@ -44,7 +34,7 @@ class HentSkattegrunnlagService(
                 ) {
                     is RestResponse.Success -> {
                         SECURE_LOGGER.info(
-                            "Sigrun (skattegrunnlag) ga følgende respons for ${it.personId} og år $inntektÅr: ${restResponseSkattegrunnlag.body}",
+                            "Henting av skattegrunnlag ga følgende respons for ${it.personId} og år $inntektÅr: ${restResponseSkattegrunnlag.body}",
                         )
                         leggTilSkattegrunnlag(skattegrunnlagListe, restResponseSkattegrunnlag.body, it.personId, inntektÅr)
                     }
@@ -57,7 +47,6 @@ class HentSkattegrunnlagService(
             }
         }
 
-        LOGGER.info("Slutt SKATTEGRUNNLAG")
         return skattegrunnlagListe
     }
 

@@ -30,7 +30,6 @@ import no.nav.bidrag.grunnlag.exception.custom.CustomExceptionHandler
 import no.nav.bidrag.grunnlag.persistence.repository.GrunnlagspakkeRepository
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
-import no.nav.bidrag.grunnlag.service.HentGrunnlagServiceAsynk
 import no.nav.bidrag.grunnlag.service.InntektskomponentenService
 import no.nav.bidrag.grunnlag.service.OppdaterGrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.PersistenceService
@@ -120,19 +119,7 @@ class GrunnlagControllerTest(
             arbeidsforholdConsumer = arbeidsforholdConsumer,
             enhetsregisterConsumer = enhetsregisterConsumer,
         )
-    private val hentGrunnlagServiceAsynk: HentGrunnlagServiceAsynk =
-        HentGrunnlagServiceAsynk(
-            inntektskomponentenService = inntektskomponentenService,
-            sigrunConsumer = sigrunConsumer,
-            familieBaSakConsumer = familieBaSakConsumer,
-            pensjonConsumer = pensjonConsumer,
-            familieKsSakConsumer = familieKsSakConsumer,
-            bidragPersonConsumer = bidragPersonConsumer,
-            familieEfSakConsumer = familieEfSakConsumer,
-            arbeidsforholdConsumer = arbeidsforholdConsumer,
-            enhetsregisterConsumer = enhetsregisterConsumer,
-        )
-    private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService, hentGrunnlagServiceAsynk)
+    private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
     private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagController)
         .setControllerAdvice(
             RestExceptionHandler(exceptionLogger),
@@ -366,7 +353,7 @@ class GrunnlagControllerTest(
     @Suppress("NonAsciiCharacters")
     fun `skal fange opp og håndtere Hibernate-feil`() {
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService, hentGrunnlagServiceAsynk)
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
         val mockMvc =
             MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(HibernateExceptionHandler(exceptionLogger)).build()
 
@@ -495,7 +482,7 @@ class GrunnlagControllerTest(
         assertNotNull(errorResult["grunnlagRequestDtoListe[0].periodeTil"])
 
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService, hentGrunnlagServiceAsynk)
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
         val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
         Mockito.`when`(
@@ -549,7 +536,7 @@ class GrunnlagControllerTest(
         assertNotNull(errorResult["grunnlagspakkeId"])
 
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService, hentGrunnlagServiceAsynk)
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
         val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
         Mockito.`when`(grunnlagspakkeService.lukkGrunnlagspakke(1)).thenReturn(1)
@@ -580,7 +567,7 @@ class GrunnlagControllerTest(
         assertNotNull(errorResult["grunnlagspakkeId"])
 
         val grunnlagspakkeService = Mockito.mock(GrunnlagspakkeService::class.java)
-        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService, hentGrunnlagServiceAsynk)
+        val grunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
         val mockMvc = MockMvcBuilders.standaloneSetup(grunnlagController).setControllerAdvice(RestExceptionHandler(exceptionLogger)).build()
 
         Mockito.`when`(grunnlagspakkeService.hentGrunnlagspakke(1))

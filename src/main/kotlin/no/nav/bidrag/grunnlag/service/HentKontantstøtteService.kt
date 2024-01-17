@@ -6,27 +6,17 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.YearMonth
 
-// @Service
 class HentKontantstøtteService(
     private val familieKsSakConsumer: FamilieKsSakConsumer,
 ) : List<KontantstøtteGrunnlagDto> by listOf() {
-
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(HentKontantstøtteService::class.java)
-    }
 
     fun hentKontantstøtte(
         kontantstøtteRequestListe: List<PersonIdOgPeriodeRequest>,
         historiskeIdenterMap: Map<String, List<String>>,
     ): List<KontantstøtteGrunnlagDto> {
-        LOGGER.info("Start KONTANTSTØTTE")
-
         val kontantstøtteListe = mutableListOf<KontantstøtteGrunnlagDto>()
 
         kontantstøtteRequestListe.forEach {
@@ -41,7 +31,7 @@ class HentKontantstøtteService(
                 val restResponseKontantstøtte = familieKsSakConsumer.hentKontantstotte(hentKontantstøtteRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Hent kontantstøtte ga følgende respons: ${restResponseKontantstøtte.body}")
+                    SECURE_LOGGER.info("Henting av kontantstøtte ga følgende respons for $personIdListe: ${restResponseKontantstøtte.body}")
                     leggTilKontantstøtte(kontantstøtteListe, restResponseKontantstøtte.body, it)
                 }
 
@@ -51,7 +41,6 @@ class HentKontantstøtteService(
             }
         }
 
-        LOGGER.info("Slutt KONTANTSTØTTE")
         return kontantstøtteListe
     }
 

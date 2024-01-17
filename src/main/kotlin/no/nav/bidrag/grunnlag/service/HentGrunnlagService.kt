@@ -1,5 +1,11 @@
 package no.nav.bidrag.grunnlag.service
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import no.nav.bidrag.commons.util.RequestContextAsyncContext
+import no.nav.bidrag.commons.util.SecurityCoroutineContext
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
@@ -47,8 +53,8 @@ class HentGrunnlagService(
         val LOGGER: Logger = LoggerFactory.getLogger(HentGrunnlagService::class.java)
     }
 
-    fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
-        LOGGER.info("*** Start HENT GRUNNLAG ***")
+    suspend fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
+        val scope = CoroutineScope(Dispatchers.IO + SecurityCoroutineContext() + RequestContextAsyncContext())
 
         val hentetTidspunkt = LocalDateTime.now()
 
@@ -58,116 +64,137 @@ class HentGrunnlagService(
         // Oppdaterer aktiv ident for personer i requesten
         val requestMedNyesteIdenter = byttUtIdentMedAktivIdent(hentGrunnlagRequestDto, historiskeIdenterMap)
 
-        val ainntektListe = HentAinntektService(
-            inntektskomponentenService = inntektskomponentenService,
-        ).hentAinntekt(
-            ainntektRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.AINNTEKT,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-            formål = hentGrunnlagRequestDto.formaal,
-        )
+        return runBlocking {
+            val ainntektListe = scope.async {
+                HentAinntektService(
+                    inntektskomponentenService = inntektskomponentenService,
+                ).hentAinntekt(
+                    ainntektRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.AINNTEKT,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                    formål = hentGrunnlagRequestDto.formaal,
+                )
+            }
 
-        val skattegrunnlagListe = HentSkattegrunnlagService(
-            sigrunConsumer = sigrunConsumer,
-        ).hentSkattegrunnlag(
-            skattegrunnlagRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.SKATTEGRUNNLAG,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-        )
+            val skattegrunnlagListe = scope.async {
+                HentSkattegrunnlagService(
+                    sigrunConsumer = sigrunConsumer,
+                ).hentSkattegrunnlag(
+                    skattegrunnlagRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.SKATTEGRUNNLAG,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
 
-        val utvidetBarnetrygdOgKontantstøtteListe = HentUtvidetBarnetrygdOgSmåbarnstilleggService(
-            familieBaSakConsumer = familieBaSakConsumer,
-        ).hentUbst(
-            ubstRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-        )
+            val utvidetBarnetrygdOgKontantstøtteListe = scope.async {
+                HentUtvidetBarnetrygdOgSmåbarnstilleggService(
+                    familieBaSakConsumer = familieBaSakConsumer,
+                ).hentUbst(
+                    ubstRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
 
-        val barnetilleggPensjonListe = HentBarnetilleggService(
-            pensjonConsumer = pensjonConsumer,
-        ).hentBarnetilleggPensjon(
-            barnetilleggPensjonRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.BARNETILLEGG,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-        )
+            val barnetilleggPensjonListe = scope.async {
+                HentBarnetilleggService(
+                    pensjonConsumer = pensjonConsumer,
+                ).hentBarnetilleggPensjon(
+                    barnetilleggPensjonRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.BARNETILLEGG,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
 
-        val kontantstøtteListe = HentKontantstøtteService(
-            familieKsSakConsumer = familieKsSakConsumer,
-        ).hentKontantstøtte(
-            kontantstøtteRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.KONTANTSTØTTE,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-            historiskeIdenterMap = historiskeIdenterMap,
-        )
+            val kontantstøtteListe = scope.async {
+                HentKontantstøtteService(
+                    familieKsSakConsumer = familieKsSakConsumer,
+                ).hentKontantstøtte(
+                    kontantstøtteRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.KONTANTSTØTTE,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
 
-        val husstandsmedlemmerOgEgneBarnListe = HentRelatertePersonerService(
-            bidragPersonConsumer = bidragPersonConsumer,
-        ).hentRelatertePersoner(
-            relatertPersonRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-        )
+            val husstandsmedlemmerOgEgneBarnListe = scope.async {
+                HentRelatertePersonerService(
+                    bidragPersonConsumer = bidragPersonConsumer,
+                ).hentRelatertePersoner(
+                    relatertPersonRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
 
-        val sivilstandListe = HentSivilstandService(
-            bidragPersonConsumer = bidragPersonConsumer,
-        ).hentSivilstand(
-            sivilstandRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.SIVILSTAND,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-        )
+            val sivilstandListe = scope.async {
+                HentSivilstandService(
+                    bidragPersonConsumer = bidragPersonConsumer,
+                ).hentSivilstand(
+                    sivilstandRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.SIVILSTAND,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
 
-        val barnetilsynListe = HentBarnetilsynService(
-            familieEfSakConsumer = familieEfSakConsumer,
-        ).hentBarnetilsyn(
-            barnetilsynRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.BARNETILSYN,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-        )
+            val barnetilsynListe = scope.async {
+                HentBarnetilsynService(
+                    familieEfSakConsumer = familieEfSakConsumer,
+                ).hentBarnetilsyn(
+                    barnetilsynRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.BARNETILSYN,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
 
-        val arbeidsforholdListe = HentArbeidsforholdService(
-            arbeidsforholdConsumer = arbeidsforholdConsumer,
-            enhetsregisterConsumer = enhetsregisterConsumer,
-        ).hentArbeidsforhold(
-            arbeidsforholdRequestListe = hentRequestListeFor(
-                type = GrunnlagRequestType.ARBEIDSFORHOLD,
-                hentGrunnlagRequestDto = requestMedNyesteIdenter,
-            ),
-        )
-        LOGGER.info("*** Slutt HENT GRUNNLAG ***")
+            val arbeidsforholdListe = scope.async {
+                HentArbeidsforholdService(
+                    arbeidsforholdConsumer = arbeidsforholdConsumer,
+                    enhetsregisterConsumer = enhetsregisterConsumer,
+                ).hentArbeidsforhold(
+                    arbeidsforholdRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.ARBEIDSFORHOLD,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
 
-        return HentGrunnlagDto(
-            ainntektListe = ainntektListe
-                .sortedWith(compareBy<AinntektGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
-            skattegrunnlagListe = skattegrunnlagListe
-                .sortedWith(compareBy<SkattegrunnlagGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
-            ubstListe = utvidetBarnetrygdOgKontantstøtteListe
-                .sortedWith(compareBy<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.periodeFra }),
-            barnetilleggListe = barnetilleggPensjonListe
-                .sortedWith(
-                    compareBy<BarnetilleggGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.barnetilleggType }
-                        .thenBy { it.periodeFra },
-                ),
-            kontantstøtteListe = kontantstøtteListe
-                .sortedWith(compareBy<KontantstøtteGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
-            husstandsmedlemmerOgEgneBarnListe = husstandsmedlemmerOgEgneBarnListe
-                .sortedWith(compareBy<RelatertPersonGrunnlagDto> { it.partPersonId }.thenBy { it.relatertPersonPersonId })
-                .distinct(),
-            sivilstandListe = sivilstandListe
-                .sortedWith(compareBy<SivilstandGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.gyldigFom }),
-            barnetilsynListe = barnetilsynListe
-                .sortedWith(compareBy<BarnetilsynGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
-            arbeidsforholdListe = arbeidsforholdListe
-                .sortedWith(compareBy<ArbeidsforholdGrunnlagDto> { it.partPersonId }.thenBy { it.startdato }),
-            hentetTidspunkt = hentetTidspunkt,
-        )
+            HentGrunnlagDto(
+                ainntektListe = ainntektListe.await()
+                    .sortedWith(compareBy<AinntektGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
+                skattegrunnlagListe = skattegrunnlagListe.await()
+                    .sortedWith(compareBy<SkattegrunnlagGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
+                ubstListe = utvidetBarnetrygdOgKontantstøtteListe.await()
+                    .sortedWith(
+                        compareBy<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.periodeFra },
+                    ),
+                barnetilleggListe = barnetilleggPensjonListe.await()
+                    .sortedWith(
+                        compareBy<BarnetilleggGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.barnetilleggType }
+                            .thenBy { it.periodeFra },
+                    ),
+                kontantstøtteListe = kontantstøtteListe.await()
+                    .sortedWith(compareBy<KontantstøtteGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
+                husstandsmedlemmerOgEgneBarnListe = husstandsmedlemmerOgEgneBarnListe.await()
+                    .sortedWith(compareBy<RelatertPersonGrunnlagDto> { it.partPersonId }.thenBy { it.relatertPersonPersonId })
+                    .distinct(),
+                sivilstandListe = sivilstandListe.await()
+                    .sortedWith(compareBy<SivilstandGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.gyldigFom }),
+                barnetilsynListe = barnetilsynListe.await()
+                    .sortedWith(compareBy<BarnetilsynGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
+                arbeidsforholdListe = arbeidsforholdListe.await()
+                    .sortedWith(compareBy<ArbeidsforholdGrunnlagDto> { it.partPersonId }.thenBy { it.startdato }),
+                hentetTidspunkt = hentetTidspunkt,
+            )
+        }
     }
 
     // Henter historiske identer for personer i requesten.
