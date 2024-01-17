@@ -9,23 +9,13 @@ import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
-// @Service
 class HentRelatertePersonerService(
     private val bidragPersonConsumer: BidragPersonConsumer,
 ) : List<RelatertPersonGrunnlagDto> by listOf() {
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(HentRelatertePersonerService::class.java)
-    }
-
     fun hentRelatertePersoner(relatertPersonRequestListe: List<PersonIdOgPeriodeRequest>): List<RelatertPersonGrunnlagDto> {
-        LOGGER.info("Start HUSSTANDSMEDLEMMER_OG_EGNE_BARN")
-
         val relatertPersonListe = mutableListOf<RelatertPersonGrunnlagDto>()
         val relatertPersonInternListe = mutableListOf<RelatertPersonIntern>()
 
@@ -91,7 +81,6 @@ class HentRelatertePersonerService(
                 }
         }
 
-        LOGGER.info("Slutt HUSSTANDSMEDLEMMER_OG_EGNE_BARN")
         return relatertPersonListe
     }
 
@@ -140,7 +129,7 @@ class HentRelatertePersonerService(
             is RestResponse.Success -> {
                 val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
                 SECURE_LOGGER.info(
-                    "Bidrag-person ga følgende respons på forelder-barn-relasjoner for ${personident.verdi}: $forelderBarnRelasjonResponse",
+                    "Henting av forelder-barn-relasjoner ga følgende respons for ${personident.verdi}: $forelderBarnRelasjonResponse",
                 )
 
                 forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach {
@@ -178,7 +167,7 @@ class HentRelatertePersonerService(
         ) {
             is RestResponse.Success -> {
                 val foedselOgDoedResponse = restResponseFoedselOgDoed.body
-                SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsdato for ${personident.verdi}: $foedselOgDoedResponse")
+                SECURE_LOGGER.info("Henting av navn og fødselsdato ga følgende respons for ${personident.verdi}: $foedselOgDoedResponse")
 
                 navnFødselDødDto = NavnFødselDødDto(
                     foedselOgDoedResponse.navn,

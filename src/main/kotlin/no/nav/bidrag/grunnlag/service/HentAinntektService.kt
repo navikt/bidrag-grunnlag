@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.YearMonth
 
-// @Service
 class HentAinntektService(
     private val inntektskomponentenService: InntektskomponentenService,
 ) : List<AinntektGrunnlagDto> by listOf() {
@@ -29,8 +28,6 @@ class HentAinntektService(
     }
 
     fun hentAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>, formål: Formål): List<AinntektGrunnlagDto> {
-        LOGGER.info("Start AINNTEKT")
-
         val ainntektListe = mutableListOf<AinntektGrunnlagDto>()
 
         ainntektRequestListe.forEach {
@@ -50,7 +47,6 @@ class HentAinntektService(
             }
         }
 
-        LOGGER.info("Slutt AINNTEKT")
         return ainntektListe
     }
 

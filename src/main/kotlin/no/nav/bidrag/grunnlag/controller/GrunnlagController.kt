@@ -10,7 +10,6 @@ import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
-import no.nav.bidrag.grunnlag.service.HentGrunnlagServiceAsynk
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController
 class GrunnlagController(
     private val grunnlagspakkeService: GrunnlagspakkeService,
     private val hentGrunnlagService: HentGrunnlagService,
-    private val hentGrunnlagServiceAsynk: HentGrunnlagServiceAsynk,
 ) {
 
     @PostMapping(GRUNNLAGSPAKKE_NY)
@@ -124,30 +122,6 @@ class GrunnlagController(
     @PostMapping(HENT_GRUNNLAG)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
-        summary = "Trigger innhenting av grunnlag for personer angitt i requesten",
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Grunnlag innhentet"),
-            ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
-            ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data"),
-            ApiResponse(responseCode = "404", description = "Grunnlag ikke funnet"),
-            ApiResponse(responseCode = "500", description = "Serverfeil"),
-            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
-        ],
-    )
-    fun hentGrunnlag(
-        @Valid @RequestBody
-        request: HentGrunnlagRequestDto,
-    ): HentGrunnlagDto? {
-        val hentGrunnlagDto = hentGrunnlagService.hentGrunnlag(request)
-        SECURE_LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
-        return hentGrunnlagDto
-    }
-
-    @PostMapping(HENT_GRUNNLAG_ASYNK)
-    @Operation(
-        security = [SecurityRequirement(name = "bearer-key")],
         summary = "Trigger asynkron innhenting av grunnlag for personer angitt i requesten",
     )
     @ApiResponses(
@@ -160,11 +134,11 @@ class GrunnlagController(
             ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
         ],
     )
-    suspend fun hentGrunnlagAsynk(
+    suspend fun hentGrunnlag(
         @Valid @RequestBody
         request: HentGrunnlagRequestDto,
     ): HentGrunnlagDto? {
-        val hentGrunnlagDto = hentGrunnlagServiceAsynk.hentGrunnlag(request)
+        val hentGrunnlagDto = hentGrunnlagService.hentGrunnlag(request)
         SECURE_LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
         return hentGrunnlagDto
     }
@@ -176,7 +150,6 @@ class GrunnlagController(
         const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/{grunnlagspakkeId}"
         const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/{grunnlagspakkeId}/lukk"
         const val HENT_GRUNNLAG = "/hentgrunnlag"
-        const val HENT_GRUNNLAG_ASYNK = "/hentgrunnlagasynk"
         private val LOGGER = LoggerFactory.getLogger(GrunnlagController::class.java)
     }
 }

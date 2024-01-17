@@ -12,23 +12,13 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.Ansettelsesdetaljer
 import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.Permisjon
 import no.nav.bidrag.transport.behandling.grunnlag.response.Permittering
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
-// @Service
 class HentArbeidsforholdService(
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
     private val enhetsregisterConsumer: EnhetsregisterConsumer,
 ) : List<ArbeidsforholdGrunnlagDto> by listOf() {
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(HentArbeidsforholdService::class.java)
-    }
-
     fun hentArbeidsforhold(arbeidsforholdRequestListe: List<PersonIdOgPeriodeRequest>): List<ArbeidsforholdGrunnlagDto> {
-        LOGGER.info("Start ARBEIDSFORHOLD")
-
         val arbeidsforholdListe = mutableListOf<ArbeidsforholdGrunnlagDto>()
 
         arbeidsforholdRequestListe.forEach {
@@ -41,17 +31,16 @@ class HentArbeidsforholdService(
                     arbeidsforholdConsumer.hentArbeidsforhold(hentArbeidsforholdRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Aareg hent arbeidsforhold ga følgende respons: ${restResponseArbeidsforhold.body}")
+                    SECURE_LOGGER.info("Henting av arbeidsforhold ga følgende respons for ${it.personId}: ${restResponseArbeidsforhold.body}")
                     leggTilArbeidsforhold(arbeidsforholdListe, restResponseArbeidsforhold.body, it.personId)
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn("Feil ved hent av arbeidsforhold for ${it.personId}")
+                    SECURE_LOGGER.warn("Feil ved henting av arbeidsforhold for ${it.personId}")
                 }
             }
         }
 
-        LOGGER.info("Slutt ARBEIDSFORHOLD")
         return arbeidsforholdListe
     }
 
@@ -133,7 +122,7 @@ class HentArbeidsforholdService(
                     }
 
                     else -> {
-                        SECURE_LOGGER.warn("Feil ved hent av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr")
+                        SECURE_LOGGER.warn("Feil ved henting av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr")
                     }
                 }
             }
