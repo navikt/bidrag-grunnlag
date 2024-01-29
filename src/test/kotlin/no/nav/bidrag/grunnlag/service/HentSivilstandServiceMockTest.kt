@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
@@ -26,7 +27,7 @@ class HentSivilstandServiceMockTest {
     private lateinit var personConsumerMock: BidragPersonConsumer
 
     @Test
-    fun `Skal returnere grunnlag når consumer-response er SUCCESS`() {
+    fun `Skal returnere grunnlag og ikke feil når consumer-response er SUCCESS`() {
         Mockito.`when`(personConsumerMock.hentSivilstand(any())).thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponse()))
 
         val sivilstandRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
@@ -39,17 +40,19 @@ class HentSivilstandServiceMockTest {
 
         assertAll(
             { assertThat(sivilstandListe).isNotNull() },
-            { assertThat(sivilstandListe).hasSize(3) },
-            { assertThat(sivilstandListe[0].type).isEqualTo(SivilstandskodePDL.SEPARERT_PARTNER) },
-            { assertThat(sivilstandListe[1].type).isEqualTo(SivilstandskodePDL.ENKE_ELLER_ENKEMANN) },
-            { assertThat(sivilstandListe[2].type).isEqualTo(SivilstandskodePDL.GJENLEVENDE_PARTNER) },
+            { assertThat(sivilstandListe.grunnlagListe).isNotEmpty() },
+            { assertThat(sivilstandListe.grunnlagListe).hasSize(3) },
+            { assertThat(sivilstandListe.grunnlagListe[0].type).isEqualTo(SivilstandskodePDL.SEPARERT_PARTNER) },
+            { assertThat(sivilstandListe.grunnlagListe[1].type).isEqualTo(SivilstandskodePDL.ENKE_ELLER_ENKEMANN) },
+            { assertThat(sivilstandListe.grunnlagListe[2].type).isEqualTo(SivilstandskodePDL.GJENLEVENDE_PARTNER) },
+            { assertThat(sivilstandListe.feilrapporteringListe).isEmpty() },
         )
     }
 
     @Test
-    fun `Skal returnere tomt grunnlag fra sivilstand når consumer-response er FAILURE`() {
+    fun `Skal returnere feil og tomt grunnlag fra sivilstand når consumer-response er FAILURE`() {
         Mockito.`when`(personConsumerMock.hentSivilstand(any()))
-            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.NOT_FOUND, HttpClientErrorException(HttpStatus.NOT_FOUND)))
+            .thenReturn(RestResponse.Failure("Ikke funnet", HttpStatus.NOT_FOUND, HttpClientErrorException(HttpStatus.NOT_FOUND)))
 
         val sivilstandRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 
@@ -61,7 +64,15 @@ class HentSivilstandServiceMockTest {
 
         assertAll(
             { assertThat(sivilstandListe).isNotNull() },
-            { assertThat(sivilstandListe).isEmpty() },
+            { assertThat(sivilstandListe.grunnlagListe).isEmpty() },
+            { assertThat(sivilstandListe.feilrapporteringListe).isNotEmpty() },
+            { assertThat(sivilstandListe.feilrapporteringListe).hasSize(1) },
+            { assertThat(sivilstandListe.feilrapporteringListe[0].grunnlagstype).isEqualTo(GrunnlagRequestType.SIVILSTAND) },
+            { assertThat(sivilstandListe.feilrapporteringListe[0].personId).isEqualTo(sivilstandRequestListe[0].personId) },
+            { assertThat(sivilstandListe.feilrapporteringListe[0].periodeFra).isNull() },
+            { assertThat(sivilstandListe.feilrapporteringListe[0].periodeTil).isNull() },
+            { assertThat(sivilstandListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(sivilstandListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -25,7 +26,7 @@ class HentBarnetilsynServiceMockTest {
     private lateinit var barnetilsynConsumerMock: FamilieEfSakConsumer
 
     @Test
-    fun `Skal returnere grunnlag når consumer-response er SUCCESS`() {
+    fun `Skal returnere grunnlag og ikke feil når consumer-response er SUCCESS`() {
         Mockito.`when`(barnetilsynConsumerMock.hentBarnetilsyn(any())).thenReturn(RestResponse.Success(TestUtil.byggBarnetilsynResponse()))
 
         val barnetilsynRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
@@ -38,16 +39,24 @@ class HentBarnetilsynServiceMockTest {
 
         assertAll(
             { assertThat(barnetilsynListe).isNotNull() },
-            { assertThat(barnetilsynListe).hasSize(2) },
-            { assertThat(barnetilsynListe[0].barnPersonId).isEqualTo("01012212345") },
-            { assertThat(barnetilsynListe[1].barnPersonId).isEqualTo("01011034543") },
+            { assertThat(barnetilsynListe.grunnlagListe).isNotEmpty() },
+            { assertThat(barnetilsynListe.grunnlagListe).hasSize(2) },
+            { assertThat(barnetilsynListe.grunnlagListe[0].barnPersonId).isEqualTo("01012212345") },
+            { assertThat(barnetilsynListe.grunnlagListe[1].barnPersonId).isEqualTo("01011034543") },
+            { assertThat(barnetilsynListe.feilrapporteringListe).isEmpty() },
         )
     }
 
     @Test
-    fun `Skal returnere tomt grunnlag fra barnetilsyn når consumer-response er FAILURE`() {
+    fun `Skal returnere feil og tomt grunnlag fra barnetilsyn når consumer-response er FAILURE`() {
         Mockito.`when`(barnetilsynConsumerMock.hentBarnetilsyn(any()))
-            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.NOT_FOUND, HttpClientErrorException(HttpStatus.NOT_FOUND)))
+            .thenReturn(
+                RestResponse.Failure(
+                    message = "Ikke funnet",
+                    statusCode = HttpStatus.NOT_FOUND,
+                    restClientException = HttpClientErrorException(HttpStatus.NOT_FOUND),
+                ),
+            )
 
         val barnetilsynRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 
@@ -59,7 +68,15 @@ class HentBarnetilsynServiceMockTest {
 
         assertAll(
             { assertThat(barnetilsynListe).isNotNull() },
-            { assertThat(barnetilsynListe).isEmpty() },
+            { assertThat(barnetilsynListe.grunnlagListe).isEmpty() },
+            { assertThat(barnetilsynListe.feilrapporteringListe).isNotEmpty() },
+            { assertThat(barnetilsynListe.feilrapporteringListe).hasSize(1) },
+            { assertThat(barnetilsynListe.feilrapporteringListe[0].grunnlagstype).isEqualTo(GrunnlagRequestType.BARNETILSYN) },
+            { assertThat(barnetilsynListe.feilrapporteringListe[0].personId).isEqualTo(barnetilsynRequestListe[0].personId) },
+            { assertThat(barnetilsynListe.feilrapporteringListe[0].periodeFra).isEqualTo(barnetilsynRequestListe[0].periodeFra) },
+            { assertThat(barnetilsynListe.feilrapporteringListe[0].periodeTil).isNull() },
+            { assertThat(barnetilsynListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(barnetilsynListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }
 }

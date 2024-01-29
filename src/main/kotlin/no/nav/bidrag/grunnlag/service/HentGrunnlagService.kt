@@ -13,6 +13,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
@@ -24,15 +25,19 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.AinntektGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
-import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.SmåbarnstilleggGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdGrunnlagDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -88,7 +93,7 @@ class HentGrunnlagService(
                 )
             }
 
-            val utvidetBarnetrygdOgKontantstøtteListe = scope.async {
+            val utvidetBarnetrygdOgSmåbarnstilleggListe = scope.async {
                 HentUtvidetBarnetrygdOgSmåbarnstilleggService(
                     familieBaSakConsumer = familieBaSakConsumer,
                 ).hentUbst(
@@ -168,30 +173,91 @@ class HentGrunnlagService(
             }
 
             HentGrunnlagDto(
-                ainntektListe = ainntektListe.await()
-                    .sortedWith(compareBy<AinntektGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
-                skattegrunnlagListe = skattegrunnlagListe.await()
-                    .sortedWith(compareBy<SkattegrunnlagGrunnlagDto> { it.personId }.thenBy { it.periodeFra }),
-                ubstListe = utvidetBarnetrygdOgKontantstøtteListe.await()
+                ainntektListe = ainntektListe.await().grunnlagListe
                     .sortedWith(
-                        compareBy<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.periodeFra },
-                    ),
-                barnetilleggListe = barnetilleggPensjonListe.await()
-                    .sortedWith(
-                        compareBy<BarnetilleggGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.barnetilleggType }
+                        compareBy<AinntektGrunnlagDto> { it.personId }
                             .thenBy { it.periodeFra },
                     ),
-                kontantstøtteListe = kontantstøtteListe.await()
-                    .sortedWith(compareBy<KontantstøtteGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
-                husstandsmedlemmerOgEgneBarnListe = husstandsmedlemmerOgEgneBarnListe.await()
-                    .sortedWith(compareBy<RelatertPersonGrunnlagDto> { it.partPersonId }.thenBy { it.relatertPersonPersonId })
+                skattegrunnlagListe = skattegrunnlagListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<SkattegrunnlagGrunnlagDto> { it.personId }
+                            .thenBy { it.periodeFra },
+                    ),
+                utvidetBarnetrygdListe = utvidetBarnetrygdOgSmåbarnstilleggListe.await().grunnlagListe
+                    .filter { it.type == BisysStønadstype.UTVIDET.name }
+                    .map {
+                        UtvidetBarnetrygdGrunnlagDto(
+                            personId = it.personId,
+                            periodeFra = it.periodeFra,
+                            periodeTil = it.periodeTil,
+                            beløp = it.beløp,
+                            manueltBeregnet = it.manueltBeregnet,
+                        )
+                    }
+                    .sortedWith(
+                        compareBy<UtvidetBarnetrygdGrunnlagDto> { it.personId }
+                            .thenBy { it.periodeFra },
+                    ),
+                småbarnstilleggListe = utvidetBarnetrygdOgSmåbarnstilleggListe.await().grunnlagListe
+                    .filter { it.type == BisysStønadstype.SMÅBARNSTILLEGG.name }
+                    .map {
+                        SmåbarnstilleggGrunnlagDto(
+                            personId = it.personId,
+                            periodeFra = it.periodeFra,
+                            periodeTil = it.periodeTil,
+                            beløp = it.beløp,
+                            manueltBeregnet = it.manueltBeregnet,
+                        )
+                    }
+                    .sortedWith(
+                        compareBy<SmåbarnstilleggGrunnlagDto> { it.personId }
+                            .thenBy { it.periodeFra },
+                    ),
+                barnetilleggListe = barnetilleggPensjonListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<BarnetilleggGrunnlagDto> { it.partPersonId }
+                            .thenBy { it.barnPersonId }
+                            .thenBy { it.barnetilleggType }
+                            .thenBy { it.periodeFra },
+                    ),
+                kontantstøtteListe = kontantstøtteListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<KontantstøtteGrunnlagDto> { it.partPersonId }
+                            .thenBy { it.barnPersonId }
+                            .thenBy { it.periodeFra },
+                    ),
+                husstandsmedlemmerOgEgneBarnListe = husstandsmedlemmerOgEgneBarnListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<RelatertPersonGrunnlagDto> { it.partPersonId }
+                            .thenBy { it.relatertPersonPersonId },
+                    )
                     .distinct(),
-                sivilstandListe = sivilstandListe.await()
-                    .sortedWith(compareBy<SivilstandGrunnlagDto> { it.personId }.thenBy { it.type }.thenBy { it.gyldigFom }),
-                barnetilsynListe = barnetilsynListe.await()
-                    .sortedWith(compareBy<BarnetilsynGrunnlagDto> { it.partPersonId }.thenBy { it.barnPersonId }.thenBy { it.periodeFra }),
-                arbeidsforholdListe = arbeidsforholdListe.await()
-                    .sortedWith(compareBy<ArbeidsforholdGrunnlagDto> { it.partPersonId }.thenBy { it.startdato }),
+                sivilstandListe = sivilstandListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<SivilstandGrunnlagDto> { it.personId }
+                            .thenBy { it.type }
+                            .thenBy { it.gyldigFom },
+                    ),
+                barnetilsynListe = barnetilsynListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<BarnetilsynGrunnlagDto> { it.partPersonId }
+                            .thenBy { it.barnPersonId }
+                            .thenBy { it.periodeFra },
+                    ),
+                arbeidsforholdListe = arbeidsforholdListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<ArbeidsforholdGrunnlagDto> { it.partPersonId }
+                            .thenBy { it.startdato },
+                    ),
+                feilrapporteringListe = ainntektListe.await().feilrapporteringListe +
+                    skattegrunnlagListe.await().feilrapporteringListe +
+                    utvidetBarnetrygdOgSmåbarnstilleggListe.await().feilrapporteringListe +
+                    barnetilleggPensjonListe.await().feilrapporteringListe +
+                    kontantstøtteListe.await().feilrapporteringListe +
+                    husstandsmedlemmerOgEgneBarnListe.await().feilrapporteringListe +
+                    sivilstandListe.await().feilrapporteringListe +
+                    barnetilsynListe.await().feilrapporteringListe +
+                    arbeidsforholdListe.await().feilrapporteringListe,
                 hentetTidspunkt = hentetTidspunkt,
             )
         }
@@ -272,3 +338,17 @@ class HentGrunnlagService(
         periodeTil = grunnlagRequestDto.periodeTil,
     )
 }
+
+data class HentGrunnlagGenericDto<T>(
+    val grunnlagListe: List<T>,
+    val feilrapporteringListe: List<FeilrapporteringDto>,
+)
+
+data class UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto(
+    val personId: String,
+    val type: String,
+    val periodeFra: LocalDate,
+    val periodeTil: LocalDate?,
+    val beløp: BigDecimal,
+    val manueltBeregnet: Boolean,
+)

@@ -22,6 +22,8 @@ import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Ansettelsesperiode
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidssted
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Identer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -60,7 +62,6 @@ import no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlagspost
 import no.nav.bidrag.grunnlag.persistence.entity.UtvidetBarnetrygdOgSmaabarnstillegg
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
-import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.person.ForelderBarnRelasjon
@@ -144,18 +145,6 @@ class TestUtil {
                 ),
                 GrunnlagRequestDto(
                     type = GrunnlagRequestType.BARNETILSYN,
-                    personId = "12345678910",
-                    periodeFra = LocalDate.parse("2021-01-01"),
-                    periodeTil = LocalDate.parse("2022-01-01"),
-                ),
-            ),
-        )
-
-        fun byggHentGrunnlagRequestKomplett() = HentGrunnlagRequestDto(
-            formaal = Formål.BIDRAG,
-            grunnlagRequestDtoListe = listOf(
-                GrunnlagRequestDto(
-                    type = GrunnlagRequestType.ARBEIDSFORHOLD,
                     personId = "12345678910",
                     periodeFra = LocalDate.parse("2021-01-01"),
                     periodeTil = LocalDate.parse("2022-01-01"),
@@ -648,7 +637,7 @@ class TestUtil {
             Arbeidsforhold(
                 ansettelsesdetaljer = emptyList(),
                 ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
-                arbeidssted = null,
+                arbeidssted = byggArbeidsstedResponse(),
                 arbeidstaker = null,
                 bruksperiode = null,
                 navArbeidsforholdId = null,
@@ -682,6 +671,11 @@ class TestUtil {
                 permisjoner = emptyList(),
                 permitteringer = emptyList(),
             ),
+        )
+
+        fun byggArbeidsstedResponse() = Arbeidssted(
+            identer = listOf(Identer(ident = "orgnr1", type = "ORGANISASJONSNUMMER")),
+            type = "Underenhet",
         )
 
         fun byggHentInntektListeRequest() = HentInntektListeRequest(
@@ -748,7 +742,7 @@ class TestUtil {
                     ),
                 )
             }
-            return HentInntektListeResponseIntern(httpStatus, arbeidsInntektMaanedListe)
+            return HentInntektListeResponseIntern(httpStatus, "", arbeidsInntektMaanedListe)
         }
 
         private fun byggArbeidsInntektMaanedListe(): List<ArbeidsInntektMaaned> {

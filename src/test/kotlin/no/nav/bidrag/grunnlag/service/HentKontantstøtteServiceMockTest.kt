@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -25,44 +26,59 @@ class HentKontantstøtteServiceMockTest {
     private lateinit var kontantstøtteConsumerMock: FamilieKsSakConsumer
 
     @Test
-    fun `Skal returnere grunnlag når consumer-response er SUCCESS`() {
+    fun `Skal returnere grunnlag og ikke feil når consumer-response er SUCCESS`() {
         Mockito.`when`(kontantstøtteConsumerMock.hentKontantstotte(any())).thenReturn(RestResponse.Success(TestUtil.byggKontantstotteResponse()))
 
         val kontantstøtteRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 
         val kontantstøtteListe = hentKontantstøtteService.hentKontantstøtte(
             kontantstøtteRequestListe = kontantstøtteRequestListe,
-            emptyMap(),
+            historiskeIdenterMap = emptyMap(),
         )
 
         Mockito.verify(kontantstøtteConsumerMock, Mockito.times(1)).hentKontantstotte(any())
 
         assertAll(
             { assertThat(kontantstøtteListe).isNotNull() },
-            { assertThat(kontantstøtteListe).hasSize(3) },
-            { assertThat(kontantstøtteListe[0].barnPersonId).isEqualTo("11223344551") },
-            { assertThat(kontantstøtteListe[1].barnPersonId).isEqualTo("15544332211") },
-            { assertThat(kontantstøtteListe[2].barnPersonId).isEqualTo("11223344551") },
+            { assertThat(kontantstøtteListe.grunnlagListe).isNotEmpty() },
+            { assertThat(kontantstøtteListe.grunnlagListe).hasSize(3) },
+            { assertThat(kontantstøtteListe.grunnlagListe[0].barnPersonId).isEqualTo("11223344551") },
+            { assertThat(kontantstøtteListe.grunnlagListe[1].barnPersonId).isEqualTo("15544332211") },
+            { assertThat(kontantstøtteListe.grunnlagListe[2].barnPersonId).isEqualTo("11223344551") },
+            { assertThat(kontantstøtteListe.feilrapporteringListe).isEmpty() },
         )
     }
 
     @Test
-    fun `Skal returnere tomt grunnlag fra kontantstøtte når consumer-response er FAILURE`() {
-        Mockito.`when`(kontantstøtteConsumerMock.hentKontantstotte(any()))
-            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.NOT_FOUND, HttpClientErrorException(HttpStatus.NOT_FOUND)))
+    fun `Skal returnere feil og tomt grunnlag fra kontantstøtte når consumer-response er FAILURE`() {
+        Mockito.`when`(kontantstøtteConsumerMock.hentKontantstotte(any())).thenReturn(
+            RestResponse.Failure(
+                message = "Ikke funnet",
+                statusCode = HttpStatus.NOT_FOUND,
+                restClientException = HttpClientErrorException(HttpStatus.NOT_FOUND),
+            ),
+        )
 
         val kontantstøtteRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 
         val kontantstøtteListe = hentKontantstøtteService.hentKontantstøtte(
             kontantstøtteRequestListe = kontantstøtteRequestListe,
-            emptyMap(),
+            historiskeIdenterMap = emptyMap(),
         )
 
         Mockito.verify(kontantstøtteConsumerMock, Mockito.times(1)).hentKontantstotte(any())
 
         assertAll(
             { assertThat(kontantstøtteListe).isNotNull() },
-            { assertThat(kontantstøtteListe).isEmpty() },
+            { assertThat(kontantstøtteListe.grunnlagListe).isEmpty() },
+            { assertThat(kontantstøtteListe.feilrapporteringListe).isNotEmpty() },
+            { assertThat(kontantstøtteListe.feilrapporteringListe).hasSize(1) },
+            { assertThat(kontantstøtteListe.feilrapporteringListe[0].grunnlagstype).isEqualTo(GrunnlagRequestType.KONTANTSTØTTE) },
+            { assertThat(kontantstøtteListe.feilrapporteringListe[0].personId).isEqualTo(kontantstøtteRequestListe[0].personId) },
+            { assertThat(kontantstøtteListe.feilrapporteringListe[0].periodeFra).isEqualTo(kontantstøtteRequestListe[0].periodeFra) },
+            { assertThat(kontantstøtteListe.feilrapporteringListe[0].periodeTil).isNull() },
+            { assertThat(kontantstøtteListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(kontantstøtteListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }
 }

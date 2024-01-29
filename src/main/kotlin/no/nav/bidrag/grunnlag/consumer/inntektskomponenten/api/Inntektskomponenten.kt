@@ -28,6 +28,7 @@ data class Aktoer(
 
 data class HentInntektListeResponseIntern(
     val httpStatus: HttpStatusCode,
+    val melding: String,
     val arbeidsInntektMaanedIntern: List<ArbeidsInntektMaanedIntern>?,
 )
 
