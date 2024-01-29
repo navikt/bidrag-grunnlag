@@ -1,30 +1,34 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.person.Familierelasjon
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import java.time.LocalDate
 
 class HentRelatertePersonerService(
     private val bidragPersonConsumer: BidragPersonConsumer,
-) : List<RelatertPersonGrunnlagDto> by listOf() {
+) {
 
-    fun hentRelatertePersoner(relatertPersonRequestListe: List<PersonIdOgPeriodeRequest>): List<RelatertPersonGrunnlagDto> {
+    fun hentRelatertePersoner(relatertPersonRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<RelatertPersonGrunnlagDto> {
         val relatertPersonListe = mutableListOf<RelatertPersonGrunnlagDto>()
         val relatertPersonInternListe = mutableListOf<RelatertPersonIntern>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         relatertPersonRequestListe.forEach { personIdOgPeriode ->
             // Henter alle husstandsmedlemmer til BM/BP
-            val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode.personId)
+            val husstandsmedlemmerListe = hentHusstandsmedlemmer(ident = personIdOgPeriode.personId, feilrapporteringListe = feilrapporteringListe)
 
             // Henter alle barn av BM/BP
-            val barnListe = hentBarn(Personident(personIdOgPeriode.personId))
+            val barnListe = hentBarn(personident = Personident(personIdOgPeriode.personId), feilrapporteringListe = feilrapporteringListe)
 
             // Slår sammen listene over husstandsmedlemmer og barn. Innsendt personId lagres ikke som eget husstandsmedlem.
             // Hvis personen ligger i barnListe settes erBarnAvBmBp lik true.
@@ -65,7 +69,7 @@ class HentRelatertePersonerService(
                 .forEach { group ->
                     val borISammeHusstandListe = group
                         .filter { it.husstandsmedlemPeriodeFra != null || it.husstandsmedlemPeriodeTil != null }
-                        .map { BorISammeHusstandDto(it.husstandsmedlemPeriodeFra, it.husstandsmedlemPeriodeTil) }
+                        .map { BorISammeHusstandDto(periodeFra = it.husstandsmedlemPeriodeFra, periodeTil = it.husstandsmedlemPeriodeTil) }
 
                     val firstPerson = group.first()
                     relatertPersonListe.add(
@@ -81,11 +85,11 @@ class HentRelatertePersonerService(
                 }
         }
 
-        return relatertPersonListe
+        return HentGrunnlagGenericDto(grunnlagListe = relatertPersonListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     // Henter alle husstandsmedlemmer til BM/BP
-    private fun hentHusstandsmedlemmer(ident: String): List<PersonBo> {
+    private fun hentHusstandsmedlemmer(ident: String, feilrapporteringListe: MutableList<FeilrapporteringDto>): List<PersonBo> {
         val husstandsmedlemListe = mutableListOf<PersonBo>()
 
         when (
@@ -112,6 +116,19 @@ class HentRelatertePersonerService(
 
             is RestResponse.Failure -> {
                 SECURE_LOGGER.warn("Feil ved henting av husstandsmedlemmer for $ident")
+                feilrapporteringListe.add(
+                    FeilrapporteringDto(
+                        grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        personId = ident,
+                        periodeFra = null,
+                        periodeTil = null,
+                        feilkode = restResponseHusstandsmedlemmer.statusCode,
+                        feilmelding = evaluerFeilmelding(
+                            melding = restResponseHusstandsmedlemmer.message,
+                            grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        ),
+                    ),
+                )
                 return emptyList()
             }
         }
@@ -119,7 +136,7 @@ class HentRelatertePersonerService(
     }
 
     // Henter alle barn av BM/BP
-    private fun hentBarn(personident: Personident): List<PersonBo> {
+    private fun hentBarn(personident: Personident, feilrapporteringListe: MutableList<FeilrapporteringDto>): List<PersonBo> {
         val barnListe = mutableListOf<PersonBo>()
 
         // Henter en liste over BMs/BPs barn og henter så info om fødselsdag og navn for disse
@@ -135,7 +152,10 @@ class HentRelatertePersonerService(
                 forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach {
                     // Kaller bidrag-person for å hente info om fødselsdato og navn
                     if (it.relatertPersonsRolle == Familierelasjon.BARN && it.relatertPersonsIdent != null) {
-                        val navnFoedselDoedResponseDto = hentNavnFoedselDoed(Personident(it.relatertPersonsIdent!!.verdi))
+                        val navnFoedselDoedResponseDto = hentNavnFoedselDoed(
+                            personident = Personident(it.relatertPersonsIdent!!.verdi),
+                            feilrapporteringListe = feilrapporteringListe,
+                        )
                         // Lager en liste over fnr for alle barn som er funnet
                         barnListe.add(
                             PersonBo(
@@ -152,6 +172,19 @@ class HentRelatertePersonerService(
 
             is RestResponse.Failure -> {
                 SECURE_LOGGER.warn("Feil ved henting av forelder-barn-relasjoner for ${personident.verdi}")
+                feilrapporteringListe.add(
+                    FeilrapporteringDto(
+                        grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        personId = personident.verdi,
+                        periodeFra = null,
+                        periodeTil = null,
+                        feilkode = restResponseForelderBarnRelasjon.statusCode,
+                        feilmelding = evaluerFeilmelding(
+                            melding = restResponseForelderBarnRelasjon.message,
+                            grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        ),
+                    ),
+                )
                 return emptyList()
             }
         }
@@ -159,7 +192,7 @@ class HentRelatertePersonerService(
     }
 
     // Henter navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
-    private fun hentNavnFoedselDoed(personident: Personident): NavnFødselDødDto? {
+    private fun hentNavnFoedselDoed(personident: Personident, feilrapporteringListe: MutableList<FeilrapporteringDto>): NavnFødselDødDto? {
         val navnFødselDødDto: NavnFødselDødDto
 
         when (
@@ -179,6 +212,19 @@ class HentRelatertePersonerService(
 
             is RestResponse.Failure -> {
                 SECURE_LOGGER.warn("Feil ved henting av navn og fødselsdato for ${personident.verdi}")
+                feilrapporteringListe.add(
+                    FeilrapporteringDto(
+                        grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        personId = personident.verdi,
+                        periodeFra = null,
+                        periodeTil = null,
+                        feilkode = restResponseFoedselOgDoed.statusCode,
+                        feilmelding = evaluerFeilmelding(
+                            melding = restResponseFoedselOgDoed.message,
+                            grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        ),
+                    ),
+                )
                 return null
             }
         }

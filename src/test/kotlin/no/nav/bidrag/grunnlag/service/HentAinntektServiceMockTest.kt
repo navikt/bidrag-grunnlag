@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeResponseIntern
@@ -24,7 +25,7 @@ class HentAinntektServiceMockTest {
     private lateinit var inntektskomponentenServiceMock: InntektskomponentenService
 
     @Test
-    fun `Skal returnere grunnlag når InntektskomponentenService-respons er OK`() {
+    fun `Skal returnere grunnlag og ikke feil når InntektskomponentenService-respons er OK`() {
         Mockito.`when`(inntektskomponentenServiceMock.hentInntekt(any())).thenReturn(TestUtil.byggHentInntektListeResponseIntern())
 
         val ainntektRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
@@ -38,16 +39,23 @@ class HentAinntektServiceMockTest {
 
         assertAll(
             { assertThat(ainntektListe).isNotNull() },
-            { assertThat(ainntektListe).hasSize(1) },
-            { assertThat(ainntektListe[0].ainntektspostListe).isNotEmpty },
-            { assertThat(ainntektListe[0].ainntektspostListe).hasSize(1) },
+            { assertThat(ainntektListe.grunnlagListe).isNotEmpty() },
+            { assertThat(ainntektListe.grunnlagListe).hasSize(1) },
+            { assertThat(ainntektListe.grunnlagListe[0].ainntektspostListe).isNotEmpty() },
+            { assertThat(ainntektListe.grunnlagListe[0].ainntektspostListe).hasSize(1) },
+            { assertThat(ainntektListe.feilrapporteringListe).isEmpty() },
         )
     }
 
     @Test
-    fun `Skal returnere tomt grunnlag fra arbeidsforhold når consumer-response er FAILURE`() {
-        Mockito.`when`(inntektskomponentenServiceMock.hentInntekt(any()))
-            .thenReturn(HentInntektListeResponseIntern(httpStatus = HttpStatus.NOT_FOUND, arbeidsInntektMaanedIntern = emptyList()))
+    fun `Skal returnere feil og tomt grunnlag fra ainntekt når InntektskomponentenService-respons ikke er OK`() {
+        Mockito.`when`(inntektskomponentenServiceMock.hentInntekt(any())).thenReturn(
+            HentInntektListeResponseIntern(
+                httpStatus = HttpStatus.NOT_FOUND,
+                melding = "Ikke funnet",
+                arbeidsInntektMaanedIntern = emptyList(),
+            ),
+        )
 
         val ainntektRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 
@@ -60,7 +68,15 @@ class HentAinntektServiceMockTest {
 
         assertAll(
             { assertThat(ainntektListe).isNotNull() },
-            { assertThat(ainntektListe).isEmpty() },
+            { assertThat(ainntektListe.grunnlagListe).isEmpty() },
+            { assertThat(ainntektListe.feilrapporteringListe).isNotEmpty() },
+            { assertThat(ainntektListe.feilrapporteringListe).hasSize(1) },
+            { assertThat(ainntektListe.feilrapporteringListe[0].grunnlagstype).isEqualTo(GrunnlagRequestType.AINNTEKT) },
+            { assertThat(ainntektListe.feilrapporteringListe[0].personId).isEqualTo(ainntektRequestListe[0].personId) },
+            { assertThat(ainntektListe.feilrapporteringListe[0].periodeFra).isEqualTo(ainntektRequestListe[0].periodeFra) },
+            { assertThat(ainntektListe.feilrapporteringListe[0].periodeTil).isEqualTo(ainntektRequestListe[0].periodeTil) },
+            { assertThat(ainntektListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(ainntektListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }
 }

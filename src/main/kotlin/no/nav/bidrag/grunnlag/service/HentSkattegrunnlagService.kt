@@ -1,22 +1,32 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagspostDto
+import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 
 class HentSkattegrunnlagService(
     private val sigrunConsumer: SigrunConsumer,
-) : List<SkattegrunnlagGrunnlagDto> by listOf() {
+) {
+    companion object {
+        const val INNTEKTSAAR_IKKE_STØTTET = "Oppgitt inntektsår er ikke støttet"
+        const val FANT_IKKE_SKATTEGRUNNLAG_PROD = "Fant ikke summert skattegrunnlag"
+        const val FANT_IKKE_SKATTEGRUNNLAG_TEST = "Det finnes ikke summertskattegrunnlag"
+    }
 
-    fun hentSkattegrunnlag(skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>): List<SkattegrunnlagGrunnlagDto> {
+    fun hentSkattegrunnlag(skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<SkattegrunnlagGrunnlagDto> {
         val skattegrunnlagListe = mutableListOf<SkattegrunnlagGrunnlagDto>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         skattegrunnlagRequestListe.forEach {
             var inntektÅr = it.periodeFra.year
@@ -36,25 +46,66 @@ class HentSkattegrunnlagService(
                         SECURE_LOGGER.info(
                             "Henting av skattegrunnlag ga følgende respons for ${it.personId} og år $inntektÅr: ${restResponseSkattegrunnlag.body}",
                         )
-                        leggTilSkattegrunnlag(skattegrunnlagListe, restResponseSkattegrunnlag.body, it.personId, inntektÅr)
+                        leggTilSkattegrunnlag(
+                            skattegrunnlagListe = skattegrunnlagListe,
+                            skattegrunnlagRespons = restResponseSkattegrunnlag.body,
+                            ident = it.personId,
+                            inntektÅr = inntektÅr,
+                        )
                     }
 
                     is RestResponse.Failure -> {
-                        SECURE_LOGGER.warn("Feil ved henting av skattegrunnlag for ${it.personId} og år $inntektÅr")
+                        // Legger ikke ut noe hvis skattegrunnlag ikke er tilgjengelig enda
+                        if ((restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) &&
+                            (inntektsårIkkeStøttet(restResponseSkattegrunnlag.message))
+                        ) {
+                            SECURE_LOGGER.warn("Skattegrunnlag er ikke tilgjengelig enda for ${it.personId} og år $inntektÅr")
+
+                            // Legger ut tom liste hvis det ikke finnes data
+                        } else if ((restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) &&
+                            (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message)) ||
+                            (restResponseSkattegrunnlag.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
+                            (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message))
+                        ) {
+                            SECURE_LOGGER.info("Fant ikke skattegrunnlag for ${it.personId} og år $inntektÅr")
+                            skattegrunnlagListe.add(
+                                SkattegrunnlagGrunnlagDto(
+                                    personId = it.personId,
+                                    periodeFra = LocalDate.parse("$inntektÅr-01-01"),
+                                    periodeTil = LocalDate.parse("$inntektÅr-01-01").plusYears(1),
+                                    skattegrunnlagspostListe = emptyList(),
+                                ),
+                            )
+                        } else {
+                            SECURE_LOGGER.warn("Feil ved henting av skattegrunnlag for ${it.personId} og år $inntektÅr")
+                            feilrapporteringListe.add(
+                                FeilrapporteringDto(
+                                    grunnlagstype = GrunnlagRequestType.SKATTEGRUNNLAG,
+                                    personId = hentSkattegrunnlagRequest.personId,
+                                    periodeFra = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsAar}-01-01"),
+                                    periodeTil = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsAar}-01-01").plusYears(1),
+                                    feilkode = restResponseSkattegrunnlag.statusCode,
+                                    feilmelding = evaluerFeilmelding(
+                                        melding = restResponseSkattegrunnlag.message,
+                                        grunnlagstype = GrunnlagRequestType.SKATTEGRUNNLAG,
+                                    ),
+                                ),
+                            )
+                        }
                     }
                 }
                 inntektÅr++
             }
         }
 
-        return skattegrunnlagListe
+        return HentGrunnlagGenericDto(grunnlagListe = skattegrunnlagListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     private fun leggTilSkattegrunnlag(
         skattegrunnlagListe: MutableList<SkattegrunnlagGrunnlagDto>,
         skattegrunnlagRespons: HentSummertSkattegrunnlagResponse,
         ident: String,
-        inntektAar: Int,
+        inntektÅr: Int,
     ) {
         val skattegrunnlagspostListe = mutableListOf<SkattegrunnlagspostDto>()
 
@@ -82,11 +133,16 @@ class HentSkattegrunnlagService(
 
         val skattegrunnlag = SkattegrunnlagGrunnlagDto(
             personId = ident,
-            periodeFra = LocalDate.parse("$inntektAar-01-01"),
-            periodeTil = LocalDate.parse("$inntektAar-01-01").plusYears(1),
+            periodeFra = LocalDate.parse("$inntektÅr-01-01"),
+            periodeTil = LocalDate.parse("$inntektÅr-01-01").plusYears(1),
             skattegrunnlagspostListe = skattegrunnlagspostListe,
         )
 
         skattegrunnlagListe.add(skattegrunnlag)
     }
+
+    private fun inntektsårIkkeStøttet(message: String?) = message?.contains(INNTEKTSAAR_IKKE_STØTTET) ?: false
+
+    private fun fantIkkeSkattegrunnlag(message: String?): Boolean =
+        message?.contains(FANT_IKKE_SKATTEGRUNNLAG_PROD) == true || message?.contains(FANT_IKKE_SKATTEGRUNNLAG_TEST) == true
 }

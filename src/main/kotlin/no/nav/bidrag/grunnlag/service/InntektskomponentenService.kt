@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.ArbeidsInntektInformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.ArbeidsInntektMaanedIntern
@@ -32,14 +33,18 @@ class InntektskomponentenService(
     // Kaller inntektskomponenten. Prøver først å hente abonnerte inntekter. Hvis det feiler og man spør på en dato bakover i tid kastes exception.
     // Ellers gjøres det et forsøk på å kalle hentInntektListe (uten abonnement)
     fun hentInntekt(inntektListeRequest: HentInntektListeRequest): HentInntektListeResponseIntern {
-        LOGGER.info("Kaller inntektskomponenten")
         val hentInntektListeResponse = ArrayList<ArbeidsInntektMaaned>()
         var httpStatus: HttpStatusCode = HttpStatus.OK
+        var melding = ""
 
         // Hent abonnerte inntekter
         when (val restResponseInntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, true)) {
             is RestResponse.Success -> {
                 // Respons OK
+                SECURE_LOGGER.info(
+                    "Henting av inntekter med abonnement for perioden ${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom} " +
+                        "ga følgende respons for ${inntektListeRequest.ident.identifikator}: ${restResponseInntekt.body}",
+                )
                 val abonnerteInntekter = restResponseInntekt.body
                 if (null != abonnerteInntekter.arbeidsInntektMaaned) {
                     hentInntektListeResponse.addAll(abonnerteInntekter.arbeidsInntektMaaned)
@@ -47,11 +52,19 @@ class InntektskomponentenService(
             }
 
             is RestResponse.Failure -> {
-                LOGGER.warn("Feil ved hent av abonnerte inntekter. Prøver å hente inntekter uten abonnement")
+                SECURE_LOGGER.warn(
+                    "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                        "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
+                )
                 // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
                 when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
                     is RestResponse.Success -> {
                         // Respons OK
+                        SECURE_LOGGER.info(
+                            "Henting av inntekter uten abonnement for perioden ${inntektListeRequest.maanedFom} - " +
+                                "${inntektListeRequest.maanedTom} ga følgende respons for ${inntektListeRequest.ident.identifikator}: " +
+                                "${restResponse2Inntekt.body}",
+                        )
                         val inntekter = restResponse2Inntekt.body
                         if (null != inntekter.arbeidsInntektMaaned) {
                             hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
@@ -59,16 +72,25 @@ class InntektskomponentenService(
                     }
 
                     is RestResponse.Failure -> {
+                        SECURE_LOGGER.warn(
+                            "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}",
+                        )
                         httpStatus = restResponse2Inntekt.statusCode
+                        melding = restResponse2Inntekt.message ?: ""
                     }
                 }
             }
         }
 
-        return mapResponsTilInternStruktur(httpStatus, hentInntektListeResponse)
+        return mapResponsTilInternStruktur(httpStatus, melding, hentInntektListeResponse)
     }
 
-    private fun mapResponsTilInternStruktur(httpStatus: HttpStatusCode, eksternRespons: List<ArbeidsInntektMaaned>): HentInntektListeResponseIntern {
+    private fun mapResponsTilInternStruktur(
+        httpStatus: HttpStatusCode,
+        melding: String,
+        eksternRespons: List<ArbeidsInntektMaaned>,
+    ): HentInntektListeResponseIntern {
         val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
         eksternRespons.forEach { arbeidsInntektMaaned ->
@@ -116,6 +138,6 @@ class InntektskomponentenService(
                 ),
             )
         }
-        return HentInntektListeResponseIntern(httpStatus, arbeidsInntektMaanedListe)
+        return HentInntektListeResponseIntern(httpStatus, melding, arbeidsInntektMaanedListe)
     }
 }

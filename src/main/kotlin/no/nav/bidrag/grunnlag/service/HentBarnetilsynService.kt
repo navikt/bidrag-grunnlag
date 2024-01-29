@@ -2,19 +2,23 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.domene.enums.barnetilsyn.Tilsynstype
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 
 class HentBarnetilsynService(
     private val familieEfSakConsumer: FamilieEfSakConsumer,
-) : List<BarnetilsynGrunnlagDto> by listOf() {
+) {
 
-    fun hentBarnetilsyn(barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>): List<BarnetilsynGrunnlagDto> {
+    fun hentBarnetilsyn(barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<BarnetilsynGrunnlagDto> {
         val barnetilsynListe = mutableListOf<BarnetilsynGrunnlagDto>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         barnetilsynRequestListe.forEach {
             val hentBarnetilsynRequest = BarnetilsynRequest(
@@ -27,16 +31,29 @@ class HentBarnetilsynService(
             ) {
                 is RestResponse.Success -> {
                     SECURE_LOGGER.info("Henting av barnetilsyn ga følgende respons for ${it.personId}: ${restResponseBarnetilsyn.body}")
-                    leggTilBarnetilsyn(barnetilsynListe, restResponseBarnetilsyn.body, it.personId)
+                    leggTilBarnetilsyn(barnetilsynListe = barnetilsynListe, barnetilsynRespons = restResponseBarnetilsyn.body, ident = it.personId)
                 }
 
                 is RestResponse.Failure -> {
                     SECURE_LOGGER.warn("Feil ved henting av barnetilsyn for ${it.personId}")
+                    feilrapporteringListe.add(
+                        FeilrapporteringDto(
+                            grunnlagstype = GrunnlagRequestType.BARNETILSYN,
+                            personId = hentBarnetilsynRequest.ident,
+                            periodeFra = hentBarnetilsynRequest.fomDato,
+                            periodeTil = null,
+                            feilkode = restResponseBarnetilsyn.statusCode,
+                            feilmelding = evaluerFeilmelding(
+                                melding = restResponseBarnetilsyn.message,
+                                grunnlagstype = GrunnlagRequestType.BARNETILSYN,
+                            ),
+                        ),
+                    )
                 }
             }
         }
 
-        return barnetilsynListe
+        return HentGrunnlagGenericDto(grunnlagListe = barnetilsynListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     private fun leggTilBarnetilsyn(barnetilsynListe: MutableList<BarnetilsynGrunnlagDto>, barnetilsynRespons: BarnetilsynResponse, ident: String) {

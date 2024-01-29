@@ -1,16 +1,20 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.vedtak.Formål
+import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.Aktoer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.ArbeidsInntektMaanedIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektRequest
 import no.nav.bidrag.grunnlag.exception.custom.UgyldigInputException
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.JANUAR2015
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFilter
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFormaal
 import no.nav.bidrag.transport.behandling.grunnlag.response.AinntektGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.AinntektspostDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.Logger
@@ -20,19 +24,20 @@ import java.time.YearMonth
 
 class HentAinntektService(
     private val inntektskomponentenService: InntektskomponentenService,
-) : List<AinntektGrunnlagDto> by listOf() {
+) {
 
     companion object {
         @JvmStatic
         val LOGGER: Logger = LoggerFactory.getLogger(HentAinntektService::class.java)
     }
 
-    fun hentAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>, formål: Formål): List<AinntektGrunnlagDto> {
+    fun hentAinntekt(ainntektRequestListe: List<PersonIdOgPeriodeRequest>, formål: Formål): HentGrunnlagGenericDto<AinntektGrunnlagDto> {
         val ainntektListe = mutableListOf<AinntektGrunnlagDto>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         ainntektRequestListe.forEach {
             val periodeFra = kalkulerPeriodeFra(it)
-            val hentInntektRequestListe = lagInntektListeRequest(
+            val hentInntektListeRequest = lagInntektListeRequest(
                 HentInntektRequest(
                     ident = it.personId,
                     maanedFom = periodeFra,
@@ -42,12 +47,12 @@ class HentAinntektService(
                 ),
             )
 
-            hentInntektRequestListe.forEach { hentInntektListeRequest ->
-                hentInntekter(hentInntektListeRequest, ainntektListe)
+            hentInntektListeRequest.forEach { hentInntektRequest ->
+                hentInntekter(hentInntektRequest = hentInntektRequest, ainntektListe = ainntektListe, feilrapporteringListe = feilrapporteringListe)
             }
         }
 
-        return ainntektListe
+        return HentGrunnlagGenericDto(grunnlagListe = ainntektListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     private fun kalkulerPeriodeFra(personIdOgPeriode: PersonIdOgPeriodeRequest): String {
@@ -59,14 +64,37 @@ class HentAinntektService(
         }
     }
 
-    private fun hentInntekter(hentInntektListeRequest: HentInntektListeRequest, ainntektListe: MutableList<AinntektGrunnlagDto>) {
-        val hentInntektListeResponseIntern = inntektskomponentenService.hentInntekt(hentInntektListeRequest)
-        if (hentInntektListeResponseIntern.httpStatus.is2xxSuccessful && !hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
-            hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.forEach {
-                if (!it.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
-                    leggTilInntekt(it, ainntektListe, hentInntektListeRequest.ident.identifikator)
+    private fun hentInntekter(
+        hentInntektRequest: HentInntektListeRequest,
+        ainntektListe: MutableList<AinntektGrunnlagDto>,
+        feilrapporteringListe: MutableList<FeilrapporteringDto>,
+    ) {
+        val hentInntektListeResponseIntern = inntektskomponentenService.hentInntekt(hentInntektRequest)
+        if (hentInntektListeResponseIntern.httpStatus.is2xxSuccessful) {
+            if (!hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
+                hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.forEach {
+                    if (!it.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
+                        leggTilInntekt(inntektPeriode = it, ainntektListe = ainntektListe, ident = hentInntektRequest.ident.identifikator)
+                    }
                 }
+            } else {
+                // Hvis responsen er tom og httpStatus er 2xx, så er det ikke funnet inntekter for perioden. Ingen inntekter legges til.
+                SECURE_LOGGER.warn(
+                    "Ingen inntekter funnet for perioden ${hentInntektRequest.maanedFom} - ${hentInntektRequest.maanedTom} " +
+                        "for ${hentInntektRequest.ident.identifikator}",
+                )
             }
+        } else {
+            feilrapporteringListe.add(
+                FeilrapporteringDto(
+                    grunnlagstype = GrunnlagRequestType.AINNTEKT,
+                    personId = hentInntektRequest.ident.identifikator,
+                    periodeFra = hentInntektRequest.maanedFom.atDay(1),
+                    periodeTil = hentInntektRequest.maanedTom.plusMonths(1).atDay(1),
+                    feilkode = hentInntektListeResponseIntern.httpStatus,
+                    feilmelding = evaluerFeilmelding(melding = hentInntektListeResponseIntern.melding, grunnlagstype = GrunnlagRequestType.AINNTEKT),
+                ),
+            )
         }
     }
 

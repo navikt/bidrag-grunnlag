@@ -139,7 +139,15 @@ fun <T> RestTemplate.tryExchange(
 ): RestResponse<T> {
     return try {
         val response = exchange(url, httpMethod, httpEntity, responseType)
-        RestResponse.Success(response.body ?: fallbackBody)
+        if (response.statusCode == HttpStatus.OK) {
+            RestResponse.Success(response.body ?: fallbackBody)
+        } else {
+            RestResponse.Failure(
+                message = response.headers.getOrEmpty(HttpHeaders.WARNING).joinToString(","),
+                statusCode = response.statusCode,
+                restClientException = HttpClientErrorException(response.statusCode),
+            )
+        }
     } catch (e: HttpClientErrorException) {
         RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
     } catch (e: HttpServerErrorException) {
@@ -157,7 +165,15 @@ fun <T> RestTemplate.tryExchange(
 ): RestResponse<T> {
     return try {
         val response = exchange(url, httpMethod, httpEntity, responseType)
-        RestResponse.Success(response.body ?: fallbackBody)
+        if (response.statusCode == HttpStatus.OK) {
+            RestResponse.Success(response.body ?: fallbackBody)
+        } else {
+            RestResponse.Failure(
+                message = response.headers.getOrEmpty(HttpHeaders.WARNING).joinToString(","),
+                statusCode = response.statusCode,
+                restClientException = HttpClientErrorException(response.statusCode),
+            )
+        }
     } catch (e: HttpClientErrorException) {
         RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
     } catch (e: HttpServerErrorException) {

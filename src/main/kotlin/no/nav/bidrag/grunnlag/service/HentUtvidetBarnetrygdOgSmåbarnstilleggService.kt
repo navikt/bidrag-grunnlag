@@ -1,20 +1,23 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
-import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import java.math.BigDecimal
 import java.time.LocalDate
 
 class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
     private val familieBaSakConsumer: FamilieBaSakConsumer,
-) : List<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> by listOf() {
+) {
 
-    fun hentUbst(ubstRequestListe: List<PersonIdOgPeriodeRequest>): List<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto> {
-        val ubstListe = mutableListOf<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto>()
+    fun hentUbst(ubstRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto> {
+        val ubstListe = mutableListOf<UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         ubstRequestListe.forEach {
             val hentUbstRequest = FamilieBaSakRequest(
@@ -29,26 +32,39 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
                     SECURE_LOGGER.info(
                         "Henting av utvidet barnetrygd og småbarnstillegg ga følgende respons for ${it.personId}: ${restResponseUbst.body}",
                     )
-                    leggTilUbst(ubstListe, restResponseUbst.body, it.personId)
+                    leggTilUbst(ubstListe = ubstListe, familieBaSakRespons = restResponseUbst.body, ident = it.personId)
                 }
 
                 is RestResponse.Failure -> {
                     SECURE_LOGGER.warn("Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}")
+                    feilrapporteringListe.add(
+                        FeilrapporteringDto(
+                            grunnlagstype = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
+                            personId = hentUbstRequest.personIdent,
+                            periodeFra = it.periodeFra,
+                            periodeTil = null,
+                            feilkode = restResponseUbst.statusCode,
+                            feilmelding = evaluerFeilmelding(
+                                melding = restResponseUbst.message,
+                                grunnlagstype = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
+                            ),
+                        ),
+                    )
                 }
             }
         }
 
-        return ubstListe
+        return HentGrunnlagGenericDto(grunnlagListe = ubstListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     private fun leggTilUbst(
-        ubstListe: MutableList<UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto>,
+        ubstListe: MutableList<UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto>,
         familieBaSakRespons: FamilieBaSakResponse,
         ident: String,
     ) {
         familieBaSakRespons.perioder.forEach {
             ubstListe.add(
-                UtvidetBarnetrygdOgSmaabarnstilleggGrunnlagDto(
+                UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto(
                     personId = ident,
                     type = it.stønadstype.toString(),
                     periodeFra = LocalDate.parse("${it.fomMåned}-01"),

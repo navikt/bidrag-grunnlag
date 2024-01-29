@@ -1,23 +1,26 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
 import java.time.LocalDate
 import java.time.YearMonth
 
 class HentKontantstøtteService(
     private val familieKsSakConsumer: FamilieKsSakConsumer,
-) : List<KontantstøtteGrunnlagDto> by listOf() {
+) {
 
     fun hentKontantstøtte(
         kontantstøtteRequestListe: List<PersonIdOgPeriodeRequest>,
         historiskeIdenterMap: Map<String, List<String>>,
-    ): List<KontantstøtteGrunnlagDto> {
+    ): HentGrunnlagGenericDto<KontantstøtteGrunnlagDto> {
         val kontantstøtteListe = mutableListOf<KontantstøtteGrunnlagDto>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         kontantstøtteRequestListe.forEach {
             val personIdListe = historiskeIdenterMap[it.personId] ?: listOf(it.personId)
@@ -32,16 +35,30 @@ class HentKontantstøtteService(
             ) {
                 is RestResponse.Success -> {
                     SECURE_LOGGER.info("Henting av kontantstøtte ga følgende respons for $personIdListe: ${restResponseKontantstøtte.body}")
-                    leggTilKontantstøtte(kontantstøtteListe, restResponseKontantstøtte.body, it)
+                    leggTilKontantstøtte(
+                        kontantstøtteListe = kontantstøtteListe,
+                        kontantstøtteRespons = restResponseKontantstøtte.body,
+                        personIdOgPeriodeRequest = it,
+                    )
                 }
 
                 is RestResponse.Failure -> {
                     SECURE_LOGGER.warn("Feil ved henting av kontantstøtte for $personIdListe")
+                    feilrapporteringListe.add(
+                        FeilrapporteringDto(
+                            grunnlagstype = GrunnlagRequestType.KONTANTSTØTTE,
+                            personId = it.personId,
+                            periodeFra = hentKontantstøtteRequest.fom,
+                            periodeTil = null,
+                            feilkode = restResponseKontantstøtte.statusCode,
+                            feilmelding = restResponseKontantstøtte.message ?: "",
+                        ),
+                    )
                 }
             }
         }
 
-        return kontantstøtteListe
+        return HentGrunnlagGenericDto(grunnlagListe = kontantstøtteListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     private fun leggTilKontantstøtte(

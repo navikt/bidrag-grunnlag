@@ -1,20 +1,24 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.person.BarnType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 
 class HentBarnetilleggService(
     private val pensjonConsumer: PensjonConsumer,
-) : List<BarnetilleggGrunnlagDto> by listOf() {
+) {
 
-    fun hentBarnetilleggPensjon(barnetilleggPensjonRequestListe: List<PersonIdOgPeriodeRequest>): List<BarnetilleggGrunnlagDto> {
+    fun hentBarnetilleggPensjon(barnetilleggPensjonRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<BarnetilleggGrunnlagDto> {
         val barnetilleggPensjonListe = mutableListOf<BarnetilleggGrunnlagDto>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         barnetilleggPensjonRequestListe.forEach {
             val hentBarnetilleggRequest = HentBarnetilleggPensjonRequest(
@@ -28,16 +32,33 @@ class HentBarnetilleggService(
             ) {
                 is RestResponse.Success -> {
                     SECURE_LOGGER.info("Henting av barnetillegg pensjon ga følgende respons for ${it.personId}: ${restResponseBarnetillegg.body}")
-                    leggTilBarnetillegg(barnetilleggPensjonListe, restResponseBarnetillegg.body, it.personId)
+                    leggTilBarnetillegg(
+                        barnetilleggPensjonListe = barnetilleggPensjonListe,
+                        barnetilleggPensjonResponsListe = restResponseBarnetillegg.body,
+                        ident = it.personId,
+                    )
                 }
 
                 is RestResponse.Failure -> {
                     SECURE_LOGGER.warn("Feil ved henting av barnetillegg pensjon for ${it.personId}")
+                    feilrapporteringListe.add(
+                        FeilrapporteringDto(
+                            grunnlagstype = GrunnlagRequestType.BARNETILLEGG,
+                            personId = hentBarnetilleggRequest.mottaker,
+                            periodeFra = hentBarnetilleggRequest.fom,
+                            periodeTil = hentBarnetilleggRequest.tom,
+                            feilkode = restResponseBarnetillegg.statusCode,
+                            feilmelding = evaluerFeilmelding(
+                                melding = restResponseBarnetillegg.message,
+                                grunnlagstype = GrunnlagRequestType.BARNETILLEGG,
+                            ),
+                        ),
+                    )
                 }
             }
         }
 
-        return barnetilleggPensjonListe
+        return HentGrunnlagGenericDto(grunnlagListe = barnetilleggPensjonListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     private fun leggTilBarnetillegg(

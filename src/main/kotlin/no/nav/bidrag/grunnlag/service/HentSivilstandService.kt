@@ -1,18 +1,22 @@
 package no.nav.bidrag.grunnlag.service
 
+import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
 
 class HentSivilstandService(
     private val bidragPersonConsumer: BidragPersonConsumer,
-) : List<SivilstandGrunnlagDto> by listOf() {
+) {
 
-    fun hentSivilstand(sivilstandRequestListe: List<PersonIdOgPeriodeRequest>): List<SivilstandGrunnlagDto> {
+    fun hentSivilstand(sivilstandRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<SivilstandGrunnlagDto> {
         val sivilstandListe = mutableListOf<SivilstandGrunnlagDto>()
+        val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         sivilstandRequestListe.forEach {
             when (
@@ -20,18 +24,31 @@ class HentSivilstandService(
             ) {
                 is RestResponse.Success -> {
                     SECURE_LOGGER.info(
-                        "Henting av sivilstand sivilstand ga følgende respons for ${it.personId}: ${restResponseSivilstand.body}",
+                        "Henting av sivilstand ga følgende respons for ${it.personId}: ${restResponseSivilstand.body}",
                     )
-                    leggTilSivilstand(sivilstandListe, restResponseSivilstand.body, it.personId)
+                    leggTilSivilstand(sivilstandListe = sivilstandListe, sivilstandRespons = restResponseSivilstand.body, ident = it.personId)
                 }
 
                 is RestResponse.Failure -> {
                     SECURE_LOGGER.warn("Feil ved henting av sivilstand for ${it.personId}")
+                    feilrapporteringListe.add(
+                        FeilrapporteringDto(
+                            grunnlagstype = GrunnlagRequestType.SIVILSTAND,
+                            personId = it.personId,
+                            periodeFra = null,
+                            periodeTil = null,
+                            feilkode = restResponseSivilstand.statusCode,
+                            feilmelding = evaluerFeilmelding(
+                                melding = restResponseSivilstand.message,
+                                grunnlagstype = GrunnlagRequestType.SIVILSTAND,
+                            ),
+                        ),
+                    )
                 }
             }
         }
 
-        return sivilstandListe
+        return HentGrunnlagGenericDto(grunnlagListe = sivilstandListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     private fun leggTilSivilstand(sivilstandListe: MutableList<SivilstandGrunnlagDto>, sivilstandRespons: SivilstandPdlHistorikkDto, ident: String) {
