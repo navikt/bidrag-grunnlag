@@ -40,6 +40,9 @@ azureAccessInbound:
   - application: bidrag-ui-feature
     namespace: bidrag
     cluster: dev-fss
+  - application: bidrag-behandling-feature
+    namespace: bidrag
+    cluster: dev-gcp
 spec:
   replicas:
     min: 1
