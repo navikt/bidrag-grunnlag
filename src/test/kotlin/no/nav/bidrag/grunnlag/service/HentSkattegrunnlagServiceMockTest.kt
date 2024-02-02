@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
@@ -16,6 +17,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
+import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
 class HentSkattegrunnlagServiceMockTest {
@@ -57,6 +59,29 @@ class HentSkattegrunnlagServiceMockTest {
     }
 
     @Test
+    fun `Skal returnere tomt grunnlag når person-id er bnr eller npid`() {
+        val skattegrunnlagRequestListe = listOf(
+            PersonIdOgPeriodeRequest(
+                personId = "11311111111",
+                periodeFra = LocalDate.parse("2023-01-01"),
+                periodeTil = LocalDate.parse("2024-01-01"),
+            ),
+        )
+
+        val skattegrunnlagListe = hentSkattegrunnlagService.hentSkattegrunnlag(
+            skattegrunnlagRequestListe = skattegrunnlagRequestListe,
+        )
+
+        Mockito.verify(sigrunConsumerMock, Mockito.times(0)).hentSummertSkattegrunnlag(any())
+
+        assertAll(
+            { assertThat(skattegrunnlagListe).isNotNull() },
+            { assertThat(skattegrunnlagListe.grunnlagListe).isEmpty() },
+            { assertThat(skattegrunnlagListe.feilrapporteringListe).isEmpty() },
+        )
+    }
+
+    @Test
     fun `Skal returnere feil og tomt grunnlag fra skattegrunnlag når consumer-response er FAILURE`() {
         Mockito.`when`(sigrunConsumerMock.hentSummertSkattegrunnlag(any())).thenReturn(
             RestResponse.Failure(
@@ -83,7 +108,7 @@ class HentSkattegrunnlagServiceMockTest {
             { assertThat(skattegrunnlagListe.feilrapporteringListe[0].personId).isEqualTo(skattegrunnlagRequestListe[0].personId) },
             { assertThat(skattegrunnlagListe.feilrapporteringListe[0].periodeFra).isEqualTo(skattegrunnlagRequestListe[0].periodeFra) },
             { assertThat(skattegrunnlagListe.feilrapporteringListe[0].periodeTil).isEqualTo(skattegrunnlagRequestListe[0].periodeTil) },
-            { assertThat(skattegrunnlagListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(skattegrunnlagListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(skattegrunnlagListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }

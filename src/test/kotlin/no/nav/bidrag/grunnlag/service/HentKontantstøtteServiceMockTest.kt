@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -77,7 +78,7 @@ class HentKontantstøtteServiceMockTest {
             { assertThat(kontantstøtteListe.feilrapporteringListe[0].personId).isEqualTo(kontantstøtteRequestListe[0].personId) },
             { assertThat(kontantstøtteListe.feilrapporteringListe[0].periodeFra).isEqualTo(kontantstøtteRequestListe[0].periodeFra) },
             { assertThat(kontantstøtteListe.feilrapporteringListe[0].periodeTil).isNull() },
-            { assertThat(kontantstøtteListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(kontantstøtteListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(kontantstøtteListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }

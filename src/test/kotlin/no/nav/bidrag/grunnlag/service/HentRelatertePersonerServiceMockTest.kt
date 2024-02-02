@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -95,13 +96,13 @@ class HentRelatertePersonerServiceMockTest {
             { assertThat(relatertPersonListe.feilrapporteringListe[0].personId).isEqualTo(relatertPersonRequestListe[0].personId) },
             { assertThat(relatertPersonListe.feilrapporteringListe[0].periodeFra).isNull() },
             { assertThat(relatertPersonListe.feilrapporteringListe[0].periodeTil).isNull() },
-            { assertThat(relatertPersonListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(relatertPersonListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(relatertPersonListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].grunnlagstype).isEqualTo(GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN) },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].personId).isEqualTo(relatertPersonRequestListe[0].personId) },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].periodeFra).isNull() },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].periodeTil).isNull() },
-            { assertThat(relatertPersonListe.feilrapporteringListe[1].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(relatertPersonListe.feilrapporteringListe[1].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].feilmelding).isEqualTo("Ikke funnet") },
         )
     }

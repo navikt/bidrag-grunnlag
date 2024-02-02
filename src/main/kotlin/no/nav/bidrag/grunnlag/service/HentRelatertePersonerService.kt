@@ -8,6 +8,7 @@ import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
@@ -122,7 +123,10 @@ class HentRelatertePersonerService(
                         personId = ident,
                         periodeFra = null,
                         periodeTil = null,
-                        feilkode = restResponseHusstandsmedlemmer.statusCode,
+                        feiltype = evaluerFeiltype(
+                            melding = restResponseHusstandsmedlemmer.message,
+                            httpStatuskode = restResponseHusstandsmedlemmer.statusCode,
+                        ),
                         feilmelding = evaluerFeilmelding(
                             melding = restResponseHusstandsmedlemmer.message,
                             grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
@@ -178,7 +182,10 @@ class HentRelatertePersonerService(
                         personId = personident.verdi,
                         periodeFra = null,
                         periodeTil = null,
-                        feilkode = restResponseForelderBarnRelasjon.statusCode,
+                        feiltype = evaluerFeiltype(
+                            melding = restResponseForelderBarnRelasjon.message,
+                            httpStatuskode = restResponseForelderBarnRelasjon.statusCode,
+                        ),
                         feilmelding = evaluerFeilmelding(
                             melding = restResponseForelderBarnRelasjon.message,
                             grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
@@ -218,7 +225,10 @@ class HentRelatertePersonerService(
                         personId = personident.verdi,
                         periodeFra = null,
                         periodeTil = null,
-                        feilkode = restResponseFoedselOgDoed.statusCode,
+                        feiltype = evaluerFeiltype(
+                            melding = restResponseFoedselOgDoed.message,
+                            httpStatuskode = restResponseFoedselOgDoed.statusCode,
+                        ),
                         feilmelding = evaluerFeilmelding(
                             melding = restResponseFoedselOgDoed.message,
                             grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,

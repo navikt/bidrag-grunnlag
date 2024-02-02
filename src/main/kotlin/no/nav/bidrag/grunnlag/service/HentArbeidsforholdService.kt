@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequ
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.Ansettelsesdetaljer
 import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
@@ -51,7 +52,10 @@ class HentArbeidsforholdService(
                             personId = hentArbeidsforholdRequest.arbeidstakerId,
                             periodeFra = null,
                             periodeTil = null,
-                            feilkode = restResponseArbeidsforhold.statusCode,
+                            feiltype = evaluerFeiltype(
+                                melding = restResponseArbeidsforhold.message,
+                                httpStatuskode = restResponseArbeidsforhold.statusCode,
+                            ),
                             feilmelding = evaluerFeilmelding(
                                 melding = restResponseArbeidsforhold.message,
                                 grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,
@@ -159,7 +163,10 @@ class HentArbeidsforholdService(
                                 personId = ident,
                                 periodeFra = null,
                                 periodeTil = null,
-                                feilkode = restResponseEnhetsregister.statusCode,
+                                feiltype = evaluerFeiltype(
+                                    melding = restResponseEnhetsregister.message,
+                                    httpStatuskode = restResponseEnhetsregister.statusCode,
+                                ),
                                 feilmelding = evaluerFeilmelding(
                                     melding = restResponseEnhetsregister.message,
                                     grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,

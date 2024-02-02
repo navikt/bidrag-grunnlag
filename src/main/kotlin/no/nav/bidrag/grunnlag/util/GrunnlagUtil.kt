@@ -1,8 +1,12 @@
 package no.nav.bidrag.grunnlag.util
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.domene.enums.vedtak.Formål
+import org.apache.commons.lang3.StringUtils
 import org.mockito.Mockito
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 
 open class GrunnlagUtil {
 
@@ -21,8 +25,21 @@ open class GrunnlagUtil {
             return if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
         }
 
+        // BNR / NPID har måned 21-32
+        fun erBnrEllerNpid(fnr: String): Boolean {
+            if (!erGyldigFnr(fnr)) {
+                return false
+            }
+            val month = fnr.substring(2, 4).toInt()
+            return month in 21..32
+        }
+
+        private fun erGyldigFnr(fnr: String) = fnr.length == 11 && StringUtils.isNumeric(fnr)
+
         fun evaluerFeilmelding(melding: String?, grunnlagstype: GrunnlagRequestType): String {
             if (melding == null) return ""
+
+            if (melding.startsWith("Message: 401")) return "Ikke autorisert"
 
             return when (grunnlagstype) {
                 GrunnlagRequestType.BARNETILSYN,
@@ -51,9 +68,13 @@ open class GrunnlagUtil {
                 }
 
                 GrunnlagRequestType.ARBEIDSFORHOLD -> {
-                    val regex = Regex("\"meldinger\":\\[\"(.*?)\"]")
-                    val matchResult = regex.find(melding)
-                    matchResult?.groupValues?.get(1) ?: melding.take(100)
+                    var regex = Regex("\"meldinger\":\\[\"(.*?)\"]")
+                    var matchResult = regex.find(melding)
+                    matchResult?.groupValues?.get(1) ?: run {
+                        regex = Regex("\"error\":\"(.*?)\"")
+                        matchResult = regex.find(melding)
+                        matchResult?.groupValues?.get(1) ?: melding.take(100)
+                    }
                 }
 
                 GrunnlagRequestType.BARNETILLEGG -> {
@@ -75,6 +96,16 @@ open class GrunnlagUtil {
                 }
 
                 else -> melding
+            }
+        }
+
+        fun evaluerFeiltype(melding: String?, httpStatuskode: HttpStatusCode): HentGrunnlagFeiltype {
+            return if (melding?.contains("Fant ikke person") == true) {
+                HentGrunnlagFeiltype.FUNKSJONELL_FEIL
+            } else if ((httpStatuskode.is5xxServerError) || (httpStatuskode == HttpStatus.UNAUTHORIZED) || (httpStatuskode == HttpStatus.FORBIDDEN)) {
+                HentGrunnlagFeiltype.TEKNISK_FEIL
+            } else {
+                HentGrunnlagFeiltype.FUNKSJONELL_FEIL
             }
         }
 

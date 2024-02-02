@@ -6,6 +6,7 @@ import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
@@ -37,7 +38,10 @@ class HentSivilstandService(
                             personId = it.personId,
                             periodeFra = null,
                             periodeTil = null,
-                            feilkode = restResponseSivilstand.statusCode,
+                            feiltype = evaluerFeiltype(
+                                melding = restResponseSivilstand.message,
+                                httpStatuskode = restResponseSivilstand.statusCode,
+                            ),
                             feilmelding = evaluerFeilmelding(
                                 melding = restResponseSivilstand.message,
                                 grunnlagstype = GrunnlagRequestType.SIVILSTAND,

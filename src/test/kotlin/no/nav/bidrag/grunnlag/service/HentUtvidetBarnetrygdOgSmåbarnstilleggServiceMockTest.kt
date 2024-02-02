@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
@@ -77,7 +78,7 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggServiceMockTest {
             { assertThat(ubstListe.feilrapporteringListe[0].personId).isEqualTo(ubstRequestListe[0].personId) },
             { assertThat(ubstListe.feilrapporteringListe[0].periodeFra).isEqualTo(ubstRequestListe[0].periodeFra) },
             { assertThat(ubstListe.feilrapporteringListe[0].periodeTil).isNull() },
-            { assertThat(ubstListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(ubstListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(ubstListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }

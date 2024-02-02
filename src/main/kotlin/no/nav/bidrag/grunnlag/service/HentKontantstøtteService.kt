@@ -6,6 +6,8 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
 import java.time.LocalDate
@@ -50,8 +52,14 @@ class HentKontantstøtteService(
                             personId = it.personId,
                             periodeFra = hentKontantstøtteRequest.fom,
                             periodeTil = null,
-                            feilkode = restResponseKontantstøtte.statusCode,
-                            feilmelding = restResponseKontantstøtte.message ?: "",
+                            feiltype = evaluerFeiltype(
+                                melding = restResponseKontantstøtte.message,
+                                httpStatuskode = restResponseKontantstøtte.statusCode,
+                            ),
+                            feilmelding = evaluerFeilmelding(
+                                melding = restResponseKontantstøtte.message,
+                                grunnlagstype = GrunnlagRequestType.KONTANTSTØTTE,
+                            ),
                         ),
                     )
                 }
