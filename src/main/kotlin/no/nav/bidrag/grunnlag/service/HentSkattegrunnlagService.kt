@@ -7,7 +7,9 @@ import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.erBnrEllerNpid
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagspostDto
@@ -29,6 +31,12 @@ class HentSkattegrunnlagService(
         val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         skattegrunnlagRequestListe.forEach {
+            // Hvis ident er BNR eller NPID finnes det ikke skattegrunnlag. Kaller derfor ikke Sigrun.
+            if (erBnrEllerNpid(it.personId)) {
+                SECURE_LOGGER.warn("Ident er BNR eller NPID, ingen skattegrunnlag funnet for ${it.personId}")
+                return@forEach
+            }
+
             var inntektÅr = it.periodeFra.year
             val sluttÅr = it.periodeTil.year
 
@@ -84,7 +92,10 @@ class HentSkattegrunnlagService(
                                     personId = hentSkattegrunnlagRequest.personId,
                                     periodeFra = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsAar}-01-01"),
                                     periodeTil = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsAar}-01-01").plusYears(1),
-                                    feilkode = restResponseSkattegrunnlag.statusCode,
+                                    feiltype = evaluerFeiltype(
+                                        melding = restResponseSkattegrunnlag.message,
+                                        httpStatuskode = restResponseSkattegrunnlag.statusCode,
+                                    ),
                                     feilmelding = evaluerFeilmelding(
                                         melding = restResponseSkattegrunnlag.message,
                                         grunnlagstype = GrunnlagRequestType.SKATTEGRUNNLAG,

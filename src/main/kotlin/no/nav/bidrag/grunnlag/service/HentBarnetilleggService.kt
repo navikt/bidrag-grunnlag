@@ -9,6 +9,7 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 
@@ -47,7 +48,10 @@ class HentBarnetilleggService(
                             personId = hentBarnetilleggRequest.mottaker,
                             periodeFra = hentBarnetilleggRequest.fom,
                             periodeTil = hentBarnetilleggRequest.tom,
-                            feilkode = restResponseBarnetillegg.statusCode,
+                            feiltype = evaluerFeiltype(
+                                melding = restResponseBarnetillegg.message,
+                                httpStatuskode = restResponseBarnetillegg.statusCode,
+                            ),
                             feilmelding = evaluerFeilmelding(
                                 melding = restResponseBarnetillegg.message,
                                 grunnlagstype = GrunnlagRequestType.BARNETILLEGG,

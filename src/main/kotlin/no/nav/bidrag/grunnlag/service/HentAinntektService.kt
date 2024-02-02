@@ -9,7 +9,9 @@ import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeR
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektRequest
 import no.nav.bidrag.grunnlag.exception.custom.UgyldigInputException
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.JANUAR2015
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.erBnrEllerNpid
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFilter
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFormaal
 import no.nav.bidrag.transport.behandling.grunnlag.response.AinntektGrunnlagDto
@@ -36,6 +38,12 @@ class HentAinntektService(
         val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         ainntektRequestListe.forEach {
+            // Hvis ident er BNR eller NPID finnes det ikke inntekter i AINNTEKT. Kaller derfor ikke Inntektskomponenten.
+            if (erBnrEllerNpid(it.personId)) {
+                SECURE_LOGGER.warn("Ident er BNR eller NPID, ingen inntekter funnet for ${it.personId}")
+                return@forEach
+            }
+
             val periodeFra = kalkulerPeriodeFra(it)
             val hentInntektListeRequest = lagInntektListeRequest(
                 HentInntektRequest(
@@ -91,7 +99,10 @@ class HentAinntektService(
                     personId = hentInntektRequest.ident.identifikator,
                     periodeFra = hentInntektRequest.maanedFom.atDay(1),
                     periodeTil = hentInntektRequest.maanedTom.plusMonths(1).atDay(1),
-                    feilkode = hentInntektListeResponseIntern.httpStatus,
+                    feiltype = evaluerFeiltype(
+                        melding = hentInntektListeResponseIntern.melding,
+                        httpStatuskode = hentInntektListeResponseIntern.httpStatus,
+                    ),
                     feilmelding = evaluerFeilmelding(melding = hentInntektListeResponseIntern.melding, grunnlagstype = GrunnlagRequestType.AINNTEKT),
                 ),
             )

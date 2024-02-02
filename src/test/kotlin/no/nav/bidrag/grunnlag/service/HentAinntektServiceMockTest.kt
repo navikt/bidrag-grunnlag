@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeResponseIntern
@@ -14,6 +15,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
+import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
 class HentAinntektServiceMockTest {
@@ -48,6 +50,30 @@ class HentAinntektServiceMockTest {
     }
 
     @Test
+    fun `Skal returnere tomt grunnlag når person-id er bnr eller npid`() {
+        val ainntektRequestListe = listOf(
+            PersonIdOgPeriodeRequest(
+                personId = "11311111111",
+                periodeFra = LocalDate.parse("2023-01-01"),
+                periodeTil = LocalDate.parse("2024-01-01"),
+            ),
+        )
+
+        val ainntektListe = hentAinntektService.hentAinntekt(
+            ainntektRequestListe = ainntektRequestListe,
+            formål = Formål.BIDRAG,
+        )
+
+        Mockito.verify(inntektskomponentenServiceMock, Mockito.times(0)).hentInntekt(any())
+
+        assertAll(
+            { assertThat(ainntektListe).isNotNull() },
+            { assertThat(ainntektListe.grunnlagListe).isEmpty() },
+            { assertThat(ainntektListe.feilrapporteringListe).isEmpty() },
+        )
+    }
+
+    @Test
     fun `Skal returnere feil og tomt grunnlag fra ainntekt når InntektskomponentenService-respons ikke er OK`() {
         Mockito.`when`(inntektskomponentenServiceMock.hentInntekt(any())).thenReturn(
             HentInntektListeResponseIntern(
@@ -75,7 +101,7 @@ class HentAinntektServiceMockTest {
             { assertThat(ainntektListe.feilrapporteringListe[0].personId).isEqualTo(ainntektRequestListe[0].personId) },
             { assertThat(ainntektListe.feilrapporteringListe[0].periodeFra).isEqualTo(ainntektRequestListe[0].periodeFra) },
             { assertThat(ainntektListe.feilrapporteringListe[0].periodeTil).isEqualTo(ainntektRequestListe[0].periodeTil) },
-            { assertThat(ainntektListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(ainntektListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(ainntektListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }

@@ -9,6 +9,7 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 
@@ -42,7 +43,10 @@ class HentBarnetilsynService(
                             personId = hentBarnetilsynRequest.ident,
                             periodeFra = hentBarnetilsynRequest.fomDato,
                             periodeTil = null,
-                            feilkode = restResponseBarnetilsyn.statusCode,
+                            feiltype = evaluerFeiltype(
+                                melding = restResponseBarnetilsyn.message,
+                                httpStatuskode = restResponseBarnetilsyn.statusCode,
+                            ),
                             feilmelding = evaluerFeilmelding(
                                 melding = restResponseBarnetilsyn.message,
                                 grunnlagstype = GrunnlagRequestType.BARNETILSYN,

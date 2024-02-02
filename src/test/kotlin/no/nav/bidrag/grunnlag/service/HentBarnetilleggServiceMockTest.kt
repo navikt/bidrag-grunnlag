@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -80,7 +81,7 @@ class HentBarnetilleggServiceMockTest {
                     barnetilleggPensjonRequestListe[0].periodeTil.minusDays(1),
                 )
             },
-            { assertThat(barnetilleggPensjonListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(barnetilleggPensjonListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(barnetilleggPensjonListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }

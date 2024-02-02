@@ -7,6 +7,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -43,7 +44,10 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
                             personId = hentUbstRequest.personIdent,
                             periodeFra = it.periodeFra,
                             periodeTil = null,
-                            feilkode = restResponseUbst.statusCode,
+                            feiltype = evaluerFeiltype(
+                                melding = restResponseUbst.message,
+                                httpStatuskode = restResponseUbst.statusCode,
+                            ),
                             feilmelding = evaluerFeilmelding(
                                 melding = restResponseUbst.message,
                                 grunnlagstype = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,

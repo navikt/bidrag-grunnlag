@@ -1,6 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
@@ -76,7 +77,7 @@ class HentArbeidsforholdServiceMockTest {
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].personId).isEqualTo(arbeidsforholdRequestListe[0].personId) },
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].periodeFra).isNull() },
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].periodeTil).isNull() },
-            { assertThat(arbeidsforholdListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(arbeidsforholdListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }
@@ -112,7 +113,7 @@ class HentArbeidsforholdServiceMockTest {
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].personId).isEqualTo(arbeidsforholdRequestListe[0].personId) },
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].periodeFra).isNull() },
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].periodeTil).isNull() },
-            { assertThat(arbeidsforholdListe.feilrapporteringListe[0].feilkode).isEqualTo(HttpStatus.NOT_FOUND) },
+            { assertThat(arbeidsforholdListe.feilrapporteringListe[0].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(arbeidsforholdListe.feilrapporteringListe[0].feilmelding).isEqualTo("Ikke funnet") },
         )
     }
