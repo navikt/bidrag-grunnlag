@@ -302,6 +302,7 @@ class HentGrunnlagService(
             }
 
             is RestResponse.Failure -> {
+                LOGGER.warn("Feil ved kall til bidrag-person for å hente historiske identer ${response.statusCode}")
                 SECURE_LOGGER.warn("Feil ved kall til bidrag-person for å hente historiske identer for ident $personId. Respons = $response")
                 listOf(HistoriskIdent(personId, false))
             }
