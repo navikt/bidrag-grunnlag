@@ -140,6 +140,7 @@ class GrunnlagController(
     ): HentGrunnlagDto? {
         val hentGrunnlagDto = hentGrunnlagService.hentGrunnlag(request)
         SECURE_LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
+        SECURE_LOGGER.info("Følgende HentGrunnlagDto ble sendt som respons: $hentGrunnlagDto")
         return hentGrunnlagDto
     }
 
