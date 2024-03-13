@@ -53,10 +53,11 @@ class OppdaterRelatertePersoner(
             // henter alle barn av BM/BP
             val barnListe = hentBarn(Personident(personIdOgPeriode.personId))
 
-            // Alle husstandsmedlemmer lagres i tabell relatert_person. Det sjekkes om husstandsmedlem finnes i liste over barn.
+            // Alle husstandsmedlemmer innenfor aktuell periode lagres i tabell relatert_person.
+            // Det sjekkes om husstandsmedlem finnes i liste over barn.
             // erBarnAvmBp settes lik true i så fall. Tester slik at person ikke lagres som eget husstandsmedlem.
             husstandsmedlemmerListe.forEach { husstandsmedlem ->
-                if (husstandsmedlem.personId != personIdOgPeriode.personId) {
+                if (husstandsmedlem.personId != personIdOgPeriode.personId && husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem)) {
                     persistenceService.opprettRelatertPerson(
                         RelatertPersonBo(
                             grunnlagspakkeId = grunnlagspakkeId,
@@ -100,6 +101,27 @@ class OppdaterRelatertePersoner(
             }
         }
         return this
+    }
+
+    private fun husstandsmedlemInnenforPeriode(personIdOgPeriode: PersonIdOgPeriodeRequest, husstandsmedlem: PersonBo): Boolean {
+        if (husstandsmedlem.husstandsmedlemPeriodeFra == null) {
+            return husstandsmedlem.husstandsmedlemPeriodeTil == null || husstandsmedlem.husstandsmedlemPeriodeTil.isAfter(
+                personIdOgPeriode.periodeFra,
+            )
+        }
+
+        if (husstandsmedlem.husstandsmedlemPeriodeTil == null) {
+            return husstandsmedlem.husstandsmedlemPeriodeFra.isBefore(personIdOgPeriode.periodeTil)
+        }
+
+        if (husstandsmedlem.husstandsmedlemPeriodeFra.isAfter(personIdOgPeriode.periodeTil.minusDays(1))) {
+            return false
+        }
+
+        if (husstandsmedlem.husstandsmedlemPeriodeTil.isAfter(personIdOgPeriode.periodeFra)) {
+            return true
+        }
+        return false
     }
 
     private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: String): List<PersonBo> {
