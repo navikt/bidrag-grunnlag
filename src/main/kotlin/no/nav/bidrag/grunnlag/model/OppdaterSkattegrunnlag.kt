@@ -59,9 +59,7 @@ class OppdaterSkattegrunnlag(
                 SECURE_LOGGER.info("Kaller Sigrun (skattegrunnlag) med request: $skattegrunnlagRequest")
 
                 try {
-                    val restResponseSkattegrunnlag = sigrunConsumer.hentSummertSkattegrunnlag(skattegrunnlagRequest)
-
-                    when (restResponseSkattegrunnlag) {
+                    when (val restResponseSkattegrunnlag = sigrunConsumer.hentSummertSkattegrunnlag(skattegrunnlagRequest)) {
                         is RestResponse.Success -> {
                             var antallSkattegrunnlagsposter = 0
                             val skattegrunnlagResponse = restResponseSkattegrunnlag.body
