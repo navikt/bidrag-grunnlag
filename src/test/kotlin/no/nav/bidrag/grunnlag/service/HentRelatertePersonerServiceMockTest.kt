@@ -46,17 +46,15 @@ class HentRelatertePersonerServiceMockTest {
         assertAll(
             { assertThat(relatertPersonListe).isNotNull() },
             { assertThat(relatertPersonListe.grunnlagListe).isNotEmpty() },
-            { assertThat(relatertPersonListe.grunnlagListe).hasSize(5) },
+            { assertThat(relatertPersonListe.grunnlagListe).hasSize(4) },
             { assertThat(relatertPersonListe.grunnlagListe[0].relatertPersonPersonId).isEqualTo("111") },
-            { assertThat(relatertPersonListe.grunnlagListe[1].relatertPersonPersonId).isEqualTo("333") },
-            { assertThat(relatertPersonListe.grunnlagListe[2].relatertPersonPersonId).isEqualTo("444") },
-            { assertThat(relatertPersonListe.grunnlagListe[3].relatertPersonPersonId).isEqualTo("555") },
-            { assertThat(relatertPersonListe.grunnlagListe[4].relatertPersonPersonId).isEqualTo("222") },
+            { assertThat(relatertPersonListe.grunnlagListe[1].relatertPersonPersonId).isEqualTo("555") },
+            { assertThat(relatertPersonListe.grunnlagListe[2].relatertPersonPersonId).isEqualTo("222") },
+            { assertThat(relatertPersonListe.grunnlagListe[3].relatertPersonPersonId).isEqualTo("333") },
             { assertThat(relatertPersonListe.grunnlagListe[0].borISammeHusstandDtoListe).isNotEmpty },
             { assertThat(relatertPersonListe.grunnlagListe[1].borISammeHusstandDtoListe).isNotEmpty },
-            { assertThat(relatertPersonListe.grunnlagListe[2].borISammeHusstandDtoListe).isNotEmpty },
-            { assertThat(relatertPersonListe.grunnlagListe[3].borISammeHusstandDtoListe).isNotEmpty },
-            { assertThat(relatertPersonListe.grunnlagListe[4].borISammeHusstandDtoListe).isEmpty() },
+            { assertThat(relatertPersonListe.grunnlagListe[2].borISammeHusstandDtoListe).isEmpty() },
+            { assertThat(relatertPersonListe.grunnlagListe[3].borISammeHusstandDtoListe).isEmpty() },
             { assertThat(relatertPersonListe.feilrapporteringListe).isEmpty() },
         )
     }
