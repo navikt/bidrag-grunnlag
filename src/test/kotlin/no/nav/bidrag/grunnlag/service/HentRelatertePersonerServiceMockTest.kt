@@ -16,6 +16,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
+import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
 class HentRelatertePersonerServiceMockTest {
@@ -102,6 +103,33 @@ class HentRelatertePersonerServiceMockTest {
             { assertThat(relatertPersonListe.feilrapporteringListe[1].periodeTil).isNull() },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].feilmelding).isEqualTo("Ikke funnet") },
+        )
+    }
+
+    @Test
+    fun `Test beregning av borISammeHusstandDtoListe`() {
+        val relatertPersonRequestListe = listOf(
+            PersonIdOgPeriodeRequest(
+                personId = "personident",
+                periodeFra = LocalDate.parse("2021-03-21"),
+                periodeTil = LocalDate.parse("2024-03-21"),
+            ),
+        )
+
+        Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentEttHusstandsmedlem()))
+        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
+        Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
+
+        val relatertPersonListe = hentRelatertePersonerService.hentRelatertePersoner(relatertPersonRequestListe)
+
+        assertAll(
+            { assertThat(relatertPersonListe).isNotNull() },
+            { assertThat(relatertPersonListe.grunnlagListe[0].relatertPersonPersonId).isEqualTo("111") },
+            { assertThat(relatertPersonListe.grunnlagListe[0].borISammeHusstandDtoListe).isNotEmpty },
+
         )
     }
 }

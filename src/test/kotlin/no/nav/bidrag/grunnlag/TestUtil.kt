@@ -1079,6 +1079,39 @@ class TestUtil {
             ),
         )
 
+        fun byggHentEttHusstandsmedlem() = HusstandsmedlemmerDto(
+            immutableListOf(
+                Husstand(
+                    gyldigFraOgMed = LocalDate.parse("2023-09-04"),
+                    gyldigTilOgMed = LocalDate.parse("2023-11-12"),
+                    adressenavn = "adressenavn1",
+                    husnummer = "husnummer1",
+                    husbokstav = "husbokstav1",
+                    bruksenhetsnummer = "bruksenhetsnummer1",
+                    postnummer = "postnr1",
+                    bydelsnummer = "bydelsnummer1",
+                    kommunenummer = "kommunenummer1",
+                    matrikkelId = 12345,
+                    immutableListOf(
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2023-09-04"),
+                            gyldigTilOgMed = LocalDate.parse("2023-11-29"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2015-09-04"),
+                            gyldigTilOgMed = LocalDate.parse("2018-11-29"),
+                            personId = Personident("666"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
         fun byggHentSivilstandResponse() = SivilstandPdlHistorikkDto(
             immutableListOf(
                 SivilstandPdlDto(
