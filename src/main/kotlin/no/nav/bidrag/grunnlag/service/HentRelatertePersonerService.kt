@@ -90,6 +90,7 @@ class HentRelatertePersonerService(
                         ),
                     )
                 }
+            SECURE_LOGGER.info("relatertPersonListe for ${personIdOgPeriode.personId}: $relatertPersonListe ")
         }
 
         return HentGrunnlagGenericDto(grunnlagListe = relatertPersonListe, feilrapporteringListe = feilrapporteringListe)
@@ -116,7 +117,7 @@ class HentRelatertePersonerService(
                         SECURE_LOGGER.info(
                             "husstandsmedlemInnenforPeriode: ${personIdOgPeriode.personId} " +
                                 "${husstandsmedlem.personId} " +
-                                "husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem)",
+                                husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem),
                         )
                         if (husstandsmedlem.personId.toString() != personIdOgPeriode.personId &&
                             husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem)
