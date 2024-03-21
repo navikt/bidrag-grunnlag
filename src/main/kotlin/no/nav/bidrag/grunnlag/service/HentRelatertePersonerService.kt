@@ -28,9 +28,12 @@ class HentRelatertePersonerService(
         relatertPersonRequestListe.forEach { personIdOgPeriode ->
             // Henter alle husstandsmedlemmer til BM/BP
             val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode = personIdOgPeriode, feilrapporteringListe = feilrapporteringListe)
+            SECURE_LOGGER.info("husstandsmedlemmerListe for ${personIdOgPeriode.personId} $husstandsmedlemmerListe ")
 
             // Henter alle barn av BM/BP
             val barnListe = hentBarn(personident = Personident(personIdOgPeriode.personId), feilrapporteringListe = feilrapporteringListe)
+            SECURE_LOGGER.info("barnListe for ${personIdOgPeriode.personId} $barnListe ")
+            SECURE_LOGGER.info("relatertPersonRequestListe: $relatertPersonRequestListe")
 
             // Slår sammen listene over husstandsmedlemmer og barn. Innsendt personId lagres ikke som eget husstandsmedlem.
             // Hvis personen ligger i barnListe settes erBarnAvBmBp lik true.
@@ -65,6 +68,8 @@ class HentRelatertePersonerService(
             // En relatert person kan forekomme flere ganger i listen, én gang for hver periode personen har delt bolig med BM/BP (partPersonId).
             // I responsen skal hver person kun ligge én gang, med en liste over perioder personen har delt bolig med BM/BP (partPersonId).
             // Sjekker derfor om personen allerede ligger i responsen.
+            SECURE_LOGGER.info("relatertPersonInternListe for ${personIdOgPeriode.personId} $relatertPersonInternListe ")
+
             relatertPersonInternListe
                 .groupBy { it.partPersonId to it.relatertPersonPersonId }
                 .values
@@ -108,6 +113,11 @@ class HentRelatertePersonerService(
 
                 husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
                     husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
+                        SECURE_LOGGER.info(
+                            "husstandsmedlemInnenforPeriode: ${personIdOgPeriode.personId} " +
+                                "${husstandsmedlem.personId} " +
+                                "husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem)",
+                        )
                         if (husstandsmedlem.personId.toString() != personIdOgPeriode.personId &&
                             husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem)
                         ) {
