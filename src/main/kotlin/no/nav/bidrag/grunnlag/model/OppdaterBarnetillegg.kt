@@ -44,61 +44,72 @@ class OppdaterBarnetillegg(
             LOGGER.info("Kaller barnetillegg pensjon")
             SECURE_LOGGER.info("Kaller barnetillegg pensjon med request: $hentBarnetilleggPensjonRequest")
 
-            when (
-                val restResponseBarnetilleggPensjon =
-                    pensjonConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)
-            ) {
-                is RestResponse.Success -> {
-                    val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
+            try {
+                when (
+                    val restResponseBarnetilleggPensjon =
+                        pensjonConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest)
+                ) {
+                    is RestResponse.Success -> {
+                        val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
 
-                    SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
+                        SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
 
-                    persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
-                        grunnlagspakkeId = grunnlagspakkeId,
-                        personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
-                        timestampOppdatering = timestampOppdatering,
-                    )
-                    barnetilleggPensjonResponse.forEach { bt ->
-                        antallPerioderFunnet++
-                        persistenceService.opprettBarnetillegg(
-                            BarnetilleggBo(
-                                grunnlagspakkeId = grunnlagspakkeId,
-                                partPersonId = personIdOgPeriode.personId,
-                                barnPersonId = bt.barn,
-                                barnetilleggType = Barnetilleggstype.PENSJON.toString(),
-                                periodeFra = bt.fom,
-                                // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                periodeTil = bt.tom.plusMonths(1)?.withDayOfMonth(1),
-                                aktiv = true,
-                                brukFra = timestampOppdatering,
-                                brukTil = null,
-                                belopBrutto = bt.beloep,
-                                barnType = if (bt.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
-                                hentetTidspunkt = timestampOppdatering,
+                        persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
+                            grunnlagspakkeId = grunnlagspakkeId,
+                            personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                            timestampOppdatering = timestampOppdatering,
+                        )
+                        barnetilleggPensjonResponse.forEach { bt ->
+                            antallPerioderFunnet++
+                            persistenceService.opprettBarnetillegg(
+                                BarnetilleggBo(
+                                    grunnlagspakkeId = grunnlagspakkeId,
+                                    partPersonId = personIdOgPeriode.personId,
+                                    barnPersonId = bt.barn,
+                                    barnetilleggType = Barnetilleggstype.PENSJON.toString(),
+                                    periodeFra = bt.fom,
+                                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                                    periodeTil = bt.tom.plusMonths(1)?.withDayOfMonth(1),
+                                    aktiv = true,
+                                    brukFra = timestampOppdatering,
+                                    brukTil = null,
+                                    belopBrutto = bt.beloep,
+                                    barnType = if (bt.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
+                                    hentetTidspunkt = timestampOppdatering,
+                                ),
+                            )
+                        }
+                        this.add(
+                            OppdaterGrunnlagDto(
+                                GrunnlagRequestType.BARNETILLEGG,
+                                personIdOgPeriode.personId,
+                                GrunnlagRequestStatus.HENTET,
+                                "Antall perioder funnet: $antallPerioderFunnet",
                             ),
                         )
                     }
-                    this.add(
+
+                    is RestResponse.Failure -> this.add(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.BARNETILLEGG,
                             personIdOgPeriode.personId,
-                            GrunnlagRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet",
+                            if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) {
+                                GrunnlagRequestStatus.IKKE_FUNNET
+                            } else {
+                                GrunnlagRequestStatus.FEILET
+                            },
+                            "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - " +
+                                "${personIdOgPeriode.periodeTil}.",
                         ),
                     )
                 }
-
-                is RestResponse.Failure -> this.add(
+            } catch (e: Exception) {
+                this.add(
                     OppdaterGrunnlagDto(
-                        GrunnlagRequestType.BARNETILLEGG,
-                        personIdOgPeriode.personId,
-                        if (restResponseBarnetilleggPensjon.statusCode == HttpStatus.NOT_FOUND) {
-                            GrunnlagRequestStatus.IKKE_FUNNET
-                        } else {
-                            GrunnlagRequestStatus.FEILET
-                        },
-                        "Feil ved henting av barnetillegg pensjon for perioden: ${personIdOgPeriode.periodeFra} - " +
-                            "${personIdOgPeriode.periodeTil}.",
+                        type = GrunnlagRequestType.BARNETILLEGG,
+                        personId = personIdOgPeriode.personId,
+                        status = GrunnlagRequestStatus.FEILET,
+                        statusMelding = "Feil ved henting av barnetillegg fra pensjon. Exception: ${e.message}",
                     ),
                 )
             }
