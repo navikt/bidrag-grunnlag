@@ -83,6 +83,18 @@ class OppdaterAinntekt(
                     val hentInntektListeResponseIntern = inntektskomponentenService.hentInntekt(hentInntektListeRequest)
                     SECURE_LOGGER.info("Inntektskomponenten ga følgende respons: $hentInntektListeResponseIntern")
 
+                    if (hentInntektListeResponseIntern.exceptionKastet) {
+                        this.add(
+                            OppdaterGrunnlagDto(
+                                type = GrunnlagRequestType.AINNTEKT,
+                                personId = hentInntektListeRequest.ident.identifikator,
+                                status = GrunnlagRequestStatus.FEILET,
+                                statusMelding = "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - " +
+                                    "${hentInntektListeRequest.maanedTom}.",
+                            ),
+                        )
+                    }
+
                     if (hentInntektListeResponseIntern.httpStatus.is2xxSuccessful) {
                         var antallPerioderFunnet = 0
 

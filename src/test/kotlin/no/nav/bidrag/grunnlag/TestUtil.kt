@@ -742,7 +742,7 @@ class TestUtil {
                     ),
                 )
             }
-            return HentInntektListeResponseIntern(httpStatus, "", arbeidsInntektMaanedListe)
+            return HentInntektListeResponseIntern(httpStatus, "", arbeidsInntektMaanedListe, false)
         }
 
         private fun byggArbeidsInntektMaanedListe(): List<ArbeidsInntektMaaned> {
