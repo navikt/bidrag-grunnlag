@@ -83,100 +83,112 @@ class OppdaterAinntekt(
                     val hentInntektListeResponseIntern = inntektskomponentenService.hentInntekt(hentInntektListeRequest)
                     SECURE_LOGGER.info("Inntektskomponenten ga følgende respons: $hentInntektListeResponseIntern")
 
-                    if (hentInntektListeResponseIntern.httpStatus.is2xxSuccessful) {
-                        var antallPerioderFunnet = 0
+                    if (hentInntektListeResponseIntern.exceptionKastet) {
+                        this.add(
+                            OppdaterGrunnlagDto(
+                                type = GrunnlagRequestType.AINNTEKT,
+                                personId = hentInntektListeRequest.ident.identifikator,
+                                status = GrunnlagRequestStatus.FEILET,
+                                statusMelding = "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - " +
+                                    "${hentInntektListeRequest.maanedTom}.",
+                            ),
+                        )
+                    } else {
+                        if (hentInntektListeResponseIntern.httpStatus.is2xxSuccessful) {
+                            var antallPerioderFunnet = 0
 
-                        if (hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
-                            this.add(
-                                OppdaterGrunnlagDto(
-                                    type = GrunnlagRequestType.AINNTEKT,
-                                    personId = hentInntektListeRequest.ident.identifikator,
-                                    status = GrunnlagRequestStatus.HENTET,
-                                    statusMelding = "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
-                                        "${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
-                                ),
-                            )
-                        } else {
-                            hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
-
-                                if (!inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
-                                    antallPerioderFunnet++
-                                    val inntekt = AinntektBo(
-                                        grunnlagspakkeId = grunnlagspakkeId,
-                                        personId = hentInntektListeRequest.ident.identifikator,
-                                        periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
-                                        // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                        periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
-                                        aktiv = true,
-                                        brukFra = timestampOppdatering,
-                                        brukTil = null,
-                                        hentetTidspunkt = timestampOppdatering,
-                                    )
-
-                                    val inntektsposter = mutableListOf<AinntektspostBo>()
-                                    inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern?.forEach { inntektspost ->
-                                        inntektsposter.add(
-                                            AinntektspostBo(
-                                                utbetalingsperiode = inntektspost.utbetaltIMaaned,
-                                                opptjeningsperiodeFra = inntektspost.opptjeningsperiodeFom,
-                                                opptjeningsperiodeTil = if (inntektspost.opptjeningsperiodeTom != null) {
-                                                    inntektspost.opptjeningsperiodeTom.plusMonths(1).withDayOfMonth(1)
-                                                } else {
-                                                    null
-                                                },
-                                                opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
-                                                virksomhetId = inntektspost.virksomhet?.identifikator,
-                                                inntektType = inntektspost.inntektType,
-                                                fordelType = inntektspost.fordel,
-                                                beskrivelse = inntektspost.beskrivelse,
-                                                belop = inntektspost.beloep,
-                                                etterbetalingsperiodeFra =
-                                                inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
-                                                etterbetalingsperiodeTil =
-                                                inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom,
-
-                                            ),
-                                        )
-                                    }
-                                    nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
-                                }
-                            }
-                            if (antallPerioderFunnet == 0) {
+                            if (hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.isNullOrEmpty()) {
                                 this.add(
                                     OppdaterGrunnlagDto(
-                                        GrunnlagRequestType.AINNTEKT,
-                                        hentInntektListeRequest.ident.identifikator,
-                                        GrunnlagRequestStatus.HENTET,
-                                        "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
+                                        type = GrunnlagRequestType.AINNTEKT,
+                                        personId = hentInntektListeRequest.ident.identifikator,
+                                        status = GrunnlagRequestStatus.HENTET,
+                                        statusMelding = "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
                                             "${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
                                     ),
                                 )
                             } else {
-                                this.add(
-                                    OppdaterGrunnlagDto(
-                                        GrunnlagRequestType.AINNTEKT,
-                                        hentInntektListeRequest.ident.identifikator,
-                                        GrunnlagRequestStatus.HENTET,
-                                        "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
-                                            "${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet",
-                                    ),
-                                )
-                            }
-                        }
-                    } else {
-                        this.add(
-                            OppdaterGrunnlagDto(
-                                GrunnlagRequestType.AINNTEKT,
-                                hentInntektListeRequest.ident.identifikator,
-                                if (hentInntektListeResponseIntern.httpStatus == HttpStatus.NOT_FOUND) {
-                                    GrunnlagRequestStatus.IKKE_FUNNET
+                                hentInntektListeResponseIntern.arbeidsInntektMaanedIntern.forEach { inntektPeriode ->
+
+                                    if (!inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern.isNullOrEmpty()) {
+                                        antallPerioderFunnet++
+                                        val inntekt = AinntektBo(
+                                            grunnlagspakkeId = grunnlagspakkeId,
+                                            personId = hentInntektListeRequest.ident.identifikator,
+                                            periodeFra = LocalDate.parse(inntektPeriode.aarMaaned + "-01"),
+                                            // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                                            periodeTil = LocalDate.parse(inntektPeriode.aarMaaned + "-01").plusMonths(1),
+                                            aktiv = true,
+                                            brukFra = timestampOppdatering,
+                                            brukTil = null,
+                                            hentetTidspunkt = timestampOppdatering,
+                                        )
+
+                                        val inntektsposter = mutableListOf<AinntektspostBo>()
+                                        inntektPeriode.arbeidsInntektInformasjonIntern.inntektIntern?.forEach { inntektspost ->
+                                            inntektsposter.add(
+                                                AinntektspostBo(
+                                                    utbetalingsperiode = inntektspost.utbetaltIMaaned,
+                                                    opptjeningsperiodeFra = inntektspost.opptjeningsperiodeFom,
+                                                    opptjeningsperiodeTil = if (inntektspost.opptjeningsperiodeTom != null) {
+                                                        inntektspost.opptjeningsperiodeTom.plusMonths(1).withDayOfMonth(1)
+                                                    } else {
+                                                        null
+                                                    },
+                                                    opplysningspliktigId = inntektspost.opplysningspliktig?.identifikator,
+                                                    virksomhetId = inntektspost.virksomhet?.identifikator,
+                                                    inntektType = inntektspost.inntektType,
+                                                    fordelType = inntektspost.fordel,
+                                                    beskrivelse = inntektspost.beskrivelse,
+                                                    belop = inntektspost.beloep,
+                                                    etterbetalingsperiodeFra =
+                                                    inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeFom,
+                                                    etterbetalingsperiodeTil =
+                                                    inntektspost.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.etterbetalingsperiodeTom,
+
+                                                ),
+                                            )
+                                        }
+                                        nyeAinntekter.add(PeriodComparable(inntekt, inntektsposter))
+                                    }
+                                }
+                                if (antallPerioderFunnet == 0) {
+                                    this.add(
+                                        OppdaterGrunnlagDto(
+                                            GrunnlagRequestType.AINNTEKT,
+                                            hentInntektListeRequest.ident.identifikator,
+                                            GrunnlagRequestStatus.HENTET,
+                                            "Ingen inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
+                                                "${hentInntektListeRequest.maanedTom}. Evt. eksisterende perioder vil bli satt til inaktive.",
+                                        ),
+                                    )
                                 } else {
-                                    GrunnlagRequestStatus.FEILET
-                                },
-                                "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - " +
-                                    "${hentInntektListeRequest.maanedTom}.",
-                            ),
-                        )
+                                    this.add(
+                                        OppdaterGrunnlagDto(
+                                            GrunnlagRequestType.AINNTEKT,
+                                            hentInntektListeRequest.ident.identifikator,
+                                            GrunnlagRequestStatus.HENTET,
+                                            "Antall inntekter funnet for periode ${hentInntektListeRequest.maanedFom} - " +
+                                                "${hentInntektListeRequest.maanedTom}: $antallPerioderFunnet",
+                                        ),
+                                    )
+                                }
+                            }
+                        } else {
+                            this.add(
+                                OppdaterGrunnlagDto(
+                                    GrunnlagRequestType.AINNTEKT,
+                                    hentInntektListeRequest.ident.identifikator,
+                                    if (hentInntektListeResponseIntern.httpStatus == HttpStatus.NOT_FOUND) {
+                                        GrunnlagRequestStatus.IKKE_FUNNET
+                                    } else {
+                                        GrunnlagRequestStatus.FEILET
+                                    },
+                                    "Feil ved henting av inntekter for periode ${hentInntektListeRequest.maanedFom} - " +
+                                        "${hentInntektListeRequest.maanedTom}.",
+                                ),
+                            )
+                        }
                     }
                 }
 

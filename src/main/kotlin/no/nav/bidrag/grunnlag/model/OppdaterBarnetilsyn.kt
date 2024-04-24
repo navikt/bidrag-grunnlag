@@ -45,58 +45,69 @@ class OppdaterBarnetilsyn(
             LOGGER.info("Henter barnetilsyn for enslig forsørger")
             SECURE_LOGGER.info("Kaller barnetilsyn enslig forsørger med request: $barnetilsynRequest")
 
-            when (
-                val restResponseBarnetilsyn =
-                    familieEfSakConsumer.hentBarnetilsyn(barnetilsynRequest)
-            ) {
-                is RestResponse.Success -> {
-                    val barnetilsynResponse = restResponseBarnetilsyn.body
-                    SECURE_LOGGER.info("Barnetilsyn ga følgende respons: $barnetilsynResponse")
+            try {
+                when (
+                    val restResponseBarnetilsyn =
+                        familieEfSakConsumer.hentBarnetilsyn(barnetilsynRequest)
+                ) {
+                    is RestResponse.Success -> {
+                        val barnetilsynResponse = restResponseBarnetilsyn.body
+                        SECURE_LOGGER.info("Barnetilsyn ga følgende respons: $barnetilsynResponse")
 
-                    persistenceService.oppdaterEksisterendeBarnetilsynTilInaktiv(
-                        grunnlagspakkeId = grunnlagspakkeId,
-                        personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
-                        timestampOppdatering = timestampOppdatering,
-                    )
+                        persistenceService.oppdaterEksisterendeBarnetilsynTilInaktiv(
+                            grunnlagspakkeId = grunnlagspakkeId,
+                            personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                            timestampOppdatering = timestampOppdatering,
+                        )
 
-                    barnetilsynResponse.barnetilsynBisysPerioder.forEach { bts ->
-                        antallPerioderFunnet++
-                        for (barnIdent in bts.barnIdenter) {
-                            persistenceService.opprettBarnetilsyn(
-                                BarnetilsynBo(
-                                    grunnlagspakkeId = grunnlagspakkeId,
-                                    partPersonId = personIdOgPeriode.personId,
-                                    barnPersonId = barnIdent,
-                                    periodeFra = bts.periode.fom,
-                                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                    periodeTil = bts.periode.tom.plusMonths(1).withDayOfMonth(1),
-                                    aktiv = true,
-                                    brukFra = timestampOppdatering,
-                                    brukTil = null,
-                                    belop = null,
-                                    tilsynstype = null,
-                                    skolealder = null,
-                                    hentetTidspunkt = timestampOppdatering,
-                                ),
-                            )
+                        barnetilsynResponse.barnetilsynBisysPerioder.forEach { bts ->
+                            antallPerioderFunnet++
+                            for (barnIdent in bts.barnIdenter) {
+                                persistenceService.opprettBarnetilsyn(
+                                    BarnetilsynBo(
+                                        grunnlagspakkeId = grunnlagspakkeId,
+                                        partPersonId = personIdOgPeriode.personId,
+                                        barnPersonId = barnIdent,
+                                        periodeFra = bts.periode.fom,
+                                        // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                                        periodeTil = bts.periode.tom.plusMonths(1).withDayOfMonth(1),
+                                        aktiv = true,
+                                        brukFra = timestampOppdatering,
+                                        brukTil = null,
+                                        belop = null,
+                                        tilsynstype = null,
+                                        skolealder = null,
+                                        hentetTidspunkt = timestampOppdatering,
+                                    ),
+                                )
+                            }
                         }
+                        this.add(
+                            OppdaterGrunnlagDto(
+                                GrunnlagRequestType.BARNETILSYN,
+                                personIdOgPeriode.personId,
+                                GrunnlagRequestStatus.HENTET,
+                                "Antall perioder funnet: $antallPerioderFunnet",
+                            ),
+                        )
                     }
-                    this.add(
+
+                    is RestResponse.Failure -> this.add(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.BARNETILSYN,
                             personIdOgPeriode.personId,
-                            GrunnlagRequestStatus.HENTET,
-                            "Antall perioder funnet: $antallPerioderFunnet",
+                            GrunnlagRequestStatus.IKKE_FUNNET,
+                            "Feil ved henting av barnetilsyn for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
                         ),
                     )
                 }
-
-                is RestResponse.Failure -> this.add(
+            } catch (e: Exception) {
+                this.add(
                     OppdaterGrunnlagDto(
-                        GrunnlagRequestType.BARNETILSYN,
-                        personIdOgPeriode.personId,
-                        GrunnlagRequestStatus.IKKE_FUNNET,
-                        "Feil ved henting av barnetilsyn for perioden: ${personIdOgPeriode.periodeFra} - ${personIdOgPeriode.periodeTil}.",
+                        type = GrunnlagRequestType.BARNETILSYN,
+                        personId = personIdOgPeriode.personId,
+                        status = GrunnlagRequestStatus.FEILET,
+                        statusMelding = "Feil ved henting av barnetillegg fra enslig forsørger. Exception: ${e.message}",
                     ),
                 )
             }

@@ -36,60 +36,73 @@ class InntektskomponentenService(
         val hentInntektListeResponse = ArrayList<ArbeidsInntektMaaned>()
         var httpStatus: HttpStatusCode = HttpStatus.OK
         var melding = ""
+        var exceptionKastet = false
 
         // Hent abonnerte inntekter
-        when (val restResponseInntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, true)) {
-            is RestResponse.Success -> {
-                // Respons OK
-                SECURE_LOGGER.info(
-                    "Henting av inntekter med abonnement for perioden ${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom} " +
-                        "ga følgende respons for ${inntektListeRequest.ident.identifikator}: ${restResponseInntekt.body}",
-                )
-                val abonnerteInntekter = restResponseInntekt.body
-                if (null != abonnerteInntekter.arbeidsInntektMaaned) {
-                    hentInntektListeResponse.addAll(abonnerteInntekter.arbeidsInntektMaaned)
+        try {
+            when (val restResponseInntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, true)) {
+                is RestResponse.Success -> {
+                    // Respons OK
+                    SECURE_LOGGER.info(
+                        "Henting av inntekter med abonnement for perioden ${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom} " +
+                            "ga følgende respons for ${inntektListeRequest.ident.identifikator}: ${restResponseInntekt.body}",
+                    )
+                    val abonnerteInntekter = restResponseInntekt.body
+                    if (null != abonnerteInntekter.arbeidsInntektMaaned) {
+                        hentInntektListeResponse.addAll(abonnerteInntekter.arbeidsInntektMaaned)
+                    }
                 }
-            }
 
-            is RestResponse.Failure -> {
-                SECURE_LOGGER.warn(
-                    "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                        "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
-                )
-                // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
-                when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
-                    is RestResponse.Success -> {
-                        // Respons OK
-                        SECURE_LOGGER.info(
-                            "Henting av inntekter uten abonnement for perioden ${inntektListeRequest.maanedFom} - " +
-                                "${inntektListeRequest.maanedTom} ga følgende respons for ${inntektListeRequest.ident.identifikator}: " +
-                                "${restResponse2Inntekt.body}",
-                        )
-                        val inntekter = restResponse2Inntekt.body
-                        if (null != inntekter.arbeidsInntektMaaned) {
-                            hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
+                is RestResponse.Failure -> {
+                    SECURE_LOGGER.warn(
+                        "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
+                    )
+                    // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
+                    try {
+                        when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
+                            is RestResponse.Success -> {
+                                // Respons OK
+                                SECURE_LOGGER.info(
+                                    "Henting av inntekter uten abonnement for perioden ${inntektListeRequest.maanedFom} - " +
+                                        "${inntektListeRequest.maanedTom} ga følgende respons for ${inntektListeRequest.ident.identifikator}: " +
+                                        "${restResponse2Inntekt.body}",
+                                )
+                                val inntekter = restResponse2Inntekt.body
+                                if (null != inntekter.arbeidsInntektMaaned) {
+                                    hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
+                                }
+                            }
+
+                            is RestResponse.Failure -> {
+                                SECURE_LOGGER.warn(
+                                    "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                                        "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}",
+                                )
+                                httpStatus = restResponse2Inntekt.statusCode
+                                melding = restResponse2Inntekt.message ?: ""
+                            }
                         }
-                    }
-
-                    is RestResponse.Failure -> {
-                        SECURE_LOGGER.warn(
-                            "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}",
-                        )
-                        httpStatus = restResponse2Inntekt.statusCode
-                        melding = restResponse2Inntekt.message ?: ""
+                    } catch (e: Exception) {
+                        exceptionKastet = true
+                        melding = "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. ${e.message} "
                     }
                 }
             }
+        } catch (e: Exception) {
+            exceptionKastet = true
+            melding = "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. ${e.message} "
         }
-
-        return mapResponsTilInternStruktur(httpStatus, melding, hentInntektListeResponse)
+        return mapResponsTilInternStruktur(httpStatus, melding, hentInntektListeResponse, exceptionKastet)
     }
 
     private fun mapResponsTilInternStruktur(
         httpStatus: HttpStatusCode,
         melding: String,
         eksternRespons: List<ArbeidsInntektMaaned>,
+        exceptionKastet: Boolean,
     ): HentInntektListeResponseIntern {
         val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
 
@@ -138,6 +151,6 @@ class InntektskomponentenService(
                 ),
             )
         }
-        return HentInntektListeResponseIntern(httpStatus, melding, arbeidsInntektMaanedListe)
+        return HentInntektListeResponseIntern(httpStatus, melding, arbeidsInntektMaanedListe, exceptionKastet)
     }
 }

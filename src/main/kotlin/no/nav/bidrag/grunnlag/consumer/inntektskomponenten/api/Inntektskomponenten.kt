@@ -30,6 +30,7 @@ data class HentInntektListeResponseIntern(
     val httpStatus: HttpStatusCode,
     val melding: String,
     val arbeidsInntektMaanedIntern: List<ArbeidsInntektMaanedIntern>?,
+    val exceptionKastet: Boolean,
 )
 
 data class ArbeidsInntektMaanedIntern(

@@ -47,90 +47,101 @@ class OppdaterKontantstotte(
             LOGGER.info("Kaller kontantstøtte")
             SECURE_LOGGER.info("Kaller kontantstøtte med request: $innsynRequest")
 
-            when (
-                val restResponseKontantstotte =
-                    familieKsSakConsumer.hentKontantstotte(innsynRequest)
-            ) {
-                is RestResponse.Success -> {
-                    val kontantstotteResponse = restResponseKontantstotte.body
-                    SECURE_LOGGER.info("kontantstøtte ga følgende respons: $kontantstotteResponse")
+            try {
+                when (
+                    val restResponseKontantstotte =
+                        familieKsSakConsumer.hentKontantstotte(innsynRequest)
+                ) {
+                    is RestResponse.Success -> {
+                        val kontantstotteResponse = restResponseKontantstotte.body
+                        SECURE_LOGGER.info("kontantstøtte ga følgende respons: $kontantstotteResponse")
 
-                    persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
-                        grunnlagspakkeId = grunnlagspakkeId,
-                        personIdListe = personIdListe,
-                        timestampOppdatering = timestampOppdatering,
-                    )
+                        persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
+                            grunnlagspakkeId = grunnlagspakkeId,
+                            personIdListe = personIdListe,
+                            timestampOppdatering = timestampOppdatering,
+                        )
 
-                    // Kontantstøtte fra Infotrygd
-                    kontantstotteResponse.infotrygdPerioder.forEach { ks ->
-                        val belopPerParn = ks.beløp.div(ks.barna.size)
-                        ks.barna.forEach { barnPersonId ->
-                            antallPerioderFunnet++
-                            persistenceService.opprettKontantstotte(
-                                KontantstotteBo(
-                                    grunnlagspakkeId = grunnlagspakkeId,
-                                    partPersonId = personIdOgPeriode.personId,
-                                    barnPersonId = barnPersonId,
-                                    periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
-                                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                    periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
-                                    aktiv = true,
-                                    brukFra = timestampOppdatering,
-                                    belop = belopPerParn,
-                                    brukTil = null,
-                                    hentetTidspunkt = timestampOppdatering,
-                                ),
-                            )
+                        // Kontantstøtte fra Infotrygd
+                        kontantstotteResponse.infotrygdPerioder.forEach { ks ->
+                            val belopPerParn = ks.beløp.div(ks.barna.size)
+                            ks.barna.forEach { barnPersonId ->
+                                antallPerioderFunnet++
+                                persistenceService.opprettKontantstotte(
+                                    KontantstotteBo(
+                                        grunnlagspakkeId = grunnlagspakkeId,
+                                        partPersonId = personIdOgPeriode.personId,
+                                        barnPersonId = barnPersonId,
+                                        periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
+                                        // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                                        periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
+                                        aktiv = true,
+                                        brukFra = timestampOppdatering,
+                                        belop = belopPerParn,
+                                        brukTil = null,
+                                        hentetTidspunkt = timestampOppdatering,
+                                    ),
+                                )
+                            }
                         }
+
+                        // Kontantstøtte fra ks-sak
+                        kontantstotteResponse.ksSakPerioder.forEach { ks ->
+                            if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
+                                antallPerioderFunnet++
+                                persistenceService.opprettKontantstotte(
+                                    KontantstotteBo(
+                                        grunnlagspakkeId = grunnlagspakkeId,
+                                        partPersonId = personIdOgPeriode.personId,
+                                        barnPersonId = ks.barn.ident,
+                                        periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
+                                        // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
+                                        periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
+                                        aktiv = true,
+                                        brukFra = timestampOppdatering,
+                                        belop = ks.barn.beløp,
+                                        brukTil = null,
+                                        hentetTidspunkt = timestampOppdatering,
+                                    ),
+                                )
+                            }
+                        }
+                        this.add(
+                            OppdaterGrunnlagDto(
+                                type = GrunnlagRequestType.KONTANTSTØTTE,
+                                personId = personIdOgPeriode.personId,
+                                status = GrunnlagRequestStatus.HENTET,
+                                statusMelding = "Antall perioder funnet: $antallPerioderFunnet",
+                            ),
+                        )
                     }
 
-                    // Kontantstøtte fra ks-sak
-                    kontantstotteResponse.ksSakPerioder.forEach { ks ->
-                        if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
-                            antallPerioderFunnet++
-                            persistenceService.opprettKontantstotte(
-                                KontantstotteBo(
-                                    grunnlagspakkeId = grunnlagspakkeId,
-                                    partPersonId = personIdOgPeriode.personId,
-                                    barnPersonId = ks.barn.ident,
-                                    periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
-                                    // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                    periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
-                                    aktiv = true,
-                                    brukFra = timestampOppdatering,
-                                    belop = ks.barn.beløp,
-                                    brukTil = null,
-                                    hentetTidspunkt = timestampOppdatering,
-                                ),
-                            )
-                        }
+                    is RestResponse.Failure -> {
+                        this.add(
+                            OppdaterGrunnlagDto(
+                                GrunnlagRequestType.KONTANTSTØTTE,
+                                personIdOgPeriode.personId,
+                                if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) {
+                                    GrunnlagRequestStatus.IKKE_FUNNET
+                                } else {
+                                    GrunnlagRequestStatus.FEILET
+                                },
+                                "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - " +
+                                    "${personIdOgPeriode.periodeTil}.",
+                            ),
+                        )
+                        SECURE_LOGGER.info("kontantstøtte familie-ks-sak svarer med feil, respons: $restResponseKontantstotte")
                     }
-                    this.add(
-                        OppdaterGrunnlagDto(
-                            type = GrunnlagRequestType.KONTANTSTØTTE,
-                            personId = personIdOgPeriode.personId,
-                            status = GrunnlagRequestStatus.HENTET,
-                            statusMelding = "Antall perioder funnet: $antallPerioderFunnet",
-                        ),
-                    )
                 }
-
-                is RestResponse.Failure -> {
-                    this.add(
-                        OppdaterGrunnlagDto(
-                            GrunnlagRequestType.KONTANTSTØTTE,
-                            personIdOgPeriode.personId,
-                            if (restResponseKontantstotte.statusCode == HttpStatus.NOT_FOUND) {
-                                GrunnlagRequestStatus.IKKE_FUNNET
-                            } else {
-                                GrunnlagRequestStatus.FEILET
-                            },
-                            "Feil ved henting av kontantstøtte for perioden: ${personIdOgPeriode.periodeFra} - " +
-                                "${personIdOgPeriode.periodeTil}.",
-                        ),
-                    )
-                    SECURE_LOGGER.info("kontantstøtte familie-ks-sak svarer med feil, respons: $restResponseKontantstotte")
-                }
+            } catch (e: Exception) {
+                this.add(
+                    OppdaterGrunnlagDto(
+                        type = GrunnlagRequestType.KONTANTSTØTTE,
+                        personId = personIdOgPeriode.personId,
+                        status = GrunnlagRequestStatus.FEILET,
+                        statusMelding = "Feil ved henting av kontantstøtte. Exception: ${e.message}",
+                    ),
+                )
             }
         }
         return this

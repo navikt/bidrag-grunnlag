@@ -130,52 +130,70 @@ class OppdaterRelatertePersoner(
 
         val husstandsmedlemListe = mutableListOf<PersonBo>()
 
-        when (
-            val restResponseHusstandsmedlemmer =
-                bidragPersonConsumer.hentHusstandsmedlemmer(Personident(husstandsmedlemmerRequest))
-        ) {
-            is RestResponse.Success -> {
-                val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
-                SECURE_LOGGER.info(
-                    "Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: $husstandsmedlemmerResponseDto",
-                )
+        try {
+            when (
+                val restResponseHusstandsmedlemmer =
+                    bidragPersonConsumer.hentHusstandsmedlemmer(Personident(husstandsmedlemmerRequest))
+            ) {
+                is RestResponse.Success -> {
+                    val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
+                    SECURE_LOGGER.info(
+                        "Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: $husstandsmedlemmerResponseDto",
+                    )
 
-                if (husstandsmedlemmerResponseDto.husstandListe.isNotEmpty()) {
-                    husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
-                        husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
-                            husstandsmedlemListe.add(
-                                PersonBo(
-                                    husstandsmedlem.personId.verdi,
-                                    husstandsmedlem.navn,
-                                    husstandsmedlem.fødselsdato,
-                                    husstandsmedlem.gyldigFraOgMed,
-                                    husstandsmedlem.gyldigTilOgMed,
-                                ),
-                            )
+                    if (husstandsmedlemmerResponseDto.husstandListe.isNotEmpty()) {
+                        husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
+                            husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
+                                husstandsmedlemListe.add(
+                                    PersonBo(
+                                        husstandsmedlem.personId.verdi,
+                                        husstandsmedlem.navn,
+                                        husstandsmedlem.fødselsdato,
+                                        husstandsmedlem.gyldigFraOgMed,
+                                        husstandsmedlem.gyldigTilOgMed,
+                                    ),
+                                )
+                            }
                         }
                     }
+                    this.add(
+                        OppdaterGrunnlagDto(
+                            GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                            husstandsmedlemmerRequest,
+                            GrunnlagRequestStatus.HENTET,
+                            "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}",
+                        ),
+                    )
+                    return slåSammenSammenhengendePerioder(
+                        husstandsmedlemListe.sortedWith(
+                            compareBy(
+                                { it.personId },
+                                { it.husstandsmedlemPeriodeFra },
+                            ),
+                        ),
+                    )
                 }
-                this.add(
+
+                is RestResponse.Failure -> this.add(
                     OppdaterGrunnlagDto(
                         GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
                         husstandsmedlemmerRequest,
-                        GrunnlagRequestStatus.HENTET,
-                        "Antall husstandsmedlemmer funnet: ${husstandsmedlemListe.size}",
+                        if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) {
+                            GrunnlagRequestStatus.IKKE_FUNNET
+                        } else {
+                            GrunnlagRequestStatus.FEILET
+                        },
+                        "Feil ved henting av husstandsmedlemmer og egne barn for: $husstandsmedlemmerRequest.",
                     ),
                 )
-                return slåSammenSammenhengendePerioder(husstandsmedlemListe.sortedWith(compareBy({ it.personId }, { it.husstandsmedlemPeriodeFra })))
             }
-
-            is RestResponse.Failure -> this.add(
+        } catch (e: Exception) {
+            this.add(
                 OppdaterGrunnlagDto(
-                    GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
-                    husstandsmedlemmerRequest,
-                    if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) {
-                        GrunnlagRequestStatus.IKKE_FUNNET
-                    } else {
-                        GrunnlagRequestStatus.FEILET
-                    },
-                    "Feil ved henting av husstandsmedlemmer og egne barn for: $husstandsmedlemmerRequest.",
+                    type = GrunnlagRequestType.BARNETILLEGG,
+                    personId = husstandsmedlemmerRequest,
+                    status = GrunnlagRequestStatus.FEILET,
+                    statusMelding = "Feil ved henting av husstandsmedlemmer og egne barn for: $husstandsmedlemmerRequest.. Exception: ${e.message}",
                 ),
             )
         }
@@ -189,46 +207,59 @@ class OppdaterRelatertePersoner(
         val barnListe = mutableListOf<PersonBo>()
 
         // Henter en liste over BMs/BPs barn og henter så info om fødselsdag og navn for disse
-        when (
-            val restResponseForelderBarnRelasjon =
-                bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)
-        ) {
-            is RestResponse.Success -> {
-                val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
+        try {
+            when (
+                val restResponseForelderBarnRelasjon =
+                    bidragPersonConsumer.hentForelderBarnRelasjon(forelderBarnRequest)
+            ) {
+                is RestResponse.Success -> {
+                    val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
 
-                if (forelderBarnRelasjonResponse.forelderBarnRelasjon.isNotEmpty()) {
-                    SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
+                    if (forelderBarnRelasjonResponse.forelderBarnRelasjon.isNotEmpty()) {
+                        SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
 
-                    forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { forelderBarnRelasjon ->
-                        // Kaller bidrag-person for å hente info om fødselsdato og navn
-                        if (forelderBarnRelasjon.relatertPersonsRolle == Familierelasjon.BARN && forelderBarnRelasjon.relatertPersonsIdent != null) {
-                            val navnFoedselDoedResponseDto = hentNavnFoedselDoed(Personident(forelderBarnRelasjon.relatertPersonsIdent!!.verdi))
-                            // Lager en liste over fnr for alle barn som er funnet
-                            barnListe.add(
-                                PersonBo(
-                                    forelderBarnRelasjon.relatertPersonsIdent?.verdi,
-                                    navnFoedselDoedResponseDto?.navn,
-                                    navnFoedselDoedResponseDto?.fødselsdato,
-                                    null,
-                                    null,
-                                ),
-                            )
+                        forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { forelderBarnRelasjon ->
+                            // Kaller bidrag-person for å hente info om fødselsdato og navn
+                            if (forelderBarnRelasjon.relatertPersonsRolle == Familierelasjon.BARN &&
+                                forelderBarnRelasjon.relatertPersonsIdent != null
+                            ) {
+                                val navnFoedselDoedResponseDto = hentNavnFoedselDoed(Personident(forelderBarnRelasjon.relatertPersonsIdent!!.verdi))
+                                // Lager en liste over fnr for alle barn som er funnet
+                                barnListe.add(
+                                    PersonBo(
+                                        forelderBarnRelasjon.relatertPersonsIdent?.verdi,
+                                        navnFoedselDoedResponseDto?.navn,
+                                        navnFoedselDoedResponseDto?.fødselsdato,
+                                        null,
+                                        null,
+                                    ),
+                                )
+                            }
                         }
+                        return barnListe
                     }
-                    return barnListe
                 }
-            }
 
-            is RestResponse.Failure -> this.add(
+                is RestResponse.Failure -> this.add(
+                    OppdaterGrunnlagDto(
+                        GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        forelderBarnRequest.verdi,
+                        if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) {
+                            GrunnlagRequestStatus.IKKE_FUNNET
+                        } else {
+                            GrunnlagRequestStatus.FEILET
+                        },
+                        "Feil ved henting av egne barn for: ${forelderBarnRequest.verdi} .",
+                    ),
+                )
+            }
+        } catch (e: Exception) {
+            this.add(
                 OppdaterGrunnlagDto(
-                    GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
-                    forelderBarnRequest.verdi,
-                    if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) {
-                        GrunnlagRequestStatus.IKKE_FUNNET
-                    } else {
-                        GrunnlagRequestStatus.FEILET
-                    },
-                    "Feil ved henting av egne barn i husstanden for: ${forelderBarnRequest.verdi} .",
+                    type = GrunnlagRequestType.BARNETILLEGG,
+                    personId = forelderBarnRequest.verdi,
+                    status = GrunnlagRequestStatus.FEILET,
+                    statusMelding = "Feil ved henting av egne barn for: ${forelderBarnRequest.verdi}. Exception: ${e.message}",
                 ),
             )
         }
@@ -239,25 +270,37 @@ class OppdaterRelatertePersoner(
         // hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
         LOGGER.info("Kaller bidrag-person hent navn og fødselsdato")
         SECURE_LOGGER.info("Kaller bidrag-person hent navn og fødselsdato for : $personident")
-        when (
-            val restResponseFoedselOgDoed =
-                bidragPersonConsumer.hentNavnFoedselOgDoed(personident)
-        ) {
-            is RestResponse.Success -> {
-                val foedselOgDoedResponse = restResponseFoedselOgDoed.body
-                SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsdato: $foedselOgDoedResponse")
+        try {
+            when (
+                val restResponseFoedselOgDoed =
+                    bidragPersonConsumer.hentNavnFoedselOgDoed(personident)
+            ) {
+                is RestResponse.Success -> {
+                    val foedselOgDoedResponse = restResponseFoedselOgDoed.body
+                    SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsdato: $foedselOgDoedResponse")
 
-                return NavnFødselDødDto(
-                    foedselOgDoedResponse.navn,
-                    foedselOgDoedResponse.fødselsdato,
-                    foedselOgDoedResponse.fødselsår,
-                    foedselOgDoedResponse.dødsdato,
-                )
+                    return NavnFødselDødDto(
+                        foedselOgDoedResponse.navn,
+                        foedselOgDoedResponse.fødselsdato,
+                        foedselOgDoedResponse.fødselsår,
+                        foedselOgDoedResponse.dødsdato,
+                    )
+                }
+
+                is RestResponse.Failure ->
+                    return null
             }
-
-            is RestResponse.Failure ->
-                return null
+        } catch (e: Exception) {
+            this.add(
+                OppdaterGrunnlagDto(
+                    type = GrunnlagRequestType.BARNETILLEGG,
+                    personId = personident.verdi,
+                    status = GrunnlagRequestStatus.FEILET,
+                    statusMelding = "Feil ved henting av hent navn og fødselsdato for: ${personident.verdi}. Exception: ${e.message}",
+                ),
+            )
         }
+        return null
     }
 
     // Metode for å slå sammen sammenhengende perioder en person har vært husstandsmedlem. Responsen fra bidrag-person er gruppert per husstand,
