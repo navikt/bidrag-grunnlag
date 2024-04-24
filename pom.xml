@@ -33,7 +33,7 @@
     <com.squareup.okhttp3.version>4.12.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <jackson-datatype.version>2.16.1</jackson-datatype.version>
-    <ktlint.version>1.1.1</ktlint.version>
+    <ktlint.version>1.2.1</ktlint.version>
     <kotlin-coroutines.version>1.8.0</kotlin-coroutines.version>
   </properties>
 
