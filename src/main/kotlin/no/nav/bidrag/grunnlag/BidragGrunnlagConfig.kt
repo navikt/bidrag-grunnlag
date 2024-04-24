@@ -73,7 +73,7 @@ class BidragGrunnlagConfig {
     fun restTemplate(): HttpHeaderRestTemplate {
         val httpHeaderRestTemplate = HttpHeaderRestTemplate()
 
-        val sc = SocketConfig.custom().setSoTimeout(Timeout.ofSeconds(10)).build()
+        val sc = SocketConfig.custom().setSoTimeout(Timeout.ofSeconds(3)).build()
         val pb = PoolingHttpClientConnectionManagerBuilder.create().setDefaultSocketConfig(sc).build()
         val connectionManager = HttpClientBuilder.create().setConnectionManager(pb).build()
         val requestFactory = HttpComponentsClientHttpRequestFactory(connectionManager)
