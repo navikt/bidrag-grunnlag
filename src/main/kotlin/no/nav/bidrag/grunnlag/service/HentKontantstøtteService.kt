@@ -92,7 +92,10 @@ class HentKontantstøtteService(
 
         // Kontantstøtte fra ks-sak
         kontantstøtteRespons.ksSakPerioder.forEach { ks ->
-            if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriodeRequest.periodeTil.year, personIdOgPeriodeRequest.periodeTil.month))) {
+            if (ks.fomMåned.isBefore(
+                    YearMonth.of(personIdOgPeriodeRequest.periodeTil.year, personIdOgPeriodeRequest.periodeTil.month).plusMonths(1),
+                )
+            ) {
                 kontantstøtteListe.add(
                     KontantstøtteGrunnlagDto(
                         partPersonId = personIdOgPeriodeRequest.personId,

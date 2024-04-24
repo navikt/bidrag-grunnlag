@@ -87,7 +87,10 @@ class OppdaterKontantstotte(
 
                         // Kontantstøtte fra ks-sak
                         kontantstotteResponse.ksSakPerioder.forEach { ks ->
-                            if (ks.fomMåned.isBefore(YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month))) {
+                            if (ks.fomMåned.isBefore(
+                                    YearMonth.of(personIdOgPeriode.periodeTil.year, personIdOgPeriode.periodeTil.month).plusMonths(1),
+                                )
+                            ) {
                                 antallPerioderFunnet++
                                 persistenceService.opprettKontantstotte(
                                     KontantstotteBo(
