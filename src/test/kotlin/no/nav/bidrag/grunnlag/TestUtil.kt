@@ -742,7 +742,7 @@ class TestUtil {
                     ),
                 )
             }
-            return HentInntektListeResponseIntern(httpStatus, "", arbeidsInntektMaanedListe)
+            return HentInntektListeResponseIntern(httpStatus, "", arbeidsInntektMaanedListe, false)
         }
 
         private fun byggArbeidsInntektMaanedListe(): List<ArbeidsInntektMaaned> {
@@ -988,6 +988,124 @@ class TestUtil {
                             navn = "fornavn5 mellomnavn5 etternavn5",
                             fødselsdato = LocalDate.parse("1985-07-17"),
                             dødsdato = null,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        fun byggHentHusstandsmedlemmerResponseTestPerioder() = HusstandsmedlemmerDto(
+            immutableListOf(
+                Husstand(
+                    gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+                    gyldigTilOgMed = LocalDate.parse("2011-10-01"),
+                    adressenavn = "adressenavn1",
+                    husnummer = "husnummer1",
+                    husbokstav = "husbokstav1",
+                    bruksenhetsnummer = "bruksenhetsnummer1",
+                    postnummer = "postnr1",
+                    bydelsnummer = "bydelsnummer1",
+                    kommunenummer = "kommunenummer1",
+                    matrikkelId = 12345,
+                    immutableListOf(
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+                            gyldigTilOgMed = LocalDate.parse("2011-02-01"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2011-05-17"),
+                            gyldigTilOgMed = LocalDate.parse("2018-01-01"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2011-01-01"),
+                            gyldigTilOgMed = LocalDate.parse("2011-12-01"),
+                            personId = Personident("333"),
+                            navn = "fornavn3 mellomnavn3 etternavn3",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2011-05-01"),
+                            gyldigTilOgMed = LocalDate.parse("2011-06-01"),
+                            personId = Personident("444"),
+                            navn = "fornavn4 mellomnavn4 etternavn4",
+                            fødselsdato = LocalDate.parse("1974-02-01"),
+                        ),
+                    ),
+                ),
+                Husstand(
+                    gyldigFraOgMed = LocalDate.parse("2011-10-01"),
+                    gyldigTilOgMed = null,
+                    adressenavn = "adressenavn2",
+                    husnummer = "husnummer2",
+                    husbokstav = "husbokstav2",
+                    bruksenhetsnummer = "bruksenhetsnummer2",
+                    postnummer = "postnr2",
+                    bydelsnummer = "bydelsnummer2",
+                    kommunenummer = "kommunenummer2",
+                    matrikkelId = 54321,
+                    immutableListOf(
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2018-01-01"),
+                            gyldigTilOgMed = LocalDate.parse("2021-04-17"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                            dødsdato = null,
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2022-04-17"),
+                            gyldigTilOgMed = null,
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                            dødsdato = null,
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2020-01-01"),
+                            gyldigTilOgMed = null,
+                            personId = Personident("555"),
+                            navn = "fornavn5 mellomnavn5 etternavn5",
+                            fødselsdato = LocalDate.parse("1985-07-17"),
+                            dødsdato = null,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        fun byggHentEttHusstandsmedlem() = HusstandsmedlemmerDto(
+            immutableListOf(
+                Husstand(
+                    gyldigFraOgMed = LocalDate.parse("2023-09-04"),
+                    gyldigTilOgMed = LocalDate.parse("2023-11-12"),
+                    adressenavn = "adressenavn1",
+                    husnummer = "husnummer1",
+                    husbokstav = "husbokstav1",
+                    bruksenhetsnummer = "bruksenhetsnummer1",
+                    postnummer = "postnr1",
+                    bydelsnummer = "bydelsnummer1",
+                    kommunenummer = "kommunenummer1",
+                    matrikkelId = 12345,
+                    immutableListOf(
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2023-09-04"),
+                            gyldigTilOgMed = LocalDate.parse("2023-11-29"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2015-09-04"),
+                            gyldigTilOgMed = LocalDate.parse("2018-11-29"),
+                            personId = Personident("666"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
                         ),
                     ),
                 ),

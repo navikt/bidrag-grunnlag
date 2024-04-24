@@ -23,6 +23,10 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.service.SecurityTokenService
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder
+import org.apache.hc.core5.http.io.SocketConfig
+import org.apache.hc.core5.util.Timeout
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RootUriTemplateHandler
@@ -30,6 +34,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Scope
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 import org.springframework.retry.annotation.EnableRetry
 
@@ -67,6 +72,13 @@ class BidragGrunnlagConfig {
     @Scope("prototype")
     fun restTemplate(): HttpHeaderRestTemplate {
         val httpHeaderRestTemplate = HttpHeaderRestTemplate()
+
+        val sc = SocketConfig.custom().setSoTimeout(Timeout.ofSeconds(10)).build()
+        val pb = PoolingHttpClientConnectionManagerBuilder.create().setDefaultSocketConfig(sc).build()
+        val connectionManager = HttpClientBuilder.create().setConnectionManager(pb).build()
+        val requestFactory = HttpComponentsClientHttpRequestFactory(connectionManager)
+        httpHeaderRestTemplate.requestFactory = requestFactory
+
         httpHeaderRestTemplate.addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER) { CorrelationId.fetchCorrelationIdForThread() }
         return httpHeaderRestTemplate
     }

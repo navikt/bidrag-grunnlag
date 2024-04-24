@@ -80,6 +80,7 @@ class HentAinntektServiceMockTest {
                 httpStatus = HttpStatus.NOT_FOUND,
                 melding = "Ikke funnet",
                 arbeidsInntektMaanedIntern = emptyList(),
+                false,
             ),
         )
 

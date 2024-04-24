@@ -12,6 +12,7 @@ import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
+import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import java.time.LocalDate
 
@@ -26,10 +27,13 @@ class HentRelatertePersonerService(
 
         relatertPersonRequestListe.forEach { personIdOgPeriode ->
             // Henter alle husstandsmedlemmer til BM/BP
-            val husstandsmedlemmerListe = hentHusstandsmedlemmer(ident = personIdOgPeriode.personId, feilrapporteringListe = feilrapporteringListe)
+            val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode = personIdOgPeriode, feilrapporteringListe = feilrapporteringListe)
+            SECURE_LOGGER.info("husstandsmedlemmerListe for ${personIdOgPeriode.personId} $husstandsmedlemmerListe ")
 
             // Henter alle barn av BM/BP
             val barnListe = hentBarn(personident = Personident(personIdOgPeriode.personId), feilrapporteringListe = feilrapporteringListe)
+            SECURE_LOGGER.info("barnListe for ${personIdOgPeriode.personId} $barnListe ")
+            SECURE_LOGGER.info("relatertPersonRequestListe: $relatertPersonRequestListe")
 
             // Slår sammen listene over husstandsmedlemmer og barn. Innsendt personId lagres ikke som eget husstandsmedlem.
             // Hvis personen ligger i barnListe settes erBarnAvBmBp lik true.
@@ -64,6 +68,8 @@ class HentRelatertePersonerService(
             // En relatert person kan forekomme flere ganger i listen, én gang for hver periode personen har delt bolig med BM/BP (partPersonId).
             // I responsen skal hver person kun ligge én gang, med en liste over perioder personen har delt bolig med BM/BP (partPersonId).
             // Sjekker derfor om personen allerede ligger i responsen.
+            SECURE_LOGGER.info("relatertPersonInternListe for ${personIdOgPeriode.personId} $relatertPersonInternListe ")
+
             relatertPersonInternListe
                 .groupBy { it.partPersonId to it.relatertPersonPersonId }
                 .values
@@ -84,43 +90,58 @@ class HentRelatertePersonerService(
                         ),
                     )
                 }
+            SECURE_LOGGER.info("relatertPersonListe for ${personIdOgPeriode.personId}: $relatertPersonListe ")
         }
 
         return HentGrunnlagGenericDto(grunnlagListe = relatertPersonListe, feilrapporteringListe = feilrapporteringListe)
     }
 
     // Henter alle husstandsmedlemmer til BM/BP
-    private fun hentHusstandsmedlemmer(ident: String, feilrapporteringListe: MutableList<FeilrapporteringDto>): List<PersonBo> {
+    private fun hentHusstandsmedlemmer(
+        personIdOgPeriode: PersonIdOgPeriodeRequest,
+        feilrapporteringListe: MutableList<FeilrapporteringDto>,
+    ): List<PersonBo> {
         val husstandsmedlemListe = mutableListOf<PersonBo>()
 
         when (
-            val restResponseHusstandsmedlemmer = bidragPersonConsumer.hentHusstandsmedlemmer(Personident(ident))
+            val restResponseHusstandsmedlemmer = bidragPersonConsumer.hentHusstandsmedlemmer(Personident(personIdOgPeriode.personId))
         ) {
             is RestResponse.Success -> {
                 val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
-                SECURE_LOGGER.info("Bidrag-person ga følgende respons på husstandsmedlemmer for $ident: $husstandsmedlemmerResponseDto")
+                SECURE_LOGGER.info(
+                    "Bidrag-person ga følgende respons på husstandsmedlemmer for ${personIdOgPeriode.personId}: $husstandsmedlemmerResponseDto",
+                )
 
                 husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
-                    husstand.husstandsmedlemListe.forEach {
-                        husstandsmedlemListe.add(
-                            PersonBo(
-                                personId = it.personId.verdi,
-                                navn = it.navn,
-                                fodselsdato = it.fødselsdato,
-                                husstandsmedlemPeriodeFra = it.gyldigFraOgMed,
-                                husstandsmedlemPeriodeTil = it.gyldigTilOgMed,
-                            ),
+                    husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
+                        SECURE_LOGGER.info(
+                            "husstandsmedlemInnenforPeriode: ${personIdOgPeriode.personId} " +
+                                "${husstandsmedlem.personId} " +
+                                husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem),
                         )
+                        if (husstandsmedlem.personId.toString() != personIdOgPeriode.personId &&
+                            husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem)
+                        ) {
+                            husstandsmedlemListe.add(
+                                PersonBo(
+                                    personId = husstandsmedlem.personId.verdi,
+                                    navn = husstandsmedlem.navn,
+                                    fodselsdato = husstandsmedlem.fødselsdato,
+                                    husstandsmedlemPeriodeFra = husstandsmedlem.gyldigFraOgMed,
+                                    husstandsmedlemPeriodeTil = husstandsmedlem.gyldigTilOgMed,
+                                ),
+                            )
+                        }
                     }
                 }
             }
 
             is RestResponse.Failure -> {
-                SECURE_LOGGER.warn("Feil ved henting av husstandsmedlemmer for $ident")
+                SECURE_LOGGER.warn("Feil ved henting av husstandsmedlemmer for ${personIdOgPeriode.personId}")
                 feilrapporteringListe.add(
                     FeilrapporteringDto(
                         grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
-                        personId = ident,
+                        personId = personIdOgPeriode.personId,
                         periodeFra = null,
                         periodeTil = null,
                         feiltype = evaluerFeiltype(
@@ -271,6 +292,27 @@ class HentRelatertePersonerService(
         resultatListe.add(gjeldendeForekomst)
 
         return resultatListe
+    }
+
+    private fun husstandsmedlemInnenforPeriode(personIdOgPeriode: PersonIdOgPeriodeRequest, husstandsmedlem: Husstandsmedlem): Boolean {
+        if (husstandsmedlem.gyldigFraOgMed == null) {
+            return husstandsmedlem.gyldigTilOgMed == null || husstandsmedlem.gyldigTilOgMed!!.isAfter(
+                personIdOgPeriode.periodeFra,
+            )
+        }
+
+        if (husstandsmedlem.gyldigTilOgMed == null) {
+            return husstandsmedlem.gyldigFraOgMed!!.isBefore(personIdOgPeriode.periodeTil)
+        }
+
+        if (husstandsmedlem.gyldigFraOgMed!!.isAfter(personIdOgPeriode.periodeTil.minusDays(1))) {
+            return false
+        }
+
+        if (husstandsmedlem.gyldigTilOgMed!!.isAfter(personIdOgPeriode.periodeFra)) {
+            return true
+        }
+        return false
     }
 
     // Intern dataklasse brukt for å simulere funksjonalitet fra oppdater- og hent-grunnlagspakke-tjenestene

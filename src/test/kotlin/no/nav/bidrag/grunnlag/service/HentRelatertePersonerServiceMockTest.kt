@@ -16,6 +16,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
+import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
 class HentRelatertePersonerServiceMockTest {
@@ -46,17 +47,15 @@ class HentRelatertePersonerServiceMockTest {
         assertAll(
             { assertThat(relatertPersonListe).isNotNull() },
             { assertThat(relatertPersonListe.grunnlagListe).isNotEmpty() },
-            { assertThat(relatertPersonListe.grunnlagListe).hasSize(5) },
+            { assertThat(relatertPersonListe.grunnlagListe).hasSize(4) },
             { assertThat(relatertPersonListe.grunnlagListe[0].relatertPersonPersonId).isEqualTo("111") },
-            { assertThat(relatertPersonListe.grunnlagListe[1].relatertPersonPersonId).isEqualTo("333") },
-            { assertThat(relatertPersonListe.grunnlagListe[2].relatertPersonPersonId).isEqualTo("444") },
-            { assertThat(relatertPersonListe.grunnlagListe[3].relatertPersonPersonId).isEqualTo("555") },
-            { assertThat(relatertPersonListe.grunnlagListe[4].relatertPersonPersonId).isEqualTo("222") },
+            { assertThat(relatertPersonListe.grunnlagListe[1].relatertPersonPersonId).isEqualTo("555") },
+            { assertThat(relatertPersonListe.grunnlagListe[2].relatertPersonPersonId).isEqualTo("222") },
+            { assertThat(relatertPersonListe.grunnlagListe[3].relatertPersonPersonId).isEqualTo("333") },
             { assertThat(relatertPersonListe.grunnlagListe[0].borISammeHusstandDtoListe).isNotEmpty },
             { assertThat(relatertPersonListe.grunnlagListe[1].borISammeHusstandDtoListe).isNotEmpty },
-            { assertThat(relatertPersonListe.grunnlagListe[2].borISammeHusstandDtoListe).isNotEmpty },
-            { assertThat(relatertPersonListe.grunnlagListe[3].borISammeHusstandDtoListe).isNotEmpty },
-            { assertThat(relatertPersonListe.grunnlagListe[4].borISammeHusstandDtoListe).isEmpty() },
+            { assertThat(relatertPersonListe.grunnlagListe[2].borISammeHusstandDtoListe).isEmpty() },
+            { assertThat(relatertPersonListe.grunnlagListe[3].borISammeHusstandDtoListe).isEmpty() },
             { assertThat(relatertPersonListe.feilrapporteringListe).isEmpty() },
         )
     }
@@ -104,6 +103,33 @@ class HentRelatertePersonerServiceMockTest {
             { assertThat(relatertPersonListe.feilrapporteringListe[1].periodeTil).isNull() },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].feiltype).isEqualTo(HentGrunnlagFeiltype.FUNKSJONELL_FEIL) },
             { assertThat(relatertPersonListe.feilrapporteringListe[1].feilmelding).isEqualTo("Ikke funnet") },
+        )
+    }
+
+    @Test
+    fun `Test beregning av borISammeHusstandDtoListe`() {
+        val relatertPersonRequestListe = listOf(
+            PersonIdOgPeriodeRequest(
+                personId = "personident",
+                periodeFra = LocalDate.parse("2021-03-21"),
+                periodeTil = LocalDate.parse("2024-03-21"),
+            ),
+        )
+
+        Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentEttHusstandsmedlem()))
+        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
+        Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
+
+        val relatertPersonListe = hentRelatertePersonerService.hentRelatertePersoner(relatertPersonRequestListe)
+
+        assertAll(
+            { assertThat(relatertPersonListe).isNotNull() },
+            { assertThat(relatertPersonListe.grunnlagListe[0].relatertPersonPersonId).isEqualTo("111") },
+            { assertThat(relatertPersonListe.grunnlagListe[0].borISammeHusstandDtoListe).isNotEmpty },
+
         )
     }
 }

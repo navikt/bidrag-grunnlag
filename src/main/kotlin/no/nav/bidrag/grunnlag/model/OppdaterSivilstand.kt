@@ -41,55 +41,67 @@ class OppdaterSivilstand(
             LOGGER.info("Kaller bidrag-person og henter sivilstand")
             SECURE_LOGGER.info("Kaller bidrag-person og henter sivilstand for: $personIdOgPeriode.personId")
 
-            when (
-                val restResponseSivilstand =
-                    bidragPersonConsumer.hentSivilstand(Personident(personIdOgPeriode.personId))
-            ) {
-                is RestResponse.Success -> {
-                    val sivilstandResponse = restResponseSivilstand.body
-                    SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
+            try {
+                when (
+                    val restResponseSivilstand =
+                        bidragPersonConsumer.hentSivilstand(Personident(personIdOgPeriode.personId))
+                ) {
+                    is RestResponse.Success -> {
+                        val sivilstandResponse = restResponseSivilstand.body
+                        SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
 
-                    if (sivilstandResponse.sivilstandPdlDto.isNotEmpty()) {
-                        persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
-                            grunnlagspakkeId,
-                            historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
-                            timestampOppdatering,
-                        )
-                        // Sorterer motta sivilstandforekomster etter. Forekomstene som er historiske skal komme først. Deretter sorteres det på
-                        // gyldigFraOgMed, bekreftelsesdato, registrert og til slutt på type.
-                        antallPerioderFunnet = behandleSivilstandResponse(
-                            sivilstandResponse.sivilstandPdlDto.sortedWith(
-                                compareByDescending<SivilstandPdlDto> { it.historisk }.thenBy { it.gyldigFom }
-                                    .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() },
+                        if (sivilstandResponse.sivilstandPdlDto.isNotEmpty()) {
+                            persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(
+                                grunnlagspakkeId,
+                                historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
+                                timestampOppdatering,
+                            )
+                            // Sorterer motta sivilstandforekomster etter. Forekomstene som er historiske skal komme først. Deretter sorteres det på
+                            // gyldigFraOgMed, bekreftelsesdato, registrert og til slutt på type.
+                            antallPerioderFunnet = behandleSivilstandResponse(
+                                sivilstandResponse.sivilstandPdlDto.sortedWith(
+                                    compareByDescending<SivilstandPdlDto> { it.historisk }.thenBy { it.gyldigFom }
+                                        .thenBy { it.bekreftelsesdato }.thenBy { it.registrert }.thenBy { it.type.toString() },
+                                ),
+                                personIdOgPeriode,
+                            )
+                        }
+                        this.add(
+                            OppdaterGrunnlagDto(
+                                GrunnlagRequestType.SIVILSTAND,
+                                personIdOgPeriode.personId,
+                                GrunnlagRequestStatus.HENTET,
+                                "Antall sivilstandsforekomster funnet: $antallPerioderFunnet",
                             ),
-                            personIdOgPeriode,
                         )
                     }
-                    this.add(
+
+                    is RestResponse.Failure -> this.add(
                         OppdaterGrunnlagDto(
                             GrunnlagRequestType.SIVILSTAND,
                             personIdOgPeriode.personId,
-                            GrunnlagRequestStatus.HENTET,
-                            "Antall sivilstandsforekomster funnet: $antallPerioderFunnet",
+                            if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) {
+                                GrunnlagRequestStatus.IKKE_FUNNET
+                            } else {
+                                GrunnlagRequestStatus.FEILET
+                            },
+                            "Feil ved henting av sivilstand fra bidrag-person/PDL for perioden: ${personIdOgPeriode.periodeFra} - " +
+                                "${personIdOgPeriode.periodeTil}.",
                         ),
                     )
                 }
-
-                is RestResponse.Failure -> this.add(
+            } catch (e: Exception) {
+                this.add(
                     OppdaterGrunnlagDto(
-                        GrunnlagRequestType.SIVILSTAND,
-                        personIdOgPeriode.personId,
-                        if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) {
-                            GrunnlagRequestStatus.IKKE_FUNNET
-                        } else {
-                            GrunnlagRequestStatus.FEILET
-                        },
-                        "Feil ved henting av sivilstand fra bidrag-person/PDL for perioden: ${personIdOgPeriode.periodeFra} - " +
-                            "${personIdOgPeriode.periodeTil}.",
+                        type = GrunnlagRequestType.SIVILSTAND,
+                        personId = personIdOgPeriode.personId,
+                        status = GrunnlagRequestStatus.FEILET,
+                        statusMelding = "Feil ved henting av sivilstand for ${personIdOgPeriode.personId}. Exception: ${e.message}",
                     ),
                 )
             }
         }
+
         return this
     }
 
