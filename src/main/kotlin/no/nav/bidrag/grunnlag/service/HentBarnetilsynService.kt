@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 
@@ -31,12 +32,15 @@ class HentBarnetilsynService(
                 val restResponseBarnetilsyn = familieEfSakConsumer.hentBarnetilsyn(hentBarnetilsynRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Henting av barnetilsyn ga følgende respons for ${it.personId}: ${restResponseBarnetilsyn.body}")
+                    SECURE_LOGGER.info("Henting av barnetilsyn ga følgende respons for ${it.personId}: ${tilJson(restResponseBarnetilsyn.body)}")
                     leggTilBarnetilsyn(barnetilsynListe = barnetilsynListe, barnetilsynRespons = restResponseBarnetilsyn.body, ident = it.personId)
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn("Feil ved henting av barnetilsyn for ${it.personId}")
+                    SECURE_LOGGER.warn(
+                        "Feil ved henting av barnetilsyn for ${it.personId}. " +
+                            "Statuskode ${restResponseBarnetilsyn.statusCode.value()}",
+                    )
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.BARNETILSYN,

@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
@@ -47,7 +48,7 @@ class GrunnlagController(
         request: OpprettGrunnlagspakkeRequestDto,
     ): Int? {
         val grunnlagspakkeOpprettet = grunnlagspakkeService.opprettGrunnlagspakke(request)
-        LOGGER.info("Følgende grunnlagspakke er opprettet: $grunnlagspakkeOpprettet")
+        LOGGER.info("Grunnlagspakke er opprettet med id: $grunnlagspakkeOpprettet")
         return grunnlagspakkeOpprettet
     }
 
@@ -69,9 +70,9 @@ class GrunnlagController(
         @Valid @RequestBody
         request: OppdaterGrunnlagspakkeRequestDto,
     ): OppdaterGrunnlagspakkeDto? {
+        SECURE_LOGGER.info("Oppdaterer grunnlagspakkeId: $grunnlagspakkeId med request: ${tilJson(request)}")
         val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(grunnlagspakkeId, request)
         LOGGER.info("Følgende grunnlagspakke ble oppdatert: $grunnlagspakkeId")
-        SECURE_LOGGER.info("Oppdater grunnlagspakkeId: $grunnlagspakkeId med request: $request")
         return grunnlagspakkeOppdatert
     }
 
@@ -93,7 +94,7 @@ class GrunnlagController(
     ): HentGrunnlagspakkeDto? {
         val grunnlagspakkeFunnet = grunnlagspakkeService.hentGrunnlagspakke(grunnlagspakkeId)
         LOGGER.info("Følgende grunnlagspakke ble hentet: ${grunnlagspakkeFunnet.grunnlagspakkeId}")
-        SECURE_LOGGER.info("Hent grunnlagspakke med id: $grunnlagspakkeId ga følgende response: $grunnlagspakkeFunnet")
+        SECURE_LOGGER.info("Hent av grunnlagspakke med id: $grunnlagspakkeId ga følgende response: ${tilJson(grunnlagspakkeFunnet)}")
 
         return grunnlagspakkeFunnet
     }
@@ -138,9 +139,9 @@ class GrunnlagController(
         @Valid @RequestBody
         request: HentGrunnlagRequestDto,
     ): HentGrunnlagDto? {
+        SECURE_LOGGER.info("Henter grunnlag med request: ${tilJson(request)}")
         val hentGrunnlagDto = hentGrunnlagService.hentGrunnlag(request)
-        SECURE_LOGGER.info("Følgende hentGrunnlagRequest ble behandlet: $request")
-        SECURE_LOGGER.info("Følgende HentGrunnlagDto ble sendt som respons: $hentGrunnlagDto")
+        SECURE_LOGGER.info("Hent av grunnlag ga følgende respons: ${tilJson(hentGrunnlagDto)}")
         return hentGrunnlagDto
     }
 

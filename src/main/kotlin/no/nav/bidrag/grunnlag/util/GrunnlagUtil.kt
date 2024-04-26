@@ -1,5 +1,8 @@
 package no.nav.bidrag.grunnlag.util
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.domene.enums.vedtak.Formål
@@ -7,6 +10,7 @@ import org.apache.commons.lang3.StringUtils
 import org.mockito.Mockito
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
+import java.text.SimpleDateFormat
 
 open class GrunnlagUtil {
 
@@ -112,5 +116,14 @@ open class GrunnlagUtil {
         fun <T> any(type: Class<T>): T = Mockito.any(type)
 
         fun <T> any(): T = Mockito.any()
+
+        fun tilJson(json: Any): String {
+            val objectMapper = ObjectMapper()
+            objectMapper.registerKotlinModule()
+            objectMapper.writerWithDefaultPrettyPrinter()
+            objectMapper.registerModule(JavaTimeModule())
+            objectMapper.dateFormat = SimpleDateFormat("yyyy-MM-dd")
+            return objectMapper.writeValueAsString(json)
+        }
     }
 }

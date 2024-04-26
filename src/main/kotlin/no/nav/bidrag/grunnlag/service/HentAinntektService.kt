@@ -65,7 +65,7 @@ class HentAinntektService(
 
     private fun kalkulerPeriodeFra(personIdOgPeriode: PersonIdOgPeriodeRequest): String {
         return if (personIdOgPeriode.periodeFra.isBefore(LocalDate.parse("2015-01-01"))) {
-            LOGGER.info("Ikke tillatt med periodeFra tidligere enn 2015 i request til Ainntekt, overstyres til januar 2015")
+            LOGGER.warn("Ikke tillatt med periodeFra tidligere enn 2015 i request til Ainntekt, overstyres til januar 2015")
             JANUAR2015
         } else {
             personIdOgPeriode.periodeFra.toString().substring(0, 7)

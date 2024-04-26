@@ -7,6 +7,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequ
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -24,7 +25,7 @@ open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTempla
     @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentEnhetsinfo(request: HentEnhetsregisterRequest): RestResponse<HentEnhetsregisterResponse> {
         LOGGER.info("Henter info om en organisasjon fra Ereg")
-        SECURE_LOGGER.info("Henter info om en organisasjon fra Ereg med request: $request")
+        SECURE_LOGGER.info("Henter info om en organisasjon fra Ereg med request: ${tilJson(request)}")
 
         val restResponse = restTemplate.tryExchange(
             byggEregUrl(request),

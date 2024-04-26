@@ -8,6 +8,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -31,13 +32,16 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
             ) {
                 is RestResponse.Success -> {
                     SECURE_LOGGER.info(
-                        "Henting av utvidet barnetrygd og småbarnstillegg ga følgende respons for ${it.personId}: ${restResponseUbst.body}",
+                        "Henting av utvidet barnetrygd og småbarnstillegg ga følgende respons for ${it.personId}: ${tilJson(restResponseUbst.body)}",
                     )
                     leggTilUbst(ubstListe = ubstListe, familieBaSakRespons = restResponseUbst.body, ident = it.personId)
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn("Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}")
+                    SECURE_LOGGER.warn(
+                        "Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}. " +
+                            "Statuskode ${restResponseUbst.statusCode.value()}",
+                    )
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,

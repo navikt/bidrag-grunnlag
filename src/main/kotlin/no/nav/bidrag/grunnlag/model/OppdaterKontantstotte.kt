@@ -9,9 +9,8 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,11 +22,6 @@ class OppdaterKontantstotte(
     private val persistenceService: PersistenceService,
     private val familieKsSakConsumer: FamilieKsSakConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
-
-    companion object {
-        @JvmStatic
-        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterBarnetillegg::class.java)
-    }
 
     fun oppdaterKontantstotte(
         kontantstotteRequestListe: List<PersonIdOgPeriodeRequest>,
@@ -44,8 +38,7 @@ class OppdaterKontantstotte(
                 identer = personIdListe,
             )
 
-            LOGGER.info("Kaller kontantstøtte")
-            SECURE_LOGGER.info("Kaller kontantstøtte med request: $innsynRequest")
+            SECURE_LOGGER.info("Kaller kontantstøtte med request: ${tilJson(innsynRequest)}")
 
             try {
                 when (
@@ -54,7 +47,7 @@ class OppdaterKontantstotte(
                 ) {
                     is RestResponse.Success -> {
                         val kontantstotteResponse = restResponseKontantstotte.body
-                        SECURE_LOGGER.info("kontantstøtte ga følgende respons: $kontantstotteResponse")
+                        SECURE_LOGGER.info("kontantstøtte ga følgende respons: ${tilJson(kontantstotteResponse)}")
 
                         persistenceService.oppdaterEksisterendeKontantstotteTilInaktiv(
                             grunnlagspakkeId = grunnlagspakkeId,
@@ -133,7 +126,7 @@ class OppdaterKontantstotte(
                                     "${personIdOgPeriode.periodeTil}.",
                             ),
                         )
-                        SECURE_LOGGER.info("kontantstøtte familie-ks-sak svarer med feil, respons: $restResponseKontantstotte")
+                        SECURE_LOGGER.warn("kontantstøtte familie-ks-sak svarte med feil, respons: ${tilJson(restResponseKontantstotte)}")
                     }
                 }
             } catch (e: Exception) {

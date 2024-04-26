@@ -7,6 +7,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
@@ -26,7 +27,7 @@ open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTempla
 
     @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<List<Arbeidsforhold>> {
-        SECURE_LOGGER.info("Henter arbeidsforhold fra Aareg med request: $request")
+        SECURE_LOGGER.info("Henter arbeidsforhold fra Aareg med request: ${tilJson(request)}")
 
         val responseType = object : ParameterizedTypeReference<List<Arbeidsforhold>>() {}
 

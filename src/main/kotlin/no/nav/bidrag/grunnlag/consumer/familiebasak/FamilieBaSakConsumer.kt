@@ -25,7 +25,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
 
     @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentFamilieBaSak(request: FamilieBaSakRequest): RestResponse<FamilieBaSakResponse> {
-        logger.info("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
+        logger.debug("Henter utvidet barnetrygd og småbarnstillegg fra familie-ba-sak")
 
         val restResponse = restTemplate.tryExchange(
             FAMILIEBASAK_CONTEXT,

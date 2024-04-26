@@ -10,9 +10,8 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
@@ -24,11 +23,6 @@ class OppdaterBarnetilsyn(
     private val persistenceService: PersistenceService,
     private val familieEfSakConsumer: FamilieEfSakConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
-
-    companion object {
-        @JvmStatic
-        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterBarnetilsyn::class.java)
-    }
 
     fun oppdaterBarnetilsyn(
         barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>,
@@ -42,8 +36,7 @@ class OppdaterBarnetilsyn(
                 personIdOgPeriode.periodeFra,
             )
 
-            LOGGER.info("Henter barnetilsyn for enslig forsørger")
-            SECURE_LOGGER.info("Kaller barnetilsyn enslig forsørger med request: $barnetilsynRequest")
+            SECURE_LOGGER.info("Kaller barnetilsyn enslig forsørger med request: ${tilJson(barnetilsynRequest)}")
 
             try {
                 when (
@@ -52,7 +45,7 @@ class OppdaterBarnetilsyn(
                 ) {
                     is RestResponse.Success -> {
                         val barnetilsynResponse = restResponseBarnetilsyn.body
-                        SECURE_LOGGER.info("Barnetilsyn ga følgende respons: $barnetilsynResponse")
+                        SECURE_LOGGER.info("Barnetilsyn ga følgende respons: ${tilJson(barnetilsynResponse)}")
 
                         persistenceService.oppdaterEksisterendeBarnetilsynTilInaktiv(
                             grunnlagspakkeId = grunnlagspakkeId,

@@ -9,10 +9,9 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandPdlDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -25,11 +24,6 @@ class OppdaterSivilstand(
 
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
-    companion object {
-        @JvmStatic
-        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterSivilstand::class.java)
-    }
-
     fun oppdaterSivilstand(
         sivilstandRequestListe: List<PersonIdOgPeriodeRequest>,
         historiskeIdenterMap: Map<String, List<String>>,
@@ -38,8 +32,7 @@ class OppdaterSivilstand(
 
             var antallPerioderFunnet = 0
 
-            LOGGER.info("Kaller bidrag-person og henter sivilstand")
-            SECURE_LOGGER.info("Kaller bidrag-person og henter sivilstand for: $personIdOgPeriode.personId")
+            SECURE_LOGGER.info("Kaller bidrag-person og henter sivilstand for: ${tilJson(personIdOgPeriode.personId)}")
 
             try {
                 when (
@@ -48,7 +41,7 @@ class OppdaterSivilstand(
                 ) {
                     is RestResponse.Success -> {
                         val sivilstandResponse = restResponseSivilstand.body
-                        SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: $sivilstandResponse")
+                        SECURE_LOGGER.info("Kall til bidrag-person for å hente sivilstand ga følgende respons: ${tilJson(sivilstandResponse)}")
 
                         if (sivilstandResponse.sivilstandPdlDto.isNotEmpty()) {
                             persistenceService.oppdaterEksisterendeSivilstandTilInaktiv(

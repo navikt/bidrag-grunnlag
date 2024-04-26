@@ -12,6 +12,7 @@ import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.Tilleggsinformasj
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.VirksomhetIntern
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.TilleggsinformasjonDetaljerType
@@ -45,7 +46,7 @@ class InntektskomponentenService(
                     // Respons OK
                     SECURE_LOGGER.info(
                         "Henting av inntekter med abonnement for perioden ${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom} " +
-                            "ga følgende respons for ${inntektListeRequest.ident.identifikator}: ${restResponseInntekt.body}",
+                            "ga følgende respons for ${inntektListeRequest.ident.identifikator}: ${tilJson(restResponseInntekt.body)}",
                     )
                     val abonnerteInntekter = restResponseInntekt.body
                     if (null != abonnerteInntekter.arbeidsInntektMaaned) {
@@ -66,7 +67,7 @@ class InntektskomponentenService(
                                 SECURE_LOGGER.info(
                                     "Henting av inntekter uten abonnement for perioden ${inntektListeRequest.maanedFom} - " +
                                         "${inntektListeRequest.maanedTom} ga følgende respons for ${inntektListeRequest.ident.identifikator}: " +
-                                        "${restResponse2Inntekt.body}",
+                                        tilJson(restResponse2Inntekt.body),
                                 )
                                 val inntekter = restResponse2Inntekt.body
                                 if (null != inntekter.arbeidsInntektMaaned) {
@@ -77,7 +78,8 @@ class InntektskomponentenService(
                             is RestResponse.Failure -> {
                                 SECURE_LOGGER.warn(
                                     "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                                        "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}",
+                                        "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. " +
+                                        "Statuskode ${restResponse2Inntekt.statusCode.value()}",
                                 )
                                 httpStatus = restResponse2Inntekt.statusCode
                                 melding = restResponse2Inntekt.message ?: ""
