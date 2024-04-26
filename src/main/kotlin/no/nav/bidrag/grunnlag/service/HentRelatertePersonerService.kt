@@ -9,6 +9,7 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
@@ -28,12 +29,12 @@ class HentRelatertePersonerService(
         relatertPersonRequestListe.forEach { personIdOgPeriode ->
             // Henter alle husstandsmedlemmer til BM/BP
             val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode = personIdOgPeriode, feilrapporteringListe = feilrapporteringListe)
-            SECURE_LOGGER.info("husstandsmedlemmerListe for ${personIdOgPeriode.personId} $husstandsmedlemmerListe ")
+            SECURE_LOGGER.debug("husstandsmedlemmerListe for {} {}", personIdOgPeriode.personId, husstandsmedlemmerListe)
 
             // Henter alle barn av BM/BP
             val barnListe = hentBarn(personident = Personident(personIdOgPeriode.personId), feilrapporteringListe = feilrapporteringListe)
-            SECURE_LOGGER.info("barnListe for ${personIdOgPeriode.personId} $barnListe ")
-            SECURE_LOGGER.info("relatertPersonRequestListe: $relatertPersonRequestListe")
+            SECURE_LOGGER.debug("barnListe for {} {}", personIdOgPeriode.personId, barnListe)
+            SECURE_LOGGER.debug("relatertPersonRequestListe: {}", relatertPersonRequestListe)
 
             // Slår sammen listene over husstandsmedlemmer og barn. Innsendt personId lagres ikke som eget husstandsmedlem.
             // Hvis personen ligger i barnListe settes erBarnAvBmBp lik true.
@@ -68,7 +69,7 @@ class HentRelatertePersonerService(
             // En relatert person kan forekomme flere ganger i listen, én gang for hver periode personen har delt bolig med BM/BP (partPersonId).
             // I responsen skal hver person kun ligge én gang, med en liste over perioder personen har delt bolig med BM/BP (partPersonId).
             // Sjekker derfor om personen allerede ligger i responsen.
-            SECURE_LOGGER.info("relatertPersonInternListe for ${personIdOgPeriode.personId} $relatertPersonInternListe ")
+            SECURE_LOGGER.debug("relatertPersonInternListe for ${personIdOgPeriode.personId} ${tilJson(relatertPersonInternListe)}")
 
             relatertPersonInternListe
                 .groupBy { it.partPersonId to it.relatertPersonPersonId }
@@ -90,7 +91,7 @@ class HentRelatertePersonerService(
                         ),
                     )
                 }
-            SECURE_LOGGER.info("relatertPersonListe for ${personIdOgPeriode.personId}: $relatertPersonListe ")
+            SECURE_LOGGER.debug("relatertPersonListe for ${personIdOgPeriode.personId}: ${tilJson(relatertPersonListe)}")
         }
 
         return HentGrunnlagGenericDto(grunnlagListe = relatertPersonListe, feilrapporteringListe = feilrapporteringListe)
@@ -109,15 +110,17 @@ class HentRelatertePersonerService(
             is RestResponse.Success -> {
                 val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
                 SECURE_LOGGER.info(
-                    "Bidrag-person ga følgende respons på husstandsmedlemmer for ${personIdOgPeriode.personId}: $husstandsmedlemmerResponseDto",
+                    "Bidrag-person ga følgende respons på husstandsmedlemmer for ${personIdOgPeriode.personId}: " +
+                        tilJson(husstandsmedlemmerResponseDto),
                 )
 
                 husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
                     husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
-                        SECURE_LOGGER.info(
-                            "husstandsmedlemInnenforPeriode: ${personIdOgPeriode.personId} " +
-                                "${husstandsmedlem.personId} " +
-                                husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem),
+                        SECURE_LOGGER.debug(
+                            "husstandsmedlemInnenforPeriode: {} {} {}",
+                            personIdOgPeriode.personId,
+                            husstandsmedlem.personId,
+                            husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem),
                         )
                         if (husstandsmedlem.personId.toString() != personIdOgPeriode.personId &&
                             husstandsmedlemInnenforPeriode(personIdOgPeriode, husstandsmedlem)
@@ -137,7 +140,10 @@ class HentRelatertePersonerService(
             }
 
             is RestResponse.Failure -> {
-                SECURE_LOGGER.warn("Feil ved henting av husstandsmedlemmer for ${personIdOgPeriode.personId}")
+                SECURE_LOGGER.warn(
+                    "Feil ved henting av husstandsmedlemmer for ${personIdOgPeriode.personId}. " +
+                        "Statuskode ${restResponseHusstandsmedlemmer.statusCode.value()}",
+                )
                 feilrapporteringListe.add(
                     FeilrapporteringDto(
                         grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
@@ -171,7 +177,7 @@ class HentRelatertePersonerService(
             is RestResponse.Success -> {
                 val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
                 SECURE_LOGGER.info(
-                    "Henting av forelder-barn-relasjoner ga følgende respons for ${personident.verdi}: $forelderBarnRelasjonResponse",
+                    "Henting av forelder-barn-relasjoner ga følgende respons for ${personident.verdi}: ${tilJson(forelderBarnRelasjonResponse)}",
                 )
 
                 forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach {
@@ -196,7 +202,10 @@ class HentRelatertePersonerService(
             }
 
             is RestResponse.Failure -> {
-                SECURE_LOGGER.warn("Feil ved henting av forelder-barn-relasjoner for ${personident.verdi}")
+                SECURE_LOGGER.warn(
+                    "Feil ved henting av forelder-barn-relasjoner for ${personident.verdi}. " +
+                        "Statuskode ${restResponseForelderBarnRelasjon.statusCode.value()}",
+                )
                 feilrapporteringListe.add(
                     FeilrapporteringDto(
                         grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
@@ -228,7 +237,7 @@ class HentRelatertePersonerService(
         ) {
             is RestResponse.Success -> {
                 val foedselOgDoedResponse = restResponseFoedselOgDoed.body
-                SECURE_LOGGER.info("Henting av navn og fødselsdato ga følgende respons for ${personident.verdi}: $foedselOgDoedResponse")
+                SECURE_LOGGER.info("Henting av navn og fødselsdato ga følgende respons for ${personident.verdi}: ${tilJson(foedselOgDoedResponse)}")
 
                 navnFødselDødDto = NavnFødselDødDto(
                     foedselOgDoedResponse.navn,
@@ -239,7 +248,10 @@ class HentRelatertePersonerService(
             }
 
             is RestResponse.Failure -> {
-                SECURE_LOGGER.warn("Feil ved henting av navn og fødselsdato for ${personident.verdi}")
+                SECURE_LOGGER.warn(
+                    "Feil ved henting av navn og fødselsdato for ${personident.verdi}. " +
+                        "Statuskode ${restResponseFoedselOgDoed.statusCode.value()}",
+                )
                 feilrapporteringListe.add(
                     FeilrapporteringDto(
                         grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,

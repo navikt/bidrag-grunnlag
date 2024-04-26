@@ -28,9 +28,9 @@ open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestT
     @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentInntekter(request: HentInntektListeRequest, abonnerteInntekterRequest: Boolean): RestResponse<HentInntektListeResponse> {
         if (abonnerteInntekterRequest) {
-            LOGGER.info("Henter abonnerte inntekter fra Inntektskomponenten.")
+            LOGGER.debug("Henter abonnerte inntekter fra Inntektskomponenten.")
         } else {
-            LOGGER.info("Henter inntekter fra Inntektskomponenten.")
+            LOGGER.debug("Henter inntekter fra Inntektskomponenten.")
         }
         SECURE_LOGGER.info("HentInntektListeRequest: $request")
         val url = if (abonnerteInntekterRequest) DETALJERTE_ABONNERTE_INNTEKTER_CONTEXT else INNTEKT_LISTE_CONTEXT

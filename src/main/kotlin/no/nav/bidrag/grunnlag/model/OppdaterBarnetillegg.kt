@@ -11,9 +11,8 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonReques
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDateTime
 
@@ -23,11 +22,6 @@ class OppdaterBarnetillegg(
     private val persistenceService: PersistenceService,
     private val pensjonConsumer: PensjonConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
-
-    companion object {
-        @JvmStatic
-        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterBarnetillegg::class.java)
-    }
 
     fun oppdaterBarnetillegg(
         barnetilleggRequestListe: List<PersonIdOgPeriodeRequest>,
@@ -41,8 +35,7 @@ class OppdaterBarnetillegg(
                 tom = personIdOgPeriode.periodeTil.minusDays(1),
             )
 
-            LOGGER.info("Kaller barnetillegg pensjon")
-            SECURE_LOGGER.info("Kaller barnetillegg pensjon med request: $hentBarnetilleggPensjonRequest")
+            SECURE_LOGGER.info("Kaller barnetillegg pensjon med request: ${tilJson(hentBarnetilleggPensjonRequest)}")
 
             try {
                 when (
@@ -52,7 +45,7 @@ class OppdaterBarnetillegg(
                     is RestResponse.Success -> {
                         val barnetilleggPensjonResponse = restResponseBarnetilleggPensjon.body
 
-                        SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: $barnetilleggPensjonResponse")
+                        SECURE_LOGGER.info("Barnetillegg pensjon ga følgende respons: ${tilJson(barnetilleggPensjonResponse)}")
 
                         persistenceService.oppdaterEksisterendeBarnetilleggPensjonTilInaktiv(
                             grunnlagspakkeId = grunnlagspakkeId,

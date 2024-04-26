@@ -16,6 +16,7 @@ import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.JANUAR2015
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFilter
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.finnFormaal
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import org.apache.commons.lang3.StringUtils
@@ -47,18 +48,25 @@ class OppdaterAinntekt(
             // 2015.01 hvis periodeFra er tidligere enn det. Hvis periodeTil er før januar 2015 så gjøres det ikke et kall.
             //
             if (personIdOgPeriode.periodeTil.isBefore(LocalDate.of(2015, 1, 1))) {
-                LOGGER.info("Ugyldig periode angitt i HentInntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere")
-                SECURE_LOGGER.info(
-                    "Ugyldig periode angitt i HentInntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere: " +
-                        "$personIdOgPeriode",
+                LOGGER.warn("Ugyldig periode angitt i HentInntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere")
+                SECURE_LOGGER.warn(
+                    "Ugyldig periode angitt i HentInntektRequest (Inntektskomponenten). PeriodeTil må være januar 2015 eller senere: ${
+                        tilJson(
+                            personIdOgPeriode,
+                        )
+                    }",
                 )
             } else {
                 val periodeFra: String
                 if (personIdOgPeriode.periodeFra.isBefore(LocalDate.parse("2015-01-01"))) {
                     periodeFra = JANUAR2015
-                    LOGGER.info("For gammel periodeFra angitt i HentInntektRequest (Inntektskomponenten), overstyres til januar 2015")
-                    SECURE_LOGGER.info(
-                        "For gammel periodeFra angitt i HentInntektRequest (Inntektskomponenten), overstyres til januar 2015: $personIdOgPeriode",
+                    LOGGER.warn("For gammel periodeFra angitt i HentInntektRequest (Inntektskomponenten), overstyres til januar 2015")
+                    SECURE_LOGGER.warn(
+                        "For gammel periodeFra angitt i HentInntektRequest (Inntektskomponenten), overstyres til januar 2015: ${
+                            tilJson(
+                                personIdOgPeriode,
+                            )
+                        }",
                     )
                 } else {
                     periodeFra = personIdOgPeriode.periodeFra.toString().substring(0, 7)
@@ -78,10 +86,10 @@ class OppdaterAinntekt(
                 hentInntektListeRequestListe.forEach { hentInntektListeRequest ->
                     // Henter inntekter for ett og ett år (litt uvisst hvorfor det er løst slik)
 
-                    SECURE_LOGGER.info("Kaller InntektskomponentenService med request: $hentInntektListeRequest")
+                    SECURE_LOGGER.info("Kaller InntektskomponentenService med request: ${tilJson(hentInntektListeRequest)}")
 
                     val hentInntektListeResponseIntern = inntektskomponentenService.hentInntekt(hentInntektListeRequest)
-                    SECURE_LOGGER.info("Inntektskomponenten ga følgende respons: $hentInntektListeResponseIntern")
+                    SECURE_LOGGER.info("Inntektskomponenten ga følgende respons: ${tilJson(hentInntektListeResponseIntern)}")
 
                     if (hentInntektListeResponseIntern.exceptionKastet) {
                         this.add(

@@ -26,7 +26,7 @@ open class FamilieEfSakConsumer(
 
     @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentBarnetilsyn(request: BarnetilsynRequest): RestResponse<BarnetilsynResponse> {
-        logger.info("Henter barnetilsyn")
+        logger.debug("Henter barnetilsyn")
 
         val restResponse = restTemplate.tryExchange(
             BARNETILSYN_CONTEXT,

@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.erBnrEllerNpid
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagspostDto
@@ -52,7 +53,9 @@ class HentSkattegrunnlagService(
                 ) {
                     is RestResponse.Success -> {
                         SECURE_LOGGER.info(
-                            "Henting av skattegrunnlag ga følgende respons for ${it.personId} og år $inntektÅr: ${restResponseSkattegrunnlag.body}",
+                            "Henting av skattegrunnlag ga følgende respons for ${it.personId} og år $inntektÅr: ${tilJson(
+                                restResponseSkattegrunnlag.body,
+                            )}",
                         )
                         leggTilSkattegrunnlag(
                             skattegrunnlagListe = skattegrunnlagListe,
@@ -85,7 +88,10 @@ class HentSkattegrunnlagService(
                                 ),
                             )
                         } else {
-                            SECURE_LOGGER.warn("Feil ved henting av skattegrunnlag for ${it.personId} og år $inntektÅr")
+                            SECURE_LOGGER.warn(
+                                "Feil ved henting av skattegrunnlag for ${it.personId} og år $inntektÅr. " +
+                                    "Statuskode ${restResponseSkattegrunnlag.statusCode.value()}",
+                            )
                             feilrapporteringListe.add(
                                 FeilrapporteringDto(
                                     grunnlagstype = GrunnlagRequestType.SKATTEGRUNNLAG,

@@ -37,7 +37,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
 
     @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentNavnFoedselOgDoed(personident: Personident): RestResponse<NavnFødselDødDto> {
-        logger.info("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
+        logger.debug("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
 
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_FOEDSEL_DOED,
@@ -108,7 +108,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
 
     @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
     open fun hentPersonidenter(personident: Personident, inkludereHistoriske: Boolean): RestResponse<List<PersonidentDto>> {
-        logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons historiske identer")
+        logger.debug("Kaller bidrag-person som igjen kaller PDL for å finne en persons historiske identer")
 
         val responseType = object : ParameterizedTypeReference<List<PersonidentDto>>() {}
 

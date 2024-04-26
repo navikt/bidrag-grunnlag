@@ -8,6 +8,7 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
 import java.time.LocalDate
@@ -36,7 +37,7 @@ class HentKontantstøtteService(
                 val restResponseKontantstøtte = familieKsSakConsumer.hentKontantstotte(hentKontantstøtteRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Henting av kontantstøtte ga følgende respons for $personIdListe: ${restResponseKontantstøtte.body}")
+                    SECURE_LOGGER.info("Henting av kontantstøtte ga følgende respons for $personIdListe: ${tilJson(restResponseKontantstøtte.body)}")
                     leggTilKontantstøtte(
                         kontantstøtteListe = kontantstøtteListe,
                         kontantstøtteRespons = restResponseKontantstøtte.body,
@@ -45,7 +46,10 @@ class HentKontantstøtteService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn("Feil ved henting av kontantstøtte for $personIdListe")
+                    SECURE_LOGGER.warn(
+                        "Feil ved henting av kontantstøtte for $personIdListe. " +
+                            "Statuskode ${restResponseKontantstøtte.statusCode.value()}",
+                    )
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.KONTANTSTØTTE,

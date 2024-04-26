@@ -9,6 +9,7 @@ import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
@@ -84,7 +85,13 @@ class GrunnlagspakkeService(
             if (!historiskeIdenterMap.values.any { grunnlagDto.personId in it }) {
                 val historiskeIdenterListe = hentIdenterFraConsumer(grunnlagDto.personId)
                 if (historiskeIdenterListe.size > 1) {
-                    SECURE_LOGGER.warn("Hentet historiske identer for personId: ${grunnlagDto.personId} og fikk tilbake: $historiskeIdenterListe")
+                    SECURE_LOGGER.warn(
+                        "Hentet historiske identer for personId: ${grunnlagDto.personId} og fikk tilbake: ${
+                            tilJson(
+                                historiskeIdenterListe,
+                            )
+                        }",
+                    )
                 }
 
                 val key = historiskeIdenterListe.find { !it.historisk }?.personId
@@ -103,7 +110,9 @@ class GrunnlagspakkeService(
             is RestResponse.Success -> {
                 val personidenterResponse = response.body
                 SECURE_LOGGER.info(
-                    "Kall til bidrag-person for å hente historiske identer for ident $personId ga følgende respons: $personidenterResponse",
+                    "Kall til bidrag-person for å hente historiske identer for ident $personId ga følgende respons: ${tilJson(
+                        personidenterResponse,
+                    )}",
                 )
                 if (personidenterResponse.isEmpty()) {
                     listOf(HistoriskIdent(personId, false))

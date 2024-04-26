@@ -13,9 +13,8 @@ import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.Skattegrunnlag
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -27,11 +26,6 @@ class OppdaterSkattegrunnlag(
     private val persistenceService: PersistenceService,
     private val sigrunConsumer: SigrunConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
-
-    companion object {
-        @JvmStatic
-        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterSkattegrunnlag::class.java)
-    }
 
     fun oppdaterSkattegrunnlag(
         skattegrunnlagRequestListe: List<PersonIdOgPeriodeRequest>,
@@ -55,15 +49,14 @@ class OppdaterSkattegrunnlag(
                     personId = personIdOgPeriode.personId,
                 )
 
-                LOGGER.info("Kaller Sigrun (skattegrunnlag)")
-                SECURE_LOGGER.info("Kaller Sigrun (skattegrunnlag) med request: $skattegrunnlagRequest")
+                SECURE_LOGGER.info("Kaller Sigrun (skattegrunnlag) med request: ${tilJson(skattegrunnlagRequest)}")
 
                 try {
                     when (val restResponseSkattegrunnlag = sigrunConsumer.hentSummertSkattegrunnlag(skattegrunnlagRequest)) {
                         is RestResponse.Success -> {
                             var antallSkattegrunnlagsposter = 0
                             val skattegrunnlagResponse = restResponseSkattegrunnlag.body
-                            SECURE_LOGGER.info("Sigrun (skattegrunnlag) ga følgende respons: $skattegrunnlagResponse")
+                            SECURE_LOGGER.info("Sigrun (skattegrunnlag) ga følgende respons: ${tilJson(skattegrunnlagResponse)}")
 
                             val skattegrunnlagsPosterOrdinaer = mutableListOf<Skattegrunnlag>()
                             val skattegrunnlagsPosterSvalbard = mutableListOf<Skattegrunnlag>()

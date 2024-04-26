@@ -11,6 +11,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequ
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.Ansettelsesdetaljer
 import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
@@ -33,7 +34,9 @@ class HentArbeidsforholdService(
                 val restResponseArbeidsforhold = arbeidsforholdConsumer.hentArbeidsforhold(hentArbeidsforholdRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Henting av arbeidsforhold ga følgende respons for ${it.personId}: ${restResponseArbeidsforhold.body}")
+                    SECURE_LOGGER.info(
+                        "Henting av arbeidsforhold ga følgende respons for ${it.personId}: ${tilJson(restResponseArbeidsforhold.body)}",
+                    )
                     leggTilArbeidsforhold(
                         arbeidsforholdListe = arbeidsforholdListe,
                         feilrapporteringListe = feilrapporteringListe,
@@ -43,9 +46,10 @@ class HentArbeidsforholdService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn("Feil ved henting av arbeidsforhold for ${it.personId}")
-                    SECURE_LOGGER.info("restResponseArbeidsforhold.statusCode ${restResponseArbeidsforhold.statusCode}")
-                    SECURE_LOGGER.info("restResponseArbeidsforhold.statusCode.value ${restResponseArbeidsforhold.statusCode.value()}")
+                    SECURE_LOGGER.warn(
+                        "Feil ved henting av arbeidsforhold for ${it.personId}. " +
+                            "Statuskode ${restResponseArbeidsforhold.statusCode.value()}",
+                    )
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,
@@ -156,7 +160,10 @@ class HentArbeidsforholdService(
                     }
 
                     is RestResponse.Failure -> {
-                        SECURE_LOGGER.warn("Feil ved henting av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr")
+                        SECURE_LOGGER.warn(
+                            "Feil ved henting av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr. " +
+                                "Statuskode ${restResponseEnhetsregister.statusCode.value()}",
+                        )
                         feilrapporteringListe.add(
                             FeilrapporteringDto(
                                 grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,

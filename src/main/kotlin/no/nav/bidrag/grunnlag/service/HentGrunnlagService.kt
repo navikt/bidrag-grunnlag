@@ -273,7 +273,7 @@ class HentGrunnlagService(
             if (!historiskeIdenterMap.values.any { grunnlagDto.personId in it }) {
                 val historiskeIdenterListe = hentIdenterFraConsumer(grunnlagDto.personId)
                 if (historiskeIdenterListe.size > 1) {
-                    SECURE_LOGGER.warn("Hentet historiske identer for personId: ${grunnlagDto.personId} og fikk tilbake: $historiskeIdenterListe")
+                    SECURE_LOGGER.info("Hentet historiske identer for personId: ${grunnlagDto.personId} og fikk tilbake: $historiskeIdenterListe")
                 }
 
                 val key = historiskeIdenterListe.find { !it.historisk }?.personId
@@ -291,9 +291,6 @@ class HentGrunnlagService(
         return when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)) {
             is RestResponse.Success -> {
                 val personidenterResponse = response.body
-                SECURE_LOGGER.info(
-                    "Kall til bidrag-person for å hente historiske identer for ident $personId ga følgende respons: $personidenterResponse",
-                )
                 if (personidenterResponse.isEmpty()) {
                     listOf(HistoriskIdent(personId, false))
                 } else {
@@ -302,7 +299,6 @@ class HentGrunnlagService(
             }
 
             is RestResponse.Failure -> {
-                LOGGER.warn("Feil ved kall til bidrag-person for å hente historiske identer ${response.statusCode}")
                 SECURE_LOGGER.warn("Feil ved kall til bidrag-person for å hente historiske identer for ident $personId. Respons = $response")
                 listOf(HistoriskIdent(personId, false))
             }

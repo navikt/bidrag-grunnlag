@@ -10,6 +10,7 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonReques
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 
@@ -32,7 +33,9 @@ class HentBarnetilleggService(
                 val restResponseBarnetillegg = pensjonConsumer.hentBarnetilleggPensjon(hentBarnetilleggRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info("Henting av barnetillegg pensjon ga følgende respons for ${it.personId}: ${restResponseBarnetillegg.body}")
+                    SECURE_LOGGER.info(
+                        "Henting av barnetillegg pensjon ga følgende respons for ${it.personId}: ${tilJson(restResponseBarnetillegg.body)}",
+                    )
                     leggTilBarnetillegg(
                         barnetilleggPensjonListe = barnetilleggPensjonListe,
                         barnetilleggPensjonResponsListe = restResponseBarnetillegg.body,
@@ -41,7 +44,10 @@ class HentBarnetilleggService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn("Feil ved henting av barnetillegg pensjon for ${it.personId}")
+                    SECURE_LOGGER.warn(
+                        "Feil ved henting av barnetillegg pensjon for ${it.personId}. " +
+                            "Statuskode ${restResponseBarnetillegg.statusCode.value()}",
+                    )
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.BARNETILLEGG,

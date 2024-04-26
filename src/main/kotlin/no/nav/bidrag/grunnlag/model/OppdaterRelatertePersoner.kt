@@ -11,10 +11,9 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.time.LocalDateTime
 
@@ -25,11 +24,6 @@ class OppdaterRelatertePersoner(
     private val bidragPersonConsumer: BidragPersonConsumer,
 
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
-
-    companion object {
-        @JvmStatic
-        private val LOGGER: Logger = LoggerFactory.getLogger(OppdaterRelatertePersoner::class.java)
-    }
 
     // Henter og lagrer først husstandsmedlemmer for så å hente forelder-barn-relasjoner.
     // Også barn som ikke bor i samme husstand som BM/BP skal være med i grunnlaget og lagres med null i husstandsmedlemPeriodeFra
@@ -125,8 +119,7 @@ class OppdaterRelatertePersoner(
     }
 
     private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: String): List<PersonBo> {
-        LOGGER.info("Kaller bidrag-person Husstandsmedlemmer")
-        SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: $husstandsmedlemmerRequest")
+        SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: ${tilJson(husstandsmedlemmerRequest)}")
 
         val husstandsmedlemListe = mutableListOf<PersonBo>()
 
@@ -138,7 +131,11 @@ class OppdaterRelatertePersoner(
                 is RestResponse.Success -> {
                     val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
                     SECURE_LOGGER.info(
-                        "Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: $husstandsmedlemmerResponseDto",
+                        "Bidrag-person ga følgende respons på Husstandsmedlemmer for grunnlag EgneBarnIHusstanden: ${
+                            tilJson(
+                                husstandsmedlemmerResponseDto,
+                            )
+                        }",
                     )
 
                     if (husstandsmedlemmerResponseDto.husstandListe.isNotEmpty()) {
@@ -201,8 +198,7 @@ class OppdaterRelatertePersoner(
     }
 
     private fun hentBarn(forelderBarnRequest: Personident): List<PersonBo> {
-        LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon")
-        SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: $forelderBarnRequest")
+        SECURE_LOGGER.info("Kaller bidrag-person Forelder-barn-relasjon med request: ${tilJson(forelderBarnRequest)}")
 
         val barnListe = mutableListOf<PersonBo>()
 
@@ -216,7 +212,7 @@ class OppdaterRelatertePersoner(
                     val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
 
                     if (forelderBarnRelasjonResponse.forelderBarnRelasjon.isNotEmpty()) {
-                        SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: $forelderBarnRelasjonResponse")
+                        SECURE_LOGGER.info("Bidrag-person ga følgende respons på forelder-barn-relasjoner: ${tilJson(forelderBarnRelasjonResponse)}")
 
                         forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach { forelderBarnRelasjon ->
                             // Kaller bidrag-person for å hente info om fødselsdato og navn
@@ -268,7 +264,6 @@ class OppdaterRelatertePersoner(
 
     private fun hentNavnFoedselDoed(personident: Personident): NavnFødselDødDto? {
         // hent navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
-        LOGGER.info("Kaller bidrag-person hent navn og fødselsdato")
         SECURE_LOGGER.info("Kaller bidrag-person hent navn og fødselsdato for : $personident")
         try {
             when (
@@ -277,7 +272,7 @@ class OppdaterRelatertePersoner(
             ) {
                 is RestResponse.Success -> {
                     val foedselOgDoedResponse = restResponseFoedselOgDoed.body
-                    SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsdato: $foedselOgDoedResponse")
+                    SECURE_LOGGER.info("Bidrag-person ga følgende respons på hent navn og fødselsdato: ${tilJson(foedselOgDoedResponse)}")
 
                     return NavnFødselDødDto(
                         foedselOgDoedResponse.navn,

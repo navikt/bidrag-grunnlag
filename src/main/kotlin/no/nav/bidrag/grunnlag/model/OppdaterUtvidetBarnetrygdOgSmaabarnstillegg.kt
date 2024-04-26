@@ -9,9 +9,8 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -24,12 +23,6 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
     private val familieBaSakConsumer: FamilieBaSakConsumer,
 ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
-    companion object {
-        @JvmStatic
-        private val LOGGER: Logger =
-            LoggerFactory.getLogger(OppdaterUtvidetBarnetrygdOgSmaabarnstillegg::class.java)
-    }
-
     fun oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
         utvidetBarnetrygdOgSmaabarnstilleggRequestListe: List<PersonIdOgPeriodeRequest>,
         historiskeIdenterMap: Map<String, List<String>>,
@@ -41,8 +34,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                 fraDato = personIdOgPeriode.periodeFra,
             )
 
-            LOGGER.info("Kaller familie-ba-sak")
-            SECURE_LOGGER.info("Kaller familie-ba-sak med request: $familieBaSakRequest")
+            SECURE_LOGGER.info("Kaller familie-ba-sak med request: ${tilJson(familieBaSakRequest)}")
 
             try {
                 when (
@@ -51,7 +43,7 @@ class OppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
                 ) {
                     is RestResponse.Success -> {
                         val familieBaSakResponse = restResponseFamilieBaSak.body
-                        SECURE_LOGGER.info("familie-ba-sak ga følgende respons: $familieBaSakResponse")
+                        SECURE_LOGGER.info("familie-ba-sak ga følgende respons: ${tilJson(familieBaSakResponse)}")
                         persistenceService.oppdaterEksisterendeUtvidetBarnetrygOgSmaabarnstilleggTilInaktiv(
                             grunnlagspakkeId = grunnlagspakkeId,
                             personIdListe = historiskeIdenterMap[personIdOgPeriode.personId] ?: listOf(personIdOgPeriode.personId),
