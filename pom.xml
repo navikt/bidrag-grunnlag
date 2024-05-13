@@ -34,7 +34,7 @@
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <jackson-datatype.version>2.17.0</jackson-datatype.version>
     <ktlint.version>1.2.1</ktlint.version>
-    <kotlin-coroutines.version>1.8.0</kotlin-coroutines.version>
+    <kotlin-coroutines.version>1.8.1</kotlin-coroutines.version>
   </properties>
 
   <dependencies>
