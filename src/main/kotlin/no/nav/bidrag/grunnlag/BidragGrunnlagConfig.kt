@@ -63,10 +63,6 @@ class BidragGrunnlagConfig {
         private val LOGGER = LoggerFactory.getLogger(BidragGrunnlagConfig::class.java)
     }
 
-    @Bean
-    fun exceptionLogger(): ExceptionLogger {
-        return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
-    }
 
     @Bean
     @Scope("prototype")
