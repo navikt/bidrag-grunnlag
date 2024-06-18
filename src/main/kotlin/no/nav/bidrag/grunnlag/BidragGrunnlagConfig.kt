@@ -63,6 +63,10 @@ class BidragGrunnlagConfig {
         private val LOGGER = LoggerFactory.getLogger(BidragGrunnlagConfig::class.java)
     }
 
+    @Bean
+    fun exceptionLogger(): ExceptionLogger {
+        return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
+    }
 
     @Bean
     @Scope("prototype")
@@ -87,7 +91,6 @@ class BidragGrunnlagConfig {
         @Value("\${FAMILIEBASAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): FamilieBaSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -100,7 +103,6 @@ class BidragGrunnlagConfig {
         @Value("\${FAMILIEEFSAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): FamilieEfSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -113,7 +115,6 @@ class BidragGrunnlagConfig {
         @Value("\${INNTEKTSKOMPONENTEN_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): InntektskomponentenConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -126,7 +127,6 @@ class BidragGrunnlagConfig {
         @Value("\${SIGRUN_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): SigrunConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -139,7 +139,6 @@ class BidragGrunnlagConfig {
         @Value("\${PENSJON_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): PensjonConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -152,7 +151,6 @@ class BidragGrunnlagConfig {
         @Value("\${BIDRAGPERSON_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): BidragPersonConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -165,7 +163,6 @@ class BidragGrunnlagConfig {
         @Value("\${FAMILIEKSSAK_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): FamilieKsSakConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -178,7 +175,6 @@ class BidragGrunnlagConfig {
         @Value("\${AAREG_URL}") url: String,
         restTemplate: HttpHeaderRestTemplate,
         grunnlagSecurityTokenService: SecurityTokenService,
-        exceptionLogger: ExceptionLogger,
     ): ArbeidsforholdConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
@@ -187,11 +183,7 @@ class BidragGrunnlagConfig {
     }
 
     @Bean
-    fun enhetsregisterConsumer(
-        @Value("\${EREG_URL}") url: String,
-        restTemplate: HttpHeaderRestTemplate,
-        exceptionLogger: ExceptionLogger,
-    ): EnhetsregisterConsumer {
+    fun enhetsregisterConsumer(@Value("\${EREG_URL}") url: String, restTemplate: HttpHeaderRestTemplate): EnhetsregisterConsumer {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
         return EnhetsregisterConsumer(restTemplate)
