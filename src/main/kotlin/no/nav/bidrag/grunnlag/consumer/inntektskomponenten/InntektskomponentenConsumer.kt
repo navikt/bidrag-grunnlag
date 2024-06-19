@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
+import java.net.SocketTimeoutException
 
 private const val INNTEKT_LISTE_CONTEXT = "/rs/api/v1/hentinntektliste"
 private const val DETALJERTE_ABONNERTE_INNTEKTER_CONTEXT = "/rs/api/v1/hentdetaljerteabonnerteinntekter"
@@ -25,7 +26,7 @@ open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestT
         val LOGGER: Logger = LoggerFactory.getLogger(InntektskomponentenConsumer::class.java)
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentInntekter(request: HentInntektListeRequest, abonnerteInntekterRequest: Boolean): RestResponse<HentInntektListeResponse> {
         if (abonnerteInntekterRequest) {
             LOGGER.debug("Henter abonnerte inntekter fra Inntektskomponenten.")
