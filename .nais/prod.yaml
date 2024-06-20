@@ -30,8 +30,8 @@ azure:
   bidrag_organisasjon_scope: prod-fss.bidrag.bidrag-organisasjon
   unsecure:
     ereg_url: ereg-services.prod-fss-pub.nais.io
-dbname: bidrag-grunnlag-prod
-dbinstancename: bidrag-grunnlag-prod
+dbname: bidrag-grunnlag-prod-4
+dbinstancename: bidrag-grunnlag-prod-4
 azureAccessInbound:
   - application: bisys
     namespace: bidrag
