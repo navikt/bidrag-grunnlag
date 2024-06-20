@@ -31,7 +31,7 @@ azure:
   unsecure:
     ereg_url: ereg-services.prod-fss-pub.nais.io
 dbname: bidrag-grunnlag-prod
-dbinstancename: bidrag-grunnlag-prod-3
+dbinstancename: bidrag-grunnlag-prod
 azureAccessInbound:
   - application: bisys
     namespace: bidrag
