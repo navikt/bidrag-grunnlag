@@ -31,6 +31,7 @@ azure:
   unsecure:
     ereg_url: ereg-services.prod-fss-pub.nais.io
 dbname: bidrag-grunnlag-prod
+dbinstancename: bidrag-grunnlag-prod-3
 azureAccessInbound:
   - application: bisys
     namespace: bidrag
@@ -46,4 +47,5 @@ spec:
     min: 2
   gcp:
     sqlInstances:
+      diskSize: 20
       tier: db-custom-1-3840
