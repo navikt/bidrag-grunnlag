@@ -48,4 +48,5 @@ spec:
     min: 1
   gcp:
     sqlInstances:
+      diskSize: 10
       tier: db-f1-micro
