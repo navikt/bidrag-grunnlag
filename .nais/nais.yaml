@@ -108,7 +108,7 @@ spec:
   gcp:
     sqlInstances:
       - name: {{ dbinstancename }}
-        type: POSTGRES_14
+        type: POSTGRES_15
         diskSize: {{ spec.gcp.sqlInstances.diskSize }}
         databases:
           - name: {{ dbname }}
