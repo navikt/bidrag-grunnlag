@@ -14,6 +14,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
+import java.net.SocketTimeoutException
 
 private const val AAREG_CONTEXT = "/api/v2/arbeidstaker/arbeidsforhold"
 
@@ -25,7 +26,7 @@ open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTempla
         val LOGGER: Logger = LoggerFactory.getLogger(ArbeidsforholdConsumer::class.java)
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<List<Arbeidsforhold>> {
         SECURE_LOGGER.info("Henter arbeidsforhold fra Aareg med request: ${tilJson(request)}")
 

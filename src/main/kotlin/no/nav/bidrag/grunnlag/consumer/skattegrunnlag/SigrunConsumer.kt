@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.web.util.UriComponentsBuilder
+import java.net.SocketTimeoutException
 
 private const val SUMMERT_SKATTEGRUNNLAG_URL = "/api/v1/summertskattegrunnlag"
 private const val INNTEKTSAAR = "inntektsaar"
@@ -25,7 +26,7 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
         val LOGGER: Logger = LoggerFactory.getLogger(SigrunConsumer::class.java)
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentSummertSkattegrunnlag(request: HentSummertSkattegrunnlagRequest): RestResponse<HentSummertSkattegrunnlagResponse> {
         val uri = UriComponentsBuilder.fromPath(SUMMERT_SKATTEGRUNNLAG_URL)
             .queryParam(INNTEKTSAAR, request.inntektsAar)

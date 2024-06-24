@@ -30,6 +30,7 @@ azure:
   unsecure:
     ereg_url: ereg-services.dev-fss-pub.nais.io
 dbname: bidrag-grunnlag-feature
+dbinstancename: bidrag-grunnlag-feature-2
 azureAccessInbound:
   - application: bisys
     namespace: bidrag
@@ -48,4 +49,5 @@ spec:
     min: 1
   gcp:
     sqlInstances:
+      diskSize: 10
       tier: db-f1-micro

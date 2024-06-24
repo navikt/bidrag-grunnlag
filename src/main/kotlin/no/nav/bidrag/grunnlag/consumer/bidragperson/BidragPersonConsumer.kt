@@ -20,6 +20,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
+import java.net.SocketTimeoutException
 
 private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/navnfoedseldoed"
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
@@ -35,7 +36,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentNavnFoedselOgDoed(personident: Personident): RestResponse<NavnFødselDødDto> {
         logger.debug("Kaller bidrag-person som igjen henter info om fødselsdato og eventuelt død fra PDL")
 
@@ -52,7 +53,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentForelderBarnRelasjon(personident: Personident): RestResponse<ForelderBarnRelasjonDto> {
         logger.info("Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL")
 
@@ -69,7 +70,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentHusstandsmedlemmer(personident: Personident): RestResponse<HusstandsmedlemmerDto> {
         logger.info(
             "Kaller bidrag-person som igjen henter info om en persons bostedsadresser " +
@@ -89,7 +90,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentSivilstand(personident: Personident): RestResponse<SivilstandPdlHistorikkDto> {
         logger.info("Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand")
 
@@ -106,7 +107,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         return restResponse
     }
 
-    @Retryable(value = [Exception::class], backoff = Backoff(delay = 500))
+    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentPersonidenter(personident: Personident, inkludereHistoriske: Boolean): RestResponse<List<PersonidentDto>> {
         logger.debug("Kaller bidrag-person som igjen kaller PDL for å finne en persons historiske identer")
 

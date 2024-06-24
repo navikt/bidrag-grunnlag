@@ -107,8 +107,9 @@ spec:
       value: {{ azure.bidrag_organisasjon_scope }}
   gcp:
     sqlInstances:
-      - name: {{ dbname }}
-        type: POSTGRES_14
+      - name: {{ dbinstancename }}
+        type: POSTGRES_15
+        diskSize: {{ spec.gcp.sqlInstances.diskSize }}
         databases:
           - name: {{ dbname }}
             envVarPrefix: DB
