@@ -122,7 +122,7 @@ class OppdaterRelatertePersoner(
         return false
     }
 
-    private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: String, periodeFra: LocalDate): List<PersonBo> {
+    private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: String, periodeFra: LocalDate?): List<PersonBo> {
         SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: ${tilJson(husstandsmedlemmerRequest)}")
 
         val husstandsmedlemListe = mutableListOf<PersonBo>()
