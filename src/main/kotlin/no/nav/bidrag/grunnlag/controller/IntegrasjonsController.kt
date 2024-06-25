@@ -100,7 +100,7 @@ class IntegrasjonsController(
     fun hentForelderbarnrelasjon(@RequestBody bidragPersonident: Personident): ResponseEntity<ForelderBarnRelasjonDto> =
         handleRestResponse(bidragPersonConsumer.hentForelderBarnRelasjon(bidragPersonident))
 
-    @PostMapping(HENT_HUSSTANDSMEDLEMMER)
+    @PostMapping(HENT_HUSSTANDSMEDLEMMER_DATO)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid " +
@@ -154,6 +154,7 @@ class IntegrasjonsController(
         const val HENT_FORELDER_BARN_RELASJON = "/integrasjoner/forelderbarnrelasjon"
         const val HENT_FOEDSEL_DOED = "/integrasjoner/navnfoedseldoed"
         const val HENT_HUSSTANDSMEDLEMMER = "/integrasjoner/husstandsmedlemmer"
+        const val HENT_HUSSTANDSMEDLEMMER_DATO = "/integrasjoner/husstandsmedlemmerdato"
         const val HENT_SIVILSTAND = "/integrasjoner/sivilstand"
         const val HENT_KONTANTSTOTTE = "/integrasjoner/kontantstotte"
         const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"
