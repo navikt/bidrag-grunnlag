@@ -49,7 +49,7 @@ internal class BidragPersonConsumerTest {
 
         Mockito.`when`(
             restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
+                eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT_DATO),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
                 any<Class<HusstandsmedlemmerDto>>(),
@@ -57,7 +57,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentHusstandsmedlemmerResponse(), HttpStatus.OK))
 
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request.ident)) {
+        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
             is RestResponse.Success -> {
                 val hentHusstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
                 assertAll(
@@ -214,7 +214,7 @@ internal class BidragPersonConsumerTest {
 
         Mockito.`when`(
             restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
+                eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT_DATO),
                 eq(HttpMethod.POST),
                 eq(initHttpEntity(request)),
                 any<Class<HusstandsmedlemmerDto>>(),
@@ -222,7 +222,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request.ident)) {
+        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseHusstandsmedlemmer.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
@@ -380,6 +380,7 @@ internal class BidragPersonConsumerTest {
         private const val BIDRAGPERSON_FORELDER_BARN_RELASJON_CONTEXT = "/bidrag-person/forelderbarnrelasjon"
         private const val BIDRAGPERSON_FOEDSEL_DOED_CONTEXT = "/bidrag-person/foedselogdoed"
         private const val BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT = "/bidrag-person/husstandsmedlemmer"
+        private const val BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT_DATO = "/bidrag-person/husstandsmedlemmerdato"
         private const val BIDRAGPERSON_SIVILSTAND_CONTEXT = "/bidrag-person/sivilstand"
         private const val BIDRAGPERSON_PERSON_INFO_CONTEXT = "/bidrag-person/informasjon"
         private const val BIDRAGPERSON_PERSONIDENTER_CONTEXT = "/bidrag-person/personidenter"

@@ -11,6 +11,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequ
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResponse
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -58,107 +59,90 @@ class IntegrasjonsController(
 
     @PostMapping(HENT_AINNTEKT)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter A-inntekt")
-    fun hentAinntekt(@RequestBody hentInntektListeRequest: HentInntektListeRequest): ResponseEntity<HentInntektListeResponse> {
-        return handleRestResponse(inntektskomponentenConsumer.hentInntekter(hentInntektListeRequest, false))
-    }
+    fun hentAinntekt(@RequestBody hentInntektListeRequest: HentInntektListeRequest): ResponseEntity<HentInntektListeResponse> =
+        handleRestResponse(inntektskomponentenConsumer.hentInntekter(hentInntektListeRequest, false))
 
     @PostMapping(HENT_AINNTEKT_ABONNEMENT)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter A-inntekt med abonnement")
-    fun hentAinntektAbonnement(@RequestBody hentInntektListeRequest: HentInntektListeRequest): ResponseEntity<HentInntektListeResponse> {
-        return handleRestResponse(inntektskomponentenConsumer.hentInntekter(hentInntektListeRequest, true))
-    }
+    fun hentAinntektAbonnement(@RequestBody hentInntektListeRequest: HentInntektListeRequest): ResponseEntity<HentInntektListeResponse> =
+        handleRestResponse(inntektskomponentenConsumer.hentInntekter(hentInntektListeRequest, true))
 
     @PostMapping(HENT_SKATTEGRUNNLAG)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter skattegrunnlag")
     fun hentSkattegrunnlag(
         @RequestBody hentSkattegrunnlagRequest: HentSummertSkattegrunnlagRequest,
-    ): ResponseEntity<HentSummertSkattegrunnlagResponse> {
-        return handleRestResponse(sigrunConsumer.hentSummertSkattegrunnlag(hentSkattegrunnlagRequest))
-    }
+    ): ResponseEntity<HentSummertSkattegrunnlagResponse> = handleRestResponse(sigrunConsumer.hentSummertSkattegrunnlag(hentSkattegrunnlagRequest))
 
     @PostMapping(HENT_BARNETILLEGG_PENSJON)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter barnetillegg fra pensjon")
     fun hentBarnetilleggPensjon(
         @RequestBody hentBarnetilleggPensjonRequest: HentBarnetilleggPensjonRequest,
-    ): ResponseEntity<List<BarnetilleggPensjon>> {
-        return handleRestResponse(pensjonConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest))
-    }
+    ): ResponseEntity<List<BarnetilleggPensjon>> = handleRestResponse(pensjonConsumer.hentBarnetilleggPensjon(hentBarnetilleggPensjonRequest))
 
     @PostMapping(HENT_FAMILIEBASAK)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Henter utvidet barnetrygd og småbarnstillegg")
-    fun hentFamilieBaSak(@RequestBody familieBaSakRequest: FamilieBaSakRequest): ResponseEntity<FamilieBaSakResponse> {
-        return handleRestResponse(familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest))
-    }
+    fun hentFamilieBaSak(@RequestBody familieBaSakRequest: FamilieBaSakRequest): ResponseEntity<FamilieBaSakResponse> =
+        handleRestResponse(familieBaSakConsumer.hentFamilieBaSak(familieBaSakRequest))
 
     @PostMapping(HENT_FOEDSEL_DOED)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL",
     )
-    fun hentFoedselOgDoed(@RequestBody bidragPersonident: Personident): ResponseEntity<NavnFødselDødDto> {
-        return handleRestResponse(bidragPersonConsumer.hentNavnFoedselOgDoed(bidragPersonident))
-    }
+    fun hentFoedselOgDoed(@RequestBody bidragPersonident: Personident): ResponseEntity<NavnFødselDødDto> =
+        handleRestResponse(bidragPersonConsumer.hentNavnFoedselOgDoed(bidragPersonident))
 
     @PostMapping(HENT_FORELDER_BARN_RELASJON)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller bidrag-person som igjen henter forelderbarnrelasjoner for angitt person fra PDL",
     )
-    fun hentForelderbarnrelasjon(@RequestBody bidragPersonident: Personident): ResponseEntity<ForelderBarnRelasjonDto> {
-        return handleRestResponse(bidragPersonConsumer.hentForelderBarnRelasjon(bidragPersonident))
-    }
+    fun hentForelderbarnrelasjon(@RequestBody bidragPersonident: Personident): ResponseEntity<ForelderBarnRelasjonDto> =
+        handleRestResponse(bidragPersonConsumer.hentForelderBarnRelasjon(bidragPersonident))
 
-    @PostMapping(HENT_HUSSTANDSMEDLEMMER)
+    @PostMapping(HENT_HUSSTANDSMEDLEMMER_DATO)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller bidrag-person som igjen henter info om en persons bostedsadresser og personer som har bodd på samme adresse på samme tid " +
             "fra PDL",
     )
-    fun hentHusstandsmedlemmer(@RequestBody husstandsmedlemmerRequest: Personident): ResponseEntity<HusstandsmedlemmerDto> {
-        return handleRestResponse(bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest))
-    }
+    fun hentHusstandsmedlemmer(@RequestBody husstandsmedlemmerRequest: HusstandsmedlemmerRequest): ResponseEntity<HusstandsmedlemmerDto> =
+        handleRestResponse(bidragPersonConsumer.hentHusstandsmedlemmer(husstandsmedlemmerRequest))
 
     @PostMapping(HENT_SIVILSTAND)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller bidrag-person som igjen kaller PDL for å finne en persons sivilstand",
     )
-    fun hentSivilstand(@RequestBody sivilstandRequest: Personident): ResponseEntity<SivilstandPdlHistorikkDto> {
-        return handleRestResponse(bidragPersonConsumer.hentSivilstand(sivilstandRequest))
-    }
+    fun hentSivilstand(@RequestBody sivilstandRequest: Personident): ResponseEntity<SivilstandPdlHistorikkDto> =
+        handleRestResponse(bidragPersonConsumer.hentSivilstand(sivilstandRequest))
 
     @PostMapping(HENT_KONTANTSTOTTE)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller familie-ks-sak for å hente kontantstotte")
-    fun hentKontantstotte(@RequestBody innsynRequest: BisysDto): ResponseEntity<BisysResponsDto> {
-        return handleRestResponse(familieKsSakConsumer.hentKontantstotte(innsynRequest))
-    }
+    fun hentKontantstotte(@RequestBody innsynRequest: BisysDto): ResponseEntity<BisysResponsDto> =
+        handleRestResponse(familieKsSakConsumer.hentKontantstotte(innsynRequest))
 
     @PostMapping(HENT_BARNETILSYN)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller familie-ef-sak/hentPerioderBarnetilsyn for å hente barnetilsyn",
     )
-    fun hentBarnetilsyn(@RequestBody barnetilsynRequest: BarnetilsynRequest): ResponseEntity<BarnetilsynResponse> {
-        return handleRestResponse(familieEfSakConsumer.hentBarnetilsyn(barnetilsynRequest))
-    }
+    fun hentBarnetilsyn(@RequestBody barnetilsynRequest: BarnetilsynRequest): ResponseEntity<BarnetilsynResponse> =
+        handleRestResponse(familieEfSakConsumer.hentBarnetilsyn(barnetilsynRequest))
 
     @PostMapping(HENT_ARBEIDSFORHOLD)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller Aareg og henter arbeidsforhold")
-    fun hentArbeidsforhold(@RequestBody hentArbeidsforholdRequest: HentArbeidsforholdRequest): ResponseEntity<List<Arbeidsforhold>> {
-        return handleRestResponse(arbeidsforholdConsumer.hentArbeidsforhold(hentArbeidsforholdRequest))
-    }
+    fun hentArbeidsforhold(@RequestBody hentArbeidsforholdRequest: HentArbeidsforholdRequest): ResponseEntity<List<Arbeidsforhold>> =
+        handleRestResponse(arbeidsforholdConsumer.hentArbeidsforhold(hentArbeidsforholdRequest))
 
     @PostMapping(HENT_ENHETSINFO)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller Ereg og henter info fra enhetsregister")
-    fun hentEnhetsinfo(@RequestBody hentEnhetsregisterRequest: HentEnhetsregisterRequest): ResponseEntity<HentEnhetsregisterResponse> {
-        return handleRestResponse(enhetsregisterConsumer.hentEnhetsinfo(hentEnhetsregisterRequest))
-    }
+    fun hentEnhetsinfo(@RequestBody hentEnhetsregisterRequest: HentEnhetsregisterRequest): ResponseEntity<HentEnhetsregisterResponse> =
+        handleRestResponse(enhetsregisterConsumer.hentEnhetsinfo(hentEnhetsregisterRequest))
 
-    private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> {
-        return when (restResponse) {
-            is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
-            is RestResponse.Failure -> throw ResponseStatusException(restResponse.statusCode, restResponse.message)
-        }
+    private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> = when (restResponse) {
+        is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
+        is RestResponse.Failure -> throw ResponseStatusException(restResponse.statusCode, restResponse.message)
     }
 
     companion object {
@@ -170,6 +154,7 @@ class IntegrasjonsController(
         const val HENT_FORELDER_BARN_RELASJON = "/integrasjoner/forelderbarnrelasjon"
         const val HENT_FOEDSEL_DOED = "/integrasjoner/navnfoedseldoed"
         const val HENT_HUSSTANDSMEDLEMMER = "/integrasjoner/husstandsmedlemmer"
+        const val HENT_HUSSTANDSMEDLEMMER_DATO = "/integrasjoner/husstandsmedlemmerdato"
         const val HENT_SIVILSTAND = "/integrasjoner/sivilstand"
         const val HENT_KONTANTSTOTTE = "/integrasjoner/kontantstotte"
         const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"

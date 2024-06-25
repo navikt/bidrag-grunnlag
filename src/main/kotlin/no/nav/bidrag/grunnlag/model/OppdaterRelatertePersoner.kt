@@ -8,13 +8,16 @@ import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.service.PersistenceService
 import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagDto
 import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.PersonRequest
 import org.springframework.http.HttpStatus
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class OppdaterRelatertePersoner(
@@ -42,7 +45,7 @@ class OppdaterRelatertePersoner(
             )
 
             // henter alle husstandsmedlemmer til BM/BP
-            val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode.personId)
+            val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode.personId, personIdOgPeriode.periodeFra)
 
             // henter alle barn av BM/BP
             val barnListe = hentBarn(Personident(personIdOgPeriode.personId))
@@ -99,9 +102,10 @@ class OppdaterRelatertePersoner(
 
     private fun husstandsmedlemInnenforPeriode(personIdOgPeriode: PersonIdOgPeriodeRequest, husstandsmedlem: PersonBo): Boolean {
         if (husstandsmedlem.husstandsmedlemPeriodeFra == null) {
-            return husstandsmedlem.husstandsmedlemPeriodeTil == null || husstandsmedlem.husstandsmedlemPeriodeTil.isAfter(
-                personIdOgPeriode.periodeFra,
-            )
+            return husstandsmedlem.husstandsmedlemPeriodeTil == null ||
+                husstandsmedlem.husstandsmedlemPeriodeTil.isAfter(
+                    personIdOgPeriode.periodeFra,
+                )
         }
 
         if (husstandsmedlem.husstandsmedlemPeriodeTil == null) {
@@ -118,7 +122,7 @@ class OppdaterRelatertePersoner(
         return false
     }
 
-    private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: String): List<PersonBo> {
+    private fun hentHusstandsmedlemmer(husstandsmedlemmerRequest: String, periodeFra: LocalDate?): List<PersonBo> {
         SECURE_LOGGER.info("Kaller bidrag-person Husstandsmedlemmer med request: ${tilJson(husstandsmedlemmerRequest)}")
 
         val husstandsmedlemListe = mutableListOf<PersonBo>()
@@ -126,7 +130,12 @@ class OppdaterRelatertePersoner(
         try {
             when (
                 val restResponseHusstandsmedlemmer =
-                    bidragPersonConsumer.hentHusstandsmedlemmer(Personident(husstandsmedlemmerRequest))
+                    bidragPersonConsumer.hentHusstandsmedlemmer(
+                        HusstandsmedlemmerRequest(
+                            PersonRequest(Personident(husstandsmedlemmerRequest)),
+                            periodeFra,
+                        ),
+                    )
             ) {
                 is RestResponse.Success -> {
                     val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body

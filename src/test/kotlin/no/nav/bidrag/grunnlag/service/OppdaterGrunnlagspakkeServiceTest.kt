@@ -14,6 +14,7 @@ import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.UtvidetBarnetrygdOgSmaabarnstilleggBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
@@ -380,7 +381,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentHusstandsmedlemmer(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    Personident::class.java,
+                    HusstandsmedlemmerRequest::class.java,
                 ),
             ),
         )
@@ -462,7 +463,7 @@ class OppdaterGrunnlagspakkeServiceTest {
         Mockito.`when`(
             bidragPersonConsumerMock.hentHusstandsmedlemmer(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
-                    Personident::class.java,
+                    HusstandsmedlemmerRequest::class.java,
                 ),
             ),
         )
