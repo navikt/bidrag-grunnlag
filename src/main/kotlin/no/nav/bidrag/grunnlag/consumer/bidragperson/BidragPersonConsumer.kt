@@ -26,6 +26,7 @@ import java.net.SocketTimeoutException
 private const val BIDRAGPERSON_CONTEXT_FOEDSEL_DOED = "/bidrag-person/navnfoedseldoed"
 private const val BIDRAGPERSON_CONTEXT_FORELDER_BARN_RELASJON = "/bidrag-person/forelderbarnrelasjon"
 private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER = "/bidrag-person/husstandsmedlemmer"
+private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER_DATO = "/bidrag-person/husstandsmedlemmerdato"
 private const val BIDRAGPERSON_CONTEXT_SIVILSTAND = "/bidrag-person/sivilstand"
 private const val BIDRAGPERSON_CONTEXT_PERSONIDENTER = "/bidrag-person/personidenter"
 
@@ -78,7 +79,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         )
 
         val restResponse = restTemplate.tryExchange(
-            BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
+            BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER_DATO,
             HttpMethod.POST,
             initHttpEntity(request),
             HusstandsmedlemmerDto::class.java,
