@@ -24,6 +24,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Ansettelsesperiode
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidssted
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Identer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -718,7 +719,9 @@ class TestUtil {
                             inntekt.virksomhet?.identifikator,
                             inntekt.virksomhet?.aktoerType.toString(),
                         ),
-                        tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType == TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE) {
+                        tilleggsinformasjon = if (inntekt?.tilleggsinformasjon?.tilleggsinformasjonDetaljer?.detaljerType ==
+                            TilleggsinformasjonDetaljerType.ETTERBETALINGSPERIODE
+                        ) {
                             TilleggsinformasjonIntern(
                                 inntekt.tilleggsinformasjon.kategori,
                                 TilleggsinformasjonDetaljerIntern(
@@ -849,7 +852,7 @@ class TestUtil {
             fraDato = LocalDate.now(),
         )
 
-        fun byggHusstandsmedlemmerRequest() = PersonRequest(Personident("personident"))
+        fun byggHusstandsmedlemmerRequest() = HusstandsmedlemmerRequest(PersonRequest(Personident("personident")), LocalDate.now())
 
         fun byggSivilstandRequest() = PersonRequest(Personident("personident"))
 

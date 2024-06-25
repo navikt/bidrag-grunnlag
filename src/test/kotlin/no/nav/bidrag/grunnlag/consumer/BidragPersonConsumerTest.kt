@@ -57,7 +57,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenReturn(ResponseEntity(TestUtil.byggHentHusstandsmedlemmerResponse(), HttpStatus.OK))
 
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request.ident)) {
+        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
             is RestResponse.Success -> {
                 val hentHusstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
                 assertAll(
@@ -222,7 +222,7 @@ internal class BidragPersonConsumerTest {
         )
             .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
 
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request.ident)) {
+        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
             is RestResponse.Failure -> {
                 assertAll(
                     Executable { assertThat(restResponseHusstandsmedlemmer.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },

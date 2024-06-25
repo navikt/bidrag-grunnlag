@@ -4,6 +4,7 @@ import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
@@ -28,8 +29,7 @@ private const val BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER = "/bidrag-person/huss
 private const val BIDRAGPERSON_CONTEXT_SIVILSTAND = "/bidrag-person/sivilstand"
 private const val BIDRAGPERSON_CONTEXT_PERSONIDENTER = "/bidrag-person/personidenter"
 
-open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-    GrunnlagsConsumer() {
+open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
     companion object {
         @JvmStatic
@@ -71,7 +71,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
     }
 
     @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
-    open fun hentHusstandsmedlemmer(personident: Personident): RestResponse<HusstandsmedlemmerDto> {
+    open fun hentHusstandsmedlemmer(request: HusstandsmedlemmerRequest): RestResponse<HusstandsmedlemmerDto> {
         logger.info(
             "Kaller bidrag-person som igjen henter info om en persons bostedsadresser " +
                 "og personer som har bodd på samme adresse på samme tid fra PDL",
@@ -80,7 +80,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
         val restResponse = restTemplate.tryExchange(
             BIDRAGPERSON_CONTEXT_HUSSTANDSMEDLEMMER,
             HttpMethod.POST,
-            initHttpEntity(PersonRequest(personident)),
+            initHttpEntity(request),
             HusstandsmedlemmerDto::class.java,
             HusstandsmedlemmerDto(emptyList()),
         )

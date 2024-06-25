@@ -6,6 +6,7 @@ import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
@@ -15,11 +16,10 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
 import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.PersonRequest
 import java.time.LocalDate
 
-class HentRelatertePersonerService(
-    private val bidragPersonConsumer: BidragPersonConsumer,
-) {
+class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPersonConsumer) {
 
     fun hentRelatertePersoner(relatertPersonRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<RelatertPersonGrunnlagDto> {
         val relatertPersonListe = mutableListOf<RelatertPersonGrunnlagDto>()
@@ -105,12 +105,18 @@ class HentRelatertePersonerService(
         val husstandsmedlemListe = mutableListOf<PersonBo>()
 
         when (
-            val restResponseHusstandsmedlemmer = bidragPersonConsumer.hentHusstandsmedlemmer(Personident(personIdOgPeriode.personId))
+            val restResponseHusstandsmedlemmer = bidragPersonConsumer.hentHusstandsmedlemmer(
+                HusstandsmedlemmerRequest(
+                    PersonRequest(Personident(personIdOgPeriode.personId)),
+                    personIdOgPeriode.periodeFra,
+                ),
+            )
         ) {
             is RestResponse.Success -> {
                 val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
                 SECURE_LOGGER.info(
                     "Bidrag-person ga følgende respons på husstandsmedlemmer for ${personIdOgPeriode.personId}: " +
+                        "periode: ${personIdOgPeriode.periodeFra}:" +
                         tilJson(husstandsmedlemmerResponseDto),
                 )
 
@@ -308,9 +314,10 @@ class HentRelatertePersonerService(
 
     private fun husstandsmedlemInnenforPeriode(personIdOgPeriode: PersonIdOgPeriodeRequest, husstandsmedlem: Husstandsmedlem): Boolean {
         if (husstandsmedlem.gyldigFraOgMed == null) {
-            return husstandsmedlem.gyldigTilOgMed == null || husstandsmedlem.gyldigTilOgMed!!.isAfter(
-                personIdOgPeriode.periodeFra,
-            )
+            return husstandsmedlem.gyldigTilOgMed == null ||
+                husstandsmedlem.gyldigTilOgMed!!.isAfter(
+                    personIdOgPeriode.periodeFra,
+                )
         }
 
         if (husstandsmedlem.gyldigTilOgMed == null) {
