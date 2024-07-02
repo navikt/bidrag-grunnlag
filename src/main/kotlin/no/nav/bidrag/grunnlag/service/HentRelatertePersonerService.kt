@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.person.Familierelasjon
+import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.PersonBo
@@ -14,6 +15,8 @@ import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.BorISammeHusstandDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnlagDto
+import no.nav.bidrag.transport.person.ForelderBarnRelasjon
+import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
@@ -31,8 +34,34 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
             val husstandsmedlemmerListe = hentHusstandsmedlemmer(personIdOgPeriode = personIdOgPeriode, feilrapporteringListe = feilrapporteringListe)
             SECURE_LOGGER.debug("husstandsmedlemmerListe for {} {}", personIdOgPeriode.personId, husstandsmedlemmerListe)
 
-            // Henter alle barn av BM/BP
-            val barnListe = hentBarn(personident = Personident(personIdOgPeriode.personId), feilrapporteringListe = feilrapporteringListe)
+            // Henter alle forelderbarnrelasjoner for BM/BP
+            val forelderBarnRelasjoner =
+                hentForelderBarnRelasjoner(
+                    personident = Personident(personIdOgPeriode.personId),
+                    feilrapporteringListe = feilrapporteringListe,
+                ).forelderBarnRelasjon
+
+            // Henter personid for eventuelle ektefeller
+            val ektefelleListe = hentEktefelleListe(personIdOgPeriode.personId)
+
+            // Filtrerer ut alle barn av BM/BP
+            val barnListe = finnBarn(forelderBarnRelasjoner, feilrapporteringListe = feilrapporteringListe)
+
+            val motpartFellesBarnListe = mutableListOf<Personident>()
+
+            barnListe.forEach { barn ->
+                val relasjoner = hentForelderBarnRelasjoner(Personident(barn.personId!!), feilrapporteringListe).forelderBarnRelasjon
+                relasjoner.forEach { relasjon ->
+                    if (relasjon.relatertPersonsRolle == Familierelasjon.MOR ||
+                        relasjon.relatertPersonsRolle == Familierelasjon.FAR ||
+                        relasjon.relatertPersonsRolle == Familierelasjon.MEDMOR &&
+                        relasjon.relatertPersonsIdent != null
+                    ) {
+                        motpartFellesBarnListe.add(relasjon.relatertPersonsIdent!!)
+                    }
+                }
+            }
+
             SECURE_LOGGER.debug("barnListe for {} {}", personIdOgPeriode.personId, barnListe)
             SECURE_LOGGER.debug("relatertPersonRequestListe: {}", relatertPersonRequestListe)
 
@@ -41,13 +70,30 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
             (husstandsmedlemmerListe + barnListe)
                 .filterNot { it.personId == personIdOgPeriode.personId }
                 .forEach { person ->
+                    val relasjonEktefelle = if (ektefelleListe.firstOrNull { it.verdi == person.personId } != null) {
+                        Familierelasjon.EKTEFELLE
+                    } else {
+                        null
+                    }
+
+                    val relasjonMotpartFellesBarn = if (motpartFellesBarnListe.firstOrNull { it.verdi == person.personId } != null) {
+                        Familierelasjon.MOTPART_TIL_FELLES_BARN
+                    } else {
+                        null
+                    }
+
+                    val relasjonBarn =
+                        forelderBarnRelasjoner.firstOrNull { it.relatertPersonsIdent?.verdi == person.personId }?.relatertPersonsRolle
+
                     relatertPersonInternListe.add(
                         RelatertPersonIntern(
                             partPersonId = personIdOgPeriode.personId,
                             relatertPersonPersonId = person.personId,
+                            gjelderPersonId = person.personId,
                             navn = person.navn,
                             fødselsdato = person.fodselsdato,
                             erBarnAvBmBp = barnListe.any { it.personId == person.personId },
+                            relasjon = relasjonEktefelle ?: relasjonMotpartFellesBarn ?: relasjonBarn ?: Familierelasjon.INGEN,
                             husstandsmedlemPeriodeFra =
                             if (husstandsmedlemmerListe.any { it.personId == person.personId }) {
                                 person.husstandsmedlemPeriodeFra
@@ -74,19 +120,21 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
             relatertPersonInternListe
                 .groupBy { it.partPersonId to it.relatertPersonPersonId }
                 .values
-                .forEach { group ->
-                    val borISammeHusstandListe = group
+                .forEach { relatertePersoner ->
+                    val borISammeHusstandListe = relatertePersoner
                         .filter { it.husstandsmedlemPeriodeFra != null || it.husstandsmedlemPeriodeTil != null }
                         .map { BorISammeHusstandDto(periodeFra = it.husstandsmedlemPeriodeFra, periodeTil = it.husstandsmedlemPeriodeTil) }
 
-                    val firstPerson = group.first()
+                    val firstPerson = relatertePersoner.first()
                     relatertPersonListe.add(
                         RelatertPersonGrunnlagDto(
                             partPersonId = firstPerson.partPersonId,
                             relatertPersonPersonId = firstPerson.relatertPersonPersonId,
+                            gjelderPersonId = firstPerson.relatertPersonPersonId,
                             navn = firstPerson.navn,
                             fødselsdato = firstPerson.fødselsdato,
                             erBarnAvBmBp = firstPerson.erBarnAvBmBp,
+                            relasjon = firstPerson.relasjon,
                             borISammeHusstandDtoListe = borISammeHusstandListe,
                         ),
                     )
@@ -172,11 +220,12 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
         return slåSammenSammenhengendePerioder(husstandsmedlemListe.sortedWith(compareBy({ it.personId }, { it.husstandsmedlemPeriodeFra })))
     }
 
-    // Henter alle barn av BM/BP
-    private fun hentBarn(personident: Personident, feilrapporteringListe: MutableList<FeilrapporteringDto>): List<PersonBo> {
-        val barnListe = mutableListOf<PersonBo>()
-
-        // Henter en liste over BMs/BPs barn og henter så info om fødselsdag og navn for disse
+    // Henter alle forelderbarnrelasjoner
+    private fun hentForelderBarnRelasjoner(
+        personident: Personident,
+        feilrapporteringListe: MutableList<FeilrapporteringDto>,
+    ): ForelderBarnRelasjonDto {
+        // Henter en liste over forelderbarnrelasjoner
         when (
             val restResponseForelderBarnRelasjon = bidragPersonConsumer.hentForelderBarnRelasjon(personident)
         ) {
@@ -185,26 +234,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                 SECURE_LOGGER.info(
                     "Henting av forelder-barn-relasjoner ga følgende respons for ${personident.verdi}: ${tilJson(forelderBarnRelasjonResponse)}",
                 )
-
-                forelderBarnRelasjonResponse.forelderBarnRelasjon.forEach {
-                    // Kaller bidrag-person for å hente info om fødselsdato og navn
-                    if (it.relatertPersonsRolle == Familierelasjon.BARN && it.relatertPersonsIdent != null) {
-                        val navnFoedselDoedResponseDto = hentNavnFoedselDoed(
-                            personident = Personident(it.relatertPersonsIdent!!.verdi),
-                            feilrapporteringListe = feilrapporteringListe,
-                        )
-                        // Lager en liste over fnr for alle barn som er funnet
-                        barnListe.add(
-                            PersonBo(
-                                personId = it.relatertPersonsIdent?.verdi,
-                                navn = navnFoedselDoedResponseDto?.navn,
-                                fodselsdato = navnFoedselDoedResponseDto?.fødselsdato,
-                                husstandsmedlemPeriodeFra = null,
-                                husstandsmedlemPeriodeTil = null,
-                            ),
-                        )
-                    }
-                }
+                return forelderBarnRelasjonResponse
             }
 
             is RestResponse.Failure -> {
@@ -228,14 +258,42 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                         ),
                     ),
                 )
-                return emptyList()
+                return ForelderBarnRelasjonDto(emptyList())
+            }
+        }
+    }
+
+    // Henter alle forelderbarnrelasjoner
+    private fun finnBarn(
+        forelderBarnRelasjonListe: List<ForelderBarnRelasjon>,
+        feilrapporteringListe: MutableList<FeilrapporteringDto>,
+    ): List<PersonBo> {
+        val barnListe = mutableListOf<PersonBo>()
+
+        forelderBarnRelasjonListe.forEach {
+            // Kaller bidrag-person for å hente info om fødselsdato og navn
+            if (it.relatertPersonsRolle == Familierelasjon.BARN && it.relatertPersonsIdent != null) {
+                val navnFødselDødResponseDto = hentNavnFødselDød(
+                    personident = Personident(it.relatertPersonsIdent!!.verdi),
+                    feilrapporteringListe = feilrapporteringListe,
+                )
+                // Lager en liste over fnr for alle barn som er funnet
+                barnListe.add(
+                    PersonBo(
+                        personId = it.relatertPersonsIdent?.verdi,
+                        navn = navnFødselDødResponseDto?.navn,
+                        fodselsdato = navnFødselDødResponseDto?.fødselsdato,
+                        husstandsmedlemPeriodeFra = null,
+                        husstandsmedlemPeriodeTil = null,
+                    ),
+                )
             }
         }
         return barnListe
     }
 
     // Henter navn, fødselsdato og eventuell dødsdato for personer fra bidrag-person
-    private fun hentNavnFoedselDoed(personident: Personident, feilrapporteringListe: MutableList<FeilrapporteringDto>): NavnFødselDødDto? {
+    private fun hentNavnFødselDød(personident: Personident, feilrapporteringListe: MutableList<FeilrapporteringDto>): NavnFødselDødDto? {
         val navnFødselDødDto: NavnFødselDødDto
 
         when (
@@ -334,13 +392,42 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
         return false
     }
 
+    private fun hentEktefelleListe(personId: String): List<Personident> {
+        val ektefelleListe = mutableListOf<Personident>()
+        when (
+            val restResponseSivilstand = bidragPersonConsumer.hentSivilstand(Personident(personId))
+        ) {
+            is RestResponse.Success -> {
+                val sivilstandRespons = restResponseSivilstand.body
+                sivilstandRespons.sivilstandPdlDto.forEach {
+                    if (it.relatertVedSivilstand != null && it.type.toString() == SivilstandskodePDL.GIFT.toString()) {
+                        SECURE_LOGGER.info(
+                            "Henting av ektefelles personident ga følgende respons for $personId: ${tilJson(restResponseSivilstand.body)}",
+                        )
+                        ektefelleListe.add(Personident(it.relatertVedSivilstand!!))
+                    }
+                }
+            }
+
+            is RestResponse.Failure -> {
+                SECURE_LOGGER.warn(
+                    "Feil ved henting av ektefelles personident for $personId. Statuskode ${restResponseSivilstand.statusCode.value()}",
+                )
+                return emptyList()
+            }
+        }
+        return ektefelleListe
+    }
+
     // Intern dataklasse brukt for å simulere funksjonalitet fra oppdater- og hent-grunnlagspakke-tjenestene
     data class RelatertPersonIntern(
         val partPersonId: String?,
         val relatertPersonPersonId: String?,
+        val gjelderPersonId: String? = null,
         val navn: String?,
         val fødselsdato: LocalDate?,
         val erBarnAvBmBp: Boolean,
+        val relasjon: Familierelasjon = Familierelasjon.INGEN,
         val husstandsmedlemPeriodeFra: LocalDate?,
         val husstandsmedlemPeriodeTil: LocalDate?,
     )

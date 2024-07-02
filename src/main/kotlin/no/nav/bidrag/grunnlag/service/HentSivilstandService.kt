@@ -12,9 +12,7 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
 
-class HentSivilstandService(
-    private val bidragPersonConsumer: BidragPersonConsumer,
-) {
+class HentSivilstandService(private val bidragPersonConsumer: BidragPersonConsumer) {
 
     fun hentSivilstand(sivilstandRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<SivilstandGrunnlagDto> {
         val sivilstandListe = mutableListOf<SivilstandGrunnlagDto>()
