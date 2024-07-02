@@ -56,7 +56,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                         relasjon.relatertPersonsRolle == Familierelasjon.FAR ||
                         relasjon.relatertPersonsRolle == Familierelasjon.MEDMOR &&
                         relasjon.relatertPersonsIdent != null &&
-                        relasjon.relatertPersonsIdent != Personident(personIdOgPeriode.personId)
+                        relasjon.relatertPersonsIdent?.verdi != personIdOgPeriode.personId
                     ) {
                         motpartFellesBarnListe.add(relasjon.relatertPersonsIdent!!)
                     }
