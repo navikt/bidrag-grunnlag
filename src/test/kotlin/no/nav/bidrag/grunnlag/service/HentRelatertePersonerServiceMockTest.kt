@@ -198,6 +198,11 @@ class HentRelatertePersonerServiceMockTest {
             { assertThat(relatertPersonListe[5].relasjon).isEqualTo(Familierelasjon.MOTPART_TIL_FELLES_BARN) },
             { assertThat(relatertPersonListe[5].borISammeHusstandDtoListe).isNotEmpty },
 
+            { assertThat(relatertPersonListe[6].relatertPersonPersonId).isEqualTo("999") },
+            { assertThat(relatertPersonListe[6].gjelderPersonId).isEqualTo("999") },
+            { assertThat(relatertPersonListe[6].relasjon).isEqualTo(Familierelasjon.MOR) },
+            { assertThat(relatertPersonListe[6].borISammeHusstandDtoListe).isNotEmpty },
+
         )
     }
 }

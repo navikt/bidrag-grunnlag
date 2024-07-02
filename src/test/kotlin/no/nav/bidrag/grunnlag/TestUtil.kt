@@ -910,6 +910,11 @@ class TestUtil {
                     relatertPersonsRolle = Familierelasjon.BARN,
                     minRolleForPerson = Familierelasjon.FAR,
                 ),
+                ForelderBarnRelasjon(
+                    relatertPersonsIdent = Personident("999"),
+                    relatertPersonsRolle = Familierelasjon.MOR,
+                    minRolleForPerson = Familierelasjon.BARN,
+                ),
             ),
         )
 
@@ -1171,6 +1176,13 @@ class TestUtil {
                             personId = Personident("888"),
                             navn = "Mor Til Felles Barn",
                             fødselsdato = LocalDate.parse("2004-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2012-09-04"),
+                            gyldigTilOgMed = null,
+                            personId = Personident("999"),
+                            navn = "Mor Til BP",
+                            fødselsdato = LocalDate.parse("1950-04-17"),
                         ),
                     ),
                 ),

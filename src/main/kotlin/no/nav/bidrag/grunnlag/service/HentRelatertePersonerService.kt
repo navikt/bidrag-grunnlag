@@ -83,7 +83,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                         null
                     }
 
-                    val relasjonBarn =
+                    val forelderBarnRelasjoner =
                         forelderBarnRelasjoner.firstOrNull { it.relatertPersonsIdent?.verdi == person.personId }?.relatertPersonsRolle
 
                     relatertPersonInternListe.add(
@@ -94,7 +94,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                             navn = person.navn,
                             fødselsdato = person.fodselsdato,
                             erBarnAvBmBp = barnListe.any { it.personId == person.personId },
-                            relasjon = relasjonEktefelle ?: relasjonMotpartFellesBarn ?: relasjonBarn ?: Familierelasjon.INGEN,
+                            relasjon = relasjonEktefelle ?: relasjonMotpartFellesBarn ?: forelderBarnRelasjoner ?: Familierelasjon.INGEN,
                             husstandsmedlemPeriodeFra =
                             if (husstandsmedlemmerListe.any { it.personId == person.personId }) {
                                 person.husstandsmedlemPeriodeFra
