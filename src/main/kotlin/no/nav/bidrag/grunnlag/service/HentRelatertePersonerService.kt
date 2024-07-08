@@ -52,11 +52,12 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
             barnListe.forEach { barn ->
                 val relasjoner = hentForelderBarnRelasjoner(Personident(barn.personId!!), feilrapporteringListe).forelderBarnRelasjon
                 relasjoner.forEach { relasjon ->
-                    if (relasjon.relatertPersonsRolle == Familierelasjon.MOR ||
-                        relasjon.relatertPersonsRolle == Familierelasjon.FAR ||
-                        relasjon.relatertPersonsRolle == Familierelasjon.MEDMOR &&
+                    if (
+                        listOf(Familierelasjon.MOR, Familierelasjon.FAR, Familierelasjon.MEDMOR)
+                            .contains(relasjon.relatertPersonsRolle) &&
                         relasjon.relatertPersonsIdent != null &&
                         relasjon.relatertPersonsIdent?.verdi != personIdOgPeriode.personId
+
                     ) {
                         motpartFellesBarnListe.add(relasjon.relatertPersonsIdent!!)
                     }
