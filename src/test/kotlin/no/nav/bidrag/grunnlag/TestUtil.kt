@@ -910,6 +910,26 @@ class TestUtil {
                     relatertPersonsRolle = Familierelasjon.BARN,
                     minRolleForPerson = Familierelasjon.FAR,
                 ),
+                ForelderBarnRelasjon(
+                    relatertPersonsIdent = Personident("999"),
+                    relatertPersonsRolle = Familierelasjon.MOR,
+                    minRolleForPerson = Familierelasjon.BARN,
+                ),
+            ),
+        )
+
+        fun byggHentForelderBarnRelasjonerForBarn() = ForelderBarnRelasjonDto(
+            immutableListOf(
+                ForelderBarnRelasjon(
+                    relatertPersonsIdent = Personident("123456"),
+                    relatertPersonsRolle = Familierelasjon.FAR,
+                    minRolleForPerson = Familierelasjon.BARN,
+                ),
+                ForelderBarnRelasjon(
+                    relatertPersonsIdent = Personident("888"),
+                    relatertPersonsRolle = Familierelasjon.MOR,
+                    minRolleForPerson = Familierelasjon.BARN,
+                ),
             ),
         )
 
@@ -1082,7 +1102,7 @@ class TestUtil {
             ),
         )
 
-        fun byggHentEttHusstandsmedlem() = HusstandsmedlemmerDto(
+        fun byggHentToHusstandsmedlemmer() = HusstandsmedlemmerDto(
             immutableListOf(
                 Husstand(
                     gyldigFraOgMed = LocalDate.parse("2023-09-04"),
@@ -1109,6 +1129,60 @@ class TestUtil {
                             personId = Personident("666"),
                             navn = "fornavn1 mellomnavn1 etternavn1",
                             fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        fun byggHentHusstandsmedlemmerSærbidrag() = HusstandsmedlemmerDto(
+            immutableListOf(
+                Husstand(
+                    gyldigFraOgMed = LocalDate.parse("2023-09-04"),
+                    gyldigTilOgMed = LocalDate.parse("2023-11-12"),
+                    adressenavn = "adressenavn1",
+                    husnummer = "husnummer1",
+                    husbokstav = "husbokstav1",
+                    bruksenhetsnummer = "bruksenhetsnummer1",
+                    postnummer = "postnr1",
+                    bydelsnummer = "bydelsnummer1",
+                    kommunenummer = "kommunenummer1",
+                    matrikkelId = 12345,
+                    immutableListOf(
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2023-09-04"),
+                            gyldigTilOgMed = LocalDate.parse("2023-11-29"),
+                            personId = Personident("111"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2015-09-04"),
+                            gyldigTilOgMed = LocalDate.parse("2024-11-29"),
+                            personId = Personident("666"),
+                            navn = "fornavn1 mellomnavn1 etternavn1",
+                            fødselsdato = LocalDate.parse("2001-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2010-09-04"),
+                            gyldigTilOgMed = null,
+                            personId = Personident("777"),
+                            navn = "Nåværende Ektefelle",
+                            fødselsdato = LocalDate.parse("2000-01-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2012-09-04"),
+                            gyldigTilOgMed = null,
+                            personId = Personident("888"),
+                            navn = "Mor Til Felles Barn",
+                            fødselsdato = LocalDate.parse("2004-04-17"),
+                        ),
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.parse("2012-09-04"),
+                            gyldigTilOgMed = null,
+                            personId = Personident("999"),
+                            navn = "Mor Til BP",
+                            fødselsdato = LocalDate.parse("1950-04-17"),
                         ),
                     ),
                 ),
@@ -1267,6 +1341,29 @@ class TestUtil {
                     bekreftelsesdato = null,
                     master = "PDL",
                     registrert = null,
+                    historisk = true,
+                ),
+            ),
+        )
+
+        fun byggHentSivilstandMedRelatertVedSivilstand() = SivilstandPdlHistorikkDto(
+            immutableListOf(
+                SivilstandPdlDto(
+                    type = SivilstandskodePDL.GIFT,
+                    gyldigFom = LocalDate.parse("2017-03-01"),
+                    relatertVedSivilstand = "777",
+                    bekreftelsesdato = null,
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2021-01-01T12:00:00"),
+                    historisk = false,
+                ),
+                SivilstandPdlDto(
+                    type = SivilstandskodePDL.ENKE_ELLER_ENKEMANN,
+                    gyldigFom = null,
+                    relatertVedSivilstand = null,
+                    bekreftelsesdato = LocalDate.parse("2011-02-01"),
+                    master = "PDL",
+                    registrert = LocalDateTime.parse("2011-02-01T12:00:00"),
                     historisk = true,
                 ),
             ),
