@@ -6,17 +6,17 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.service.InntektskomponentenService.Companion.LOGGER
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.KontantstøtteGrunnlagDto
+import org.springframework.http.HttpStatus
 import java.time.LocalDate
 import java.time.YearMonth
 
-class HentKontantstøtteService(
-    private val familieKsSakConsumer: FamilieKsSakConsumer,
-) {
+class HentKontantstøtteService(private val familieKsSakConsumer: FamilieKsSakConsumer) {
 
     fun hentKontantstøtte(
         kontantstøtteRequestListe: List<PersonIdOgPeriodeRequest>,
@@ -46,10 +46,21 @@ class HentKontantstøtteService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av kontantstøtte for $personIdListe. " +
-                            "Statuskode ${restResponseKontantstøtte.statusCode.value()}",
-                    )
+                    if (restResponseKontantstøtte.statusCode == HttpStatus.NOT_FOUND) {
+                        SECURE_LOGGER.warn(
+                            "Kontantstøtte ikke funnet for $personIdListe. " +
+                                "Statuskode ${restResponseKontantstøtte.statusCode.value()}",
+                        )
+                    } else {
+                        LOGGER.error(
+                            "Feil ved henting av kontantstøtte fra KS-Sak. Statuskode ${restResponseKontantstøtte.statusCode.value()}",
+                        )
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av kontantstøtte for $personIdListe. " +
+                                "Statuskode ${restResponseKontantstøtte.statusCode.value()}",
+                        )
+                    }
+
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.KONTANTSTØTTE,

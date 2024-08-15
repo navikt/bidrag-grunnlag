@@ -10,12 +10,11 @@ import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
+import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
-    private val familieBaSakConsumer: FamilieBaSakConsumer,
-) {
+class HentUtvidetBarnetrygdOgSmåbarnstilleggService(private val familieBaSakConsumer: FamilieBaSakConsumer) {
 
     fun hentUbst(ubstRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto> {
         val ubstListe = mutableListOf<UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto>()
@@ -38,10 +37,17 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}. " +
-                            "Statuskode ${restResponseUbst.statusCode.value()}",
-                    )
+                    if (restResponseUbst.statusCode == HttpStatus.NOT_FOUND) {
+                        SECURE_LOGGER.warn(
+                            "Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}. " +
+                                "Statuskode ${restResponseUbst.statusCode.value()}",
+                        )
+                    } else {
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}. " +
+                                "Statuskode ${restResponseUbst.statusCode.value()}",
+                        )
+                    }
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,

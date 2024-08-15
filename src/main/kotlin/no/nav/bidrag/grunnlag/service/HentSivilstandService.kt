@@ -5,12 +5,14 @@ import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.service.InntektskomponentenService.Companion.LOGGER
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
+import org.springframework.http.HttpStatus
 
 class HentSivilstandService(private val bidragPersonConsumer: BidragPersonConsumer) {
 
@@ -30,7 +32,17 @@ class HentSivilstandService(private val bidragPersonConsumer: BidragPersonConsum
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn("Feil ved henting av sivilstand for ${it.personId}. Statuskode ${restResponseSivilstand.statusCode.value()}")
+                    if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) {
+                        SECURE_LOGGER.warn("Sivilstand ikke funnet for ${it.personId}. Statuskode ${restResponseSivilstand.statusCode.value()}")
+                    } else {
+                        LOGGER.error(
+                            "Feil ved henting av sivilstanda bidrag-person/PDL. Statuskode ${restResponseSivilstand.statusCode.value()}",
+                        )
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av sivilstand for ${it.personId}. Statuskode ${restResponseSivilstand.statusCode.value()}",
+                        )
+                    }
+
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.SIVILSTAND,
