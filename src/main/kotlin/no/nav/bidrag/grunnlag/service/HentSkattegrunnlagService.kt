@@ -7,6 +7,7 @@ import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.service.InntektskomponentenService.Companion.LOGGER
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.erBnrEllerNpid
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
@@ -18,9 +19,7 @@ import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class HentSkattegrunnlagService(
-    private val sigrunConsumer: SigrunConsumer,
-) {
+class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
     companion object {
         const val INNTEKTSAAR_IKKE_STØTTET = "Oppgitt inntektsår er ikke støttet"
         const val FANT_IKKE_SKATTEGRUNNLAG_PROD = "Fant ikke summert skattegrunnlag"
@@ -70,7 +69,7 @@ class HentSkattegrunnlagService(
                         if ((restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) &&
                             (inntektsårIkkeStøttet(restResponseSkattegrunnlag.message))
                         ) {
-                            SECURE_LOGGER.warn("Skattegrunnlag er ikke tilgjengelig enda for ${it.personId} og år $inntektÅr")
+                            SECURE_LOGGER.warn("Skattegrunnlag er ikke tilgjengelig ennå for ${it.personId} og år $inntektÅr")
 
                             // Legger ut tom liste hvis det ikke finnes data
                         } else if ((restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) &&
@@ -88,7 +87,10 @@ class HentSkattegrunnlagService(
                                 ),
                             )
                         } else {
-                            SECURE_LOGGER.warn(
+                            LOGGER.error(
+                                "Feil ved henting av skattegrunnlag. Statuskode ${restResponseSkattegrunnlag.statusCode.value()}",
+                            )
+                            SECURE_LOGGER.error(
                                 "Feil ved henting av skattegrunnlag for ${it.personId} og år $inntektÅr. " +
                                     "Statuskode ${restResponseSkattegrunnlag.statusCode.value()}",
                             )

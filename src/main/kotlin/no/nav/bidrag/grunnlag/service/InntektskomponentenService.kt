@@ -23,9 +23,7 @@ import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Service
 
 @Service
-class InntektskomponentenService(
-    private val inntektskomponentenConsumer: InntektskomponentenConsumer,
-) {
+class InntektskomponentenService(private val inntektskomponentenConsumer: InntektskomponentenConsumer) {
     companion object {
         @JvmStatic
         val LOGGER: Logger = LoggerFactory.getLogger(InntektskomponentenService::class.java)
@@ -55,10 +53,21 @@ class InntektskomponentenService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
-                    )
+                    if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) {
+                        SECURE_LOGGER.warn(
+                            "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
+                        )
+                    } else {
+                        LOGGER.error(
+                            "Feil ved henting av inntekter med abonnement fra Inntektskomponenten. " +
+                                "Statuskode ${restResponseInntekt.statusCode.value()}",
+                        )
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
+                        )
+                    }
                     // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
                     try {
                         when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
@@ -76,11 +85,23 @@ class InntektskomponentenService(
                             }
 
                             is RestResponse.Failure -> {
-                                SECURE_LOGGER.warn(
-                                    "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                                        "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. " +
-                                        "Statuskode ${restResponse2Inntekt.statusCode.value()}",
-                                )
+                                if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) {
+                                    SECURE_LOGGER.warn(
+                                        "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. " +
+                                            "Statuskode ${restResponse2Inntekt.statusCode.value()}",
+                                    )
+                                } else {
+                                    LOGGER.error(
+                                        "Feil ved henting av inntekter uten abonnement fra Inntektskomponenten. " +
+                                            "Statuskode ${restResponseInntekt.statusCode.value()}",
+                                    )
+                                    SECURE_LOGGER.error(
+                                        "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. " +
+                                            "Statuskode ${restResponse2Inntekt.statusCode.value()}",
+                                    )
+                                }
                                 httpStatus = restResponse2Inntekt.statusCode
                                 melding = restResponse2Inntekt.message ?: ""
                             }

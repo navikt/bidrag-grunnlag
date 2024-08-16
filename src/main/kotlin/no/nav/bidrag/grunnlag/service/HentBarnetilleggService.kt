@@ -8,15 +8,15 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.service.InntektskomponentenService.Companion.LOGGER
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
+import org.springframework.http.HttpStatus
 
-class HentBarnetilleggService(
-    private val pensjonConsumer: PensjonConsumer,
-) {
+class HentBarnetilleggService(private val pensjonConsumer: PensjonConsumer) {
 
     fun hentBarnetilleggPensjon(barnetilleggPensjonRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<BarnetilleggGrunnlagDto> {
         val barnetilleggPensjonListe = mutableListOf<BarnetilleggGrunnlagDto>()
@@ -44,10 +44,21 @@ class HentBarnetilleggService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av barnetillegg pensjon for ${it.personId}. " +
-                            "Statuskode ${restResponseBarnetillegg.statusCode.value()}",
-                    )
+                    if (restResponseBarnetillegg.statusCode == HttpStatus.NOT_FOUND) {
+                        SECURE_LOGGER.warn(
+                            "Barnetillegg pensjon ikke funnet for ${it.personId}. " +
+                                "Statuskode ${restResponseBarnetillegg.statusCode.value()}",
+                        )
+                    } else {
+                        LOGGER.error(
+                            "Feil ved henting av barnetillegg fra pensjon. Statuskode ${restResponseBarnetillegg.statusCode.value()}",
+                        )
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av barnetillegg pensjon for ${it.personId}. " +
+                                "Statuskode ${restResponseBarnetillegg.statusCode.value()}",
+                        )
+                    }
+
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.BARNETILLEGG,

@@ -8,15 +8,15 @@ import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.service.InntektskomponentenService.Companion.LOGGER
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilsynGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
+import org.springframework.http.HttpStatus
 
-class HentBarnetilsynService(
-    private val familieEfSakConsumer: FamilieEfSakConsumer,
-) {
+class HentBarnetilsynService(private val familieEfSakConsumer: FamilieEfSakConsumer) {
 
     fun hentBarnetilsyn(barnetilsynRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<BarnetilsynGrunnlagDto> {
         val barnetilsynListe = mutableListOf<BarnetilsynGrunnlagDto>()
@@ -37,10 +37,22 @@ class HentBarnetilsynService(
                 }
 
                 is RestResponse.Failure -> {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av barnetilsyn for ${it.personId}. " +
-                            "Statuskode ${restResponseBarnetilsyn.statusCode.value()}",
-                    )
+                    if (restResponseBarnetilsyn.statusCode == HttpStatus.NOT_FOUND) {
+                        SECURE_LOGGER.warn(
+                            "Stønad til barnetilsyn fra Enslig Forsørger ikke funnet for ${it.personId}. " +
+                                "Statuskode ${restResponseBarnetilsyn.statusCode.value()}",
+                        )
+                    } else {
+                        LOGGER.error(
+                            "Feil ved henting av stønad til barnetilsyn fra Enslig Forsørger. " +
+                                "Statuskode ${restResponseBarnetilsyn.statusCode.value()}",
+                        )
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av stønad til barnetilsyn fra Enslig Forsørger for ${it.personId}. " +
+                                "Statuskode ${restResponseBarnetilsyn.statusCode.value()}",
+                        )
+                    }
+
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.BARNETILSYN,

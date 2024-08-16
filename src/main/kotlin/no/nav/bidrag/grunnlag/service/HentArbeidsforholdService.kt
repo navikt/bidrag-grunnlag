@@ -3,6 +3,7 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer.Companion.LOGGER
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidssted
@@ -17,6 +18,7 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.ArbeidsforholdGrunnl
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.Permisjon
 import no.nav.bidrag.transport.behandling.grunnlag.response.Permittering
+import org.springframework.http.HttpStatus
 
 class HentArbeidsforholdService(
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
@@ -148,53 +150,59 @@ class HentArbeidsforholdService(
         arbeidssted: Arbeidssted?,
         feilrapporteringListe: MutableList<FeilrapporteringDto>,
         ident: String,
-    ): Arbeidsgiverinfo? {
-        return if (arbeidssted?.type == "Underenhet") {
-            val orgnr = arbeidssted.identer?.filter { it.type == "ORGANISASJONSNUMMER" }?.get(0)?.ident
-            var navn: String? = null
+    ): Arbeidsgiverinfo? = if (arbeidssted?.type == "Underenhet") {
+        val orgnr = arbeidssted.identer?.filter { it.type == "ORGANISASJONSNUMMER" }?.get(0)?.ident
+        var navn: String? = null
 
-            if (orgnr != null) {
-                when (val restResponseEnhetsregister = enhetsregisterConsumer.hentEnhetsinfo(HentEnhetsregisterRequest(orgnr))) {
-                    is RestResponse.Success -> {
-                        navn = restResponseEnhetsregister.body.navn?.navnelinje1
-                    }
+        if (orgnr != null) {
+            when (val restResponseEnhetsregister = enhetsregisterConsumer.hentEnhetsinfo(HentEnhetsregisterRequest(orgnr))) {
+                is RestResponse.Success -> {
+                    navn = restResponseEnhetsregister.body.navn?.navnelinje1
+                }
 
-                    is RestResponse.Failure -> {
+                is RestResponse.Failure -> {
+                    if (restResponseEnhetsregister.statusCode == HttpStatus.NOT_FOUND) {
                         SECURE_LOGGER.warn(
+                            "Arbeidsgivernavn ikke funnet fra enhetsregisteret for orgnr $orgnr. " +
+                                "Statuskode ${restResponseEnhetsregister.statusCode.value()}",
+                        )
+                    } else {
+                        LOGGER.error(
                             "Feil ved henting av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr. " +
                                 "Statuskode ${restResponseEnhetsregister.statusCode.value()}",
                         )
-                        feilrapporteringListe.add(
-                            FeilrapporteringDto(
-                                grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,
-                                personId = ident,
-                                periodeFra = null,
-                                periodeTil = null,
-                                feiltype = evaluerFeiltype(
-                                    melding = restResponseEnhetsregister.message,
-                                    httpStatuskode = restResponseEnhetsregister.statusCode,
-                                ),
-                                feilmelding = evaluerFeilmelding(
-                                    melding = restResponseEnhetsregister.message,
-                                    grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,
-                                ),
-                            ),
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr. " +
+                                "Statuskode ${restResponseEnhetsregister.statusCode.value()}",
                         )
                     }
+                    feilrapporteringListe.add(
+                        FeilrapporteringDto(
+                            grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,
+                            personId = ident,
+                            periodeFra = null,
+                            periodeTil = null,
+                            feiltype = evaluerFeiltype(
+                                melding = restResponseEnhetsregister.message,
+                                httpStatuskode = restResponseEnhetsregister.statusCode,
+                            ),
+                            feilmelding = evaluerFeilmelding(
+                                melding = restResponseEnhetsregister.message,
+                                grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,
+                            ),
+                        ),
+                    )
                 }
             }
-
-            Arbeidsgiverinfo(
-                orgnr = orgnr,
-                navn = navn,
-            )
-        } else {
-            null
         }
+
+        Arbeidsgiverinfo(
+            orgnr = orgnr,
+            navn = navn,
+        )
+    } else {
+        null
     }
 }
 
-data class Arbeidsgiverinfo(
-    val orgnr: String?,
-    val navn: String?,
-)
+data class Arbeidsgiverinfo(val orgnr: String?, val navn: String?)
