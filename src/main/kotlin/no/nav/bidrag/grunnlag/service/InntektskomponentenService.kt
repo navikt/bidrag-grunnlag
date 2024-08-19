@@ -59,10 +59,13 @@ class InntektskomponentenService(private val inntektskomponentenConsumer: Inntek
                                 "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
                         )
                     } else {
-                        LOGGER.error(
-                            "Feil ved henting av inntekter med abonnement fra Inntektskomponenten. " +
-                                "Statuskode ${restResponseInntekt.statusCode.value()}",
-                        )
+                        // Utelater logging ved 400 - Bad Request (inntektsabonnement finnes ikke for personen)
+                        if (restResponseInntekt.statusCode != HttpStatus.BAD_REQUEST) {
+                            LOGGER.error(
+                                "Feil ved henting av inntekter med abonnement fra Inntektskomponenten. " +
+                                    "Statuskode ${restResponseInntekt.statusCode.value()}",
+                            )
+                        }
                         SECURE_LOGGER.error(
                             "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
                                 "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
