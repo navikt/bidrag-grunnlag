@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.ArbeidsInntektInformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.ArbeidsInntektMaanedIntern
@@ -12,7 +11,6 @@ import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.Tilleggsinformasj
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.TilleggsinformasjonIntern
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.VirksomhetIntern
 import no.nav.bidrag.grunnlag.exception.RestResponse
-import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.tjenester.aordningen.inntektsinformasjon.ArbeidsInntektMaaned
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.TilleggsinformasjonDetaljerType
@@ -42,69 +40,23 @@ class InntektskomponentenService(private val inntektskomponentenConsumer: Inntek
             when (val restResponseInntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, true)) {
                 is RestResponse.Success -> {
                     // Respons OK
-                    SECURE_LOGGER.info(
-                        "Henting av inntekter med abonnement for perioden ${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom} " +
-                            "ga følgende respons for ${inntektListeRequest.ident.identifikator}: ${tilJson(restResponseInntekt.body)}",
-                    )
                     val abonnerteInntekter = restResponseInntekt.body
                     if (null != abonnerteInntekter.arbeidsInntektMaaned) {
                         hentInntektListeResponse.addAll(abonnerteInntekter.arbeidsInntektMaaned)
                     }
                 }
-
                 is RestResponse.Failure -> {
-                    if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) {
-                        SECURE_LOGGER.warn(
-                            "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
-                        )
-                    } else {
-                        // Utelater logging ved 400 - Bad Request (inntektsabonnement finnes ikke for personen)
-                        if (restResponseInntekt.statusCode != HttpStatus.BAD_REQUEST) {
-                            LOGGER.error(
-                                "Feil ved henting av inntekter med abonnement fra Inntektskomponenten. " +
-                                    "Statuskode ${restResponseInntekt.statusCode.value()}",
-                            )
-                        }
-                        SECURE_LOGGER.error(
-                            "Feil ved henting av inntekter med abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. Prøver å hente inntekter uten abonnement.",
-                        )
-                    }
                     // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
                     try {
                         when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
                             is RestResponse.Success -> {
                                 // Respons OK
-                                SECURE_LOGGER.info(
-                                    "Henting av inntekter uten abonnement for perioden ${inntektListeRequest.maanedFom} - " +
-                                        "${inntektListeRequest.maanedTom} ga følgende respons for ${inntektListeRequest.ident.identifikator}: " +
-                                        tilJson(restResponse2Inntekt.body),
-                                )
                                 val inntekter = restResponse2Inntekt.body
                                 if (null != inntekter.arbeidsInntektMaaned) {
                                     hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
                                 }
                             }
-
                             is RestResponse.Failure -> {
-                                if (restResponseInntekt.statusCode == HttpStatus.NOT_FOUND) {
-                                    SECURE_LOGGER.warn(
-                                        "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. " +
-                                            "Statuskode ${restResponse2Inntekt.statusCode.value()}",
-                                    )
-                                } else {
-                                    LOGGER.error(
-                                        "Feil ved henting av inntekter uten abonnement fra Inntektskomponenten. " +
-                                            "Statuskode ${restResponseInntekt.statusCode.value()}",
-                                    )
-                                    SECURE_LOGGER.error(
-                                        "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. " +
-                                            "Statuskode ${restResponse2Inntekt.statusCode.value()}",
-                                    )
-                                }
                                 httpStatus = restResponse2Inntekt.statusCode
                                 melding = restResponse2Inntekt.message ?: ""
                             }

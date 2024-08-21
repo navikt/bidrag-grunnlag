@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.familiekssak
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
@@ -16,8 +15,7 @@ import java.net.SocketTimeoutException
 
 private const val FAMILIEKSSAK_CONTEXT = "/api/bisys/hent-utbetalingsinfo"
 
-open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-    GrunnlagsConsumer() {
+open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
     companion object {
         @JvmStatic
@@ -34,7 +32,7 @@ open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate
             BisysResponsDto(emptyList(), emptyList()),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Kontantstøtte fra KS-Sak", request.identer.first(), request.fom, null, restResponse)
 
         return restResponse
     }

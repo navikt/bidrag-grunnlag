@@ -15,8 +15,7 @@ import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import java.net.SocketTimeoutException
 
-open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-    GrunnlagsConsumer() {
+open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
     companion object {
         @JvmStatic
@@ -36,7 +35,7 @@ open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTempla
             HentEnhetsregisterResponse(),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Enhetsregister", request.organisasjonsnummer, null, null, restResponse)
 
         return restResponse
     }

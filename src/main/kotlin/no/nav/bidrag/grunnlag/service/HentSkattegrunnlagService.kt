@@ -7,11 +7,9 @@ import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
-import no.nav.bidrag.grunnlag.service.InntektskomponentenService.Companion.LOGGER
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.erBnrEllerNpid
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
-import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagspostDto
@@ -51,11 +49,6 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
                     val restResponseSkattegrunnlag = sigrunConsumer.hentSummertSkattegrunnlag(hentSkattegrunnlagRequest)
                 ) {
                     is RestResponse.Success -> {
-                        SECURE_LOGGER.info(
-                            "Henting av skattegrunnlag ga følgende respons for ${it.personId} og år $inntektÅr: ${tilJson(
-                                restResponseSkattegrunnlag.body,
-                            )}",
-                        )
                         leggTilSkattegrunnlag(
                             skattegrunnlagListe = skattegrunnlagListe,
                             skattegrunnlagRespons = restResponseSkattegrunnlag.body,
@@ -77,7 +70,7 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
                             (restResponseSkattegrunnlag.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
                             (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message))
                         ) {
-                            SECURE_LOGGER.info("Fant ikke skattegrunnlag for ${it.personId} og år $inntektÅr")
+//                            SECURE_LOGGER.info("Fant ikke skattegrunnlag for ${it.personId} og år $inntektÅr")
                             skattegrunnlagListe.add(
                                 SkattegrunnlagGrunnlagDto(
                                     personId = it.personId,
@@ -87,13 +80,6 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
                                 ),
                             )
                         } else {
-                            LOGGER.error(
-                                "Feil ved henting av skattegrunnlag. Statuskode ${restResponseSkattegrunnlag.statusCode.value()}",
-                            )
-                            SECURE_LOGGER.error(
-                                "Feil ved henting av skattegrunnlag for ${it.personId} og år $inntektÅr. " +
-                                    "Statuskode ${restResponseSkattegrunnlag.statusCode.value()}",
-                            )
                             feilrapporteringListe.add(
                                 FeilrapporteringDto(
                                     grunnlagstype = GrunnlagRequestType.SKATTEGRUNNLAG,

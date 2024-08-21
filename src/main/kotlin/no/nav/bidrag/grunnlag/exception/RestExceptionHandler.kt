@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JacksonException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import no.nav.bidrag.commons.ExceptionLogger
+import no.nav.bidrag.commons.service.retryTemplate
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -136,23 +137,25 @@ fun <T> RestTemplate.tryExchange(
     httpEntity: HttpEntity<*>,
     responseType: Class<T>,
     fallbackBody: T,
-): RestResponse<T> {
-    return try {
-        val response = exchange(url, httpMethod, httpEntity, responseType)
-        if (response.statusCode == HttpStatus.OK) {
-            RestResponse.Success(response.body ?: fallbackBody)
-        } else {
-            RestResponse.Failure(
-                message = response.headers.getOrEmpty(HttpHeaders.WARNING).joinToString(","),
-                statusCode = response.statusCode,
-                restClientException = HttpClientErrorException(response.statusCode),
-            )
-        }
-    } catch (e: HttpClientErrorException) {
-        RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
-    } catch (e: HttpServerErrorException) {
-        RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+): RestResponse<T> = try {
+    val response = retryTemplate(
+        url,
+    ).execute<ResponseEntity<T>, HttpClientErrorException> {
+        exchange(url, httpMethod, httpEntity, responseType)
     }
+    if (response.statusCode == HttpStatus.OK) {
+        RestResponse.Success(response.body ?: fallbackBody)
+    } else {
+        RestResponse.Failure(
+            message = response.headers.getOrEmpty(HttpHeaders.WARNING).joinToString(","),
+            statusCode = response.statusCode,
+            restClientException = HttpClientErrorException(response.statusCode),
+        )
+    }
+} catch (e: HttpClientErrorException) {
+    RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+} catch (e: HttpServerErrorException) {
+    RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
 }
 
 // Brukes hvis responseType er en liste
@@ -162,21 +165,23 @@ fun <T> RestTemplate.tryExchange(
     httpEntity: HttpEntity<*>,
     responseType: ParameterizedTypeReference<T>,
     fallbackBody: T,
-): RestResponse<T> {
-    return try {
-        val response = exchange(url, httpMethod, httpEntity, responseType)
-        if (response.statusCode == HttpStatus.OK) {
-            RestResponse.Success(response.body ?: fallbackBody)
-        } else {
-            RestResponse.Failure(
-                message = response.headers.getOrEmpty(HttpHeaders.WARNING).joinToString(","),
-                statusCode = response.statusCode,
-                restClientException = HttpClientErrorException(response.statusCode),
-            )
-        }
-    } catch (e: HttpClientErrorException) {
-        RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
-    } catch (e: HttpServerErrorException) {
-        RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+): RestResponse<T> = try {
+    val response = retryTemplate(
+        url,
+    ).execute<ResponseEntity<T>, HttpClientErrorException> {
+        exchange(url, httpMethod, httpEntity, responseType)
     }
+    if (response.statusCode == HttpStatus.OK) {
+        RestResponse.Success(response.body ?: fallbackBody)
+    } else {
+        RestResponse.Failure(
+            message = response.headers.getOrEmpty(HttpHeaders.WARNING).joinToString(","),
+            statusCode = response.statusCode,
+            restClientException = HttpClientErrorException(response.statusCode),
+        )
+    }
+} catch (e: HttpClientErrorException) {
+    RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+} catch (e: HttpServerErrorException) {
+    RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
 }
