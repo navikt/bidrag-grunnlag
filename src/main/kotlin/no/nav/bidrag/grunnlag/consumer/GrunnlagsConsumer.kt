@@ -29,22 +29,39 @@ open class GrunnlagsConsumer {
             }
 
             is RestResponse.Failure -> {
-                // Logger som warning i stedet for error hvis status er not found
-                if (restResponse.statusCode == HttpStatus.NOT_FOUND) {
-                    logger.warn(
-                        "Feil ved hent av grunnlag $type ${restResponse.statusCode}/${restResponse.message}",
-                    )
-                    secureLogger.warn {
-                        "Feil ved hent av grunnlag $type for $ident for perioden $fom - $tom. " +
-                            "${restResponse.statusCode}/${restResponse.message}"
+                if (type == "Skattegrunnlag") {
+                    // Legger ikke ut noe hvis skattegrunnlag ikke er tilgjengelig ennå
+                    if ((restResponse.statusCode == HttpStatus.NOT_FOUND) &&
+                        (inntektsårIkkeStøttet(restResponse.message))
+                    ) {
+                        secureLogger.warn { "Skattegrunnlag er ikke tilgjengelig ennå for $ident og år ${fom?.year}" }
+
+                        // Legger ut tom liste hvis det ikke finnes data
+                    } else if ((restResponse.statusCode == HttpStatus.NOT_FOUND) &&
+                        (fantIkkeSkattegrunnlag(restResponse.message)) ||
+                        (restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
+                        (fantIkkeSkattegrunnlag(restResponse.message))
+                    ) {
+                        secureLogger.info { "Fant ikke skattegrunnlag for $ident og år $fom?.year" }
                     }
                 } else {
-                    logger.error(
-                        "Feil ved hent av grunnlag $type ${restResponse.statusCode}/${restResponse.message}",
-                    )
-                    secureLogger.error {
-                        "Feil ved hent av grunnlag $type for $ident for perioden $fom - $tom. " +
-                            "${restResponse.statusCode}/${restResponse.message}"
+                    // Logger som warning i stedet for error hvis status er not found
+                    if (restResponse.statusCode == HttpStatus.NOT_FOUND) {
+                        logger.warn(
+                            "Feil ved hent av grunnlag $type ${restResponse.statusCode}/${restResponse.message}",
+                        )
+                        secureLogger.warn {
+                            "Feil ved hent av grunnlag $type for $ident for perioden $fom - $tom. " +
+                                "${restResponse.statusCode}/${restResponse.message}"
+                        }
+                    } else {
+                        logger.error(
+                            "Feil ved hent av grunnlag $type ${restResponse.statusCode}/${restResponse.message}",
+                        )
+                        secureLogger.error {
+                            "Feil ved hent av grunnlag $type for $ident for perioden $fom - $tom. " +
+                                "${restResponse.statusCode}/${restResponse.message}"
+                        }
                     }
                 }
             }
@@ -89,11 +106,19 @@ open class GrunnlagsConsumer {
         return HttpEntity(body, httpHeaders)
     }
 
+    private fun inntektsårIkkeStøttet(message: String?) = message?.contains(INNTEKTSAAR_IKKE_STØTTET) ?: false
+
+    private fun fantIkkeSkattegrunnlag(message: String?): Boolean =
+        message?.contains(FANT_IKKE_SKATTEGRUNNLAG_PROD) == true || message?.contains(FANT_IKKE_SKATTEGRUNNLAG_TEST) == true
+
     companion object {
         const val NAV_CALL_ID = "Nav-Call-Id"
         const val NAV_CONSUMER_ID = "Nav-Consumer-Id"
         const val NAV_CONSUMER_ID_VERDI = "BIDRAG-GRUNNLAG"
         const val NAV_PERSONIDENT = "Nav-Personident"
+        const val INNTEKTSAAR_IKKE_STØTTET = "Oppgitt inntektsår er ikke støttet"
+        const val FANT_IKKE_SKATTEGRUNNLAG_PROD = "Fant ikke summert skattegrunnlag"
+        const val FANT_IKKE_SKATTEGRUNNLAG_TEST = "Det finnes ikke summertskattegrunnlag"
 
         @JvmStatic
         val logger: Logger = LoggerFactory.getLogger(BidragPersonConsumer::class.java)
