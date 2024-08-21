@@ -9,7 +9,6 @@ import no.nav.bidrag.grunnlag.bo.PersonBo
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
-import no.nav.bidrag.grunnlag.service.InntektskomponentenService.Companion.LOGGER
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
@@ -21,7 +20,6 @@ import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.NavnFødselDødDto
 import no.nav.bidrag.transport.person.PersonRequest
-import org.springframework.http.HttpStatus
 import java.time.LocalDate
 
 class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPersonConsumer) {
@@ -166,11 +164,6 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
         ) {
             is RestResponse.Success -> {
                 val husstandsmedlemmerResponseDto = restResponseHusstandsmedlemmer.body
-                SECURE_LOGGER.info(
-                    "Bidrag-person ga følgende respons på husstandsmedlemmer for ${personIdOgPeriode.personId}: " +
-                        "periode: ${personIdOgPeriode.periodeFra}:" +
-                        tilJson(husstandsmedlemmerResponseDto),
-                )
 
                 husstandsmedlemmerResponseDto.husstandListe.forEach { husstand ->
                     husstand.husstandsmedlemListe.forEach { husstandsmedlem ->
@@ -198,21 +191,6 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
             }
 
             is RestResponse.Failure -> {
-                if (restResponseHusstandsmedlemmer.statusCode == HttpStatus.NOT_FOUND) {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av husstandsmedlemmer for ${personIdOgPeriode.personId}. " +
-                            "Statuskode ${restResponseHusstandsmedlemmer.statusCode.value()}",
-                    )
-                } else {
-                    LOGGER.error(
-                        "Feil ved henting av husstandsmedlemmer fra bidrag-person/PDL ${restResponseHusstandsmedlemmer.statusCode.value()}",
-                    )
-                    SECURE_LOGGER.error(
-                        "Feil ved henting av husstandsmedlemmer for ${personIdOgPeriode.personId}. " +
-                            "Statuskode ${restResponseHusstandsmedlemmer.statusCode.value()}",
-                    )
-                }
-
                 feilrapporteringListe.add(
                     FeilrapporteringDto(
                         grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
@@ -246,28 +224,10 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
         ) {
             is RestResponse.Success -> {
                 val forelderBarnRelasjonResponse = restResponseForelderBarnRelasjon.body
-                SECURE_LOGGER.info(
-                    "Henting av forelder-barn-relasjoner ga følgende respons for ${personident.verdi}: ${tilJson(forelderBarnRelasjonResponse)}",
-                )
                 return forelderBarnRelasjonResponse
             }
 
             is RestResponse.Failure -> {
-                if (restResponseForelderBarnRelasjon.statusCode == HttpStatus.NOT_FOUND) {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av forelder-barn-relasjoner for ${personident.verdi}. " +
-                            "Statuskode ${restResponseForelderBarnRelasjon.statusCode.value()}",
-                    )
-                } else {
-                    LOGGER.error(
-                        "Feil ved henting av forelder-barn-relasjon fra bidrag-person/PDL. " +
-                            "Statuskode ${restResponseForelderBarnRelasjon.statusCode.value()}",
-                    )
-                    SECURE_LOGGER.error(
-                        "Feil ved henting av forelder-barn-relasjoner for ${personident.verdi}. " +
-                            "Statuskode ${restResponseForelderBarnRelasjon.statusCode.value()}",
-                    )
-                }
                 feilrapporteringListe.add(
                     FeilrapporteringDto(
                         grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
@@ -327,7 +287,6 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
         ) {
             is RestResponse.Success -> {
                 val foedselOgDoedResponse = restResponseFoedselOgDoed.body
-                SECURE_LOGGER.info("Henting av navn og fødselsdato ga følgende respons for ${personident.verdi}: ${tilJson(foedselOgDoedResponse)}")
 
                 navnFødselDødDto = NavnFødselDødDto(
                     foedselOgDoedResponse.navn,
@@ -338,20 +297,6 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
             }
 
             is RestResponse.Failure -> {
-                if (restResponseFoedselOgDoed.statusCode == HttpStatus.NOT_FOUND) {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av navn og fødselsdato for ${personident.verdi}. " +
-                            "Statuskode ${restResponseFoedselOgDoed.statusCode.value()}",
-                    )
-                } else {
-                    LOGGER.error(
-                        "Feil ved henting av navn og fødselsdato fra bidrag-person/PDL. Statuskode ${restResponseFoedselOgDoed.statusCode.value()}",
-                    )
-                    SECURE_LOGGER.error(
-                        "Feil ved henting av navn og fødselsdato for ${personident.verdi}. " +
-                            "Statuskode ${restResponseFoedselOgDoed.statusCode.value()}",
-                    )
-                }
                 feilrapporteringListe.add(
                     FeilrapporteringDto(
                         grunnlagstype = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
@@ -437,27 +382,12 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                 val sivilstandRespons = restResponseSivilstand.body
                 sivilstandRespons.sivilstandPdlDto.forEach {
                     if (it.relatertVedSivilstand != null && it.type.toString() == SivilstandskodePDL.GIFT.toString()) {
-                        SECURE_LOGGER.info(
-                            "Henting av ektefelles personident ga følgende respons for $personId: ${tilJson(restResponseSivilstand.body)}",
-                        )
                         ektefelleListe.add(Personident(it.relatertVedSivilstand!!))
                     }
                 }
             }
 
             is RestResponse.Failure -> {
-                if (restResponseSivilstand.statusCode == HttpStatus.NOT_FOUND) {
-                    SECURE_LOGGER.warn(
-                        "Feil ved henting av ektefelles personident for $personId. Statuskode ${restResponseSivilstand.statusCode.value()}",
-                    )
-                } else {
-                    LOGGER.error(
-                        "Feil ved henting av ektefelles personident fra bidrag-person/PDL. Statuskode ${restResponseSivilstand.statusCode.value()}",
-                    )
-                    SECURE_LOGGER.error(
-                        "Feil ved henting av ektefelles personident for $personId. Statuskode ${restResponseSivilstand.statusCode.value()}",
-                    )
-                }
                 return emptyList()
             }
         }

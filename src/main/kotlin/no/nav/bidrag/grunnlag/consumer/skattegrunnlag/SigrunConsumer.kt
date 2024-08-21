@@ -14,6 +14,7 @@ import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.SocketTimeoutException
+import java.time.LocalDate
 
 private const val SUMMERT_SKATTEGRUNNLAG_URL = "/api/v1/summertskattegrunnlag"
 private const val INNTEKTSAAR = "inntektsaar"
@@ -45,7 +46,7 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
             HentSummertSkattegrunnlagResponse(emptyList(), emptyList(), null),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Skattegrunnlag", request.personId, LocalDate.of(request.inntektsAar.toInt(), 1, 1), null, restResponse)
 
         return restResponse
     }

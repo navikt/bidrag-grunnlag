@@ -2,7 +2,6 @@ package no.nav.bidrag.grunnlag.consumer.bidragperson
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.domene.ident.Personident
-import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
@@ -48,7 +47,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             NavnFødselDødDto(navn = "", fødselsdato = null, fødselsår = 0, dødsdato = null),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Navn, fødsel og død", personident.toString(), null, null, restResponse)
 
         return restResponse
     }
@@ -65,7 +64,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             ForelderBarnRelasjonDto(emptyList()),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Forelder-barn-relasjon", personident.toString(), null, null, restResponse)
 
         return restResponse
     }
@@ -85,7 +84,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             HusstandsmedlemmerDto(emptyList()),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Husstandsmedlemmer", request.personRequest.ident.toString(), request.periodeFra, null, restResponse)
 
         return restResponse
     }
@@ -102,7 +101,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             SivilstandPdlHistorikkDto(emptyList()),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Sivilstand", personident.toString(), null, null, restResponse)
 
         return restResponse
     }
@@ -121,7 +120,7 @@ open class BidragPersonConsumer(private val restTemplate: HttpHeaderRestTemplate
             emptyList(),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Personidenter", personident.toString(), null, null, restResponse)
 
         return restResponse
     }

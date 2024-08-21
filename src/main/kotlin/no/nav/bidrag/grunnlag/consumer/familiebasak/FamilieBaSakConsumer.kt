@@ -1,7 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.familiebasak
 
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
@@ -16,8 +15,7 @@ import java.net.SocketTimeoutException
 
 private const val FAMILIEBASAK_CONTEXT = "/api/bisys/hent-utvidet-barnetrygd"
 
-open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-    GrunnlagsConsumer() {
+open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
     companion object {
         @JvmStatic
@@ -36,7 +34,7 @@ open class FamilieBaSakConsumer(private val restTemplate: HttpHeaderRestTemplate
             FamilieBaSakResponse(emptyList()),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Utvidet barnetrygd og småbarnstillegg", request.personIdent, request.fraDato, null, restResponse)
 
         return restResponse
     }

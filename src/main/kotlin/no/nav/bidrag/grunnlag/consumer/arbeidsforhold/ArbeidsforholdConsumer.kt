@@ -18,8 +18,7 @@ import java.net.SocketTimeoutException
 
 private const val AAREG_CONTEXT = "/api/v2/arbeidstaker/arbeidsforhold"
 
-open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTemplate) :
-    GrunnlagsConsumer() {
+open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
     companion object {
         @JvmStatic
@@ -40,7 +39,7 @@ open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTempla
             emptyList(),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Arbeidsforhold", request.arbeidstakerId, null, null, restResponse)
 
         return restResponse
     }

@@ -6,12 +6,15 @@ import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
+import no.nav.bidrag.grunnlag.service.InntektskomponentenService
+import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import java.net.SocketTimeoutException
@@ -43,6 +46,50 @@ open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestT
             HentInntektListeResponse::class.java,
             HentInntektListeResponse(emptyList(), Aktoer(request.ident.identifikator, AktoerType.NATURLIG_IDENT)),
         )
+
+        when (restResponse) {
+            is RestResponse.Success -> SECURE_LOGGER.info(
+                "Henting av abonnerte ? $abonnerteInntekterRequest inntekter for perioden ${request.maanedFom} - ${request.maanedTom} " +
+                    "ga følgende respons for ${request.ident.identifikator}: ${tilJson(restResponse.body)}",
+            )
+
+            is RestResponse.Failure -> {
+                if (abonnerteInntekterRequest) {
+                    // Utelater feillogging ved 400 - Bad Request (inntektsabonnement finnes ikke for personen)
+                    // og 500 (inntektsabonnementet er ikke aktivt ennå)
+                    if (restResponse.statusCode == HttpStatus.NOT_FOUND ||
+                        restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR
+                    ) {
+                        InntektskomponentenService.LOGGER.warn(
+                            "Mangler abonnement for henting av inntekter fra Inntektskomponenten. " +
+                                "Statuskode ${restResponse.statusCode.value()}/${restResponse.message}",
+                        )
+                        SECURE_LOGGER.warn(
+                            "Mangler abonnement for henting av inntekter fra Inntektskomponenten for ${request.ident.identifikator} for perioden " +
+                                "${request.maanedFom} - ${request.maanedTom}. Prøver å hente inntekter uten abonnement. ${restResponse.message}",
+                        )
+                    } else {
+                        InntektskomponentenService.LOGGER.error(
+                            "Feil ved henting av inntekter med abonnement fra Inntektskomponenten. " +
+                                "Statuskode ${restResponse.statusCode.value()}/${restResponse.message}",
+                        )
+                        SECURE_LOGGER.error(
+                            "Feil ved henting av inntekter med abonnement for ${request.ident.identifikator} for perioden " +
+                                "${request.maanedFom} - ${request.maanedTom}. Prøver å hente inntekter uten abonnement. /${restResponse.message}",
+                        )
+                    }
+                } else {
+                    InntektskomponentenService.LOGGER.error(
+                        "Feil ved henting av inntekter uten abonnement fra Inntektskomponenten. " +
+                            "Statuskode ${restResponse.statusCode.value()} /${restResponse.message}",
+                    )
+                    SECURE_LOGGER.error(
+                        "Feil ved henting av inntekter uten abonnement for ${request.ident.identifikator} for perioden " +
+                            "${request.maanedFom} - ${request.maanedTom}. Prøver å hente inntekter uten abonnement. /${restResponse.message}",
+                    )
+                }
+            }
+        }
 
         logResponse(SECURE_LOGGER, restResponse)
 

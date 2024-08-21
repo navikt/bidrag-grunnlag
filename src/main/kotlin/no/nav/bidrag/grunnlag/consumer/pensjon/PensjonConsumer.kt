@@ -44,7 +44,7 @@ open class PensjonConsumer(private val restTemplate: HttpHeaderRestTemplate) : G
             emptyList(),
         )
 
-        logResponse(SECURE_LOGGER, restResponse)
+        logResponse("Barnetillegg fra pensjon", request.mottaker, request.fom, request.tom, restResponse)
 
         return restResponse
     }

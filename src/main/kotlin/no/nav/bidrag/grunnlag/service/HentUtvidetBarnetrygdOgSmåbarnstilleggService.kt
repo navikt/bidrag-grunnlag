@@ -1,16 +1,13 @@
 package no.nav.bidrag.grunnlag.service
 
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
-import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
-import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
-import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -30,24 +27,10 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(private val familieBaSakCon
                 val restResponseUbst = familieBaSakConsumer.hentFamilieBaSak(hentUbstRequest)
             ) {
                 is RestResponse.Success -> {
-                    SECURE_LOGGER.info(
-                        "Henting av utvidet barnetrygd og småbarnstillegg ga følgende respons for ${it.personId}: ${tilJson(restResponseUbst.body)}",
-                    )
                     leggTilUbst(ubstListe = ubstListe, familieBaSakRespons = restResponseUbst.body, ident = it.personId)
                 }
 
                 is RestResponse.Failure -> {
-                    if (restResponseUbst.statusCode == HttpStatus.NOT_FOUND) {
-                        SECURE_LOGGER.warn(
-                            "Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}. " +
-                                "Statuskode ${restResponseUbst.statusCode.value()}",
-                        )
-                    } else {
-                        SECURE_LOGGER.error(
-                            "Feil ved henting av utvidet barnetrygd og småbarnstillegg for ${it.personId}. " +
-                                "Statuskode ${restResponseUbst.statusCode.value()}",
-                        )
-                    }
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
