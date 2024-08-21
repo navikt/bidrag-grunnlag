@@ -24,7 +24,7 @@ open class GrunnlagsConsumer {
     fun <T> logResponse(type: String, ident: String, fom: LocalDate?, tom: LocalDate?, restResponse: RestResponse<T>) {
         when (restResponse) {
             is RestResponse.Success -> {
-                logger.info("Henting av grunnlag $type utført ok")
+                logger.info("Hent av grunnlag $type utført ok")
                 secureLogger.info { "Hent av grunnlag $type for $ident for perioden $fom - $tom ga følgende respons: ${restResponse.body}" }
             }
 
