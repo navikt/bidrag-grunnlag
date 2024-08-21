@@ -58,7 +58,8 @@ open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestT
                     // Utelater feillogging ved 400 - Bad Request (inntektsabonnement finnes ikke for personen)
                     // og 500 (inntektsabonnementet er ikke aktivt ennå)
                     if (restResponse.statusCode == HttpStatus.NOT_FOUND ||
-                        restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR
+                        restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR ||
+                        restResponse.statusCode == HttpStatus.BAD_REQUEST
                     ) {
                         InntektskomponentenService.LOGGER.warn(
                             "Mangler abonnement for henting av inntekter fra Inntektskomponenten. " +
