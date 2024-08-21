@@ -34,6 +34,7 @@ open class GrunnlagsConsumer {
                     if ((restResponse.statusCode == HttpStatus.NOT_FOUND) &&
                         (inntektsårIkkeStøttet(restResponse.message))
                     ) {
+                        logger.warn("Skattegrunnlag er ikke tilgjengelig ennå for personen")
                         secureLogger.warn { "Skattegrunnlag er ikke tilgjengelig ennå for $ident og år ${fom?.year}" }
 
                         // Legger ut tom liste hvis det ikke finnes data
@@ -42,7 +43,8 @@ open class GrunnlagsConsumer {
                         (restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
                         (fantIkkeSkattegrunnlag(restResponse.message))
                     ) {
-                        secureLogger.info { "Fant ikke skattegrunnlag for $ident og år $fom?.year" }
+                        logger.warn("Fant ikke skattegrunnlag for personen")
+                        secureLogger.warn { "Fant ikke skattegrunnlag for $ident og år $fom?.year" }
                     }
                 } else {
                     // Logger som warning i stedet for error hvis status er not found
