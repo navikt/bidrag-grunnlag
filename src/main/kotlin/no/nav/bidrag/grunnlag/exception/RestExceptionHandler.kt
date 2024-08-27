@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.service.retryTemplate
+import no.nav.bidrag.commons.util.LoggingRetryListener
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -12,7 +13,14 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
+import org.springframework.retry.RetryContext
+import org.springframework.retry.RetryPolicy
+import org.springframework.retry.backoff.FixedBackOffPolicy
+import org.springframework.retry.context.RetryContextSupport
+import org.springframework.retry.policy.SimpleRetryPolicy
+import org.springframework.retry.support.RetryTemplate
 import org.springframework.stereotype.Component
+import org.springframework.util.ClassUtils
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -130,6 +138,52 @@ sealed class RestResponse<T> {
     data class Success<T>(val body: T) : RestResponse<T>()
     data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: RestClientException) : RestResponse<T>()
 }
+fun httpRetryTemplate(details: String? = null): RetryTemplate {
+    val retryTemplate = RetryTemplate()
+    val fixedBackOffPolicy = FixedBackOffPolicy()
+    fixedBackOffPolicy.backOffPeriod = 500L
+    retryTemplate.setBackOffPolicy(fixedBackOffPolicy)
+    val retryPolicy = HttpRetryPolicy()
+    retryTemplate.setRetryPolicy(retryPolicy)
+    retryTemplate.setThrowLastExceptionOnExhausted(true)
+    retryTemplate.registerListener(LoggingRetryListener(details))
+    return retryTemplate
+}
+
+class HttpRetryPolicy(
+    private val maxAttempts: Int = 3,
+    private val ignoreHttpStatus: List<HttpStatus> = listOf(HttpStatus.NOT_FOUND, HttpStatus.BAD_REQUEST)
+) : RetryPolicy {
+    internal class HttpRetryContext(parent: RetryContext?) : RetryContextSupport(parent)
+
+    override fun canRetry(context: RetryContext): Boolean {
+        val throwable = context.lastThrowable
+        val can = context.retryCount < maxAttempts && (context.lastThrowable == null || throwable is HttpStatusCodeException && !ignoreHttpStatus.contains(throwable.statusCode))
+        if (!can && throwable != null) {
+            context.setAttribute(RetryContext.NO_RECOVERY, true)
+        } else {
+            context.removeAttribute(RetryContext.NO_RECOVERY)
+        }
+        return can
+    }
+
+    override fun close(status: RetryContext) {
+    }
+
+    override fun registerThrowable(context: RetryContext, throwable: Throwable?) {
+        val httpRetryContext = (context as HttpRetryContext)
+        httpRetryContext.registerThrowable(throwable)
+    }
+
+
+    override fun open(parent: RetryContext?): RetryContext {
+        return HttpRetryContext(parent)
+    }
+
+    override fun toString(): String {
+        return ClassUtils.getShortName(javaClass) + "[maxAttempts=$maxAttempts, ignoreHttpStatus=$ignoreHttpStatus]"
+    }
+}
 
 fun <T> RestTemplate.tryExchange(
     url: String,
@@ -138,7 +192,7 @@ fun <T> RestTemplate.tryExchange(
     responseType: Class<T>,
     fallbackBody: T,
 ): RestResponse<T> = try {
-    val response = retryTemplate(
+    val response = httpRetryTemplate(
         url,
     ).execute<ResponseEntity<T>, HttpClientErrorException> {
         exchange(url, httpMethod, httpEntity, responseType)
@@ -166,7 +220,7 @@ fun <T> RestTemplate.tryExchange(
     responseType: ParameterizedTypeReference<T>,
     fallbackBody: T,
 ): RestResponse<T> = try {
-    val response = retryTemplate(
+    val response = httpRetryTemplate(
         url,
     ).execute<ResponseEntity<T>, HttpClientErrorException> {
         exchange(url, httpMethod, httpEntity, responseType)
