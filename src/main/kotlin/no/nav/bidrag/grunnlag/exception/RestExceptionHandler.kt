@@ -17,7 +17,6 @@ import org.springframework.retry.RetryContext
 import org.springframework.retry.RetryPolicy
 import org.springframework.retry.backoff.FixedBackOffPolicy
 import org.springframework.retry.context.RetryContextSupport
-import org.springframework.retry.policy.SimpleRetryPolicy
 import org.springframework.retry.support.RetryTemplate
 import org.springframework.stereotype.Component
 import org.springframework.util.ClassUtils
@@ -152,13 +151,16 @@ fun httpRetryTemplate(details: String? = null): RetryTemplate {
 
 class HttpRetryPolicy(
     private val maxAttempts: Int = 3,
-    private val ignoreHttpStatus: List<HttpStatus> = listOf(HttpStatus.NOT_FOUND, HttpStatus.BAD_REQUEST)
+    private val ignoreHttpStatus: List<HttpStatus> = listOf(HttpStatus.NOT_FOUND, HttpStatus.BAD_REQUEST),
 ) : RetryPolicy {
     internal class HttpRetryContext(parent: RetryContext?) : RetryContextSupport(parent)
 
     override fun canRetry(context: RetryContext): Boolean {
         val throwable = context.lastThrowable
-        val can = context.retryCount < maxAttempts && (context.lastThrowable == null || throwable is HttpStatusCodeException && !ignoreHttpStatus.contains(throwable.statusCode))
+        val can = context.retryCount < maxAttempts && (
+            context.lastThrowable == null ||
+                throwable is HttpStatusCodeException && !ignoreHttpStatus.contains(throwable.statusCode)
+            )
         if (!can && throwable != null) {
             context.setAttribute(RetryContext.NO_RECOVERY, true)
         } else {
@@ -174,7 +176,6 @@ class HttpRetryPolicy(
         val httpRetryContext = (context as HttpRetryContext)
         httpRetryContext.registerThrowable(throwable)
     }
-
 
     override fun open(parent: RetryContext?): RetryContext {
         return HttpRetryContext(parent)
