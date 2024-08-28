@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JacksonException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import no.nav.bidrag.commons.ExceptionLogger
-import no.nav.bidrag.commons.service.retryTemplate
 import no.nav.bidrag.commons.util.LoggingRetryListener
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.HttpStatusCodeException
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
@@ -157,10 +157,9 @@ class HttpRetryPolicy(
 
     override fun canRetry(context: RetryContext): Boolean {
         val throwable = context.lastThrowable
+        val ignoreException = throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode) || throwable is ResourceAccessException
         val can = context.retryCount < maxAttempts && (
-            context.lastThrowable == null ||
-                throwable is HttpStatusCodeException && !ignoreHttpStatus.contains(throwable.statusCode)
-            )
+            context.lastThrowable == null || !ignoreException )
         if (!can && throwable != null) {
             context.setAttribute(RetryContext.NO_RECOVERY, true)
         } else {
