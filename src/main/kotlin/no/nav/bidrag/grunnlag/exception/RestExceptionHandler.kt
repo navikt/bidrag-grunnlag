@@ -135,7 +135,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
 sealed class RestResponse<T> {
     data class Success<T>(val body: T) : RestResponse<T>()
-    data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: RestClientException) : RestResponse<T>()
+    data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: Exception) : RestResponse<T>()
 }
 fun httpRetryTemplate(details: String? = null): RetryTemplate {
     val retryTemplate = RetryTemplate()
@@ -210,6 +210,8 @@ fun <T> RestTemplate.tryExchange(
     RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
 } catch (e: HttpServerErrorException) {
     RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+} catch (e: Exception) {
+    RestResponse.Failure("Message: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR, e)
 }
 
 // Brukes hvis responseType er en liste
