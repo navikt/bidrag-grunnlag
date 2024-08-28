@@ -157,9 +157,13 @@ class HttpRetryPolicy(
 
     override fun canRetry(context: RetryContext): Boolean {
         val throwable = context.lastThrowable
-        val ignoreException = throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode) || throwable is ResourceAccessException
-        val can = context.retryCount < maxAttempts && (
-            context.lastThrowable == null || !ignoreException )
+        val ignoreException =
+            throwable != null &&
+                (throwable is ResourceAccessException || throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode))
+        val can = context.retryCount < maxAttempts &&
+            (
+                context.lastThrowable == null || !ignoreException
+                )
         if (!can && throwable != null) {
             context.setAttribute(RetryContext.NO_RECOVERY, true)
         } else {
@@ -176,13 +180,9 @@ class HttpRetryPolicy(
         httpRetryContext.registerThrowable(throwable)
     }
 
-    override fun open(parent: RetryContext?): RetryContext {
-        return HttpRetryContext(parent)
-    }
+    override fun open(parent: RetryContext?): RetryContext = HttpRetryContext(parent)
 
-    override fun toString(): String {
-        return ClassUtils.getShortName(javaClass) + "[maxAttempts=$maxAttempts, ignoreHttpStatus=$ignoreHttpStatus]"
-    }
+    override fun toString(): String = ClassUtils.getShortName(javaClass) + "[maxAttempts=$maxAttempts, ignoreHttpStatus=$ignoreHttpStatus]"
 }
 
 fun <T> RestTemplate.tryExchange(
