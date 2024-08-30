@@ -9,9 +9,6 @@ import no.nav.bidrag.grunnlag.exception.tryExchange
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
-import java.net.SocketTimeoutException
 
 private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
 
@@ -22,7 +19,6 @@ open class FamilieEfSakConsumer(private val restTemplate: HttpHeaderRestTemplate
         private val logger: Logger = LoggerFactory.getLogger(FamilieEfSakConsumer::class.java)
     }
 
-    @Retryable(value = [Exception::class], exclude = [SocketTimeoutException::class], backoff = Backoff(delay = 500))
     open fun hentBarnetilsyn(request: BarnetilsynRequest): RestResponse<BarnetilsynResponse> {
         logger.debug("Henter barnetilsyn")
 

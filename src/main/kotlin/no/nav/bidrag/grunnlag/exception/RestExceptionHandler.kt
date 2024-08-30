@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import java.net.SocketTimeoutException
 import java.time.format.DateTimeParseException
 
 @RestControllerAdvice
@@ -159,17 +159,15 @@ class HttpRetryPolicy(
         val throwable = context.lastThrowable
         val ignoreException =
             throwable != null &&
-                (throwable is ResourceAccessException || throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode))
-        val can = context.retryCount < maxAttempts &&
-            (
-                context.lastThrowable == null || !ignoreException
-                )
-        if (!can && throwable != null) {
+                (throwable.cause is SocketTimeoutException || throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode))
+        val shouldRetry = context.retryCount < maxAttempts &&
+            (context.lastThrowable == null || !ignoreException)
+        if (!shouldRetry && throwable != null) {
             context.setAttribute(RetryContext.NO_RECOVERY, true)
         } else {
             context.removeAttribute(RetryContext.NO_RECOVERY)
         }
-        return can
+        return shouldRetry
     }
 
     override fun close(status: RetryContext) {
