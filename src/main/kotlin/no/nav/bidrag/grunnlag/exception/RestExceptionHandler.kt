@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JacksonException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import no.nav.bidrag.commons.ExceptionLogger
-import no.nav.bidrag.commons.service.retryTemplate
 import no.nav.bidrag.commons.util.LoggingRetryListener
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -32,6 +31,7 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import java.net.SocketTimeoutException
 import java.time.format.DateTimeParseException
 
 @RestControllerAdvice
@@ -135,7 +135,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
 
 sealed class RestResponse<T> {
     data class Success<T>(val body: T) : RestResponse<T>()
-    data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: RestClientException) : RestResponse<T>()
+    data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: Exception) : RestResponse<T>()
 }
 fun httpRetryTemplate(details: String? = null): RetryTemplate {
     val retryTemplate = RetryTemplate()
@@ -157,16 +157,17 @@ class HttpRetryPolicy(
 
     override fun canRetry(context: RetryContext): Boolean {
         val throwable = context.lastThrowable
-        val can = context.retryCount < maxAttempts && (
-            context.lastThrowable == null ||
-                throwable is HttpStatusCodeException && !ignoreHttpStatus.contains(throwable.statusCode)
-            )
-        if (!can && throwable != null) {
+        val ignoreException =
+            throwable != null &&
+                (throwable.cause is SocketTimeoutException || throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode))
+        val shouldRetry = context.retryCount < maxAttempts &&
+            (context.lastThrowable == null || !ignoreException)
+        if (!shouldRetry && throwable != null) {
             context.setAttribute(RetryContext.NO_RECOVERY, true)
         } else {
             context.removeAttribute(RetryContext.NO_RECOVERY)
         }
-        return can
+        return shouldRetry
     }
 
     override fun close(status: RetryContext) {
@@ -177,13 +178,9 @@ class HttpRetryPolicy(
         httpRetryContext.registerThrowable(throwable)
     }
 
-    override fun open(parent: RetryContext?): RetryContext {
-        return HttpRetryContext(parent)
-    }
+    override fun open(parent: RetryContext?): RetryContext = HttpRetryContext(parent)
 
-    override fun toString(): String {
-        return ClassUtils.getShortName(javaClass) + "[maxAttempts=$maxAttempts, ignoreHttpStatus=$ignoreHttpStatus]"
-    }
+    override fun toString(): String = ClassUtils.getShortName(javaClass) + "[maxAttempts=$maxAttempts, ignoreHttpStatus=$ignoreHttpStatus]"
 }
 
 fun <T> RestTemplate.tryExchange(
@@ -211,6 +208,8 @@ fun <T> RestTemplate.tryExchange(
     RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
 } catch (e: HttpServerErrorException) {
     RestResponse.Failure("Message: ${e.message}", e.statusCode, e)
+} catch (e: Exception) {
+    RestResponse.Failure("Message: ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR, e)
 }
 
 // Brukes hvis responseType er en liste
