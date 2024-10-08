@@ -172,6 +172,18 @@ class HentGrunnlagService(
                 )
             }
 
+            val tilleggsstønadListe = scope.async {
+                HentKontantstøtteService(
+                    familieKsSakConsumer = familieKsSakConsumer,
+                ).hentKontantstøtte(
+                    kontantstøtteRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.KONTANTSTØTTE,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
             HentGrunnlagDto(
                 ainntektListe = ainntektListe.await().grunnlagListe
                     .sortedWith(
@@ -287,8 +299,8 @@ class HentGrunnlagService(
     }
 
     // Henter historiske identer for personen. Returnerer en liste med historiske identer (inklusiv den aktive identen)
-    private fun hentIdenterFraConsumer(personId: String): List<HistoriskIdent> {
-        return when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)) {
+    private fun hentIdenterFraConsumer(personId: String): List<HistoriskIdent> =
+        when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)) {
             is RestResponse.Success -> {
                 val personidenterResponse = response.body
                 if (personidenterResponse.isEmpty()) {
@@ -303,7 +315,6 @@ class HentGrunnlagService(
                 listOf(HistoriskIdent(personId, false))
             }
         }
-    }
 
     // Bytter ut identer i requesten med aktiv ident for personen
     private fun byttUtIdentMedAktivIdent(request: HentGrunnlagRequestDto, historiskeIdenterMap: Map<String, List<String>>): HentGrunnlagRequestDto {
@@ -336,10 +347,7 @@ class HentGrunnlagService(
     )
 }
 
-data class HentGrunnlagGenericDto<T>(
-    val grunnlagListe: List<T>,
-    val feilrapporteringListe: List<FeilrapporteringDto>,
-)
+data class HentGrunnlagGenericDto<T>(val grunnlagListe: List<T>, val feilrapporteringListe: List<FeilrapporteringDto>)
 
 data class UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto(
     val personId: String,

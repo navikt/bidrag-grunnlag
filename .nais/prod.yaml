@@ -28,6 +28,8 @@ azure:
   aareg_cluster: prod-fss
   bidrag_organisasjon_url: bidrag-organisasjon.prod-fss-pub.nais.io
   bidrag_organisasjon_scope: prod-fss.bidrag.bidrag-organisasjon
+  tilleggsstønad_url: tilleggsstonader-sak.intern.nav.no
+  tilleggsstønad_scope: prod-gcp.tilleggsstonader.tilleggsstonader-sak
   unsecure:
     ereg_url: ereg-services.prod-fss-pub.nais.io
 dbname: bidrag-grunnlag-prod-4
