@@ -13,6 +13,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
@@ -32,6 +33,7 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnl
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SmåbarnstilleggGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.TilleggsstønadGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdGrunnlagDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -51,6 +53,7 @@ class HentGrunnlagService(
     private val familieEfSakConsumer: FamilieEfSakConsumer,
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
     private val enhetsregisterConsumer: EnhetsregisterConsumer,
+    private val tilleggsstønadConsumer: TilleggsstønadConsumer,
 ) {
 
     companion object {
@@ -173,14 +176,13 @@ class HentGrunnlagService(
             }
 
             val tilleggsstønadListe = scope.async {
-                HentKontantstøtteService(
-                    familieKsSakConsumer = familieKsSakConsumer,
-                ).hentKontantstøtte(
-                    kontantstøtteRequestListe = hentRequestListeFor(
-                        type = GrunnlagRequestType.KONTANTSTØTTE,
+                HentTilleggsstønadService(
+                    tilleggsstønadConsumer = tilleggsstønadConsumer,
+                ).hentTilleggsstønad(
+                    tilleggsstønadRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.TILLEGGSSTØNAD,
                         hentGrunnlagRequestDto = requestMedNyesteIdenter,
                     ),
-                    historiskeIdenterMap = historiskeIdenterMap,
                 )
             }
 
@@ -261,6 +263,10 @@ class HentGrunnlagService(
                         compareBy<ArbeidsforholdGrunnlagDto> { it.partPersonId }
                             .thenBy { it.startdato },
                     ),
+                tilleggsstønadBarnetilsynListe = tilleggsstønadListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<TilleggsstønadGrunnlagDto> { it.partPersonId },
+                    ),
                 feilrapporteringListe = ainntektListe.await().feilrapporteringListe +
                     skattegrunnlagListe.await().feilrapporteringListe +
                     utvidetBarnetrygdOgSmåbarnstilleggListe.await().feilrapporteringListe +
@@ -269,7 +275,8 @@ class HentGrunnlagService(
                     husstandsmedlemmerOgEgneBarnListe.await().feilrapporteringListe +
                     sivilstandListe.await().feilrapporteringListe +
                     barnetilsynListe.await().feilrapporteringListe +
-                    arbeidsforholdListe.await().feilrapporteringListe,
+                    arbeidsforholdListe.await().feilrapporteringListe +
+                    tilleggsstønadListe.await().feilrapporteringListe,
                 hentetTidspunkt = hentetTidspunkt,
             )
         }

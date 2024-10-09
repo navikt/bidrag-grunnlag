@@ -28,6 +28,8 @@ import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerReques
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadRequest
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
@@ -634,6 +636,10 @@ class TestUtil {
             ),
         )
 
+        fun byggTilleggsstønadResponse() = TilleggsstønadResponse(
+            harInnvilgetVedtak = true,
+        )
+
         fun byggArbeidsforholdResponse() = immutableListOf(
             Arbeidsforhold(
                 ansettelsesdetaljer = emptyList(),
@@ -868,6 +874,10 @@ class TestUtil {
         fun byggBarnetilsynRequest() = BarnetilsynRequest(
             "123",
             LocalDate.now(),
+        )
+
+        fun byggTilleggsstønadRequest() = TilleggsstønadRequest(
+            "123",
         )
 
         fun byggHentBarnetilleggPensjonRequest() = HentBarnetilleggPensjonRequest(

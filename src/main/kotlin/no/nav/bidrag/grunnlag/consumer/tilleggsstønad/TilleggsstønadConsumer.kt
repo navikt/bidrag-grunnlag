@@ -30,7 +30,7 @@ open class TilleggsstønadConsumer(private val restTemplate: HttpHeaderRestTempl
             TilleggsstønadResponse(false),
         )
 
-        logResponse("Tilleggsstønad til barnetilsyn", request.personIdent, null, null, restResponse)
+        logResponse("Tilleggsstønad til barnetilsyn", request.ident, null, null, restResponse)
 
         return restResponse
     }

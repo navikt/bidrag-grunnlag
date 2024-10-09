@@ -12,10 +12,7 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.TilleggsstønadGrunn
 
 class HentTilleggsstønadService(private val tilleggsstønadConsumer: TilleggsstønadConsumer) {
 
-    fun hentTilleggsstønad(
-        tilleggsstønadRequestListe: List<PersonIdOgPeriodeRequest>,
-        historiskeIdenterMap: Map<String, List<String>>,
-    ): HentGrunnlagGenericDto<TilleggsstønadGrunnlagDto> {
+    fun hentTilleggsstønad(tilleggsstønadRequestListe: List<PersonIdOgPeriodeRequest>): HentGrunnlagGenericDto<TilleggsstønadGrunnlagDto> {
         val tilleggsstønadListe = mutableListOf<TilleggsstønadGrunnlagDto>()
         val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
@@ -29,7 +26,7 @@ class HentTilleggsstønadService(private val tilleggsstønadConsumer: Tilleggsst
             ) {
                 is RestResponse.Success -> {
                     leggTilTilleggsstønad(
-                        tilleggsstønadResponsListe = tilleggsstønadResponsListe,
+                        tilleggsstønadListe = tilleggsstønadListe,
                         tilleggsstønadRespons = restResponseTilleggsstønad.body,
                         personIdOgPeriodeRequest = it,
                     )
@@ -38,17 +35,17 @@ class HentTilleggsstønadService(private val tilleggsstønadConsumer: Tilleggsst
                 is RestResponse.Failure -> {
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
-                            grunnlagstype = GrunnlagRequestType.KONTANTSTØTTE,
+                            grunnlagstype = GrunnlagRequestType.TILLEGGSSTØNAD,
                             personId = it.personId,
-                            periodeFra = hentKontantstøtteRequest.fom,
+                            periodeFra = it.periodeFra,
                             periodeTil = null,
                             feiltype = evaluerFeiltype(
-                                melding = restResponseKontantstøtte.message,
-                                httpStatuskode = restResponseKontantstøtte.statusCode,
+                                melding = restResponseTilleggsstønad.message,
+                                httpStatuskode = restResponseTilleggsstønad.statusCode,
                             ),
                             feilmelding = evaluerFeilmelding(
-                                melding = restResponseKontantstøtte.message,
-                                grunnlagstype = GrunnlagRequestType.KONTANTSTØTTE,
+                                melding = restResponseTilleggsstønad.message,
+                                grunnlagstype = GrunnlagRequestType.TILLEGGSSTØNAD,
                             ),
                         ),
                     )
@@ -59,14 +56,16 @@ class HentTilleggsstønadService(private val tilleggsstønadConsumer: Tilleggsst
         return HentGrunnlagGenericDto(grunnlagListe = tilleggsstønadListe, feilrapporteringListe = feilrapporteringListe)
     }
 
-    private fun leggTilTilleggsstønad(tilleggsstønadListe: MutableList<TilleggsstønadGrunnlagDto>, tilleggsstønadRespons: TilleggsstønadResponse, ident: String) {
+    private fun leggTilTilleggsstønad(
+        tilleggsstønadListe: MutableList<TilleggsstønadGrunnlagDto>,
+        tilleggsstønadRespons: TilleggsstønadResponse,
+        personIdOgPeriodeRequest: PersonIdOgPeriodeRequest,
+    ) {
         tilleggsstønadListe.add(
-                    TilleggsstønadGrunnlagDto(
-                        partPersonId = tilleggsstønadRespons. .ident,
-                        harInnvilgetVedtak = tilleggsstønadRespons.harInnvilgetVedtak,
-                    ),
-                )
-            }
-        }
+            TilleggsstønadGrunnlagDto(
+                partPersonId = personIdOgPeriodeRequest.personId,
+                harInnvilgetVedtak = tilleggsstønadRespons.harInnvilgetVedtak,
+            ),
+        )
     }
 }
