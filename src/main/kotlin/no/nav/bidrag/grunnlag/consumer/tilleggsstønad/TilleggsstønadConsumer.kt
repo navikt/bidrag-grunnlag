@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.familiebasak
 
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
 import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadRequest
@@ -21,6 +22,7 @@ open class TilleggsstønadConsumer(private val restTemplate: HttpHeaderRestTempl
 
     open fun hentTilleggsstønad(request: TilleggsstønadRequest): RestResponse<TilleggsstønadResponse> {
         logger.debug("Henter tilleggsstønad for barnetilsyn fra tilleggsstonader-sak")
+        secureLogger.debug { "Henter tilleggsstønad for barnetilsyn fra tilleggsstonader-sak for ident: ${request.ident}" }
 
         val restResponse = restTemplate.tryExchange(
             TILLEGGSSTØNAD_CONTEXT,
