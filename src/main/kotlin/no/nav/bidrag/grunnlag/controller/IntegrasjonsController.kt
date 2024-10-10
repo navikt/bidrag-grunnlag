@@ -13,8 +13,11 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResp
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadRequest
+import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
@@ -55,6 +58,7 @@ class IntegrasjonsController(
     private val familieEfSakConsumer: FamilieEfSakConsumer,
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
     private val enhetsregisterConsumer: EnhetsregisterConsumer,
+    private val tilleggsstønadConsumer: TilleggsstønadConsumer,
 ) {
 
     @PostMapping(HENT_AINNTEKT)
@@ -140,6 +144,15 @@ class IntegrasjonsController(
     fun hentEnhetsinfo(@RequestBody hentEnhetsregisterRequest: HentEnhetsregisterRequest): ResponseEntity<HentEnhetsregisterResponse> =
         handleRestResponse(enhetsregisterConsumer.hentEnhetsinfo(hentEnhetsregisterRequest))
 
+    @PostMapping(HENT_TILLEGGSTØNAD)
+    @Operation(
+        security = [SecurityRequirement(name = "bearer-key")],
+        summary = "Kaller tilleggstonader-sak for å hente tilleggsstønad til barnetilsyn",
+    )
+    fun hentTilleggsstønad(@RequestBody request: TilleggsstønadRequest): ResponseEntity<TilleggsstønadResponse> = handleRestResponse(
+        tilleggsstønadConsumer.hentTilleggsstønad((request)),
+    )
+
     private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> = when (restResponse) {
         is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
         is RestResponse.Failure -> throw ResponseStatusException(restResponse.statusCode, restResponse.message)
@@ -159,5 +172,6 @@ class IntegrasjonsController(
         const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"
         const val HENT_ARBEIDSFORHOLD = "/integrasjoner/arbeidsforhold"
         const val HENT_ENHETSINFO = "/integrasjoner/enhetsinfo"
+        const val HENT_TILLEGGSTØNAD = "/integrasjoner/tilleggsstonad"
     }
 }
