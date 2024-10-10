@@ -31,7 +31,7 @@ azure:
   tilleggsstonadersak_scope: dev-gcp.tilleggsstonader.tilleggsstonader-sak
   unsecure:
     ereg_url: ereg-services.dev-fss-pub.nais.io
-dbname: bidrag-grunnlag-main-4
+dbname: bidrag-grunnlag-main
 dbinstancename: bidrag-grunnlag-main-4
 azureAccessInbound:
   - application: bisys
