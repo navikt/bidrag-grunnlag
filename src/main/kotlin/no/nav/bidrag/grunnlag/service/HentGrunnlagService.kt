@@ -13,6 +13,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
@@ -32,6 +33,7 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnl
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SmåbarnstilleggGrunnlagDto
+import no.nav.bidrag.transport.behandling.grunnlag.response.TilleggsstønadGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdGrunnlagDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -51,6 +53,7 @@ class HentGrunnlagService(
     private val familieEfSakConsumer: FamilieEfSakConsumer,
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer,
     private val enhetsregisterConsumer: EnhetsregisterConsumer,
+    private val tilleggsstønadConsumer: TilleggsstønadConsumer,
 ) {
 
     companion object {
@@ -172,6 +175,17 @@ class HentGrunnlagService(
                 )
             }
 
+            val tilleggsstønadListe = scope.async {
+                HentTilleggsstønadService(
+                    tilleggsstønadConsumer = tilleggsstønadConsumer,
+                ).hentTilleggsstønad(
+                    tilleggsstønadRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.TILLEGGSSTØNAD,
+                        hentGrunnlagRequestDto = requestMedNyesteIdenter,
+                    ),
+                )
+            }
+
             HentGrunnlagDto(
                 ainntektListe = ainntektListe.await().grunnlagListe
                     .sortedWith(
@@ -249,6 +263,10 @@ class HentGrunnlagService(
                         compareBy<ArbeidsforholdGrunnlagDto> { it.partPersonId }
                             .thenBy { it.startdato },
                     ),
+                tilleggsstønadBarnetilsynListe = tilleggsstønadListe.await().grunnlagListe
+                    .sortedWith(
+                        compareBy<TilleggsstønadGrunnlagDto> { it.partPersonId },
+                    ),
                 feilrapporteringListe = ainntektListe.await().feilrapporteringListe +
                     skattegrunnlagListe.await().feilrapporteringListe +
                     utvidetBarnetrygdOgSmåbarnstilleggListe.await().feilrapporteringListe +
@@ -257,7 +275,8 @@ class HentGrunnlagService(
                     husstandsmedlemmerOgEgneBarnListe.await().feilrapporteringListe +
                     sivilstandListe.await().feilrapporteringListe +
                     barnetilsynListe.await().feilrapporteringListe +
-                    arbeidsforholdListe.await().feilrapporteringListe,
+                    arbeidsforholdListe.await().feilrapporteringListe +
+                    tilleggsstønadListe.await().feilrapporteringListe,
                 hentetTidspunkt = hentetTidspunkt,
             )
         }
@@ -287,8 +306,8 @@ class HentGrunnlagService(
     }
 
     // Henter historiske identer for personen. Returnerer en liste med historiske identer (inklusiv den aktive identen)
-    private fun hentIdenterFraConsumer(personId: String): List<HistoriskIdent> {
-        return when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)) {
+    private fun hentIdenterFraConsumer(personId: String): List<HistoriskIdent> =
+        when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)) {
             is RestResponse.Success -> {
                 val personidenterResponse = response.body
                 if (personidenterResponse.isEmpty()) {
@@ -303,7 +322,6 @@ class HentGrunnlagService(
                 listOf(HistoriskIdent(personId, false))
             }
         }
-    }
 
     // Bytter ut identer i requesten med aktiv ident for personen
     private fun byttUtIdentMedAktivIdent(request: HentGrunnlagRequestDto, historiskeIdenterMap: Map<String, List<String>>): HentGrunnlagRequestDto {
@@ -336,10 +354,7 @@ class HentGrunnlagService(
     )
 }
 
-data class HentGrunnlagGenericDto<T>(
-    val grunnlagListe: List<T>,
-    val feilrapporteringListe: List<FeilrapporteringDto>,
-)
+data class HentGrunnlagGenericDto<T>(val grunnlagListe: List<T>, val feilrapporteringListe: List<FeilrapporteringDto>)
 
 data class UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto(
     val personId: String,

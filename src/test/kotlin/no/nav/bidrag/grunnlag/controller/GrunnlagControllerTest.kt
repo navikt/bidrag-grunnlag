@@ -13,6 +13,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
@@ -94,6 +95,7 @@ class GrunnlagControllerTest(
     private val familieEfSakConsumer: FamilieEfSakConsumer = FamilieEfSakConsumer(restTemplate)
     private val arbeidsforholdConsumer: ArbeidsforholdConsumer = ArbeidsforholdConsumer(restTemplate)
     private val enhetsregisterConsumer: EnhetsregisterConsumer = EnhetsregisterConsumer(restTemplate)
+    private val tilleggsstønadConsumer = TilleggsstønadConsumer(restTemplate)
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService =
         OppdaterGrunnlagspakkeService(
             persistenceService = persistenceService,
@@ -118,6 +120,7 @@ class GrunnlagControllerTest(
             familieEfSakConsumer = familieEfSakConsumer,
             arbeidsforholdConsumer = arbeidsforholdConsumer,
             enhetsregisterConsumer = enhetsregisterConsumer,
+            tilleggsstønadConsumer = tilleggsstønadConsumer,
         )
     private val grunnlagController: GrunnlagController = GrunnlagController(grunnlagspakkeService, hentGrunnlagService)
     private val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(grunnlagController)
@@ -651,15 +654,13 @@ class GrunnlagControllerTest(
         responseType: Class<Response>,
         customMockMvc: MockMvc? = null,
         expectedStatus: StatusResultMatchersDsl.() -> Unit,
-    ): Response {
-        return TestUtil.performRequest(
-            customMockMvc ?: mockMvc,
-            HttpMethod.POST,
-            "/grunnlagspakke/$grunnlagspakkeId/oppdater",
-            oppdaterGrunnlagspakkeRequestDto,
-            responseType,
-        ) { expectedStatus() }
-    }
+    ): Response = TestUtil.performRequest(
+        customMockMvc ?: mockMvc,
+        HttpMethod.POST,
+        "/grunnlagspakke/$grunnlagspakkeId/oppdater",
+        oppdaterGrunnlagspakkeRequestDto,
+        responseType,
+    ) { expectedStatus() }
 
     private fun performExpectedFailingRequest(filepath: String?, url: String): MutableMap<*, *> {
         val json = if (filepath != null) getFileContent(filepath) else null
@@ -677,15 +678,13 @@ class GrunnlagControllerTest(
         responseType: Class<Response>,
         customMockMvc: MockMvc? = null,
         expectedStatus: StatusResultMatchersDsl.() -> Unit,
-    ): Response {
-        return TestUtil.performRequest(
-            customMockMvc ?: mockMvc,
-            HttpMethod.POST,
-            "/hentgrunnlag",
-            hentGrunnlagRequestDto,
-            responseType,
-        ) { expectedStatus() }
-    }
+    ): Response = TestUtil.performRequest(
+        customMockMvc ?: mockMvc,
+        HttpMethod.POST,
+        "/hentgrunnlag",
+        hentGrunnlagRequestDto,
+        responseType,
+    ) { expectedStatus() }
 
     fun uriBuilder(inntektsaar: String, inntektsfilter: String) = UriComponentsBuilder.fromPath("/api/v1/summertskattegrunnlag")
         .queryParam("inntektsaar", inntektsaar)

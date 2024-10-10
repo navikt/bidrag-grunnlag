@@ -9,6 +9,7 @@ FAMILIEKSSAK_URL: http://localhost:${wiremock.server.https-port}/familiekssak
 AAREG_URL: http://localhost:${wiremock.server.https-port}/aareg
 EREG_URL: http://localhost:${wiremock.server.https-port}/ereg
 BIDRAG_ORGANISASJON_URL: http://localhost:${wiremock.server.https-port}/organisasjon
+TILLEGGSSTONADERSAK_URL: http://localhost:${wiremock.server.https-port}/tilleggsstonadersak
 NAIS_APP_NAME: bidrag-grunnlag
 spring:
   config.activate.on-profile: local
@@ -67,6 +68,12 @@ spring:
             client-secret: secret
             authorization-grant-type: client_credentials
             scope: api://aareg/.default
+          tilleggsstonadersak:
+            provider: aad
+            client-id: someid
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope: api://tilleggsstonadersak/.default
         provider:
           aad:
             token-uri: http://localhost:${mock-oauth2-server.port}/azure/token

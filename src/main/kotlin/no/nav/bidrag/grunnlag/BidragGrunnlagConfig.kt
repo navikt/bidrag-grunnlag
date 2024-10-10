@@ -16,6 +16,7 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
+import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.InntektskomponentenConsumer
@@ -64,9 +65,7 @@ class BidragGrunnlagConfig {
     }
 
     @Bean
-    fun exceptionLogger(): ExceptionLogger {
-        return ExceptionLogger(BidragGrunnlag::class.java.simpleName)
-    }
+    fun exceptionLogger(): ExceptionLogger = ExceptionLogger(BidragGrunnlag::class.java.simpleName)
 
     @Bean
     @Scope("prototype")
@@ -187,5 +186,17 @@ class BidragGrunnlagConfig {
         LOGGER.info("Url satt i config: $url")
         restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
         return EnhetsregisterConsumer(restTemplate)
+    }
+
+    @Bean
+    fun tilleggsstønadConsumer(
+        @Value("\${TILLEGGSSTONADERSAK_URL}") url: String,
+        restTemplate: HttpHeaderRestTemplate,
+        grunnlagSecurityTokenService: SecurityTokenService,
+    ): TilleggsstønadConsumer {
+        LOGGER.info("Url satt i config: $url")
+        restTemplate.uriTemplateHandler = RootUriTemplateHandler(url)
+        restTemplate.interceptors.add(grunnlagSecurityTokenService.generateBearerToken("tilleggsstonadersak"))
+        return TilleggsstønadConsumer(restTemplate)
     }
 }
