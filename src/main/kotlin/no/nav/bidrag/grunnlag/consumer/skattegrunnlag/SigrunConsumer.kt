@@ -37,6 +37,7 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
 
         SECURE_LOGGER.info("HentSummertSkattegrunnlag uri: {}", uri)
         SECURE_LOGGER.info("HentSummertSkattegrunnlagRequest: {}", request)
+        SECURE_LOGGER.info("initHttpEntitySkattegrunnlag: {${initHttpEntitySkattegrunnlag(request)}}")
 
         val restResponse = restTemplate.tryExchange(
             uri,
