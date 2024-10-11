@@ -45,7 +45,6 @@ class OppdaterSkattegrunnlag(
             while (inntektAar < sluttAar) {
                 val skattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
                     inntektsAar = inntektAar.toString(),
-                    inntektsFilter = "SummertSkattegrunnlagBidrag",
                     personId = personIdOgPeriode.personId,
                 )
 

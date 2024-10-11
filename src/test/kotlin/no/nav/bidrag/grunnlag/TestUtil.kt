@@ -805,7 +805,6 @@ class TestUtil {
 
         fun byggHentSkattegrunnlagRequest() = HentSummertSkattegrunnlagRequest(
             inntektsAar = "2021",
-            inntektsFilter = "inntektsfilter",
             personId = "personId",
         )
 

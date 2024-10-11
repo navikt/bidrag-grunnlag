@@ -13,9 +13,11 @@ import org.springframework.http.HttpMethod
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDate
 
-private const val SUMMERT_SKATTEGRUNNLAG_URL = "/api/v1/summertskattegrunnlag"
+private const val SUMMERT_SKATTEGRUNNLAG_URL = "/api/v2/summertskattegrunnlag"
 private const val INNTEKTSAAR = "inntektsaar"
-private const val INNTEKTSFILTER = "inntektsfilter"
+private const val RETTIGHETSPAKKE = "rettighetspakke"
+private const val PERSONIDENTIFIKATOR = "personidentifikator"
+private const val STADIE = "stadie"
 
 open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
 
@@ -26,8 +28,10 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
 
     open fun hentSummertSkattegrunnlag(request: HentSummertSkattegrunnlagRequest): RestResponse<HentSummertSkattegrunnlagResponse> {
         val uri = UriComponentsBuilder.fromPath(SUMMERT_SKATTEGRUNNLAG_URL)
+            .queryParam(RETTIGHETSPAKKE, "navBidrag")
             .queryParam(INNTEKTSAAR, request.inntektsAar)
-            .queryParam(INNTEKTSFILTER, request.inntektsFilter)
+            .queryParam(PERSONIDENTIFIKATOR, request.personId)
+            .queryParam(STADIE, "oppgjoer")
             .build()
             .toUriString()
 
@@ -37,7 +41,7 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
         val restResponse = restTemplate.tryExchange(
             uri,
             HttpMethod.GET,
-            initHttpEntitySkattegrunnlag(request, request.personId),
+            initHttpEntitySkattegrunnlag(request),
             HentSummertSkattegrunnlagResponse::class.java,
             HentSummertSkattegrunnlagResponse(emptyList(), emptyList(), null),
         )

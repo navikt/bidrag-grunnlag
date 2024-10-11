@@ -41,7 +41,6 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
             while (inntektÅr < sluttÅr) {
                 val hentSkattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
                     inntektsAar = inntektÅr.toString(),
-                    inntektsFilter = "SummertSkattegrunnlagBidrag",
                     personId = it.personId,
                 )
 
