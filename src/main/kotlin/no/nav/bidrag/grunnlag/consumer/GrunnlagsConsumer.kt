@@ -45,6 +45,11 @@ open class GrunnlagsConsumer {
                     ) {
                         logger.warn("Fant ikke skattegrunnlag for personen")
                         secureLogger.warn { "Fant ikke skattegrunnlag for $ident og år $fom?.year" }
+                    } else {
+                        secureLogger.warn {
+                            "Feil ved hent av skattegrunnlag for $ident for perioden $fom - $tom. " +
+                                "${restResponse.statusCode}/${restResponse.message}"
+                        } 
                     }
                 } else {
                     // Logger som warning i stedet for error hvis status er not found
