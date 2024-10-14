@@ -47,6 +47,8 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
             HentSummertSkattegrunnlagResponse(emptyList(), emptyList(), null),
         )
 
+        SECURE_LOGGER.info("Respons fra Sigrun: {$restResponse}")
+
         logResponse("Skattegrunnlag", request.personId, LocalDate.of(request.inntektsAar.toInt(), 1, 1), null, restResponse)
 
         return restResponse
