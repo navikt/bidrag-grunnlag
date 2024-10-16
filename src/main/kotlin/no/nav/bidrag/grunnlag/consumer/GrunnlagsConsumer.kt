@@ -35,7 +35,7 @@ open class GrunnlagsConsumer {
                         (inntektsårIkkeStøttet(restResponse.message))
                     ) {
                         logger.warn("Skattegrunnlag er ikke tilgjengelig ennå for personen")
-                        secureLogger.warn { "Skattegrunnlag er ikke tilgjengelig ennå for $ident og år ${fom?.year}" }
+                        secureLogger.warn { "Skattegrunnlag er ikke tilgjengelig ennå for $ident og perioden $fom - $tom" }
 
                         // Legger ut tom liste hvis det ikke finnes data
                     } else if ((restResponse.statusCode == HttpStatus.NOT_FOUND) &&
@@ -44,7 +44,12 @@ open class GrunnlagsConsumer {
                         (fantIkkeSkattegrunnlag(restResponse.message))
                     ) {
                         logger.warn("Fant ikke skattegrunnlag for personen")
-                        secureLogger.warn { "Fant ikke skattegrunnlag for $ident og år $fom?.year" }
+                        secureLogger.warn { "Fant ikke skattegrunnlag for $ident og perioden $fom - $tom" }
+                    } else {
+                        secureLogger.warn {
+                            "Feil ved hent av skattegrunnlag for $ident for perioden $fom - $tom. " +
+                                "${restResponse.statusCode}/${restResponse.message}"
+                        }
                     }
                 } else {
                     // Logger som warning i stedet for error hvis status er not found
@@ -84,12 +89,11 @@ open class GrunnlagsConsumer {
         return HttpEntity(body, httpHeaders)
     }
 
-    fun <T> initHttpEntitySkattegrunnlag(body: T, ident: String): HttpEntity<T> {
+    fun <T> initHttpEntitySkattegrunnlag(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
         httpHeaders.add(NAV_CONSUMER_ID, NAV_CONSUMER_ID_VERDI)
-        httpHeaders.add(NAV_PERSONIDENT, ident)
         return HttpEntity(body, httpHeaders)
     }
 

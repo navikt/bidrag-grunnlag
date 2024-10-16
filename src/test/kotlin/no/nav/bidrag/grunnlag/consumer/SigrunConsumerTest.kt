@@ -100,12 +100,14 @@ internal class SigrunConsumerTest {
     }
 
     private fun uriBuilder(request: HentSummertSkattegrunnlagRequest) = UriComponentsBuilder.fromPath(SIGRUN_CONTEXT)
+        .queryParam("rettighetspakke", "navBidrag")
         .queryParam("inntektsaar", request.inntektsAar)
-        .queryParam("inntektsfilter", request.inntektsFilter)
+        .queryParam("personidentifikator", request.personId)
+        .queryParam("stadie", "oppgjoer")
         .build()
         .toUriString()
 
     companion object {
-        private const val SIGRUN_CONTEXT = "/api/v1/summertskattegrunnlag"
+        private const val SIGRUN_CONTEXT = "/api/v2/summertskattegrunnlag"
     }
 }
