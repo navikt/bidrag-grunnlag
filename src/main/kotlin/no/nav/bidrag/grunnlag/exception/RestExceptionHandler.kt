@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.util.LoggingRetryListener
+import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -31,12 +32,15 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.server.ResponseStatusException
 import java.net.SocketTimeoutException
 import java.time.format.DateTimeParseException
 
 @RestControllerAdvice
 @Component
 class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     @ResponseBody
     @ExceptionHandler(RestClientException::class)
@@ -110,11 +114,24 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
                     else -> e.originalMessage
                 }
             }
+
             else -> {
                 errors["Feil ved deserialisering"] = e.originalMessage
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
+    }
+
+    @ResponseBody
+    @ExceptionHandler(
+        ResponseStatusException::class,
+    )
+    fun handleResponseStatusExceptions(e: ResponseStatusException): ResponseEntity<*> {
+        logger.warn("Feil ved hent av grunllag: ${e.message}")
+        val feilmelding = "Hent av grunnlag feilet!"
+        val headers = HttpHeaders()
+        headers.add(HttpHeaders.WARNING, feilmelding)
+        return ResponseEntity.status(e.statusCode).body(ResponseEntity(e.message, headers, e.statusCode))
     }
 
     private fun extractPath(paths: List<JsonMappingException.Reference>): String {
@@ -137,6 +154,7 @@ sealed class RestResponse<T> {
     data class Success<T>(val body: T) : RestResponse<T>()
     data class Failure<T>(val message: String?, val statusCode: HttpStatusCode, val restClientException: Exception) : RestResponse<T>()
 }
+
 fun httpRetryTemplate(details: String? = null): RetryTemplate {
     val retryTemplate = RetryTemplate()
     val fixedBackOffPolicy = FixedBackOffPolicy()
