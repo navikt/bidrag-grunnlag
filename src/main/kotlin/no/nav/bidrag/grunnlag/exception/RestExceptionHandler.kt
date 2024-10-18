@@ -127,7 +127,7 @@ class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
         ResponseStatusException::class,
     )
     fun handleResponseStatusExceptions(e: ResponseStatusException): ResponseEntity<*> {
-        logger.warn("Feil ved hent av grunllag: ${e.message}")
+        logger.warn("Feil ved hent av grunnlag: ${e.message}")
         val feilmelding = "Hent av grunnlag feilet!"
         val headers = HttpHeaders()
         headers.add(HttpHeaders.WARNING, feilmelding)

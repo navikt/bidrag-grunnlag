@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.server.ResponseStatusException
 
-fun <T> Boolean?.ifTrue(block: (Boolean) -> T?): T? = if (this == true) block(this) else null
+fun <T> Boolean?.ifTrue(block: (Boolean) -> T?): T? {
+    return if (this == true) block(this) else null
+}
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -92,7 +94,11 @@ class DefaultExceptionHandler {
         return error
     }
 
-    data class Error(val status: Int, val message: String, val fieldErrors: MutableList<CustomFieldError> = mutableListOf()) {
+    data class Error(
+        val status: Int,
+        val message: String,
+        val fieldErrors: MutableList<CustomFieldError> = mutableListOf(),
+    ) {
         fun addFieldError(objectName: String, field: String, message: String) {
             val error = CustomFieldError(objectName, field, message)
             fieldErrors.add(error)
