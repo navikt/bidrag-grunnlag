@@ -31,17 +31,17 @@ open class GrunnlagsConsumer {
             is RestResponse.Failure -> {
                 if (type == "Skattegrunnlag") {
                     // Legger ikke ut noe hvis skattegrunnlag ikke er tilgjengelig ennå
-                    if ((restResponse.statusCode == HttpStatus.NOT_FOUND) &&
-                        (inntektsårIkkeStøttet(restResponse.message))
+                    if (restResponse.statusCode == HttpStatus.NOT_FOUND &&
+                        inntektsårIkkeStøttet(restResponse.message)
                     ) {
                         logger.warn("Skattegrunnlag er ikke tilgjengelig ennå for personen")
                         secureLogger.warn { "Skattegrunnlag er ikke tilgjengelig ennå for $ident og perioden $fom - $tom" }
 
                         // Legger ut tom liste hvis det ikke finnes data
-                    } else if ((restResponse.statusCode == HttpStatus.NOT_FOUND) &&
-                        (fantIkkeSkattegrunnlag(restResponse.message)) ||
-                        (restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
-                        (fantIkkeSkattegrunnlag(restResponse.message))
+                    } else if (restResponse.statusCode == HttpStatus.NOT_FOUND &&
+                        fantIkkeSkattegrunnlag(restResponse.message) ||
+                        restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR &&
+                        fantIkkeSkattegrunnlag(restResponse.message)
                     ) {
                         logger.warn("Fant ikke skattegrunnlag for personen")
                         secureLogger.warn { "Fant ikke skattegrunnlag for $ident og perioden $fom - $tom" }
