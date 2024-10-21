@@ -89,11 +89,12 @@ open class GrunnlagsConsumer {
         return HttpEntity(body, httpHeaders)
     }
 
-    fun <T> initHttpEntitySkattegrunnlag(body: T): HttpEntity<T> {
+    fun <T> initHttpEntitySkattegrunnlag(body: T, ident: String): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
         httpHeaders.add(NAV_CONSUMER_ID, NAV_CONSUMER_ID_VERDI)
+        httpHeaders.add(NAV_PERSONIDENT, ident)
         return HttpEntity(body, httpHeaders)
     }
 

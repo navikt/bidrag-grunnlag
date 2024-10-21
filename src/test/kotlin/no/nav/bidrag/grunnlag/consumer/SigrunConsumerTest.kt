@@ -102,7 +102,6 @@ internal class SigrunConsumerTest {
     private fun uriBuilder(request: HentSummertSkattegrunnlagRequest) = UriComponentsBuilder.fromPath(SIGRUN_CONTEXT)
         .queryParam("rettighetspakke", "navBidrag")
         .queryParam("inntektsaar", request.inntektsAar)
-        .queryParam("personidentifikator", request.personId)
         .queryParam("stadie", "oppgjoer")
         .build()
         .toUriString()
