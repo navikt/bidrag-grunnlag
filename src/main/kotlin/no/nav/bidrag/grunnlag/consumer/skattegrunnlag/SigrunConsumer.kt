@@ -30,7 +30,6 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
         val uri = UriComponentsBuilder.fromPath(SUMMERT_SKATTEGRUNNLAG_URL)
             .queryParam(RETTIGHETSPAKKE, "navBidrag")
             .queryParam(INNTEKTSAAR, request.inntektsAar)
-            .queryParam(PERSONIDENTIFIKATOR, request.personId)
             .queryParam(STADIE, "oppgjoer")
             .build()
             .toUriString()
@@ -41,7 +40,7 @@ open class SigrunConsumer(private val restTemplate: HttpHeaderRestTemplate) : Gr
         val restResponse = restTemplate.tryExchange(
             uri,
             HttpMethod.GET,
-            initHttpEntitySkattegrunnlag(request),
+            initHttpEntitySkattegrunnlag(request, request.personId),
             HentSummertSkattegrunnlagResponse::class.java,
             HentSummertSkattegrunnlagResponse(emptyList(), emptyList(), null),
         )
