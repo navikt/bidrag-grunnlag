@@ -96,7 +96,7 @@ class HentKontantstøtteService(private val familieKsSakConsumer: FamilieKsSakCo
                         partPersonId = personIdOgPeriodeRequest.personId,
                         barnPersonId = ks.barn.ident,
                         periodeFra = LocalDate.parse("${ks.fomMåned}-01"),
-                        periodeTil = LocalDate.parse("${ks.tomMåned}-01").plusMonths(1) ?: null,
+                        periodeTil = ks.tomMåned?.let { LocalDate.parse("$it-01").plusMonths(1) },
                         beløp = ks.barn.beløp,
                     ),
                 )

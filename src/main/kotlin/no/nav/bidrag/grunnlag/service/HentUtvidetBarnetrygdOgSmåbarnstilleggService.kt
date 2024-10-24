@@ -65,7 +65,7 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(private val familieBaSakCon
                     personId = ident,
                     type = it.stønadstype.toString(),
                     periodeFra = LocalDate.parse("${it.fomMåned}-01"),
-                    periodeTil = LocalDate.parse("${it.tomMåned}-01").plusMonths(1) ?: null,
+                    periodeTil = it.tomMåned?.let { LocalDate.parse("$it-01").plusMonths(1) },
                     beløp = BigDecimal.valueOf(it.beløp),
                     manueltBeregnet = it.manueltBeregnet,
                 ),
