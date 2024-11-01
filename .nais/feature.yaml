@@ -46,6 +46,9 @@ azureAccessInbound:
   - application: bidrag-behandling-feature
     namespace: bidrag
     cluster: dev-gcp
+  - application: bidrag-behandling-q1
+    namespace: bidrag
+    cluster: dev-gcp
 azureAccessOutboundApps:
   - application: familie-ba-sak
     namespace: teamfamilie
