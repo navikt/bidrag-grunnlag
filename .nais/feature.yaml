@@ -47,6 +47,12 @@ azureAccessInbound:
     namespace: bidrag
     cluster: dev-gcp
 azureAccessOutboundApps:
+  - application: familie-ba-sak
+    namespace: teamfamilie
+  - application: familie-ef-sak
+    namespace: teamfamilie
+  - application: familie-ks-sak
+    namespace: teamfamilie
   - application: tilleggsstonader-sak
     namespace: tilleggsstonader
 spec:

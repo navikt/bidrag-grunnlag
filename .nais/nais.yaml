@@ -41,10 +41,14 @@ spec:
         - host: {{ azure.tilleggsstonadersak_url }}
         - host: {{ azure.unsecure.ereg_url }}
       rules:
-      {{#each azureAccessOutboundApps}}
-          - application: {{this.application}}
-            namespace: {{this.namespace}}
-      {{/each}}
+        - application: familie-ba-sak
+          namespace: teamfamilie
+        - application: familie-ef-sak
+          namespace: teamfamilie
+        - application: familie-ks-sak
+          namespace: teamfamilie
+        - application: tilleggsstonader-sak
+          namespace: tilleggsstonader
   image: {{ image }}
   liveness:
     path: /actuator/health
