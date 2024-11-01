@@ -40,6 +40,11 @@ spec:
         - host: {{ azure.bidrag_organisasjon_url }}
         - host: {{ azure.tilleggsstonadersak_url }}
         - host: {{ azure.unsecure.ereg_url }}
+      rules:
+      {{#each azureAccessOutboundApps}}
+          - application: {{this.application}}
+            namespace: {{this.namespace}}
+      {{/each}}
   image: {{ image }}
   liveness:
     path: /actuator/health

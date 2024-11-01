@@ -46,6 +46,9 @@ azureAccessInbound:
   - application: bidrag-behandling-feature
     namespace: bidrag
     cluster: dev-gcp
+azureAccessOutboundApps:
+  - application: tilleggsstonader-sak
+    namespace: tilleggsstonader
 spec:
   replicas:
     min: 1
