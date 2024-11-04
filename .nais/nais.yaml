@@ -40,15 +40,15 @@ spec:
         - host: {{ azure.bidrag_organisasjon_url }}
         - host: {{ azure.tilleggsstonadersak_url }}
         - host: {{ azure.unsecure.ereg_url }}
-#      rules:
-#        - application: familie-ba-sak
-#          namespace: teamfamilie
-#        - application: familie-ef-sak
-#          namespace: teamfamilie
-#        - application: familie-ks-sak
-#          namespace: teamfamilie
-#        - application: tilleggsstonader-sak
-#          namespace: tilleggsstonader
+      rules:
+        - application: familie-ba-sak
+          namespace: teamfamilie
+        - application: familie-ef-sak
+          namespace: teamfamilie
+        - application: familie-ks-sak
+          namespace: teamfamilie
+        - application: tilleggsstonader-sak
+          namespace: tilleggsstonader
   image: {{ image }}
   liveness:
     path: /actuator/health
