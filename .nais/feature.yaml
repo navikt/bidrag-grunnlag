@@ -46,15 +46,6 @@ azureAccessInbound:
   - application: bidrag-behandling-feature
     namespace: bidrag
     cluster: dev-gcp
-azureAccessOutboundApps:
-  - application: familie-ba-sak
-    namespace: teamfamilie
-  - application: familie-ef-sak
-    namespace: teamfamilie
-  - application: familie-ks-sak
-    namespace: teamfamilie
-  - application: tilleggsstonader-sak
-    namespace: tilleggsstonader
 spec:
   replicas:
     min: 1
