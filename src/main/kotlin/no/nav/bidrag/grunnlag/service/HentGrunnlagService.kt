@@ -63,7 +63,7 @@ class HentGrunnlagService(
 
         fun sjekkOgJusterDato(dato: LocalDate): LocalDate {
             // Hvis dato er mer enn 5 år tilbake i tid, settes den til dagens dato minus 5 år
-            return if (Period.between(dato, LocalDate.now()).years > 5) {
+            return if (Period.between(dato, LocalDate.now()).years >= 5) {
                 LocalDate.now().minusYears(5)
             } else {
                 dato
