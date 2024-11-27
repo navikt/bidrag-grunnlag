@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
 
 @Service
 class HentGrunnlagService(
@@ -59,6 +60,15 @@ class HentGrunnlagService(
     companion object {
         @JvmStatic
         val LOGGER: Logger = LoggerFactory.getLogger(HentGrunnlagService::class.java)
+
+        fun sjekkOgJusterDato(dato: LocalDate): LocalDate {
+            // Hvis dato er mer enn 5 år tilbake i tid, settes den til dagens dato minus 5 år
+            return if (Period.between(dato, LocalDate.now()).years > 5) {
+                LocalDate.now().minusYears(5)
+            } else {
+                dato
+            }
+        }
     }
 
     suspend fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {

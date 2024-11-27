@@ -6,6 +6,8 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.service.HentGrunnlagService
+import no.nav.bidrag.grunnlag.service.PersonIdOgPeriodeRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertAll
@@ -26,6 +28,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
+import java.time.LocalDate
 import java.time.YearMonth
 
 @ExtendWith(MockitoExtension::class)
@@ -109,6 +112,35 @@ internal class FamilieBaSakConsumerTest {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         return HttpEntity(body, httpHeaders)
+    }
+
+    @Test
+    fun `Skal justere fradato til dagens dato minus 5 år`() {
+        // Sjekker først at eldre dato blir justert
+        var ubstRequest = PersonIdOgPeriodeRequest(
+            personId = "personident",
+            periodeFra = LocalDate.parse("2013-01-01"),
+            periodeTil = LocalDate.parse("2024-01-01"),
+        )
+
+        val justertDato = HentGrunnlagService.sjekkOgJusterDato(ubstRequest.periodeFra)
+
+        assertAll(
+            { assertThat(justertDato).isEqualTo(LocalDate.now().minusYears(5)) },
+        )
+
+        // Sjekker at nyere dato ikke blir justert
+        ubstRequest = PersonIdOgPeriodeRequest(
+            personId = "personident",
+            periodeFra = LocalDate.parse("2033-01-01"),
+            periodeTil = LocalDate.parse("2024-01-01"),
+        )
+
+        val justertDato2 = HentGrunnlagService.sjekkOgJusterDato(ubstRequest.periodeFra)
+
+        assertAll(
+            { assertThat(justertDato2).isEqualTo(ubstRequest.periodeFra) },
+        )
     }
 
     companion object {

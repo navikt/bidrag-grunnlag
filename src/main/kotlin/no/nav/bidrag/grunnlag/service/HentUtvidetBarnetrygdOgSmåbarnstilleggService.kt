@@ -5,6 +5,7 @@ import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.grunnlag.service.HentGrunnlagService.Companion.sjekkOgJusterDato
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
@@ -18,9 +19,10 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(private val familieBaSakCon
         val feilrapporteringListe = mutableListOf<FeilrapporteringDto>()
 
         ubstRequestListe.forEach {
+            // fradato sjekkes og justeres hvis den er lenger enn 5 år tilbake i tid. Settes da til dagens dato minus 5 år.
             val hentUbstRequest = FamilieBaSakRequest(
                 personIdent = it.personId,
-                fraDato = it.periodeFra,
+                fraDato = sjekkOgJusterDato(it.periodeFra),
             )
 
             when (
