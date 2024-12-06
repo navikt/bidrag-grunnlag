@@ -44,8 +44,8 @@ class HentBarnetilleggServiceMockTest {
             { assertThat(barnetilleggPensjonListe).isNotNull() },
             { assertThat(barnetilleggPensjonListe.grunnlagListe).isNotEmpty() },
             { assertThat(barnetilleggPensjonListe.grunnlagListe).hasSize(2) },
-            { assertThat(barnetilleggPensjonListe.grunnlagListe[0].beløpBrutto).isEqualTo(BigDecimal.valueOf(1000.11)) },
-            { assertThat(barnetilleggPensjonListe.grunnlagListe[1].beløpBrutto).isEqualTo(BigDecimal.valueOf(2000.22)) },
+            { assertThat(barnetilleggPensjonListe.grunnlagListe[0].beløpBrutto).isEqualTo(BigDecimal.valueOf(1001)) },
+            { assertThat(barnetilleggPensjonListe.grunnlagListe[1].beløpBrutto).isEqualTo(BigDecimal.valueOf(2003)) },
             { assertThat(barnetilleggPensjonListe.feilrapporteringListe).isEmpty() },
         )
     }

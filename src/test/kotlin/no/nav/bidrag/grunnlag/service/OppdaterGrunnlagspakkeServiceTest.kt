@@ -322,7 +322,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             },
             { Assertions.assertThat(barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { Assertions.assertThat(barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-01-01")) },
-            { Assertions.assertThat(barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.11)) },
+            { Assertions.assertThat(barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1001.45)) },
             { Assertions.assertThat(barnetilleggListe[0].barnType).isEqualTo(BarnType.FELLES.toString()) },
 
             { Assertions.assertThat(barnetilleggListe[1].partPersonId).isEqualTo("12345678910") },
@@ -333,7 +333,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             },
             { Assertions.assertThat(barnetilleggListe[1].periodeFra).isEqualTo(LocalDate.parse("2022-01-01")) },
             { Assertions.assertThat(barnetilleggListe[1].periodeTil).isEqualTo(LocalDate.parse("2023-01-01")) },
-            { Assertions.assertThat(barnetilleggListe[1].belopBrutto).isEqualTo(BigDecimal.valueOf(2000.22)) },
+            { Assertions.assertThat(barnetilleggListe[1].belopBrutto).isEqualTo(BigDecimal.valueOf(2002.50)) },
             { Assertions.assertThat(barnetilleggListe[1].barnType).isEqualTo(BarnType.FELLES.toString()) },
 
             // sjekk oppdatertGrunnlagspakke

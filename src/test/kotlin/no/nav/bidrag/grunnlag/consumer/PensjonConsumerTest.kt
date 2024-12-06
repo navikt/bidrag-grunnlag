@@ -56,9 +56,9 @@ internal class PensjonConsumerTest {
                     { assertThat(hentBarnetilleggPensjonResponse).isNotNull },
                     { assertThat(hentBarnetilleggPensjonResponse.size).isEqualTo(2) },
                     { assertThat(hentBarnetilleggPensjonResponse[0].barn).isEqualTo("barnIdent") },
-                    { assertThat(hentBarnetilleggPensjonResponse[0].beloep).isEqualTo(BigDecimal.valueOf(1000.11)) },
+                    { assertThat(hentBarnetilleggPensjonResponse[0].beloep).isEqualTo(BigDecimal.valueOf(1001.45)) },
                     { assertThat(hentBarnetilleggPensjonResponse[1].barn).isEqualTo("barnIdent") },
-                    { assertThat(hentBarnetilleggPensjonResponse[1].beloep).isEqualTo(BigDecimal.valueOf(2000.22)) },
+                    { assertThat(hentBarnetilleggPensjonResponse[1].beloep).isEqualTo(BigDecimal.valueOf(2002.50)) },
                 )
             }
 
