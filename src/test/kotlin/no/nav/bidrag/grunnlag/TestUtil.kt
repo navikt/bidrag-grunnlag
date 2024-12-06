@@ -888,14 +888,14 @@ class TestUtil {
         fun byggHentBarnetilleggPensjonResponse() = listOf(
             BarnetilleggPensjon(
                 barn = "barnIdent",
-                beloep = BigDecimal.valueOf(1000.11),
+                beloep = BigDecimal.valueOf(1001.45),
                 fom = LocalDate.parse("2021-01-01"),
                 tom = LocalDate.parse("2021-12-31"),
                 erFellesbarn = true,
             ),
             BarnetilleggPensjon(
                 barn = "barnIdent",
-                beloep = BigDecimal.valueOf(2000.22),
+                beloep = BigDecimal.valueOf(2002.50),
                 fom = LocalDate.parse("2022-01-01"),
                 tom = LocalDate.parse("2022-12-31"),
                 erFellesbarn = true,
