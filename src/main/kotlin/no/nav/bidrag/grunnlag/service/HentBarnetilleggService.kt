@@ -11,7 +11,6 @@ import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeilmelding
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.evaluerFeiltype
 import no.nav.bidrag.transport.behandling.grunnlag.response.BarnetilleggGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.FeilrapporteringDto
-import java.math.RoundingMode
 
 class HentBarnetilleggService(private val pensjonConsumer: PensjonConsumer) {
 
@@ -74,7 +73,7 @@ class HentBarnetilleggService(private val pensjonConsumer: PensjonConsumer) {
                     barnetilleggType = Barnetilleggstype.PENSJON.toString(),
                     periodeFra = it.fom,
                     periodeTil = it.tom.plusMonths(1).withDayOfMonth(1) ?: null,
-                    beløpBrutto = it.beloep.setScale(0, RoundingMode.HALF_UP),
+                    beløpBrutto = it.beloep,
                     barnType = if (it.erFellesbarn) BarnType.FELLES.toString() else BarnType.SÆRKULL.toString(),
                 ),
             )
