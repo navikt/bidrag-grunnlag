@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
 import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.domene.enums.vedtak.Formål
@@ -9,6 +8,7 @@ import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.AinntektBo
 import no.nav.bidrag.grunnlag.bo.AinntektspostBo
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.Barnetilleggstype
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
 import no.nav.bidrag.grunnlag.bo.SivilstandBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
@@ -391,7 +391,11 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe.size).isEqualTo(1) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].partPersonId).isEqualTo("22334455") },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo("1234567") },
-            Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo(Barnetilleggstype.PENSJON.toString()) },
+            Executable {
+                assertThat(
+                    grunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType,
+                ).isEqualTo(Barnetilleggstype.PENSJON.toString())
+            },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },

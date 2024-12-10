@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
 import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.domene.enums.barnetilsyn.Tilsynstype
+import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.AinntektBo
@@ -150,7 +150,7 @@ class PersistenceService(
             grunnlagspakkeId = grunnlagspakkeId,
             personIdListe = personIdListe,
             timestampOppdatering = timestampOppdatering,
-            barnetilleggType = Barnetilleggstype.PENSJON.toString(),
+            barnetilleggType = Inntektstype.BARNETILLEGG_PENSJON.toString(),
         )
     }
 
