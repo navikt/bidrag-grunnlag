@@ -144,7 +144,7 @@ class IntegrasjonsController(
     fun hentEnhetsinfo(@RequestBody hentEnhetsregisterRequest: HentEnhetsregisterRequest): ResponseEntity<HentEnhetsregisterResponse> =
         handleRestResponse(enhetsregisterConsumer.hentEnhetsinfo(hentEnhetsregisterRequest))
 
-    @PostMapping(HENT_TILLEGGSTØNAD)
+    @PostMapping(HENT_TILLEGGSSTØNAD)
     @Operation(
         security = [SecurityRequirement(name = "bearer-key")],
         summary = "Kaller tilleggstonader-sak for å hente tilleggsstønad til barnetilsyn",
@@ -172,6 +172,6 @@ class IntegrasjonsController(
         const val HENT_BARNETILSYN = "/integrasjoner/barnetilsyn"
         const val HENT_ARBEIDSFORHOLD = "/integrasjoner/arbeidsforhold"
         const val HENT_ENHETSINFO = "/integrasjoner/enhetsinfo"
-        const val HENT_TILLEGGSTØNAD = "/integrasjoner/tilleggsstonad"
+        const val HENT_TILLEGGSSTØNAD = "/integrasjoner/tilleggsstonad"
     }
 }

@@ -57,3 +57,7 @@ fun BarnetilleggBo.toBarnetilleggEntity() = with(::Barnetillegg) {
         },
     )
 }
+
+enum class Barnetilleggstype {
+    PENSJON,
+}

@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.person.BarnType
@@ -8,6 +7,7 @@ import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
+import no.nav.bidrag.grunnlag.bo.Barnetilleggstype
 import no.nav.bidrag.grunnlag.bo.BarnetilsynBo
 import no.nav.bidrag.grunnlag.bo.KontantstotteBo
 import no.nav.bidrag.grunnlag.bo.RelatertPersonBo
