@@ -1,4 +1,3 @@
-import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
 import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
@@ -33,22 +33,22 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.util.UriComponentsBuilder
 
-//@ExtendWith(SpringExtension::class)
-//@WebMvcTest(GrunnlagController::class)
+// @ExtendWith(SpringExtension::class)
+// @WebMvcTest(GrunnlagController::class)
+// @Transactional
+// @AutoConfigureMockMvc
 @DisplayName("GrunnlagControllerTest")
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(classes = [BidragGrunnlagTest::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableMockOAuth2Server
 @AutoConfigureWireMock(port = 0)
-//@Transactional
-//@AutoConfigureMockMvc
 class GrunnlagControllerTestNy {
 
 //    @Autowired
 //    private lateinit var mockMvc: MockMvc
 
     @Autowired
-    private lateinit var securedTestRestTemplate: HttpHeaderTestRestTemplate
+    private lateinit var securedTestRestTemplate: TestRestTemplate
 
     @MockitoBean
     private lateinit var grunnlagspakkeService: GrunnlagspakkeService

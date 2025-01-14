@@ -40,7 +40,7 @@ class EnhetsregisterConsumer(
             ident = request.organisasjonsnummer,
             fom = null,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse

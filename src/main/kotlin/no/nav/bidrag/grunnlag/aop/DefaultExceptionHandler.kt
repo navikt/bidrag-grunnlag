@@ -1,8 +1,9 @@
 package no.nav.bidrag.grunnlag.aop
 
 import com.fasterxml.jackson.databind.JsonMappingException
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.bidrag.commons.util.secureLogger
-import org.slf4j.LoggerFactory
+import org.hibernate.HibernateException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
@@ -16,13 +17,18 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.server.ResponseStatusException
 
 fun <T> Boolean?.ifTrue(block: (Boolean) -> T?): T? = if (this == true) block(this) else null
+private val LOGGER = KotlinLogging.logger {}
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 @Suppress("unused")
 class DefaultExceptionHandler {
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(DefaultExceptionHandler::class.java)
+
+    @ResponseBody
+    @ExceptionHandler(HibernateException::class)
+    fun handleHibernateException(e: HibernateException): ResponseEntity<*> {
+        LOGGER.error(e) { "Feil ved kommunikasjon med databasen. ${e.message}" }
+        return ResponseEntity("Feil ved kommunikasjon med databasen. ${e.message}", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @ResponseBody
@@ -32,7 +38,7 @@ class DefaultExceptionHandler {
         val payloadFeilmelding =
             exception.responseBodyAsString.isEmpty().ifTrue { exception.message }
                 ?: exception.responseBodyAsString
-        LOGGER.warn(feilmelding, exception)
+        LOGGER.warn(exception) { feilmelding }
         secureLogger.warn(exception) { "Feilmelding: $feilmelding. Innhold: $payloadFeilmelding" }
         return ResponseEntity.status(exception.statusCode)
             .header(HttpHeaders.WARNING, feilmelding)
@@ -44,7 +50,7 @@ class DefaultExceptionHandler {
         ResponseStatusException::class,
     )
     fun handleResponseStatusExceptions(e: ResponseStatusException): ResponseEntity<*> {
-        LOGGER.warn("Feil ved hent av grunnlag: ${e.message}")
+        LOGGER.warn { "Feil ved hent av grunnlag: ${e.message}" }
         val feilmelding = "Hent av grunnlag feilet!"
         val headers = HttpHeaders()
         headers.add(HttpHeaders.WARNING, feilmelding)
@@ -54,7 +60,7 @@ class DefaultExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Exception::class)
     fun handleOtherExceptions(exception: Exception): ResponseEntity<*> {
-        LOGGER.error("Det skjedde en ukjent feil: ${exception.message}", exception)
+        LOGGER.error(exception) { "Det skjedde en ukjent feil: ${exception.message}" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .header(HttpHeaders.WARNING, exception.message)
             .body(exception.message ?: "Ukjent feil")

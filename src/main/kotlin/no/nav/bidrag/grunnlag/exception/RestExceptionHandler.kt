@@ -1,11 +1,6 @@
 package no.nav.bidrag.grunnlag.exception
 
-import com.fasterxml.jackson.core.JacksonException
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import no.nav.bidrag.commons.ExceptionLogger
 import no.nav.bidrag.commons.util.LoggingRetryListener
-import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -18,137 +13,12 @@ import org.springframework.retry.RetryPolicy
 import org.springframework.retry.backoff.FixedBackOffPolicy
 import org.springframework.retry.context.RetryContextSupport
 import org.springframework.retry.support.RetryTemplate
-import org.springframework.stereotype.Component
 import org.springframework.util.ClassUtils
-import org.springframework.validation.FieldError
-import org.springframework.validation.ObjectError
-import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
-import org.springframework.web.server.ResponseStatusException
 import java.net.SocketTimeoutException
-import java.time.format.DateTimeParseException
-
-@RestControllerAdvice
-@Component
-class RestExceptionHandler(private val exceptionLogger: ExceptionLogger) {
-
-    private val logger = LoggerFactory.getLogger(this::class.java)
-
-    @ResponseBody
-    @ExceptionHandler(RestClientException::class)
-    protected fun handleRestClientException(e: RestClientException): ResponseEntity<*> {
-        exceptionLogger.logException(e, "RestExceptionHandler")
-        val feilmelding = "Restkall feilet!"
-        val headers = HttpHeaders()
-        headers.add(HttpHeaders.WARNING, feilmelding)
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ResponseEntity(e.message, headers, HttpStatus.SERVICE_UNAVAILABLE))
-    }
-
-    @ResponseBody
-    @ExceptionHandler(HttpClientErrorException::class, HttpServerErrorException::class)
-    protected fun handleHttpClientErrorException(e: HttpStatusCodeException): ResponseEntity<*> {
-        when (e) {
-            is HttpClientErrorException -> exceptionLogger.logException(e, "HttpClientErrorException")
-            is HttpServerErrorException -> exceptionLogger.logException(e, "HttpServerErrorException")
-        }
-        return ResponseEntity.status(e.statusCode).body(e.responseBodyAsString.ifEmpty { e.message })
-    }
-
-    @ResponseBody
-    @ExceptionHandler(IllegalArgumentException::class)
-    protected fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<*> {
-        exceptionLogger.logException(e, "RestExceptionHandler")
-        val feilmelding = if (e.message == null || e.message!!.isBlank()) "Restkall feilet!" else e.message!!
-        val headers = HttpHeaders()
-        headers.add(HttpHeaders.WARNING, feilmelding)
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseEntity(feilmelding, headers, HttpStatus.BAD_REQUEST))
-    }
-
-    @ResponseBody
-    @ExceptionHandler(
-        MethodArgumentNotValidException::class,
-    )
-    fun handleArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<*> {
-        exceptionLogger.logException(e, "RestExceptionHandler")
-        val errors: MutableMap<String, String?> = HashMap()
-        e.bindingResult.allErrors.forEach { error: ObjectError ->
-            val fieldName = (error as FieldError).field
-            val errorMessage = error.getDefaultMessage()
-            errors[fieldName] = errorMessage
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
-    }
-
-    @ResponseBody
-    @ExceptionHandler(
-        MethodArgumentTypeMismatchException::class,
-    )
-    fun handleArgumentTypeMismatchException(e: MethodArgumentTypeMismatchException): ResponseEntity<*> {
-        exceptionLogger.logException(e, "RestExceptionHandler")
-        val errors: MutableMap<String, String?> = HashMap()
-        errors[e.name] = when (e.cause) {
-            is NumberFormatException -> "Ugyldig tallformat '${e.value}'"
-            else -> e.message
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
-    }
-
-    @ResponseBody
-    @ExceptionHandler(
-        JacksonException::class,
-    )
-    fun handleJacksonExceptions(e: JacksonException): ResponseEntity<*> {
-        val errors: MutableMap<String, String?> = HashMap()
-        when (e) {
-            is InvalidFormatException -> {
-                errors[extractPath(e.path)] = when (val cause = e.cause) {
-                    is DateTimeParseException -> "Ugyldig datoformat på oppgitt dato: '${cause.parsedString}'. Dato må oppgis på formatet yyyy-MM-dd."
-                    else -> e.originalMessage
-                }
-            }
-
-            else -> {
-                errors["Feil ved deserialisering"] = e.originalMessage
-            }
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
-    }
-
-    @ResponseBody
-    @ExceptionHandler(
-        ResponseStatusException::class,
-    )
-    fun handleResponseStatusExceptions(e: ResponseStatusException): ResponseEntity<*> {
-        logger.warn("Feil ved hent av grunnlag: ${e.message}")
-        val feilmelding = "Hent av grunnlag feilet!"
-        val headers = HttpHeaders()
-        headers.add(HttpHeaders.WARNING, feilmelding)
-        return ResponseEntity.status(e.statusCode).body(ResponseEntity(e.message, headers, e.statusCode))
-    }
-
-    private fun extractPath(paths: List<JsonMappingException.Reference>): String {
-        val sb = StringBuilder()
-        paths.forEach { jsonMappingException ->
-            if (jsonMappingException.index != -1) {
-                sb.append("[${jsonMappingException.index}]")
-            } else {
-                if (sb.isNotEmpty()) {
-                    sb.append(".")
-                }
-                sb.append(jsonMappingException.fieldName)
-            }
-        }
-        return sb.toString()
-    }
-}
 
 sealed class RestResponse<T> {
     data class Success<T>(val body: T) : RestResponse<T>()

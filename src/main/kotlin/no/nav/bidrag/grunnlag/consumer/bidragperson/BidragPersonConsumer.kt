@@ -25,7 +25,7 @@ import java.net.URI
 
 @Service
 class BidragPersonConsumer(
-    @Value("\${BIDRAG_PERSON_URL}") bidragPersonUrl: URI,
+    @Value("\${BIDRAGPERSON_URL}") bidragPersonUrl: URI,
     @Qualifier("azureService") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "bidrag-person") {
@@ -79,7 +79,7 @@ class BidragPersonConsumer(
             ident = personident.toString(),
             fom = null,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse
@@ -99,7 +99,7 @@ class BidragPersonConsumer(
             ident = personident.toString(),
             fom = null,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse
@@ -119,7 +119,7 @@ class BidragPersonConsumer(
             ident = request.personRequest.ident.toString(),
             fom = request.periodeFra,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse
@@ -139,7 +139,7 @@ class BidragPersonConsumer(
             ident = personident.toString(),
             fom = null,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse
@@ -155,8 +155,8 @@ class BidragPersonConsumer(
                 HentePersonidenterRequest(
                     ident = personident.verdi,
                     grupper = setOf(Identgruppe.FOLKEREGISTERIDENT),
-                    inkludereHistoriske = inkludereHistoriske
-                )
+                    inkludereHistoriske = inkludereHistoriske,
+                ),
             ),
             responseType = responseType,
             fallbackBody = emptyList(),
@@ -167,7 +167,7 @@ class BidragPersonConsumer(
             ident = personident.toString(),
             fom = null,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse
