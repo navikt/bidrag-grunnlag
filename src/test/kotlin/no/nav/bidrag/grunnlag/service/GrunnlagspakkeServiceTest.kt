@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
+import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.domene.enums.vedtak.Formål
@@ -252,7 +252,7 @@ class GrunnlagspakkeServiceTest {
                 grunnlagspakkeId = grunnlagspakkeIdOpprettet,
                 partPersonId = "22334455",
                 barnPersonId = "1234567",
-                barnetilleggType = Barnetilleggstype.PENSJON.toString(),
+                barnetilleggType = Inntektstype.BARNETILLEGG_PENSJON.toString(),
                 periodeFra = LocalDate.parse("2021-05-01"),
                 periodeTil = LocalDate.parse("2021-06-01"),
                 belopBrutto = BigDecimal.valueOf(1000.01),
@@ -391,14 +391,14 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe.size).isEqualTo(1) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].partPersonId).isEqualTo("22334455") },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo("1234567") },
-            Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo(Barnetilleggstype.PENSJON.toString()) },
+            Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo(Inntektstype.BARNETILLEGG_PENSJON.toString()) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].brukTil).isNull() },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].belopBrutto).isEqualTo(BigDecimal.valueOf(1000.01)) },
 
-        )
+            )
     }
 
     @Test
@@ -570,7 +570,7 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].sivilstand).isEqualTo(SivilstandskodePDL.UGIFT) },
             Executable { assertThat(grunnlagspakkeFunnet.sivilstandListe[0].hentetTidspunkt).isNotNull() },
 
-        )
+            )
     }
 
     @Test
@@ -670,6 +670,6 @@ class GrunnlagspakkeServiceTest {
             },
             Executable { assertThat(grunnlagspakkeFunnet.husstandmedlemmerOgEgneBarnListe[1].borISammeHusstandDtoListe[1].periodeTil).isNull() },
 
-        )
+            )
     }
 }

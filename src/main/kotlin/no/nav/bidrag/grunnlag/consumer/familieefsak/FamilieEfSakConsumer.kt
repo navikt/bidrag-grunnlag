@@ -1,36 +1,49 @@
 package no.nav.bidrag.grunnlag.consumer.familieefsak
 
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.commons.web.client.AbstractRestClient
+import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
-private const val BARNETILSYN_CONTEXT = "/api/ekstern/bisys/perioder-barnetilsyn"
+@Service
+class FamilieEfSakConsumer(
+    @Value("\${FAMILIEEFSAK_URL}") familieEfSakUrl: URI,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    private val grunnlagConsumer: GrunnlagConsumer,
+) : AbstractRestClient(restTemplate, "familie-ef-sak") {
 
-open class FamilieEfSakConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
+    private val hentBarnetilsynUri =
+        UriComponentsBuilder
+            .fromUri(familieEfSakUrl)
+            .pathSegment("api/ekstern/bisys/perioder-barnetilsyn")
+            .build()
+            .toUriString()
 
-    companion object {
-        @JvmStatic
-        private val logger: Logger = LoggerFactory.getLogger(FamilieEfSakConsumer::class.java)
-    }
-
-    open fun hentBarnetilsyn(request: BarnetilsynRequest): RestResponse<BarnetilsynResponse> {
-        logger.debug("Henter barnetilsyn")
-
+    fun hentBarnetilsyn(request: BarnetilsynRequest): RestResponse<BarnetilsynResponse> {
         val restResponse = restTemplate.tryExchange(
-            BARNETILSYN_CONTEXT,
-            HttpMethod.POST,
-            initHttpEntity(request),
-            BarnetilsynResponse::class.java,
-            BarnetilsynResponse(emptyList()),
+            url = hentBarnetilsynUri,
+            httpMethod = HttpMethod.POST,
+            httpEntity = grunnlagConsumer.initHttpEntity(request),
+            responseType = BarnetilsynResponse::class.java,
+            fallbackBody = BarnetilsynResponse(emptyList()),
         )
 
-        logResponse("Barnetilsyn fra EF-Sak", request.ident, request.fomDato, null, restResponse)
+        grunnlagConsumer.logResponse(
+            type = "Barnetilsyn fra EF-Sak",
+            ident = request.ident,
+            fom = request.fomDato,
+            tom = null,
+            restResponse = restResponse
+        )
 
         return restResponse
     }

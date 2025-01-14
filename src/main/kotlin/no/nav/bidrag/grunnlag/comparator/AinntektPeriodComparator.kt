@@ -55,21 +55,19 @@ class AinntektPeriodComparator : AbstractPeriodComparator<PeriodComparable<Ainnt
         return differences.isEmpty()
     }
 
-    private fun sortAinntektsposter(ainntektsposter: List<AinntektspostBo>): List<AinntektspostBo> {
-        return ainntektsposter.sortedWith(
-            compareBy(
-                { it.utbetalingsperiode },
-                { it.opptjeningsperiodeFra },
-                { it.opptjeningsperiodeTil },
-                { it.opplysningspliktigId },
-                { it.virksomhetId },
-                { it.inntektType },
-                { it.fordelType },
-                { it.beskrivelse },
-                { it.belop },
-                { it.etterbetalingsperiodeFra },
-                { it.etterbetalingsperiodeTil },
-            ),
-        )
-    }
+    private fun sortAinntektsposter(ainntektsposter: List<AinntektspostBo>): List<AinntektspostBo> = ainntektsposter.sortedWith(
+        compareBy(
+            { it.utbetalingsperiode },
+            { it.opptjeningsperiodeFra },
+            { it.opptjeningsperiodeTil },
+            { it.opplysningspliktigId },
+            { it.virksomhetId },
+            { it.inntektType },
+            { it.fordelType },
+            { it.beskrivelse },
+            { it.belop },
+            { it.etterbetalingsperiodeFra },
+            { it.etterbetalingsperiodeTil },
+        ),
+    )
 }

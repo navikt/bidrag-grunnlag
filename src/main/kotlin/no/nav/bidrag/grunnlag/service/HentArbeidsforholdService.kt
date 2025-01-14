@@ -150,21 +150,6 @@ class HentArbeidsforholdService(
                 }
 
                 is RestResponse.Failure -> {
-//                    if (restResponseEnhetsregister.statusCode == HttpStatus.NOT_FOUND) {
-//                        SECURE_LOGGER.warn(
-//                            "Arbeidsgivernavn ikke funnet fra enhetsregisteret for orgnr $orgnr. " +
-//                                "Statuskode ${restResponseEnhetsregister.statusCode.value()}",
-//                        )
-//                    } else {
-//                        LOGGER.error(
-//                            "Feil ved henting av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr. " +
-//                                "Statuskode ${restResponseEnhetsregister.statusCode.value()}",
-//                        )
-//                        SECURE_LOGGER.error(
-//                            "Feil ved henting av arbeidsgivernavn fra enhetsregisteret for orgnr $orgnr. " +
-//                                "Statuskode ${restResponseEnhetsregister.statusCode.value()}",
-//                        )
-//                    }
                     feilrapporteringListe.add(
                         FeilrapporteringDto(
                             grunnlagstype = GrunnlagRequestType.ARBEIDSFORHOLD,

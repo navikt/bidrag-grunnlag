@@ -7,8 +7,9 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.runs
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
-import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -21,53 +22,57 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @ExtendWith(MockKExtension::class)
-@DisplayName("PensjonConsumerTest")
-internal class PensjonConsumerTest {
+@DisplayName("ArbeidsforholdConsumerTest")
+internal class ArbeidsforholdConsumerTest {
     @MockK
     private lateinit var restTemplateMock: RestTemplate
 
     @MockK
     private lateinit var grunnlagConsumerMock: GrunnlagConsumer
 
-    private lateinit var pensjonConsumer: PensjonConsumer
+    private lateinit var arbeidsforholdConsumer: ArbeidsforholdConsumer
+
+    private val uri = URI("http://localhost")
 
     @BeforeEach
     fun setup() {
-        pensjonConsumer = PensjonConsumer(
-            URI("http://localhost"),
+        arbeidsforholdConsumer = ArbeidsforholdConsumer(
+            uri,
             restTemplateMock,
             grunnlagConsumerMock
         )
     }
 
     @Test
-    fun `hentBarnetilleggPensjon skal returnere ok respons`() {
-        val request = TestUtil.byggHentBarnetilleggPensjonRequest()
-        val response = TestUtil.byggHentBarnetilleggPensjonResponse()
+    fun `hentArbeidsforhold skal returnere ok respons`() {
+        val personident = "12345678901"
+        val request = HentArbeidsforholdRequest(arbeidstakerId = personident)
+        val response = TestUtil.byggArbeidsforholdResponse()
         val httpEntity = HttpEntity(request)
         val responseEntity = ResponseEntity(response, HttpStatus.OK)
-        val responseType = object : ParameterizedTypeReference<List<BarnetilleggPensjon>>() {}
+        val responseType = object : ParameterizedTypeReference<List<Arbeidsforhold>>() {}
 
-        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
+        every { grunnlagConsumerMock.initHttpEntityAareg(body = request, ident = request.arbeidstakerId) } returns httpEntity
 
         every {
-            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<List<BarnetilleggPensjon>>>())
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<List<Arbeidsforhold>>>())
         } just runs
 
         every {
             restTemplateMock.exchange(
-                "http://localhost/pen/api/barnetillegg/search",
-                HttpMethod.POST,
+                uriBuilder(),
+                HttpMethod.GET,
                 httpEntity,
                 responseType
             )
         } returns responseEntity
 
         // Consumer-kall
-        val restResponse = pensjonConsumer.hentBarnetilleggPensjon(request)
+        val restResponse = arbeidsforholdConsumer.hentArbeidsforhold(request)
 
         // Assertions
         restResponse is RestResponse.Success
@@ -75,31 +80,38 @@ internal class PensjonConsumerTest {
     }
 
     @Test
-    fun `hentBarnetilleggPensjon skal håndtere exception`() {
-        val request = TestUtil.byggHentBarnetilleggPensjonRequest()
+    fun `hentArbeidsforhold skal håndtere exception`() {
+        val personident = "12345678901"
+        val request = HentArbeidsforholdRequest(arbeidstakerId = personident)
         val httpEntity = HttpEntity(request)
-        val responseType = object : ParameterizedTypeReference<List<BarnetilleggPensjon>>() {}
+        val responseType = object : ParameterizedTypeReference<List<Arbeidsforhold>>() {}
 
-        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
+        every { grunnlagConsumerMock.initHttpEntityAareg(body = request, ident = request.arbeidstakerId) } returns httpEntity
 
         every {
-            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<List<BarnetilleggPensjon>>>())
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<List<Arbeidsforhold>>>())
         } just runs
 
         every {
             restTemplateMock.exchange(
-                "http://localhost/pen/api/barnetillegg/search",
-                HttpMethod.POST,
+                uriBuilder(),
+                HttpMethod.GET,
                 httpEntity,
                 responseType
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 
         // Consumer-kall
-        val restResponse = pensjonConsumer.hentBarnetilleggPensjon(request)
+        val restResponse = arbeidsforholdConsumer.hentArbeidsforhold(request)
 
         // Assertions
         restResponse is RestResponse.Failure
         (restResponse as RestResponse.Failure).statusCode shouldBe HttpStatus.BAD_REQUEST
     }
+
+    private fun uriBuilder() = UriComponentsBuilder
+        .fromUri(uri)
+        .pathSegment("api/v2/arbeidstaker/arbeidsforhold")
+        .build()
+        .toUriString()
 }

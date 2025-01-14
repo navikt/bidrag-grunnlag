@@ -1,38 +1,49 @@
 package no.nav.bidrag.grunnlag.consumer.familiebasak
 
-import no.nav.bidrag.commons.util.secureLogger
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.commons.web.client.AbstractRestClient
+import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
-private const val TILLEGGSSTØNAD_CONTEXT = "/api/ekstern/vedtak/tilsyn-barn"
+@Service
+class TilleggsstønadConsumer(
+    @Value("\${TILLEGGSSTONADERSAK_URL}") tilleggsstønadUrl: URI,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    private val grunnlagConsumer: GrunnlagConsumer,
+) : AbstractRestClient(restTemplate, "tilleggsstønad") {
 
-open class TilleggsstønadConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
+    private val hentTilleggsstønadUri =
+        UriComponentsBuilder
+            .fromUri(tilleggsstønadUrl)
+            .pathSegment("api/ekstern/vedtak/tilsyn-barn")
+            .build()
+            .toUriString()
 
-    companion object {
-        @JvmStatic
-        val logger: Logger = LoggerFactory.getLogger(TilleggsstønadConsumer::class.java)
-    }
-
-    open fun hentTilleggsstønad(request: TilleggsstønadRequest): RestResponse<TilleggsstønadResponse> {
-        logger.debug("Henter tilleggsstønad for barnetilsyn fra tilleggsstonader-sak")
-        secureLogger.debug { "Henter tilleggsstønad for barnetilsyn fra tilleggsstonader-sak for ident: ${request.ident}" }
-
+    fun hentTilleggsstønad(request: TilleggsstønadRequest): RestResponse<TilleggsstønadResponse> {
         val restResponse = restTemplate.tryExchange(
-            TILLEGGSSTØNAD_CONTEXT,
-            HttpMethod.POST,
-            initHttpEntity(request),
-            TilleggsstønadResponse::class.java,
-            TilleggsstønadResponse(false),
+            url = hentTilleggsstønadUri,
+            httpMethod = HttpMethod.POST,
+            httpEntity = grunnlagConsumer.initHttpEntity(request),
+            responseType = TilleggsstønadResponse::class.java,
+            fallbackBody = TilleggsstønadResponse(false),
         )
 
-        logResponse("Tilleggsstønad til barnetilsyn", request.ident, null, null, restResponse)
+        grunnlagConsumer.logResponse(
+            type = "Tilleggsstønad til barnetilsyn",
+            ident = request.ident,
+            fom = null,
+            tom = null,
+            restResponse = restResponse
+        )
 
         return restResponse
     }

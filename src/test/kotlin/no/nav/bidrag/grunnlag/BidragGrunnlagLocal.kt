@@ -53,11 +53,9 @@ fun stubHentSaksbehandler() {
         ),
     )
 }
-private fun jsonToString(data: Any): String {
-    return try {
-        ObjectMapper().findAndRegisterModules().writeValueAsString(data)
-    } catch (e: JsonProcessingException) {
-        Assert.fail(e.message)
-        ""
-    }
+private fun jsonToString(data: Any): String = try {
+    ObjectMapper().findAndRegisterModules().writeValueAsString(data)
+} catch (e: JsonProcessingException) {
+    Assert.fail(e.message)
+    ""
 }

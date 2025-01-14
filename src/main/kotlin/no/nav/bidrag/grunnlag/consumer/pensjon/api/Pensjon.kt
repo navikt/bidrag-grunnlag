@@ -18,14 +18,6 @@ data class HentBarnetilleggPensjonRequest(
     val returnerSaerkullsbarn: Boolean = true,
 )
 
-data class HentBarnetilleggPensjonResponse(
-    val barnetilleggPensjonListe: List<BarnetilleggPensjon>? = emptyList(),
-)
+data class HentBarnetilleggPensjonResponse(val barnetilleggPensjonListe: List<BarnetilleggPensjon>? = emptyList())
 
-data class BarnetilleggPensjon(
-    val barn: String,
-    val beloep: BigDecimal,
-    val fom: LocalDate,
-    val tom: LocalDate,
-    val erFellesbarn: Boolean,
-)
+data class BarnetilleggPensjon(val barn: String, val beloep: BigDecimal, val fom: LocalDate, val tom: LocalDate, val erFellesbarn: Boolean)

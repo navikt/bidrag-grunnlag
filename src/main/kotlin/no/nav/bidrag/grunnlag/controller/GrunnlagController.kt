@@ -27,10 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @ProtectedWithClaims(issuer = ISSUER)
-class GrunnlagController(
-    private val grunnlagspakkeService: GrunnlagspakkeService,
-    private val hentGrunnlagService: HentGrunnlagService,
-) {
+class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeService, private val hentGrunnlagService: HentGrunnlagService) {
 
     @PostMapping(GRUNNLAGSPAKKE_NY)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")

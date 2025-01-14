@@ -1,41 +1,46 @@
 package no.nav.bidrag.grunnlag.consumer.arbeidsforhold
 
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.commons.web.client.AbstractRestClient
+import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentArbeidsforholdRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
-import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
-private const val AAREG_CONTEXT = "/api/v2/arbeidstaker/arbeidsforhold"
+@Service
+class ArbeidsforholdConsumer(
+    @Value("\${AAREG_URL}") aaregUrl: URI,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    private val grunnlagConsumer: GrunnlagConsumer,
+) : AbstractRestClient(restTemplate, "arbeidsforhold") {
 
-open class ArbeidsforholdConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
+    private val hentArbeidsforholdUri =
+        UriComponentsBuilder
+            .fromUri(aaregUrl)
+            .pathSegment("api/v2/arbeidstaker/arbeidsforhold")
+            .build()
+            .toUriString()
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(ArbeidsforholdConsumer::class.java)
-    }
-
-    open fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<List<Arbeidsforhold>> {
-        SECURE_LOGGER.info("Henter arbeidsforhold fra Aareg med request: ${tilJson(request)}")
-
+    fun hentArbeidsforhold(request: HentArbeidsforholdRequest): RestResponse<List<Arbeidsforhold>> {
         val responseType = object : ParameterizedTypeReference<List<Arbeidsforhold>>() {}
 
         val restResponse = restTemplate.tryExchange(
-            AAREG_CONTEXT,
-            HttpMethod.GET,
-            initHttpEntityAareg(request, request.arbeidstakerId),
-            responseType,
-            emptyList(),
+            url = hentArbeidsforholdUri,
+            httpMethod = HttpMethod.GET,
+            httpEntity = grunnlagConsumer.initHttpEntityAareg(body = request, ident = request.arbeidstakerId),
+            responseType = responseType,
+            fallbackBody = emptyList(),
         )
 
-        logResponse("Arbeidsforhold", request.arbeidstakerId, null, null, restResponse)
+        grunnlagConsumer.logResponse(type = "Arbeidsforhold", ident = request.arbeidstakerId, fom = null, tom = null, restResponse = restResponse)
 
         return restResponse
     }

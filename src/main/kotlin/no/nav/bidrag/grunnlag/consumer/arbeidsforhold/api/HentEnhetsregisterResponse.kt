@@ -34,12 +34,6 @@ data class Adresse(
     val landkode: String?,
 )
 
-data class BruksperiodeEreg(
-    val fom: LocalDateTime?,
-    val tom: LocalDateTime?,
-)
+data class BruksperiodeEreg(val fom: LocalDateTime?, val tom: LocalDateTime?)
 
-data class Gyldighetsperiode(
-    val fom: LocalDate?,
-    val tom: LocalDate?,
-)
+data class Gyldighetsperiode(val fom: LocalDate?, val tom: LocalDate?)

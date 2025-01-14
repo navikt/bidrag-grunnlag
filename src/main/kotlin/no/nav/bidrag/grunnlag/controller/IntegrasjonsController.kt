@@ -94,7 +94,7 @@ class IntegrasjonsController(
         summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL",
     )
     fun hentFoedselOgDoed(@RequestBody bidragPersonident: Personident): ResponseEntity<NavnFødselDødDto> =
-        handleRestResponse(bidragPersonConsumer.hentNavnFoedselOgDoed(bidragPersonident))
+        handleRestResponse(bidragPersonConsumer.hentNavnFødselOgDød(bidragPersonident))
 
     @PostMapping(HENT_FORELDER_BARN_RELASJON)
     @Operation(
@@ -124,7 +124,7 @@ class IntegrasjonsController(
     @PostMapping(HENT_KONTANTSTOTTE)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller familie-ks-sak for å hente kontantstotte")
     fun hentKontantstotte(@RequestBody innsynRequest: BisysDto): ResponseEntity<BisysResponsDto> =
-        handleRestResponse(familieKsSakConsumer.hentKontantstotte(innsynRequest))
+        handleRestResponse(familieKsSakConsumer.hentKontantstøtte(innsynRequest))
 
     @PostMapping(HENT_BARNETILSYN)
     @Operation(

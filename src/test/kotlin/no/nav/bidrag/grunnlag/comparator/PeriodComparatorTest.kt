@@ -367,21 +367,19 @@ class PeriodComparatorTest {
         belop: BigDecimal = BigDecimal(1000),
         etterbetalingsperiodeFom: LocalDate? = null,
         etterbetalingsperiodeTom: LocalDate? = null,
-    ): AinntektspostBo {
-        return AinntektspostBo(
-            utbetalingsperiode = utbetalingsperiode,
-            opptjeningsperiodeFra = opptjeningsperiodeFra,
-            opptjeningsperiodeTil = opptjeningsperiodeTil,
-            opplysningspliktigId = opplysningspliktigId,
-            virksomhetId = virksomhetId,
-            inntektType = inntektType,
-            fordelType = fordelType,
-            beskrivelse = beskrivelse,
-            belop = belop,
-            etterbetalingsperiodeFra = etterbetalingsperiodeFom,
-            etterbetalingsperiodeTil = etterbetalingsperiodeTom,
-        )
-    }
+    ): AinntektspostBo = AinntektspostBo(
+        utbetalingsperiode = utbetalingsperiode,
+        opptjeningsperiodeFra = opptjeningsperiodeFra,
+        opptjeningsperiodeTil = opptjeningsperiodeTil,
+        opplysningspliktigId = opplysningspliktigId,
+        virksomhetId = virksomhetId,
+        inntektType = inntektType,
+        fordelType = fordelType,
+        beskrivelse = beskrivelse,
+        belop = belop,
+        etterbetalingsperiodeFra = etterbetalingsperiodeFom,
+        etterbetalingsperiodeTil = etterbetalingsperiodeTom,
+    )
 
     private fun createPeriodEntitiesSkattegrunnlag(
         period: IPeriod,
@@ -406,11 +404,9 @@ class PeriodComparatorTest {
         skattegrunnlagType: String = "Svalbard",
         inntektType: String = "Lonnsinntekt",
         belop: BigDecimal = BigDecimal(1000),
-    ): SkattegrunnlagspostBo {
-        return SkattegrunnlagspostBo(
-            skattegrunnlagType = skattegrunnlagType,
-            inntektType = inntektType,
-            belop = belop,
-        )
-    }
+    ): SkattegrunnlagspostBo = SkattegrunnlagspostBo(
+        skattegrunnlagType = skattegrunnlagType,
+        inntektType = inntektType,
+        belop = belop,
+    )
 }

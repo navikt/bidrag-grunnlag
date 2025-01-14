@@ -43,7 +43,7 @@ class OppdaterKontantstotte(
             try {
                 when (
                     val restResponseKontantstotte =
-                        familieKsSakConsumer.hentKontantstotte(innsynRequest)
+                        familieKsSakConsumer.hentKontantstøtte(innsynRequest)
                 ) {
                     is RestResponse.Success -> {
                         val kontantstotteResponse = restResponseKontantstotte.body

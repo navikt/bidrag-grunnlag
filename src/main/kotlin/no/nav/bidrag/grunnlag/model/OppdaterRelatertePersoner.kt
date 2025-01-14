@@ -277,7 +277,7 @@ class OppdaterRelatertePersoner(
         try {
             when (
                 val restResponseFoedselOgDoed =
-                    bidragPersonConsumer.hentNavnFoedselOgDoed(personident)
+                    bidragPersonConsumer.hentNavnFødselOgDød(personident)
             ) {
                 is RestResponse.Success -> {
                     val foedselOgDoedResponse = restResponseFoedselOgDoed.body

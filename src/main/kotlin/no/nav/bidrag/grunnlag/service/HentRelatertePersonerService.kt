@@ -283,7 +283,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
         val navnFødselDødDto: NavnFødselDødDto
 
         when (
-            val restResponseFoedselOgDoed = bidragPersonConsumer.hentNavnFoedselOgDoed(personident)
+            val restResponseFoedselOgDoed = bidragPersonConsumer.hentNavnFødselOgDød(personident)
         ) {
             is RestResponse.Success -> {
                 val foedselOgDoedResponse = restResponseFoedselOgDoed.body

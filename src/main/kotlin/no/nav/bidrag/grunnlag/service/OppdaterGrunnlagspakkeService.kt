@@ -122,10 +122,8 @@ class OppdaterGrunnlagspakkeService(
         periodeTil = grunnlagRequestDto.periodeTil,
     )
 
-    inner class OppdaterGrunnlagspakke(
-        private val grunnlagspakkeId: Int,
-        private val timestampOppdatering: LocalDateTime,
-    ) : MutableList<OppdaterGrunnlagDto> by mutableListOf() {
+    inner class OppdaterGrunnlagspakke(private val grunnlagspakkeId: Int, private val timestampOppdatering: LocalDateTime) :
+        MutableList<OppdaterGrunnlagDto> by mutableListOf() {
 
         fun oppdaterAinntekt(
             ainntektRequestListe: List<PersonIdOgPeriodeRequest>,

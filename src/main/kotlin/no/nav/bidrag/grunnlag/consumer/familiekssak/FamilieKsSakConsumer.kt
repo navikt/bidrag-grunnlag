@@ -1,34 +1,49 @@
 package no.nav.bidrag.grunnlag.consumer.familiekssak
 
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.commons.web.client.AbstractRestClient
+import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
-private const val FAMILIEKSSAK_CONTEXT = "/api/bisys/hent-utbetalingsinfo"
+@Service
+class FamilieKsSakConsumer(
+    @Value("\${FAMILIEKSSAK_URL}") familieKsSakUrl: URI,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    private val grunnlagConsumer: GrunnlagConsumer,
+) : AbstractRestClient(restTemplate, "familie-ks-sak") {
 
-open class FamilieKsSakConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
+    private val hentFamilieKsSakUri =
+        UriComponentsBuilder
+            .fromUri(familieKsSakUrl)
+            .pathSegment("api/bisys/hent-utbetalingsinfo")
+            .build()
+            .toUriString()
 
-    companion object {
-        @JvmStatic
-        val logger: Logger = LoggerFactory.getLogger(FamilieKsSakConsumer::class.java)
-    }
-
-    open fun hentKontantstotte(request: BisysDto): RestResponse<BisysResponsDto> {
+    fun hentKontantstøtte(request: BisysDto): RestResponse<BisysResponsDto> {
         val restResponse = restTemplate.tryExchange(
-            FAMILIEKSSAK_CONTEXT,
-            HttpMethod.POST,
-            initHttpEntity(request),
-            BisysResponsDto::class.java,
-            BisysResponsDto(emptyList(), emptyList()),
+            url = hentFamilieKsSakUri,
+            httpMethod = HttpMethod.POST,
+            httpEntity = grunnlagConsumer.initHttpEntity(request),
+            responseType = BisysResponsDto::class.java,
+            fallbackBody = BisysResponsDto(emptyList(), emptyList()),
         )
 
-        logResponse("Kontantstøtte fra KS-Sak", request.identer.first(), request.fom, null, restResponse)
+        grunnlagConsumer.logResponse(
+            type = "Kontantstøtte fra KS-Sak",
+            ident = request.identer.first(),
+            fom = request.fom,
+            tom = null,
+            restResponse = restResponse
+        )
 
         return restResponse
     }

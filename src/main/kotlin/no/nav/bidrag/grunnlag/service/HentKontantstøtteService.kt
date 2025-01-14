@@ -30,7 +30,7 @@ class HentKontantstøtteService(private val familieKsSakConsumer: FamilieKsSakCo
             )
 
             when (
-                val restResponseKontantstøtte = familieKsSakConsumer.hentKontantstotte(hentKontantstøtteRequest)
+                val restResponseKontantstøtte = familieKsSakConsumer.hentKontantstøtte(hentKontantstøtteRequest)
             ) {
                 is RestResponse.Success -> {
                     leggTilKontantstøtte(

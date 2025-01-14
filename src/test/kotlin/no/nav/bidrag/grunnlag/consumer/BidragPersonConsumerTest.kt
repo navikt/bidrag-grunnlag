@@ -1,387 +1,298 @@
 package no.nav.bidrag.grunnlag.consumer
 
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.just
+import io.mockk.runs
+import no.nav.bidrag.domene.enums.person.Familierelasjon
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.domene.ident.Personident
-import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
+import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
+import no.nav.bidrag.transport.person.ForelderBarnRelasjon
+import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
+import no.nav.bidrag.transport.person.HentePersonidenterRequest
+import no.nav.bidrag.transport.person.Husstand
+import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
 import no.nav.bidrag.transport.person.Identgruppe
+import no.nav.bidrag.transport.person.NavnFødselDødDto
+import no.nav.bidrag.transport.person.PersonRequest
 import no.nav.bidrag.transport.person.PersonidentDto
+import no.nav.bidrag.transport.person.SivilstandPdlDto
 import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.fail
-import org.junit.jupiter.api.Assertions.assertAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.function.Executable
-import org.mockito.ArgumentMatchers.any
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.eq
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.RestTemplate
+import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 @DisplayName("BidragPersonConsumerTest")
 internal class BidragPersonConsumerTest {
+    @MockK
+    private lateinit var restTemplateMock: RestTemplate
 
-    @InjectMocks
-    private val bidragPersonConsumer: BidragPersonConsumer? = null
+    @MockK
+    private lateinit var grunnlagConsumerMock: GrunnlagConsumer
 
-    @Mock
-    private val restTemplateMock: HttpHeaderRestTemplate? = null
+    private lateinit var bidragPersonConsumer: BidragPersonConsumer
 
-    @Test
-    fun `Sjekk at ok respons fra Bidrag-person-endepunkt for husstandsmedlemmer mappes korrekt`() {
-        val request = TestUtil.byggHusstandsmedlemmerRequest()
-
-        Mockito.`when`(
-            restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                any<Class<HusstandsmedlemmerDto>>(),
-            ),
+    @BeforeEach
+    fun setup() {
+        bidragPersonConsumer = BidragPersonConsumer(
+            URI("http://localhost"),
+            restTemplateMock,
+            grunnlagConsumerMock
         )
-            .thenReturn(ResponseEntity(TestUtil.byggHentHusstandsmedlemmerResponse(), HttpStatus.OK))
-
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
-            is RestResponse.Success -> {
-                val hentHusstandsmedlemmerResponse = restResponseHusstandsmedlemmer.body
-                assertAll(
-                    Executable { assertThat(hentHusstandsmedlemmerResponse).isNotNull },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe.size).isEqualTo(2) },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].gyldigFraOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-01-01"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].gyldigTilOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-10-01"))
-                    },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].adressenavn).isEqualTo("adressenavn1") },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husnummer).isEqualTo("husnummer1") },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].husbokstav).isEqualTo("husbokstav1") },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].bruksenhetsnummer).isEqualTo("bruksenhetsnummer1") },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].postnummer).isEqualTo("postnr1") },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].bydelsnummer).isEqualTo("bydelsnummer1") },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].kommunenummer).isEqualTo("kommunenummer1") },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[0].matrikkelId).isEqualTo(12345) },
-
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].personId,
-                        ).isEqualTo(Personident("111"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].navn,
-                        ).isEqualTo("fornavn1 mellomnavn1 etternavn1")
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].gyldigFraOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-01-01"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[0].gyldigTilOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-02-01"))
-                    },
-
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].personId,
-                        ).isEqualTo(Personident("111"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].navn,
-                        ).isEqualTo("fornavn1 mellomnavn1 etternavn1")
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].gyldigFraOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-05-17"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[1].gyldigTilOgMed,
-                        ).isEqualTo(LocalDate.parse("2018-01-01"))
-                    },
-
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].personId,
-                        ).isEqualTo(Personident("333"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].navn,
-                        ).isEqualTo("fornavn3 mellomnavn3 etternavn3")
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].gyldigFraOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-01-01"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[2].gyldigTilOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-12-01"))
-                    },
-
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].personId,
-                        ).isEqualTo(Personident("444"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].navn,
-                        ).isEqualTo("fornavn4 mellomnavn4 etternavn4")
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].gyldigFraOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-05-01"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[0].husstandsmedlemListe[3].gyldigTilOgMed,
-                        ).isEqualTo(LocalDate.parse("2011-06-01"))
-                    },
-
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].personId,
-                        ).isEqualTo(Personident("111"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].navn,
-                        ).isEqualTo("fornavn1 mellomnavn1 etternavn1")
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].gyldigFraOgMed,
-                        ).isEqualTo(LocalDate.parse("2018-01-01"))
-                    },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[0].gyldigTilOgMed).isNull() },
-
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].personId,
-                        ).isEqualTo(Personident("555"))
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].navn,
-                        ).isEqualTo("fornavn5 mellomnavn5 etternavn5")
-                    },
-                    Executable {
-                        assertThat(
-                            hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].gyldigFraOgMed,
-                        ).isEqualTo(LocalDate.parse("2020-01-01"))
-                    },
-                    Executable { assertThat(hentHusstandsmedlemmerResponse.husstandListe[1].husstandsmedlemListe[1].gyldigTilOgMed).isNull() },
-
-                )
-            }
-            else -> {
-                fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
-            }
-        }
     }
 
     @Test
-    fun `Sjekk at exception fra Bidrag-person-husstandsmedlemmer-endepunkt håndteres korrekt`() {
-        val request = TestUtil.byggHusstandsmedlemmerRequest()
+    fun `hentNavnFødselOgDød skal returnere ok respons`() {
+        val personident = Personident("12345678901")
+        val request = PersonRequest(personident)
+        val response =
+            NavnFødselDødDto(navn = "Fornavn Etternavn", fødselsdato = LocalDate.now(), fødselsår = LocalDate.now().year, dødsdato = LocalDate.now())
+        val httpEntity = HttpEntity(request)
+        val responseEntity = ResponseEntity(response, HttpStatus.OK)
 
-        Mockito.`when`(
-            restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                any<Class<HusstandsmedlemmerDto>>(),
-            ),
-        )
-            .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
+        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
 
-        when (val restResponseHusstandsmedlemmer = bidragPersonConsumer!!.hentHusstandsmedlemmer(request)) {
-            is RestResponse.Failure -> {
-                assertAll(
-                    Executable { assertThat(restResponseHusstandsmedlemmer.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseHusstandsmedlemmer.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
-                )
-            }
-            else -> {
-                fail("Test returnerte med RestResponse.Success, som ikke var forventet")
-            }
-        }
+        every {
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<NavnFødselDødDto>>())
+        } just runs
+
+        every {
+            restTemplateMock.exchange(
+                "http://localhost/navnfoedseldoed",
+                HttpMethod.POST,
+                httpEntity,
+                NavnFødselDødDto::class.java
+            )
+        } returns responseEntity
+
+        // Consumer-kall
+        val restResponse = bidragPersonConsumer.hentNavnFødselOgDød(personident)
+
+        // Assertions
+        restResponse is RestResponse.Success
+        (restResponse as RestResponse.Success).body shouldBe response
     }
 
     @Test
-    fun `Sjekk at ok respons fra Bidrag-person-endepunkt for sivilstand mappes korrekt`() {
-        val request = TestUtil.byggSivilstandRequest()
+    fun `hentNavnFødselOgDød skal håndtere exception`() {
+        val personident = Personident("12345678901")
+        val request = PersonRequest(personident)
+        val httpEntity = HttpEntity(request)
 
-        Mockito.`when`(
-            restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                any<Class<SivilstandPdlHistorikkDto>>(),
-            ),
-        )
-            .thenReturn(ResponseEntity(TestUtil.byggHentSivilstandResponse(), HttpStatus.OK))
+        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
 
-        when (val restResponseSivilstand = bidragPersonConsumer!!.hentSivilstand(request.ident)) {
-            is RestResponse.Success -> {
-                val hentSivilstandResponse = restResponseSivilstand.body
-                assertAll(
-                    Executable { assertThat(hentSivilstandResponse).isNotNull },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto.size).isEqualTo(3) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[0].type).isEqualTo(SivilstandskodePDL.SEPARERT_PARTNER) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[0].gyldigFom).isNull() },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[0].bekreftelsesdato).isNull() },
+        every {
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<NavnFødselDødDto>>())
+        } just runs
 
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[1].type).isEqualTo(SivilstandskodePDL.ENKE_ELLER_ENKEMANN) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[1].gyldigFom).isNull() },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[1].bekreftelsesdato).isEqualTo(LocalDate.parse("2021-02-01")) },
+        every {
+            restTemplateMock.exchange(
+                "http://localhost/navnfoedseldoed",
+                HttpMethod.POST,
+                httpEntity,
+                NavnFødselDødDto::class.java
+            )
+        } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[2].type).isEqualTo(SivilstandskodePDL.GJENLEVENDE_PARTNER) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[2].gyldigFom).isEqualTo(LocalDate.parse("2021-09-01")) },
-                    Executable { assertThat(hentSivilstandResponse.sivilstandPdlDto[2].bekreftelsesdato).isNull() },
+        // Consumer-kall
+        val restResponse = bidragPersonConsumer.hentNavnFødselOgDød(personident)
 
-                )
-            }
-            else -> {
-                fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
-            }
-        }
+        // Assertions
+        restResponse is RestResponse.Failure
+        (restResponse as RestResponse.Failure).statusCode shouldBe HttpStatus.BAD_REQUEST
     }
 
     @Test
-    fun `Sjekk at exception fra Bidrag-person-sivilstand-endepunkt håndteres korrekt`() {
-        val request = TestUtil.byggSivilstandRequest()
-
-        Mockito.`when`(
-            restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_SIVILSTAND_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                any<Class<SivilstandPdlHistorikkDto>>(),
-            ),
-        )
-            .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
-
-        when (val restResponseSivilstand = bidragPersonConsumer!!.hentSivilstand(request.ident)) {
-            is RestResponse.Failure -> {
-                assertAll(
-                    Executable { assertThat(restResponseSivilstand.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseSivilstand.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
+    fun `hentForelderBarnRelasjon skal returnere ok respons`() {
+        val personident = Personident("12345678901")
+        val request = PersonRequest(personident)
+        val response = ForelderBarnRelasjonDto(
+            forelderBarnRelasjon = listOf(
+                ForelderBarnRelasjon(
+                    minRolleForPerson = Familierelasjon.BARN,
+                    relatertPersonsIdent = personident,
+                    relatertPersonsRolle = Familierelasjon.FORELDER
                 )
-            }
-            else -> {
-                fail("Test returnerte med RestResponse.Success, som ikke var forventet")
-            }
-        }
+            )
+        )
+        val httpEntity = HttpEntity(request)
+        val responseEntity = ResponseEntity(response, HttpStatus.OK)
+
+        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
+
+        every {
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<NavnFødselDødDto>>())
+        } just runs
+
+        every {
+            restTemplateMock.exchange(
+                "http://localhost/forelderbarnrelasjon",
+                HttpMethod.POST,
+                httpEntity,
+                ForelderBarnRelasjonDto::class.java
+            )
+        } returns responseEntity
+
+        // Consumer-kall
+        val restResponse = bidragPersonConsumer.hentForelderBarnRelasjon(personident)
+
+        // Assertions
+        restResponse is RestResponse.Success
+        (restResponse as RestResponse.Success).body shouldBe response
     }
 
     @Test
-    fun `Sjekk at ok respons fra Bidrag-person-endepunkt for personidenter mappes korrekt`() {
-        val request = TestUtil.byggHentPersonidenterRequest()
-        val response = TestUtil.byggHentPersonidenterResponse()
+    fun `hentHusstandsmedlemmer skal returnere ok respons`() {
+        val personident = Personident("12345678901")
+        val request = HusstandsmedlemmerRequest(personRequest = PersonRequest(ident = personident), periodeFra = LocalDate.now())
+        val response = HusstandsmedlemmerDto(
+            husstandListe = listOf(
+                Husstand(
+                    gyldigFraOgMed = LocalDate.now(),
+                    gyldigTilOgMed = LocalDate.now(),
+                    adressenavn = "Adresse",
+                    husnummer = "1",
+                    husbokstav = "A",
+                    bruksenhetsnummer = "1",
+                    postnummer = "1111",
+                    bydelsnummer = "1",
+                    kommunenummer = "1",
+                    matrikkelId = 1,
+                    husstandsmedlemListe = listOf(
+                        Husstandsmedlem(
+                            gyldigFraOgMed = LocalDate.now(),
+                            gyldigTilOgMed = LocalDate.now(),
+                            personId = personident,
+                            navn = "Navn",
+                            fødselsdato = LocalDate.now(),
+                            dødsdato = LocalDate.now()
+                        )
+                    )
+                )
+            )
+        )
+        val httpEntity = HttpEntity(request)
+        val responseEntity = ResponseEntity(response, HttpStatus.OK)
+
+        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
+
+        every {
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<HusstandsmedlemmerDto>>())
+        } just runs
+
+        every {
+            restTemplateMock.exchange(
+                "http://localhost/husstandsmedlemmer",
+                HttpMethod.POST,
+                httpEntity,
+                HusstandsmedlemmerDto::class.java
+            )
+        } returns responseEntity
+
+        // Consumer-kall
+        val restResponse = bidragPersonConsumer.hentHusstandsmedlemmer(request)
+
+        // Assertions
+        restResponse is RestResponse.Success
+        (restResponse as RestResponse.Success).body shouldBe response
+    }
+
+    @Test
+    fun `hentSivilstand skal returnere ok respons`() {
+        val personident = Personident("12345678901")
+        val request = PersonRequest(personident)
+        val response = SivilstandPdlHistorikkDto(
+            sivilstandPdlDto = listOf(
+                SivilstandPdlDto(
+                    type = SivilstandskodePDL.GIFT,
+                    gyldigFom = LocalDate.now(),
+                    relatertVedSivilstand = "",
+                    bekreftelsesdato = LocalDate.now(),
+                    master = "",
+                    registrert = LocalDateTime.now(),
+                    historisk = false
+                )
+            )
+        )
+        val httpEntity = HttpEntity(request)
+        val responseEntity = ResponseEntity(response, HttpStatus.OK)
+
+        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
+
+        every {
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<SivilstandPdlHistorikkDto>>())
+        } just runs
+
+        every {
+            restTemplateMock.exchange(
+                "http://localhost/sivilstand",
+                HttpMethod.POST,
+                httpEntity,
+                SivilstandPdlHistorikkDto::class.java
+            )
+        } returns responseEntity
+
+        // Consumer-kall
+        val restResponse = bidragPersonConsumer.hentSivilstand(personident)
+
+        // Assertions
+        restResponse is RestResponse.Success
+        (restResponse as RestResponse.Success).body shouldBe response
+    }
+
+    @Test
+    fun `hentPersonidenter skal returnere ok respons`() {
+        val personident = Personident("12345678901")
+        val request = HentePersonidenterRequest(personident.verdi, setOf(Identgruppe.FOLKEREGISTERIDENT), false)
+        val response = listOf(
+            PersonidentDto(
+                ident = personident.verdi,
+                historisk = false,
+                gruppe = Identgruppe.FOLKEREGISTERIDENT
+            )
+        )
+        val httpEntity = HttpEntity(request)
+        val responseEntity = ResponseEntity(response, HttpStatus.OK)
         val responseType = object : ParameterizedTypeReference<List<PersonidentDto>>() {}
 
-        Mockito.`when`(
-            restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_PERSONIDENTER_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                eq(responseType),
-            ),
-        )
-            .thenReturn(ResponseEntity(response, HttpStatus.OK))
+        every { grunnlagConsumerMock.initHttpEntity(request) } returns httpEntity
 
-        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"), true)) {
-            is RestResponse.Success -> {
-                val hentPersonidenterResponse = restResponseHentPersonidenter.body
+        every {
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<List<PersonidentDto>>>())
+        } just runs
 
-                assertAll(
-                    Executable { assertThat(hentPersonidenterResponse).isNotNull },
-                    Executable { assertThat(hentPersonidenterResponse.size).isEqualTo(2) },
+        every {
+            restTemplateMock.exchange(
+                "http://localhost/personidenter",
+                HttpMethod.POST,
+                httpEntity,
+                responseType
+            )
+        } returns responseEntity
 
-                    Executable { assertThat(hentPersonidenterResponse[0].ident).isEqualTo("personident") },
-                    Executable { assertThat(hentPersonidenterResponse[0].gruppe).isEqualTo(Identgruppe.FOLKEREGISTERIDENT) },
-                    Executable { assertThat(hentPersonidenterResponse[0].historisk).isFalse() },
+        // Consumer-kall
+        val restResponse = bidragPersonConsumer.hentPersonidenter(personident, false)
 
-                    Executable { assertThat(hentPersonidenterResponse[1].ident).isEqualTo("personident_historisk") },
-                    Executable { assertThat(hentPersonidenterResponse[1].gruppe).isEqualTo(Identgruppe.FOLKEREGISTERIDENT) },
-                    Executable { assertThat(hentPersonidenterResponse[1].historisk).isTrue() },
-                )
-            }
-
-            else -> {
-                fail("Test returnerte med RestResponse.Failure, som ikke var forventet")
-            }
-        }
-    }
-
-    @Test
-    fun `Sjekk at exception fra Bidrag-person-endepunkt for personidenter håndteres korrekt`() {
-        val request = TestUtil.byggHentPersonidenterRequest()
-        val responseType = object : ParameterizedTypeReference<List<PersonidentDto>>() {}
-
-        Mockito.`when`(
-            restTemplateMock?.exchange(
-                eq(BIDRAGPERSON_PERSONIDENTER_CONTEXT),
-                eq(HttpMethod.POST),
-                eq(initHttpEntity(request)),
-                eq(responseType),
-            ),
-        )
-            .thenThrow(HttpClientErrorException(HttpStatus.BAD_REQUEST))
-
-        when (val restResponseHentPersonidenter = bidragPersonConsumer!!.hentPersonidenter(Personident("personident"), true)) {
-            is RestResponse.Failure -> {
-                assertAll(
-                    Executable { assertThat(restResponseHentPersonidenter.statusCode).isEqualTo(HttpStatus.BAD_REQUEST) },
-                    Executable { assertThat(restResponseHentPersonidenter.restClientException).isInstanceOf(HttpClientErrorException::class.java) },
-                )
-            }
-            else -> {
-                fail("Test returnerte med RestResponse.Success, som ikke var forventet")
-            }
-        }
-    }
-
-    fun <T> initHttpEntity(body: T): HttpEntity<T> {
-        val httpHeaders = HttpHeaders()
-        httpHeaders.contentType = MediaType.APPLICATION_JSON
-        return HttpEntity(body, httpHeaders)
-    }
-
-    companion object {
-        private const val BIDRAGPERSON_FORELDER_BARN_RELASJON_CONTEXT = "/bidrag-person/forelderbarnrelasjon"
-        private const val BIDRAGPERSON_FOEDSEL_DOED_CONTEXT = "/bidrag-person/foedselogdoed"
-        private const val BIDRAGPERSON_HUSSTANDSMEDLEMMER_CONTEXT = "/bidrag-person/husstandsmedlemmer"
-        private const val BIDRAGPERSON_SIVILSTAND_CONTEXT = "/bidrag-person/sivilstand"
-        private const val BIDRAGPERSON_PERSON_INFO_CONTEXT = "/bidrag-person/informasjon"
-        private const val BIDRAGPERSON_PERSONIDENTER_CONTEXT = "/bidrag-person/personidenter"
+        // Assertions
+        restResponse is RestResponse.Success
+        (restResponse as RestResponse.Success).body shouldBe response
     }
 }

@@ -600,7 +600,7 @@ class TestUtil {
             ),
         )
 
-        fun byggKontantstotteResponse() = BisysResponsDto(
+        fun byggKontantstøtteResponse() = BisysResponsDto(
             immutableListOf(
                 InfotrygdPeriode(
                     fomMåned = YearMonth.parse("2022-01"),

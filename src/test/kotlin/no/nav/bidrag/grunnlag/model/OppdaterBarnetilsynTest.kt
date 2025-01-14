@@ -40,18 +40,14 @@ class OppdaterBarnetilsynTest(
         assertEquals(skolealder, oppdaterBarnetilsyn.beregnSkolealder(barnIdent, fom))
     }
 
-    private fun barnMedForskjelligeAldereForBeregningAvSkolealder(): Stream<Arguments> {
-        return Stream.of(
-            Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31)), LocalDate.of(2022, 1, 1), Skolealder.UNDER),
-            Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(4)), LocalDate.of(2016, 1, 1), Skolealder.UNDER),
-            Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(6)), LocalDate.of(2022, 8, 1), Skolealder.OVER),
-            Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(5)), LocalDate.of(2022, 8, 1), Skolealder.OVER),
-            Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(6)), LocalDate.of(2022, 1, 1), Skolealder.UNDER),
-            Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(12)), LocalDate.of(2022, 1, 1), Skolealder.OVER),
-        )
-    }
+    private fun barnMedForskjelligeAldereForBeregningAvSkolealder(): Stream<Arguments> = Stream.of(
+        Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31)), LocalDate.of(2022, 1, 1), Skolealder.UNDER),
+        Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(4)), LocalDate.of(2016, 1, 1), Skolealder.UNDER),
+        Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(6)), LocalDate.of(2022, 8, 1), Skolealder.OVER),
+        Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(5)), LocalDate.of(2022, 8, 1), Skolealder.OVER),
+        Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(6)), LocalDate.of(2022, 1, 1), Skolealder.UNDER),
+        Arguments.of(opprettBarnIdentFraDato(LocalDate.of(2023, 12, 31).minusYears(12)), LocalDate.of(2022, 1, 1), Skolealder.OVER),
+    )
 
-    private fun opprettBarnIdentFraDato(date: LocalDate): String {
-        return date.format(DateTimeFormatter.ofPattern("ddMMyy")) + "45364"
-    }
+    private fun opprettBarnIdentFraDato(date: LocalDate): String = date.format(DateTimeFormatter.ofPattern("ddMMyy")) + "45364"
 }

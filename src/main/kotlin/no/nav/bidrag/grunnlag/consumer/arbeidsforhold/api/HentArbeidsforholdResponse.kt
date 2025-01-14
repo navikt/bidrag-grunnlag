@@ -35,50 +35,23 @@ data class AnsettelsesdetaljerAareg(
     val sisteLoennsendring: LocalDate?,
 )
 
-data class Ansettelsesperiode(
-    val startdato: LocalDate?,
-    val sluttdato: LocalDate?,
-)
+data class Ansettelsesperiode(val startdato: LocalDate?, val sluttdato: LocalDate?)
 
-data class Arbeidssted(
-    val identer: List<Identer>?,
-    val type: String?,
-)
+data class Arbeidssted(val identer: List<Identer>?, val type: String?)
 
-data class Arbeidstaker(
-    val identer: List<ArbeidsgiverIdenter>?,
-)
+data class Arbeidstaker(val identer: List<ArbeidsgiverIdenter>?)
 
-data class Bruksperiode(
-    val fom: String?,
-    val tom: String?,
-)
+data class Bruksperiode(val fom: String?, val tom: String?)
 
-data class Opplysningspliktig(
-    val identer: List<Identer>?,
-    val type: String?,
-)
+data class Opplysningspliktig(val identer: List<Identer>?, val type: String?)
 
-data class Kodeverksentitet(
-    val beskrivelse: String?,
-    val kode: String?,
-)
+data class Kodeverksentitet(val beskrivelse: String?, val kode: String?)
 
-data class Rapporteringsmaaneder(
-    val fra: YearMonth?,
-    val til: YearMonth?,
-)
+data class Rapporteringsmaaneder(val fra: YearMonth?, val til: YearMonth?)
 
-data class Identer(
-    val ident: String?,
-    val type: String?,
-)
+data class Identer(val ident: String?, val type: String?)
 
-data class ArbeidsgiverIdenter(
-    val gjeldende: Boolean?,
-    val ident: String?,
-    val type: String?,
-)
+data class ArbeidsgiverIdenter(val gjeldende: Boolean?, val ident: String?, val type: String?)
 
 data class Permisjon(
     val startdato: LocalDate?,
@@ -102,11 +75,7 @@ data class Permittering(
     val sporingsinformasjon: Sporingsinformasjon?,
 )
 
-data class IdHistorikk(
-    val id: String?,
-    val fom: LocalDate?,
-    val tom: LocalDate?,
-)
+data class IdHistorikk(val id: String?, val fom: LocalDate?, val tom: LocalDate?)
 
 data class Sporingsinformasjon(
     val opprettetTidspunkt: LocalDateTime?,
