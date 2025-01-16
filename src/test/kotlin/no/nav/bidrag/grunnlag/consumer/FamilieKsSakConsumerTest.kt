@@ -40,7 +40,7 @@ internal class FamilieKsSakConsumerTest {
         familieKsSakConsumer = FamilieKsSakConsumer(
             URI("http://localhost"),
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -63,7 +63,7 @@ internal class FamilieKsSakConsumerTest {
                 "http://localhost/api/bisys/hent-utbetalingsinfo",
                 HttpMethod.POST,
                 httpEntity,
-                BisysResponsDto::class.java
+                BisysResponsDto::class.java,
             )
         } returns responseEntity
 
@@ -92,7 +92,7 @@ internal class FamilieKsSakConsumerTest {
                 "http://localhost/api/bisys/hent-utbetalingsinfo",
                 HttpMethod.POST,
                 httpEntity,
-                BisysResponsDto::class.java
+                BisysResponsDto::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

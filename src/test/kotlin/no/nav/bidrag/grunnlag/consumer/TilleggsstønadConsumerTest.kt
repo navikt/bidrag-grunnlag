@@ -7,8 +7,8 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.runs
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadResponse
+import no.nav.bidrag.grunnlag.consumer.tilleggsstønad.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -38,7 +38,7 @@ internal class TilleggsstønadConsumerTest {
         tilleggsstønadConsumer = TilleggsstønadConsumer(
             URI("http://localhost"),
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -60,7 +60,7 @@ internal class TilleggsstønadConsumerTest {
                 "http://localhost/api/ekstern/vedtak/tilsyn-barn",
                 HttpMethod.POST,
                 httpEntity,
-                TilleggsstønadResponse::class.java
+                TilleggsstønadResponse::class.java,
             )
         } returns responseEntity
 
@@ -88,7 +88,7 @@ internal class TilleggsstønadConsumerTest {
                 "http://localhost/api/ekstern/vedtak/tilsyn-barn",
                 HttpMethod.POST,
                 httpEntity,
-                TilleggsstønadResponse::class.java
+                TilleggsstønadResponse::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

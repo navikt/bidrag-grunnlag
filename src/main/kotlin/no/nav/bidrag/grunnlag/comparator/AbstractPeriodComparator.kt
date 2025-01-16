@@ -2,17 +2,10 @@ package no.nav.bidrag.grunnlag.comparator
 
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.util.toJsonString
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.time.LocalDate
 
 abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
-
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(AbstractPeriodComparator::class.java)
-    }
 
     private fun isInsidePeriod(requestedPeriod: IPeriod, existingPeriod: IPeriod): Boolean =
         existingPeriod.periodeFra.isAfterOrEqual(requestedPeriod.periodeFra) &&

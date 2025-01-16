@@ -41,7 +41,7 @@ internal class EnhetsregisterConsumerTest {
         enhetsregisterConsumer = EnhetsregisterConsumer(
             uri,
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -64,7 +64,7 @@ internal class EnhetsregisterConsumerTest {
                 uriBuilder(request),
                 HttpMethod.GET,
                 httpEntity,
-                HentEnhetsregisterResponse::class.java
+                HentEnhetsregisterResponse::class.java,
             )
         } returns responseEntity
 
@@ -93,7 +93,7 @@ internal class EnhetsregisterConsumerTest {
                 uriBuilder(request),
                 HttpMethod.GET,
                 httpEntity,
-                HentEnhetsregisterResponse::class.java
+                HentEnhetsregisterResponse::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

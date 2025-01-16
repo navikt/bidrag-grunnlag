@@ -13,12 +13,12 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
-import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
 import no.nav.bidrag.grunnlag.consumer.familieefsak.FamilieEfSakConsumer
 import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
+import no.nav.bidrag.grunnlag.consumer.tilleggsstønad.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
@@ -33,10 +33,7 @@ import no.nav.bidrag.transport.behandling.grunnlag.response.RelatertPersonGrunnl
 import no.nav.bidrag.transport.behandling.grunnlag.response.SivilstandGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SkattegrunnlagGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.SmåbarnstilleggGrunnlagDto
-import no.nav.bidrag.transport.behandling.grunnlag.response.TilleggsstønadGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.UtvidetBarnetrygdGrunnlagDto
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -55,11 +52,6 @@ class HentGrunnlagService(
     private val enhetsregisterConsumer: EnhetsregisterConsumer,
     private val tilleggsstønadConsumer: TilleggsstønadConsumer,
 ) {
-
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(HentGrunnlagService::class.java)
-    }
 
     suspend fun hentGrunnlag(hentGrunnlagRequestDto: HentGrunnlagRequestDto): HentGrunnlagDto {
         val scope = CoroutineScope(Dispatchers.IO + SecurityCoroutineContext() + RequestContextAsyncContext())
@@ -243,7 +235,7 @@ class HentGrunnlagService(
                 husstandsmedlemmerOgEgneBarnListe = husstandsmedlemmerOgEgneBarnListe.await().grunnlagListe
                     .sortedWith(
                         compareBy<RelatertPersonGrunnlagDto> { it.partPersonId }
-                            .thenBy { it.relatertPersonPersonId },
+                            .thenBy { it.gjelderPersonId },
                     )
                     .distinct(),
                 sivilstandListe = sivilstandListe.await().grunnlagListe
@@ -265,7 +257,7 @@ class HentGrunnlagService(
                     ),
                 tilleggsstønadBarnetilsynListe = tilleggsstønadListe.await().grunnlagListe
                     .sortedWith(
-                        compareBy<TilleggsstønadGrunnlagDto> { it.partPersonId },
+                        compareBy { it.partPersonId },
                     ),
                 feilrapporteringListe = ainntektListe.await().feilrapporteringListe +
                     skattegrunnlagListe.await().feilrapporteringListe +

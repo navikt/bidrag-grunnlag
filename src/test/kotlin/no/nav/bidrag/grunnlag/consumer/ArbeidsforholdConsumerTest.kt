@@ -43,7 +43,7 @@ internal class ArbeidsforholdConsumerTest {
         arbeidsforholdConsumer = ArbeidsforholdConsumer(
             uri,
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -67,7 +67,7 @@ internal class ArbeidsforholdConsumerTest {
                 uriBuilder(),
                 HttpMethod.GET,
                 httpEntity,
-                responseType
+                responseType,
             )
         } returns responseEntity
 
@@ -97,7 +97,7 @@ internal class ArbeidsforholdConsumerTest {
                 uriBuilder(),
                 HttpMethod.GET,
                 httpEntity,
-                responseType
+                responseType,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

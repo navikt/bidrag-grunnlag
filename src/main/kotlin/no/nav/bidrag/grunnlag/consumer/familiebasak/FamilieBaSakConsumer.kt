@@ -42,7 +42,7 @@ class FamilieBaSakConsumer(
             ident = request.personIdent,
             fom = request.fraDato,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse

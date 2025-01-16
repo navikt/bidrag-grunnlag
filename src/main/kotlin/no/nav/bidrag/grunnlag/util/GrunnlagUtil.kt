@@ -15,10 +15,10 @@ import java.text.SimpleDateFormat
 open class GrunnlagUtil {
 
     companion object {
-        const val BIDRAG_FILTER = "BidragA-Inntekt"
-        const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
-        const val BIDRAG_FORMAAL = "Bidrag"
-        const val FORSKUDD_FORMAAL = "Bidragsforskudd"
+        private const val BIDRAG_FILTER = "BidragA-Inntekt"
+        private const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
+        private const val BIDRAG_FORMAAL = "Bidrag"
+        private const val FORSKUDD_FORMAAL = "Bidragsforskudd"
         const val JANUAR2015 = "2015-01"
 
         fun finnFilter(formaal: String): String = if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER

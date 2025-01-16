@@ -39,7 +39,7 @@ internal class PensjonConsumerTest {
         pensjonConsumer = PensjonConsumer(
             URI("http://localhost"),
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -62,7 +62,7 @@ internal class PensjonConsumerTest {
                 "http://localhost/pen/api/barnetillegg/search",
                 HttpMethod.POST,
                 httpEntity,
-                responseType
+                responseType,
             )
         } returns responseEntity
 
@@ -91,7 +91,7 @@ internal class PensjonConsumerTest {
                 "http://localhost/pen/api/barnetillegg/search",
                 HttpMethod.POST,
                 httpEntity,
-                responseType
+                responseType,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

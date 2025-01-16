@@ -150,7 +150,7 @@ class PersistenceService(
             grunnlagspakkeId = grunnlagspakkeId,
             personIdListe = personIdListe,
             timestampOppdatering = timestampOppdatering,
-            //TODO Patche databasen? PENSJON er den gamle verdien, BARNETILLEGG_PENSJON er den nye verdien
+            // TODO Patche databasen? PENSJON er den gamle verdien, BARNETILLEGG_PENSJON er den nye verdien
             barnetilleggType = listOf(Inntektstype.BARNETILLEGG_PENSJON.toString(), "PENSJON"),
         )
     }

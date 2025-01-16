@@ -1,4 +1,4 @@
-package no.nav.bidrag.grunnlag.consumer.familiebasak
+package no.nav.bidrag.grunnlag.consumer.tilleggsstønad
 
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
@@ -42,7 +42,7 @@ class TilleggsstønadConsumer(
             ident = request.ident,
             fom = null,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse

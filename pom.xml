@@ -100,11 +100,6 @@
       <artifactId>bidrag-transport-felles</artifactId>
       <version>${bidrag-felles.version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>no.nav.bidrag</groupId>-->
-<!--      <artifactId>bidrag-tilgangskontroll</artifactId>-->
-<!--      <version>${bidrag-tilgangskontroll.version}</version>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>no.nav.security</groupId>
       <artifactId>token-validation-spring</artifactId>

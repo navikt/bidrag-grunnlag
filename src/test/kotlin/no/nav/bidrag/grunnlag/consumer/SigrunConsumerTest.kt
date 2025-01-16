@@ -42,7 +42,7 @@ internal class SigrunConsumerTest {
         sigrunConsumer = SigrunConsumer(
             uri,
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -64,7 +64,7 @@ internal class SigrunConsumerTest {
                 uriBuilder(request),
                 HttpMethod.GET,
                 httpEntity,
-                HentSummertSkattegrunnlagResponse::class.java
+                HentSummertSkattegrunnlagResponse::class.java,
             )
         } returns responseEntity
 
@@ -92,7 +92,7 @@ internal class SigrunConsumerTest {
                 uriBuilder(request),
                 HttpMethod.GET,
                 httpEntity,
-                HentSummertSkattegrunnlagResponse::class.java
+                HentSummertSkattegrunnlagResponse::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

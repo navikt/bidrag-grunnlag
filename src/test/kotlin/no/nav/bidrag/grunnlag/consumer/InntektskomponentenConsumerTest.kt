@@ -38,7 +38,7 @@ internal class InntektskomponentenConsumerTest {
         inntektskomponentenConsumer = InntektskomponentenConsumer(
             URI("http://localhost"),
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -60,7 +60,7 @@ internal class InntektskomponentenConsumerTest {
                 "http://localhost/rs/api/v1/hentinntektliste",
                 HttpMethod.POST,
                 httpEntity,
-                HentInntektListeResponse::class.java
+                HentInntektListeResponse::class.java,
             )
         } returns responseEntity
 
@@ -88,7 +88,7 @@ internal class InntektskomponentenConsumerTest {
                 "http://localhost/rs/api/v1/hentinntektliste",
                 HttpMethod.POST,
                 httpEntity,
-                HentInntektListeResponse::class.java
+                HentInntektListeResponse::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

@@ -42,7 +42,7 @@ class FamilieEfSakConsumer(
             ident = request.ident,
             fom = request.fomDato,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse

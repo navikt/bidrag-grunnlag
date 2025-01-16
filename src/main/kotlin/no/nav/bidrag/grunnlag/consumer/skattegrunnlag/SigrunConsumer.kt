@@ -49,7 +49,7 @@ class SigrunConsumer(
             ident = request.personId,
             fom = LocalDate.of(request.inntektsAar.toInt(), 1, 1),
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse

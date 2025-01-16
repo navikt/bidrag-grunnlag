@@ -263,7 +263,6 @@ class HentOgByttUtIdenterTest {
         val request = TestUtil.byggOppdaterGrunnlagspakkeRequestForTreIdenter()
         val innsendtIdent1 = request.grunnlagRequestDtoListe[0].personId
         val innsendtIdent2 = request.grunnlagRequestDtoListe[1].personId
-        val innsendtIdent3 = request.grunnlagRequestDtoListe[2].personId
         val forventetAktivIdent1 = "12345678911"
         val forventetAktivIdent2 = "22345678911"
 
@@ -442,19 +441,4 @@ class HentOgByttUtIdenterTest {
         method.isAccessible = true
         return method.invoke(klasse, *args)
     }
-
-//    private inline fun <reified T> invokePrivateMethod(klasse: KClass<*>, metode: String, vararg args: Any): T? {
-//        val method: KFunction<*>? = klasse.declaredMemberFunctions.find { it.name == metode }
-//
-//        if (method != null) {
-//            method.isAccessible = true
-//            return if (method.parameters.size == args.size) {
-//                method.call(klasse.createInstance(), *args) as? T
-//            } else {
-//                null // Handle mismatched number of parameters
-//            }
-//        }
-//
-//        return null // Method not found
-//    }
 }

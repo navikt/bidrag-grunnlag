@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.domene.enums.barnetilsyn.Skolealder
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.inntekt.Inntektstype
@@ -24,18 +23,14 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Ansettelsesperiode
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidsforhold
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Arbeidssted
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.Identer
-import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.BisysStønadstype
-import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.UtvidetBarnetrygdPeriode
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynBisysPerioder
-import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynRequest
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.BarnetilsynResponse
 import no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode
-import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.BisysResponsDto
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.InfotrygdPeriode
 import no.nav.bidrag.grunnlag.consumer.familiekssak.api.KsSakPeriode
@@ -69,14 +64,10 @@ import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakk
 import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakkeRequestDto
 import no.nav.bidrag.transport.person.ForelderBarnRelasjon
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
-import no.nav.bidrag.transport.person.HentePersonidenterRequest
 import no.nav.bidrag.transport.person.Husstand
 import no.nav.bidrag.transport.person.Husstandsmedlem
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
-import no.nav.bidrag.transport.person.Identgruppe
 import no.nav.bidrag.transport.person.NavnFødselDødDto
-import no.nav.bidrag.transport.person.PersonRequest
-import no.nav.bidrag.transport.person.PersonidentDto
 import no.nav.bidrag.transport.person.SivilstandPdlDto
 import no.nav.bidrag.transport.person.SivilstandPdlHistorikkDto
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
@@ -92,14 +83,7 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListe
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.TilleggsinformasjonDetaljerType
 import okhttp3.internal.immutableListOf
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockHttpServletRequestDsl
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
-import org.springframework.test.web.servlet.result.StatusResultMatchersDsl
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -680,7 +664,7 @@ class TestUtil {
             ),
         )
 
-        fun byggArbeidsstedResponse() = Arbeidssted(
+        private fun byggArbeidsstedResponse() = Arbeidssted(
             identer = listOf(Identer(ident = "orgnr1", type = "ORGANISASJONSNUMMER")),
             type = "Underenhet",
         )
@@ -850,29 +834,6 @@ class TestUtil {
                 inntektType = Inntektstype.LØNNSINNTEKT.toString(),
                 belop = BigDecimal.valueOf(10000),
             ),
-        )
-
-        fun byggFamilieBaSakRequest() = FamilieBaSakRequest(
-            personIdent = "personident",
-            fraDato = LocalDate.now(),
-        )
-
-        fun byggHusstandsmedlemmerRequest() = HusstandsmedlemmerRequest(PersonRequest(Personident("personident")), LocalDate.now())
-
-        fun byggSivilstandRequest() = PersonRequest(Personident("personident"))
-
-        fun byggHentPersonidenterRequest() = HentePersonidenterRequest("personident", setOf(Identgruppe.FOLKEREGISTERIDENT), true)
-
-        fun byggKontantstotteRequest() = BisysDto(
-            LocalDate.now(),
-            listOf(
-                "123",
-            ),
-        )
-
-        fun byggBarnetilsynRequest() = BarnetilsynRequest(
-            "123",
-            LocalDate.now(),
         )
 
         fun byggTilleggsstønadRequest() = TilleggsstønadRequest(
@@ -1378,58 +1339,10 @@ class TestUtil {
             ),
         )
 
-        fun byggHentPersonidenterResponse() = immutableListOf(
-            PersonidentDto(
-                ident = "personident",
-                historisk = false,
-                gruppe = Identgruppe.FOLKEREGISTERIDENT,
-            ),
-            PersonidentDto(
-                ident = "personident_historisk",
-                historisk = true,
-                gruppe = Identgruppe.FOLKEREGISTERIDENT,
-            ),
-        )
-
         fun byggPersonIdOgPeriodeRequest() = PersonIdOgPeriodeRequest(
             personId = "personident",
             periodeFra = LocalDate.parse("2023-01-01"),
             periodeTil = LocalDate.parse("2024-01-01"),
         )
-
-        fun <Request, Response> performRequest(
-            mockMvc: MockMvc,
-            method: HttpMethod,
-            url: String,
-            input: Request?,
-            responseType: Class<Response>,
-            expectedStatus: StatusResultMatchersDsl.() -> Unit,
-        ): Response {
-            val mockHttpServletRequestDsl: MockHttpServletRequestDsl.() -> Unit = {
-                contentType = MediaType.APPLICATION_JSON
-                if (input != null) {
-                    content = when (input) {
-                        is String -> input
-                        else -> ObjectMapper().findAndRegisterModules().writeValueAsString(input)
-                    }
-                }
-                accept = MediaType.APPLICATION_JSON
-            }
-
-            val mvcResult = when (method) {
-                HttpMethod.POST -> mockMvc.post(url) { mockHttpServletRequestDsl() }
-                HttpMethod.GET -> mockMvc.get(url) { mockHttpServletRequestDsl() }
-                else -> throw NotImplementedError()
-            }.andExpect {
-                status { expectedStatus() }
-                content { contentType(MediaType.APPLICATION_JSON) }
-            }.andReturn()
-
-            return when (responseType) {
-                String::class.java -> mvcResult.response.contentAsString as Response
-                else -> ObjectMapper().findAndRegisterModules()
-                    .readValue(mvcResult.response.contentAsString, responseType)
-            }
-        }
     }
 }

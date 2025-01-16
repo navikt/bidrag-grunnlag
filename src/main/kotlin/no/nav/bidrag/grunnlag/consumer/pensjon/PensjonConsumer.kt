@@ -45,7 +45,7 @@ class PensjonConsumer(
             ident = request.mottaker,
             fom = request.fom,
             tom = request.tom,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse

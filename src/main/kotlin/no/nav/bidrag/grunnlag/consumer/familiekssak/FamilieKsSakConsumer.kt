@@ -42,7 +42,7 @@ class FamilieKsSakConsumer(
             ident = request.identer.first(),
             fom = request.fom,
             tom = null,
-            restResponse = restResponse
+            restResponse = restResponse,
         )
 
         return restResponse

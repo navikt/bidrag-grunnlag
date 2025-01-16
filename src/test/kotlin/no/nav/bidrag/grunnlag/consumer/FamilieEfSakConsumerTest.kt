@@ -40,7 +40,7 @@ internal class FamilieEfSakConsumerTest {
         familieEfSakConsumer = FamilieEfSakConsumer(
             URI("http://localhost"),
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -63,7 +63,7 @@ internal class FamilieEfSakConsumerTest {
                 "http://localhost/api/ekstern/bisys/perioder-barnetilsyn",
                 HttpMethod.POST,
                 httpEntity,
-                BarnetilsynResponse::class.java
+                BarnetilsynResponse::class.java,
             )
         } returns responseEntity
 
@@ -92,7 +92,7 @@ internal class FamilieEfSakConsumerTest {
                 "http://localhost/api/ekstern/bisys/perioder-barnetilsyn",
                 HttpMethod.POST,
                 httpEntity,
-                BarnetilsynResponse::class.java
+                BarnetilsynResponse::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 

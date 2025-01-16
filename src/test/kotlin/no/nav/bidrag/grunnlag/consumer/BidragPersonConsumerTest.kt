@@ -55,7 +55,7 @@ internal class BidragPersonConsumerTest {
         bidragPersonConsumer = BidragPersonConsumer(
             URI("http://localhost"),
             restTemplateMock,
-            grunnlagConsumerMock
+            grunnlagConsumerMock,
         )
     }
 
@@ -79,7 +79,7 @@ internal class BidragPersonConsumerTest {
                 "http://localhost/navnfoedseldoed",
                 HttpMethod.POST,
                 httpEntity,
-                NavnFødselDødDto::class.java
+                NavnFødselDødDto::class.java,
             )
         } returns responseEntity
 
@@ -108,7 +108,7 @@ internal class BidragPersonConsumerTest {
                 "http://localhost/navnfoedseldoed",
                 HttpMethod.POST,
                 httpEntity,
-                NavnFødselDødDto::class.java
+                NavnFødselDødDto::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 
@@ -129,9 +129,9 @@ internal class BidragPersonConsumerTest {
                 ForelderBarnRelasjon(
                     minRolleForPerson = Familierelasjon.BARN,
                     relatertPersonsIdent = personident,
-                    relatertPersonsRolle = Familierelasjon.FORELDER
-                )
-            )
+                    relatertPersonsRolle = Familierelasjon.FORELDER,
+                ),
+            ),
         )
         val httpEntity = HttpEntity(request)
         val responseEntity = ResponseEntity(response, HttpStatus.OK)
@@ -147,7 +147,7 @@ internal class BidragPersonConsumerTest {
                 "http://localhost/forelderbarnrelasjon",
                 HttpMethod.POST,
                 httpEntity,
-                ForelderBarnRelasjonDto::class.java
+                ForelderBarnRelasjonDto::class.java,
             )
         } returns responseEntity
 
@@ -183,11 +183,11 @@ internal class BidragPersonConsumerTest {
                             personId = personident,
                             navn = "Navn",
                             fødselsdato = LocalDate.now(),
-                            dødsdato = LocalDate.now()
-                        )
-                    )
-                )
-            )
+                            dødsdato = LocalDate.now(),
+                        ),
+                    ),
+                ),
+            ),
         )
         val httpEntity = HttpEntity(request)
         val responseEntity = ResponseEntity(response, HttpStatus.OK)
@@ -203,7 +203,7 @@ internal class BidragPersonConsumerTest {
                 "http://localhost/husstandsmedlemmer",
                 HttpMethod.POST,
                 httpEntity,
-                HusstandsmedlemmerDto::class.java
+                HusstandsmedlemmerDto::class.java,
             )
         } returns responseEntity
 
@@ -228,9 +228,9 @@ internal class BidragPersonConsumerTest {
                     bekreftelsesdato = LocalDate.now(),
                     master = "",
                     registrert = LocalDateTime.now(),
-                    historisk = false
-                )
-            )
+                    historisk = false,
+                ),
+            ),
         )
         val httpEntity = HttpEntity(request)
         val responseEntity = ResponseEntity(response, HttpStatus.OK)
@@ -246,7 +246,7 @@ internal class BidragPersonConsumerTest {
                 "http://localhost/sivilstand",
                 HttpMethod.POST,
                 httpEntity,
-                SivilstandPdlHistorikkDto::class.java
+                SivilstandPdlHistorikkDto::class.java,
             )
         } returns responseEntity
 
@@ -266,8 +266,8 @@ internal class BidragPersonConsumerTest {
             PersonidentDto(
                 ident = personident.verdi,
                 historisk = false,
-                gruppe = Identgruppe.FOLKEREGISTERIDENT
-            )
+                gruppe = Identgruppe.FOLKEREGISTERIDENT,
+            ),
         )
         val httpEntity = HttpEntity(request)
         val responseEntity = ResponseEntity(response, HttpStatus.OK)
@@ -284,7 +284,7 @@ internal class BidragPersonConsumerTest {
                 "http://localhost/personidenter",
                 HttpMethod.POST,
                 httpEntity,
-                responseType
+                responseType,
             )
         } returns responseEntity
 
