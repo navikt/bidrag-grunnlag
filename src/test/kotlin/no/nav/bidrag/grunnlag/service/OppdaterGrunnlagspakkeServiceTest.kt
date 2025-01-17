@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.person.BarnType
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.domene.ident.Personident
@@ -318,7 +318,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(barnetilleggListe[0].barnPersonId).isEqualTo("barnIdent") },
             {
                 Assertions.assertThat(barnetilleggListe[0].barnetilleggType)
-                    .isEqualTo(Barnetilleggstype.PENSJON.toString())
+                    .isEqualTo(Inntektstype.BARNETILLEGG_PENSJON.toString())
             },
             { Assertions.assertThat(barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-01-01")) },
             { Assertions.assertThat(barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2022-01-01")) },
@@ -329,7 +329,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             { Assertions.assertThat(barnetilleggListe[1].barnPersonId).isEqualTo("barnIdent") },
             {
                 Assertions.assertThat(barnetilleggListe[1].barnetilleggType)
-                    .isEqualTo(Barnetilleggstype.PENSJON.toString())
+                    .isEqualTo(Inntektstype.BARNETILLEGG_PENSJON.toString())
             },
             { Assertions.assertThat(barnetilleggListe[1].periodeFra).isEqualTo(LocalDate.parse("2022-01-01")) },
             { Assertions.assertThat(barnetilleggListe[1].periodeTil).isEqualTo(LocalDate.parse("2023-01-01")) },
@@ -370,7 +370,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
         Mockito.`when`(
-            bidragPersonConsumerMock.hentNavnFoedselOgDoed(
+            bidragPersonConsumerMock.hentNavnFødselOgDød(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
                     Personident::class.java,
                 ),
@@ -452,7 +452,7 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
 
         Mockito.`when`(
-            bidragPersonConsumerMock.hentNavnFoedselOgDoed(
+            bidragPersonConsumerMock.hentNavnFødselOgDød(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(
                     Personident::class.java,
                 ),
@@ -827,11 +827,11 @@ class OppdaterGrunnlagspakkeServiceTest {
                 TestUtil.byggKontantstotte(),
             )
         Mockito.`when`(
-            familieKsSakConsumerMock.hentKontantstotte(
+            familieKsSakConsumerMock.hentKontantstøtte(
                 GrunnlagspakkeServiceMockTest.MockitoHelper.any(BisysDto::class.java),
             ),
         )
-            .thenReturn(RestResponse.Success(TestUtil.byggKontantstotteResponse()))
+            .thenReturn(RestResponse.Success(TestUtil.byggKontantstøtteResponse()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
         val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(

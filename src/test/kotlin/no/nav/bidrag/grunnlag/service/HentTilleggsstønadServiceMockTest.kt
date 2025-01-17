@@ -3,7 +3,7 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
+import no.nav.bidrag.grunnlag.consumer.tilleggsstønad.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.any
 import org.assertj.core.api.Assertions.assertThat

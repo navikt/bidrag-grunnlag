@@ -11,6 +11,7 @@ EREG_URL: http://localhost:${wiremock.server.https-port}/ereg
 BIDRAG_ORGANISASJON_URL: http://localhost:${wiremock.server.port}/organisasjon
 TILLEGGSSTONADERSAK_URL: http://localhost:${wiremock.server.https-port}/tilleggsstonadersak
 NAIS_APP_NAME: bidrag-grunnlag
+
 spring:
   config.activate.on-profile: test, local
   flyway.enabled: false
@@ -19,85 +20,104 @@ spring:
   #  datasource.url: jdbc:h2:file:/Users/R153961/Dev/bidrag-grunnlag/src/main/resources/data
   h2.console.enabled: true
   jpa.hibernate.hbmddl-auto: create-drop
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:${mock-oauth2-server.port}/azure
-      client:
-        registration:
-          familiebasak:
-            provider: aad
-            client-id: someid
-            client-secret: secret
-            authorization-grant-type: client_credentials
-            scope: api://familiebasak/.default
-          pensjon:
-            provider: aad
-            client-id: someid
-            client-secret: secret
-            authorization-grant-type: client_credentials
-            scope: api://pensjon/.default
-          inntektskomponenten:
-            provider: aad
-            client-id: someid
-            client-secret: secret
-            authorization-grant-type: client_credentials
-            scope: api://inntektskomponenten/.default
-          sigrun:
-            provider: aad
-            client-id: someid
-            client-secret: secret
-            authorization-grant-type: client_credentials
-            scope: api://sigrun/.default
-          bidragperson:
-            provider: aad
-            client-id: someid
-            client-secret: secret
-            authorization-grant-type: client_credentials
-            scope: api://person/.default
-          tilleggsstonadersak:
-            provider: aad
-            client-id: someid
-            client-secret: secret
-            authorization-grant-type: client_credentials
-            scope: api://tilleggsstonadersak/.default
-        provider:
-          aad:
-            token-uri: http://localhost:${mock-oauth2-server.port}/azure/token
-            jwk-set-uri: http://localhost:${mock-oauth2-server.port}/azure/jwks
-        aareg:
-            provider: aad
-            client-id: someid
-            client-secret: secret
-            authorization-grant-type: client_credentials
-            scope: api://aareg/.default
 
 no.nav.security.jwt:
   client:
     registration:
       bidrag-organisasjon:
         resource-url: ${BIDRAG_ORGANISASJON_URL}
-        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/azure/token
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: api://org/.default
+        scope: api://123/.default
         authentication:
-          client-id: someid
-          client-secret: secret
-          client-auth-method: client_secret_post
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
       bidrag-person:
         resource-url: ${BIDRAGPERSON_URL}
-        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/azure/token
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: api://org/.default
+        scope: api://123/.default
         authentication:
-          client-id: someid
-          client-secret: secret
-          client-auth-method: client_secret_post
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      familie-ba-sak:
+        resource-url: ${FAMILIEBASAK_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      familie-ef-sak:
+        resource-url: ${FAMILIEEFSAK_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      familie-ks-sak:
+        resource-url: ${FAMILIEKSSAK_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      inntektskomponenten:
+        resource-url: ${INNTEKTSKOMPONENTEN_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      sigrun:
+        resource-url: ${SIGRUN_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      pensjon:
+        resource-url: ${PENSJON_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      arbeidsforhold:
+        resource-url: ${AAREG_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
+      tilleggsstønad:
+        resource-url: ${TILLEGGSSTONADERSAK_URL}
+        token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://123/.default
+        authentication:
+          client-id: 123
+          client-secret: 123
+          client-auth-method: client_secret_basic
   issuer:
     aad:
       discovery_url: http://localhost:${mock-oauth2-server.port}/aad/.well-known/openid-configuration
-      accepted_audience: aud-localhost
+      accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}, aud-localhost
 spring.kafka:
   properties:
     schema:

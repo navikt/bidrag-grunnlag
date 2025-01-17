@@ -21,81 +21,8 @@ management:
 # Live token-support properties.
 #
 ####################################################################
-spring:
-  config.activate.on-profile: live,lokal-nais
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${AZURE_OPENID_CONFIG_ISSUER}
-          accepted-audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}
-      client:
-        registration:
-          familiebasak:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${FAMILIEBASAK_SCOPE}/.default
-          familieefsak:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${FAMILIEEFSAK_SCOPE}/.default
-          familiekssak:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${FAMILIEKSSAK_SCOPE}/.default
-          inntektskomponenten:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${INNTEKTSKOMPONENTEN_SCOPE}/.default
-          sigrun:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${SIGRUN_SCOPE}/.default
-          pensjon:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${PENSJON_SCOPE}/.default
-          kontantstotte:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${KONTANTSTOTTE_SCOPE}/.default
-          bidragperson:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${BIDRAGPERSON_SCOPE}/.default
-          aareg:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${AAREG_SCOPE}/.default
-          tilleggsstonadersak:
-            provider: aad
-            client-id: ${AZURE_APP_CLIENT_ID}
-            client-secret: ${AZURE_APP_CLIENT_SECRET}
-            authorization-grant-type: client_credentials
-            scope: api://${TILLEGGSSTONADERSAK_SCOPE}/.default
-        provider:
-          aad:
-            token-uri: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
-            jwk-set-uri: ${AZURE_OPENID_CONFIG_JWKS_URI}
-# OIDC
+spring.config.activate.on-profile: live,lokal-nais
+
 no.nav.security.jwt:
   client:
     registration:
@@ -117,9 +44,81 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_post
+      familie-ba-sak:
+        resource-url: ${FAMILIEBASAK_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${FAMILIEBASAK_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+      familie-ef-sak:
+        resource-url: ${FAMILIEEFSAK_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${FAMILIEEFSAK_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+      familie-ks-sak:
+        resource-url: ${FAMILIEKSSAK_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${FAMILIEKSSAK_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+      inntektskomponenten:
+        resource-url: ${INNTEKTSKOMPONENTEN_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${INNTEKTSKOMPONENTEN_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+      sigrun:
+        resource-url: ${SIGRUN_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${SIGRUN_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+      pensjon:
+        resource-url: ${PENSJON_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${PENSJON_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+      arbeidsforhold:
+        resource-url: ${AAREG_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${AAREG_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
+      tilleggsstønad:
+        resource-url: ${TILLEGGSSTONADERSAK_URL}
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${TILLEGGSSTONADERSAK_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_post
   issuer:
     aad:
-      discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+      discovery_url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/v2.0/.well-known/openid-configuration
       accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}
 
 ---

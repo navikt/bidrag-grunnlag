@@ -280,7 +280,7 @@ class PeriodComparatorTest {
         val ainntektPeriodComparator = AinntektPeriodComparator()
 
         // Ingen inntekter er like og det finnes en eksisterende inntekt som ligger utenfor ny periode
-        var newEntities = createPeriodEntities(
+        val newEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1)),
             listOf(
                 createAinntektspost(),
@@ -294,8 +294,8 @@ class PeriodComparatorTest {
                 createAinntektspost(),
             ),
         )
-        var ainntektPeriod = Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1))
-        var comparatorResult = ainntektPeriodComparator.comparePeriodEntities(ainntektPeriod, newEntities, existingEntities)
+        val ainntektPeriod = Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1))
+        val comparatorResult = ainntektPeriodComparator.comparePeriodEntities(ainntektPeriod, newEntities, existingEntities)
 
         assertTrue(comparatorResult.expiredEntities.size == 4)
         assertTrue(comparatorResult.equalEntities.isEmpty())
@@ -307,7 +307,7 @@ class PeriodComparatorTest {
         val ainntektPeriodComparator = AinntektPeriodComparator()
 
         // Nye inntekter mangler inntekt for September, men den ligger i eksisterende inntekter.
-        var newEntities = createPeriodEntities(
+        val newEntities = createPeriodEntities(
             Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 9, 1)),
             listOf(
                 createAinntektspost(),
@@ -328,12 +328,12 @@ class PeriodComparatorTest {
                 createAinntektspost(),
             ),
         )
-        var ainntektPeriod = Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1))
+        val ainntektPeriod = Period(LocalDate.of(2021, 8, 1), LocalDate.of(2021, 11, 1))
         val comparatorResult = ainntektPeriodComparator.comparePeriodEntities(ainntektPeriod, newEntities, existingEntities)
 
         assertTrue(comparatorResult.expiredEntities.size == 1)
         assertTrue(comparatorResult.equalEntities.size == 2)
-        assertTrue(comparatorResult.updatedEntities.size == 0)
+        assertTrue(comparatorResult.updatedEntities.isEmpty())
     }
 
     private fun createPeriodEntities(
@@ -367,21 +367,19 @@ class PeriodComparatorTest {
         belop: BigDecimal = BigDecimal(1000),
         etterbetalingsperiodeFom: LocalDate? = null,
         etterbetalingsperiodeTom: LocalDate? = null,
-    ): AinntektspostBo {
-        return AinntektspostBo(
-            utbetalingsperiode = utbetalingsperiode,
-            opptjeningsperiodeFra = opptjeningsperiodeFra,
-            opptjeningsperiodeTil = opptjeningsperiodeTil,
-            opplysningspliktigId = opplysningspliktigId,
-            virksomhetId = virksomhetId,
-            inntektType = inntektType,
-            fordelType = fordelType,
-            beskrivelse = beskrivelse,
-            belop = belop,
-            etterbetalingsperiodeFra = etterbetalingsperiodeFom,
-            etterbetalingsperiodeTil = etterbetalingsperiodeTom,
-        )
-    }
+    ): AinntektspostBo = AinntektspostBo(
+        utbetalingsperiode = utbetalingsperiode,
+        opptjeningsperiodeFra = opptjeningsperiodeFra,
+        opptjeningsperiodeTil = opptjeningsperiodeTil,
+        opplysningspliktigId = opplysningspliktigId,
+        virksomhetId = virksomhetId,
+        inntektType = inntektType,
+        fordelType = fordelType,
+        beskrivelse = beskrivelse,
+        belop = belop,
+        etterbetalingsperiodeFra = etterbetalingsperiodeFom,
+        etterbetalingsperiodeTil = etterbetalingsperiodeTom,
+    )
 
     private fun createPeriodEntitiesSkattegrunnlag(
         period: IPeriod,
@@ -406,11 +404,9 @@ class PeriodComparatorTest {
         skattegrunnlagType: String = "Svalbard",
         inntektType: String = "Lonnsinntekt",
         belop: BigDecimal = BigDecimal(1000),
-    ): SkattegrunnlagspostBo {
-        return SkattegrunnlagspostBo(
-            skattegrunnlagType = skattegrunnlagType,
-            inntektType = inntektType,
-            belop = belop,
-        )
-    }
+    ): SkattegrunnlagspostBo = SkattegrunnlagspostBo(
+        skattegrunnlagType = skattegrunnlagType,
+        inntektType = inntektType,
+        belop = belop,
+    )
 }

@@ -71,8 +71,8 @@ class GrunnlagspakkeService(
         return oppdaterGrunnlagspakkeDto
     }
 
-    private fun harOppdatertGrunnlag(grunnlagTypeResponsListe: List<OppdaterGrunnlagDto>): Boolean {
-        return grunnlagTypeResponsListe.any { it.status == GrunnlagRequestStatus.HENTET }
+    private fun harOppdatertGrunnlag(grunnlagTypeResponsListe: List<OppdaterGrunnlagDto>): Boolean = grunnlagTypeResponsListe.any {
+        it.status == GrunnlagRequestStatus.HENTET
     }
 
     // Henter historiske identer for personer i grunnlagspakke-requesten. Returnerer en map hvor key = aktiv ident og
@@ -105,8 +105,8 @@ class GrunnlagspakkeService(
     }
 
     // Henter historiske identer for personen. Returnerer en liste med historiske identer (inklusiv den aktive identen)
-    private fun hentIdenterFraConsumer(personId: String): List<HistoriskIdent> {
-        return when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)) {
+    private fun hentIdenterFraConsumer(personId: String): List<HistoriskIdent> =
+        when (val response = bidragPersonConsumer.hentPersonidenter(personident = Personident(personId), inkludereHistoriske = true)) {
             is RestResponse.Success -> {
                 val personidenterResponse = response.body
                 SECURE_LOGGER.info(
@@ -126,7 +126,6 @@ class GrunnlagspakkeService(
                 listOf(HistoriskIdent(personId, false))
             }
         }
-    }
 
     // Bytter ut identer i grunnlagspakke-requesten med aktiv ident for personen
     private fun byttUtIdentMedAktivIdent(
@@ -169,13 +168,6 @@ class GrunnlagspakkeService(
     }
 }
 
-data class PersonIdOgPeriodeRequest(
-    val personId: String,
-    val periodeFra: LocalDate,
-    val periodeTil: LocalDate,
-)
+data class PersonIdOgPeriodeRequest(val personId: String, val periodeFra: LocalDate, val periodeTil: LocalDate)
 
-data class HistoriskIdent(
-    val personId: String,
-    val historisk: Boolean,
-)
+data class HistoriskIdent(val personId: String, val historisk: Boolean)

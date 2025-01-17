@@ -84,7 +84,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                         null
                     }
 
-                    val forelderBarnRelasjoner =
+                    val forelderBarnRelasjon =
                         forelderBarnRelasjoner.firstOrNull { it.relatertPersonsIdent?.verdi == person.personId }?.relatertPersonsRolle
 
                     relatertPersonInternListe.add(
@@ -95,7 +95,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                             navn = person.navn,
                             fødselsdato = person.fodselsdato,
                             erBarnAvBmBp = barnListe.any { it.personId == person.personId },
-                            relasjon = relasjonEktefelle ?: relasjonMotpartFellesBarn ?: forelderBarnRelasjoner ?: Familierelasjon.INGEN,
+                            relasjon = relasjonEktefelle ?: relasjonMotpartFellesBarn ?: forelderBarnRelasjon ?: Familierelasjon.INGEN,
                             husstandsmedlemPeriodeFra =
                             if (husstandsmedlemmerListe.any { it.personId == person.personId }) {
                                 person.husstandsmedlemPeriodeFra
@@ -283,7 +283,7 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
         val navnFødselDødDto: NavnFødselDødDto
 
         when (
-            val restResponseFoedselOgDoed = bidragPersonConsumer.hentNavnFoedselOgDoed(personident)
+            val restResponseFoedselOgDoed = bidragPersonConsumer.hentNavnFødselOgDød(personident)
         ) {
             is RestResponse.Success -> {
                 val foedselOgDoedResponse = restResponseFoedselOgDoed.body

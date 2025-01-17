@@ -6,10 +6,9 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.runs
-import no.nav.bidrag.grunnlag.TestUtil
-import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
-import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
-import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -25,21 +24,21 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @ExtendWith(MockKExtension::class)
-@DisplayName("SigrunConsumerTest")
-internal class SigrunConsumerTest {
+@DisplayName("EnhetsregisterConsumerTest")
+internal class EnhetsregisterConsumerTest {
     @MockK
     private lateinit var restTemplateMock: RestTemplate
 
     @MockK
     private lateinit var grunnlagConsumerMock: GrunnlagConsumer
 
-    private lateinit var sigrunConsumer: SigrunConsumer
+    private lateinit var enhetsregisterConsumer: EnhetsregisterConsumer
 
     private val uri = URI("http://localhost")
 
     @BeforeEach
     fun setup() {
-        sigrunConsumer = SigrunConsumer(
+        enhetsregisterConsumer = EnhetsregisterConsumer(
             uri,
             restTemplateMock,
             grunnlagConsumerMock,
@@ -47,16 +46,17 @@ internal class SigrunConsumerTest {
     }
 
     @Test
-    fun `hentSummertSkattegrunnlag skal returnere ok respons`() {
-        val request = TestUtil.byggHentSkattegrunnlagRequest()
-        val response = TestUtil.byggHentSkattegrunnlagResponse()
+    fun `hentEnhetsinfo skal returnere ok respons`() {
+        val organisasjonsnummer = "12345678"
+        val request = HentEnhetsregisterRequest(organisasjonsnummer = organisasjonsnummer)
+        val response = HentEnhetsregisterResponse(organisasjonsnummer = organisasjonsnummer)
         val httpEntity = HttpEntity(request)
         val responseEntity = ResponseEntity(response, HttpStatus.OK)
 
-        every { grunnlagConsumerMock.initHttpEntitySkattegrunnlag(request, request.personId) } returns httpEntity
+        every { grunnlagConsumerMock.initHttpEntityEreg(request) } returns httpEntity
 
         every {
-            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<HentSummertSkattegrunnlagResponse>>())
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<HentEnhetsregisterResponse>>())
         } just runs
 
         every {
@@ -64,12 +64,12 @@ internal class SigrunConsumerTest {
                 uriBuilder(request),
                 HttpMethod.GET,
                 httpEntity,
-                HentSummertSkattegrunnlagResponse::class.java,
+                HentEnhetsregisterResponse::class.java,
             )
         } returns responseEntity
 
         // Consumer-kall
-        val restResponse = sigrunConsumer.hentSummertSkattegrunnlag(request)
+        val restResponse = enhetsregisterConsumer.hentEnhetsinfo(request)
 
         // Assertions
         restResponse is RestResponse.Success
@@ -77,14 +77,15 @@ internal class SigrunConsumerTest {
     }
 
     @Test
-    fun `hentSummertSkattegrunnlag skal håndtere exception`() {
-        val request = TestUtil.byggHentSkattegrunnlagRequest()
+    fun `hentEnhetsinfo skal håndtere exception`() {
+        val organisasjonsnummer = "12345678"
+        val request = HentEnhetsregisterRequest(organisasjonsnummer = organisasjonsnummer)
         val httpEntity = HttpEntity(request)
 
-        every { grunnlagConsumerMock.initHttpEntitySkattegrunnlag(body = request, ident = request.personId) } returns httpEntity
+        every { grunnlagConsumerMock.initHttpEntityEreg(request) } returns httpEntity
 
         every {
-            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<HentSummertSkattegrunnlagResponse>>())
+            grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<HentEnhetsregisterResponse>>())
         } just runs
 
         every {
@@ -92,24 +93,26 @@ internal class SigrunConsumerTest {
                 uriBuilder(request),
                 HttpMethod.GET,
                 httpEntity,
-                HentSummertSkattegrunnlagResponse::class.java,
+                HentEnhetsregisterResponse::class.java,
             )
         } throws HttpClientErrorException(HttpStatus.BAD_REQUEST)
 
         // Consumer-kall
-        val restResponse = sigrunConsumer.hentSummertSkattegrunnlag(request)
+        val restResponse = enhetsregisterConsumer.hentEnhetsinfo(request)
 
         // Assertions
         restResponse is RestResponse.Failure
         (restResponse as RestResponse.Failure).statusCode shouldBe HttpStatus.BAD_REQUEST
     }
 
-    private fun uriBuilder(request: HentSummertSkattegrunnlagRequest) = UriComponentsBuilder
+    private fun uriBuilder(request: HentEnhetsregisterRequest) = UriComponentsBuilder
         .fromUri(uri)
-        .pathSegment("api/v2/summertskattegrunnlag")
-        .queryParam("rettighetspakke", "navBidrag")
-        .queryParam("inntektsaar", request.inntektsAar)
-        .queryParam("stadie", "oppgjoer")
+        .pathSegment(byggEregUrl(request))
         .build()
         .toUriString()
+
+    private fun byggEregUrl(request: HentEnhetsregisterRequest): String {
+        val url = "v2/organisasjon/${request.organisasjonsnummer}/noekkelinfo"
+        return if (!request.gyldigDato.isNullOrBlank()) url.plus("?gyldigDato=${request.gyldigDato}") else url
+    }
 }

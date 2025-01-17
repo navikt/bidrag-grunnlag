@@ -1,7 +1,7 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.person.BarnType
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.api.BarnetilleggPensjon
@@ -70,7 +70,7 @@ class HentBarnetilleggService(private val pensjonConsumer: PensjonConsumer) {
                 BarnetilleggGrunnlagDto(
                     partPersonId = ident,
                     barnPersonId = it.barn,
-                    barnetilleggType = Barnetilleggstype.PENSJON.toString(),
+                    barnetilleggType = Inntektstype.BARNETILLEGG_PENSJON.toString(),
                     periodeFra = it.fom,
                     periodeTil = it.tom.plusMonths(1).withDayOfMonth(1) ?: null,
                     beløpBrutto = it.beloep,

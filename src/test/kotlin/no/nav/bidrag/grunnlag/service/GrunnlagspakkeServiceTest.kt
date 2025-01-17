@@ -1,6 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
+import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
 import no.nav.bidrag.domene.enums.vedtak.Formål
@@ -252,7 +252,7 @@ class GrunnlagspakkeServiceTest {
                 grunnlagspakkeId = grunnlagspakkeIdOpprettet,
                 partPersonId = "22334455",
                 barnPersonId = "1234567",
-                barnetilleggType = Barnetilleggstype.PENSJON.toString(),
+                barnetilleggType = Inntektstype.BARNETILLEGG_PENSJON.toString(),
                 periodeFra = LocalDate.parse("2021-05-01"),
                 periodeTil = LocalDate.parse("2021-06-01"),
                 belopBrutto = BigDecimal.valueOf(1000.01),
@@ -291,10 +291,10 @@ class GrunnlagspakkeServiceTest {
             },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].opplysningspliktigId).isEqualTo("1234567890") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].virksomhetId).isEqualTo("222444666") },
-            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].inntektType).isEqualTo("Loenn") },
+            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].kategori).isEqualTo("Loenn") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].fordelType).isEqualTo("Kontantytelse") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].beskrivelse).isEqualTo("Loenn/fastloenn") },
-            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].belop).isEqualTo(BigDecimal.valueOf(17000.01)) },
+            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].beløp).isEqualTo(BigDecimal.valueOf(17000.01)) },
             Executable {
                 assertThat(
                     grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[0].etterbetalingsperiodeFra,
@@ -319,10 +319,10 @@ class GrunnlagspakkeServiceTest {
             },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].opplysningspliktigId).isEqualTo("1234567890") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].virksomhetId).isEqualTo("222444666") },
-            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].inntektType).isEqualTo("Loenn") },
+            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].kategori).isEqualTo("Loenn") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].fordelType).isEqualTo("Kontantytelse") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].beskrivelse).isEqualTo("Loenn/ferieLoenn") },
-            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].belop).isEqualTo(BigDecimal.valueOf(50000.01)) },
+            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].beløp).isEqualTo(BigDecimal.valueOf(50000.01)) },
             Executable {
                 assertThat(
                     grunnlagspakkeFunnet.ainntektListe[0].ainntektspostListe[1].etterbetalingsperiodeFra,
@@ -348,10 +348,10 @@ class GrunnlagspakkeServiceTest {
             },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].opplysningspliktigId).isEqualTo("9876543210") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].virksomhetId).isEqualTo("666444222") },
-            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].inntektType).isEqualTo("Loenn") },
+            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].kategori).isEqualTo("Loenn") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].fordelType).isEqualTo("Kontantytelse") },
             Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].beskrivelse).isEqualTo("Loenn/fastloenn") },
-            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].belop).isEqualTo(BigDecimal.valueOf(666000.01)) },
+            Executable { assertThat(grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].beløp).isEqualTo(BigDecimal.valueOf(666000.01)) },
             Executable {
                 assertThat(
                     grunnlagspakkeFunnet.ainntektListe[1].ainntektspostListe[0].etterbetalingsperiodeFra,
@@ -370,12 +370,12 @@ class GrunnlagspakkeServiceTest {
                     grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].skattegrunnlagType,
                 ).isEqualTo(Skattegrunnlagstype.ORDINÆR.toString())
             },
-            Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].inntektType).isEqualTo("Loenn") },
+            Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].kode).isEqualTo("Loenn") },
             Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].aktiv).isEqualTo(true) },
             Executable { assertThat(grunnlagspakkeFunnet.skattegrunnlagListe[0].brukTil).isNull() },
             Executable {
                 assertThat(
-                    grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].belop,
+                    grunnlagspakkeFunnet.skattegrunnlagListe[0].skattegrunnlagListe[0].beløp,
                 ).isEqualTo(BigDecimal.valueOf(23456.01))
             },
 
@@ -391,7 +391,7 @@ class GrunnlagspakkeServiceTest {
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe.size).isEqualTo(1) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].partPersonId).isEqualTo("22334455") },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnPersonId).isEqualTo("1234567") },
-            Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo(Barnetilleggstype.PENSJON.toString()) },
+            Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].barnetilleggType).isEqualTo(Inntektstype.BARNETILLEGG_PENSJON.toString()) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].periodeFra).isEqualTo(LocalDate.parse("2021-05-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].periodeTil).isEqualTo(LocalDate.parse("2021-06-01")) },
             Executable { assertThat(grunnlagspakkeFunnet.barnetilleggListe[0].aktiv).isEqualTo(true) },

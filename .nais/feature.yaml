@@ -15,7 +15,8 @@ azure:
   sigrun_scope: dev-fss.team-inntekt.sigrun-q1
   pensjon_url: pensjon-pen-q1.dev-fss-pub.nais.io
   pensjon_scope: dev-fss.pensjon-q1.pensjon-pen-q1
-  bidragperson_url: bidrag-person-feature.dev-fss-pub.nais.io
+  bidragperson_base_url: bidrag-person-feature.dev-fss-pub.nais.io
+  bidragperson_url: bidrag-person-feature.dev-fss-pub.nais.io/bidrag-person
   bidragperson_scope: dev-fss.bidrag.bidrag-person-feature
   bidragperson_app: bidrag-person-feature
   bidragperson_cluster: dev-fss

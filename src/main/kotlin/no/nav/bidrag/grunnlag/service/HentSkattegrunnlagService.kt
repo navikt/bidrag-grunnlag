@@ -69,7 +69,6 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
                             (restResponseSkattegrunnlag.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
                             (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message))
                         ) {
-//                            SECURE_LOGGER.info("Fant ikke skattegrunnlag for ${it.personId} og år $inntektÅr")
                             skattegrunnlagListe.add(
                                 SkattegrunnlagGrunnlagDto(
                                     personId = it.personId,

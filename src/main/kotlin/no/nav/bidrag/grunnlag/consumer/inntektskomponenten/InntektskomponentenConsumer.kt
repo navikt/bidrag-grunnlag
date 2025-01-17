@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.consumer.inntektskomponenten
 
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
+import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
 import no.nav.bidrag.grunnlag.consumer.inntektskomponenten.api.HentInntektListeRequest
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
@@ -11,36 +11,45 @@ import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer
 import no.nav.tjenester.aordningen.inntektsinformasjon.AktoerType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
-private const val INNTEKT_LISTE_CONTEXT = "/rs/api/v1/hentinntektliste"
-private const val DETALJERTE_ABONNERTE_INNTEKTER_CONTEXT = "/rs/api/v1/hentdetaljerteabonnerteinntekter"
+@Service
+class InntektskomponentenConsumer(
+    @Value("\${INNTEKTSKOMPONENTEN_URL}") inntektskomponentenUrl: URI,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    private val grunnlagConsumer: GrunnlagConsumer,
+) : AbstractRestClient(restTemplate, "inntektskomponenten") {
 
-open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
+    private val hentInntekterUri =
+        UriComponentsBuilder
+            .fromUri(inntektskomponentenUrl)
+            .pathSegment("rs/api/v1/hentinntektliste")
+            .build()
+            .toUriString()
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(InntektskomponentenConsumer::class.java)
-    }
+    private val hentAbonnerteInntekterUri =
+        UriComponentsBuilder
+            .fromUri(inntektskomponentenUrl)
+            .pathSegment("rs/api/v1/hentdetaljerteabonnerteinntekter")
+            .build()
+            .toUriString()
 
-    open fun hentInntekter(request: HentInntektListeRequest, abonnerteInntekterRequest: Boolean): RestResponse<HentInntektListeResponse> {
-        if (abonnerteInntekterRequest) {
-            LOGGER.debug("Henter abonnerte inntekter fra Inntektskomponenten.")
-        } else {
-            LOGGER.debug("Henter inntekter fra Inntektskomponenten.")
-        }
-        SECURE_LOGGER.info("HentInntektListeRequest: $request")
-        val url = if (abonnerteInntekterRequest) DETALJERTE_ABONNERTE_INNTEKTER_CONTEXT else INNTEKT_LISTE_CONTEXT
+    fun hentInntekter(request: HentInntektListeRequest, abonnerteInntekterRequest: Boolean): RestResponse<HentInntektListeResponse> {
+        val url = if (abonnerteInntekterRequest) hentAbonnerteInntekterUri else hentInntekterUri
 
         val restResponse = restTemplate.tryExchange(
-            url,
-            HttpMethod.POST,
-            initHttpEntityInntektskomponenten(request),
-            HentInntektListeResponse::class.java,
-            HentInntektListeResponse(emptyList(), Aktoer(request.ident.identifikator, AktoerType.NATURLIG_IDENT)),
+            url = url,
+            httpMethod = HttpMethod.POST,
+            httpEntity = grunnlagConsumer.initHttpEntityInntektskomponenten(request),
+            responseType = HentInntektListeResponse::class.java,
+            fallbackBody = HentInntektListeResponse(emptyList(), Aktoer(request.ident.identifikator, AktoerType.NATURLIG_IDENT)),
         )
 
         when (restResponse) {
@@ -89,7 +98,7 @@ open class InntektskomponentenConsumer(private val restTemplate: HttpHeaderRestT
             }
         }
 
-        logResponse(SECURE_LOGGER, restResponse)
+        grunnlagConsumer.logResponse(logger = SECURE_LOGGER, restResponse = restResponse)
 
         return restResponse
     }

@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
-import no.nav.bidrag.grunnlag.ISSUER
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
@@ -17,7 +16,7 @@ import no.nav.bidrag.transport.behandling.grunnlag.request.OpprettGrunnlagspakke
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.HentGrunnlagspakkeDto
 import no.nav.bidrag.transport.behandling.grunnlag.response.OppdaterGrunnlagspakkeDto
-import no.nav.security.token.support.core.api.ProtectedWithClaims
+import no.nav.security.token.support.core.api.Protected
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -26,11 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@ProtectedWithClaims(issuer = ISSUER)
-class GrunnlagController(
-    private val grunnlagspakkeService: GrunnlagspakkeService,
-    private val hentGrunnlagService: HentGrunnlagService,
-) {
+@Protected
+class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeService, private val hentGrunnlagService: HentGrunnlagService) {
 
     @PostMapping(GRUNNLAGSPAKKE_NY)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")

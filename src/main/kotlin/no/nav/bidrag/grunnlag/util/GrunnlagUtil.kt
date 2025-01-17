@@ -15,19 +15,15 @@ import java.text.SimpleDateFormat
 open class GrunnlagUtil {
 
     companion object {
-        const val BIDRAG_FILTER = "BidragA-Inntekt"
-        const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
-        const val BIDRAG_FORMAAL = "Bidrag"
-        const val FORSKUDD_FORMAAL = "Bidragsforskudd"
+        private const val BIDRAG_FILTER = "BidragA-Inntekt"
+        private const val FORSKUDD_FILTER = "BidragsforskuddA-Inntekt"
+        private const val BIDRAG_FORMAAL = "Bidrag"
+        private const val FORSKUDD_FORMAAL = "Bidragsforskudd"
         const val JANUAR2015 = "2015-01"
 
-        fun finnFilter(formaal: String): String {
-            return if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
-        }
+        fun finnFilter(formaal: String): String = if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FILTER else BIDRAG_FILTER
 
-        fun finnFormaal(formaal: String): String {
-            return if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
-        }
+        fun finnFormaal(formaal: String): String = if (formaal == Formål.FORSKUDD.toString()) FORSKUDD_FORMAAL else BIDRAG_FORMAAL
 
         // BNR / NPID har måned 21-32
         fun erBnrEllerNpid(fnr: String): Boolean {
@@ -103,15 +99,14 @@ open class GrunnlagUtil {
             }
         }
 
-        fun evaluerFeiltype(melding: String?, httpStatuskode: HttpStatusCode): HentGrunnlagFeiltype {
-            return if (melding?.contains("Fant ikke person") == true) {
+        fun evaluerFeiltype(melding: String?, httpStatuskode: HttpStatusCode): HentGrunnlagFeiltype =
+            if (melding?.contains("Fant ikke person") == true) {
                 HentGrunnlagFeiltype.FUNKSJONELL_FEIL
             } else if ((httpStatuskode.is5xxServerError) || (httpStatuskode == HttpStatus.UNAUTHORIZED) || (httpStatuskode == HttpStatus.FORBIDDEN)) {
                 HentGrunnlagFeiltype.TEKNISK_FEIL
             } else {
                 HentGrunnlagFeiltype.FUNKSJONELL_FEIL
             }
-        }
 
         fun <T> any(type: Class<T>): T = Mockito.any(type)
 

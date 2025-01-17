@@ -1,43 +1,53 @@
 package no.nav.bidrag.grunnlag.consumer.arbeidsforhold
 
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate
-import no.nav.bidrag.grunnlag.SECURE_LOGGER
-import no.nav.bidrag.grunnlag.consumer.GrunnlagsConsumer
+import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.exception.tryExchange
-import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
-open class EnhetsregisterConsumer(private val restTemplate: HttpHeaderRestTemplate) : GrunnlagsConsumer() {
+@Service
+class EnhetsregisterConsumer(
+    @Value("\${EREG_URL}") private val eregUrl: URI,
+    private val restTemplate: RestTemplate,
+    private val grunnlagConsumer: GrunnlagConsumer,
+) {
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(EnhetsregisterConsumer::class.java)
-    }
-
-    open fun hentEnhetsinfo(request: HentEnhetsregisterRequest): RestResponse<HentEnhetsregisterResponse> {
-        LOGGER.info("Henter info om en organisasjon fra Ereg")
-        SECURE_LOGGER.info("Henter info om en organisasjon fra Ereg med request: ${tilJson(request)}")
+    fun hentEnhetsinfo(request: HentEnhetsregisterRequest): RestResponse<HentEnhetsregisterResponse> {
+        val hentEnhetsinfoUri =
+            UriComponentsBuilder
+                .fromUri(eregUrl)
+                .pathSegment(byggEregUrl(request))
+                .build()
+                .toUriString()
 
         val restResponse = restTemplate.tryExchange(
-            byggEregUrl(request),
-            HttpMethod.GET,
-            initHttpEntityEreg(request),
-            HentEnhetsregisterResponse::class.java,
-            HentEnhetsregisterResponse(),
+            url = hentEnhetsinfoUri,
+            httpMethod = HttpMethod.GET,
+            httpEntity = grunnlagConsumer.initHttpEntityEreg(request),
+            responseType = HentEnhetsregisterResponse::class.java,
+            fallbackBody = HentEnhetsregisterResponse(),
         )
 
-        logResponse("Enhetsregister", request.organisasjonsnummer, null, null, restResponse)
+        grunnlagConsumer.logResponse(
+            type = "Enhetsregister",
+            ident = request.organisasjonsnummer,
+            fom = null,
+            tom = null,
+            restResponse = restResponse,
+        )
 
         return restResponse
     }
 
     private fun byggEregUrl(request: HentEnhetsregisterRequest): String {
-        val url = "/v2/organisasjon/${request.organisasjonsnummer}/noekkelinfo"
+        val url = "v2/organisasjon/${request.organisasjonsnummer}/noekkelinfo"
         return if (!request.gyldigDato.isNullOrBlank()) url.plus("?gyldigDato=${request.gyldigDato}") else url
     }
 }

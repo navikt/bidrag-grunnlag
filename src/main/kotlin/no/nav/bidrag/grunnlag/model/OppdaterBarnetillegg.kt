@@ -1,8 +1,8 @@
 package no.nav.bidrag.grunnlag.model
 
-import no.nav.bidrag.domene.enums.barnetillegg.Barnetilleggstype
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
+import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.person.BarnType
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.BarnetilleggBo
@@ -59,7 +59,7 @@ class OppdaterBarnetillegg(
                                     grunnlagspakkeId = grunnlagspakkeId,
                                     partPersonId = personIdOgPeriode.personId,
                                     barnPersonId = bt.barn,
-                                    barnetilleggType = Barnetilleggstype.PENSJON.toString(),
+                                    barnetilleggType = Inntektstype.BARNETILLEGG_PENSJON.toString(),
                                     periodeFra = bt.fom,
                                     // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
                                     periodeTil = bt.tom.plusMonths(1)?.withDayOfMonth(1),

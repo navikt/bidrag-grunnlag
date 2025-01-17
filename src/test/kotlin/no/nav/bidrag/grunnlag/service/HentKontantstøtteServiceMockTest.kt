@@ -28,7 +28,7 @@ class HentKontantstøtteServiceMockTest {
 
     @Test
     fun `Skal returnere grunnlag og ikke feil når consumer-response er SUCCESS`() {
-        Mockito.`when`(kontantstøtteConsumerMock.hentKontantstotte(any())).thenReturn(RestResponse.Success(TestUtil.byggKontantstotteResponse()))
+        Mockito.`when`(kontantstøtteConsumerMock.hentKontantstøtte(any())).thenReturn(RestResponse.Success(TestUtil.byggKontantstøtteResponse()))
 
         val kontantstøtteRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 
@@ -37,7 +37,7 @@ class HentKontantstøtteServiceMockTest {
             historiskeIdenterMap = emptyMap(),
         )
 
-        Mockito.verify(kontantstøtteConsumerMock, Mockito.times(1)).hentKontantstotte(any())
+        Mockito.verify(kontantstøtteConsumerMock, Mockito.times(1)).hentKontantstøtte(any())
 
         assertAll(
             { assertThat(kontantstøtteListe).isNotNull() },
@@ -52,7 +52,7 @@ class HentKontantstøtteServiceMockTest {
 
     @Test
     fun `Skal returnere feil og tomt grunnlag fra kontantstøtte når consumer-response er FAILURE`() {
-        Mockito.`when`(kontantstøtteConsumerMock.hentKontantstotte(any())).thenReturn(
+        Mockito.`when`(kontantstøtteConsumerMock.hentKontantstøtte(any())).thenReturn(
             RestResponse.Failure(
                 message = "Ikke funnet",
                 statusCode = HttpStatus.NOT_FOUND,
@@ -67,7 +67,7 @@ class HentKontantstøtteServiceMockTest {
             historiskeIdenterMap = emptyMap(),
         )
 
-        Mockito.verify(kontantstøtteConsumerMock, Mockito.times(1)).hentKontantstotte(any())
+        Mockito.verify(kontantstøtteConsumerMock, Mockito.times(1)).hentKontantstøtte(any())
 
         assertAll(
             { assertThat(kontantstøtteListe).isNotNull() },

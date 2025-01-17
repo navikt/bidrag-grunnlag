@@ -5,6 +5,7 @@ import no.nav.bidrag.domene.enums.grunnlag.HentGrunnlagFeiltype
 import no.nav.bidrag.grunnlag.TestUtil
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
+import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.any
 import org.assertj.core.api.Assertions.assertThat
@@ -33,6 +34,7 @@ class HentArbeidsforholdServiceMockTest {
     @Test
     fun `Skal returnere grunnlag og ikke feil når consumer-response er SUCCESS`() {
         Mockito.`when`(arbeidsforholdConsumerMock.hentArbeidsforhold(any())).thenReturn(RestResponse.Success(TestUtil.byggArbeidsforholdResponse()))
+        Mockito.`when`(enhetsregisterConsumerMock.hentEnhetsinfo(any())).thenReturn(RestResponse.Success(HentEnhetsregisterResponse()))
 
         val arbeidsforholdRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 

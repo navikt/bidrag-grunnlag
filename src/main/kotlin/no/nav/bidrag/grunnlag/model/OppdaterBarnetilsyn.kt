@@ -114,13 +114,17 @@ class OppdaterBarnetilsyn(
         val dateFormatter = DateTimeFormatter.ofPattern("ddMMyy")
         val fodselsdato = LocalDate.parse(barnIdent.substring(IntRange(0, 5)), dateFormatter)
 
-        if (alderErOver7Ar(fodselsdato) || (
-                alderEr6Ar(fodselsdato) || (
-                    alderEr5Ar(fodselsdato) && fodtEtterForsteAugust(
-                        fodselsdato,
-                    )
-                    )
-                ) && barnetilsynGjelderFraFomForsteAugust(fom)
+        if (alderErOver7Ar(fodselsdato) ||
+            (
+                alderEr6Ar(fodselsdato) ||
+                    (
+                        alderEr5Ar(fodselsdato) &&
+                            fodtEtterForsteAugust(
+                                fodselsdato,
+                            )
+                        )
+                ) &&
+            barnetilsynGjelderFraFomForsteAugust(fom)
         ) {
             return Skolealder.OVER
         }

@@ -13,7 +13,6 @@ import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterResp
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.bidragperson.api.HusstandsmedlemmerRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
-import no.nav.bidrag.grunnlag.consumer.familiebasak.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakRequest
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.FamilieBaSakResponse
 import no.nav.bidrag.grunnlag.consumer.familiebasak.api.TilleggsstønadRequest
@@ -32,6 +31,7 @@ import no.nav.bidrag.grunnlag.consumer.pensjon.api.HentBarnetilleggPensjonReques
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagRequest
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api.HentSummertSkattegrunnlagResponse
+import no.nav.bidrag.grunnlag.consumer.tilleggsstønad.TilleggsstønadConsumer
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.person.ForelderBarnRelasjonDto
 import no.nav.bidrag.transport.person.HusstandsmedlemmerDto
@@ -94,7 +94,7 @@ class IntegrasjonsController(
         summary = "Kaller bidrag-person som igjen henter info om fødselsdato og eventuell død fra PDL",
     )
     fun hentFoedselOgDoed(@RequestBody bidragPersonident: Personident): ResponseEntity<NavnFødselDødDto> =
-        handleRestResponse(bidragPersonConsumer.hentNavnFoedselOgDoed(bidragPersonident))
+        handleRestResponse(bidragPersonConsumer.hentNavnFødselOgDød(bidragPersonident))
 
     @PostMapping(HENT_FORELDER_BARN_RELASJON)
     @Operation(
@@ -124,7 +124,7 @@ class IntegrasjonsController(
     @PostMapping(HENT_KONTANTSTOTTE)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Kaller familie-ks-sak for å hente kontantstotte")
     fun hentKontantstotte(@RequestBody innsynRequest: BisysDto): ResponseEntity<BisysResponsDto> =
-        handleRestResponse(familieKsSakConsumer.hentKontantstotte(innsynRequest))
+        handleRestResponse(familieKsSakConsumer.hentKontantstøtte(innsynRequest))
 
     @PostMapping(HENT_BARNETILSYN)
     @Operation(

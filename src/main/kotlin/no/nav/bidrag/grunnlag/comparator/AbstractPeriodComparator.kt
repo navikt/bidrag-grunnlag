@@ -2,22 +2,15 @@ package no.nav.bidrag.grunnlag.comparator
 
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.util.toJsonString
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.time.LocalDate
 
 abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
 
-    companion object {
-        @JvmStatic
-        val LOGGER: Logger = LoggerFactory.getLogger(AbstractPeriodComparator::class.java)
-    }
-
-    private fun isInsidePeriod(requestedPeriod: IPeriod, existingPeriod: IPeriod): Boolean {
-        return existingPeriod.periodeFra.isAfterOrEqual(requestedPeriod.periodeFra) && existingPeriod.periodeTil
-            .isBeforeOrEqual(requestedPeriod.periodeTil)
-    }
+    private fun isInsidePeriod(requestedPeriod: IPeriod, existingPeriod: IPeriod): Boolean =
+        existingPeriod.periodeFra.isAfterOrEqual(requestedPeriod.periodeFra) &&
+            existingPeriod.periodeTil
+                .isBeforeOrEqual(requestedPeriod.periodeTil)
 
     fun comparePeriodEntities(requestedPeriod: IPeriod, newEntities: List<T>, existingEntities: List<T>): ComparatorResult<T> {
         val expiredEntities = mutableListOf<T>()
@@ -68,12 +61,11 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
         return differences
     }
 
-    private fun findEntityWithEqualPeriod(periodEntity: T, periodEntities: List<T>): T? {
-        return periodEntities.find { t ->
-            t.periodEntity.periodeFra.isEqual(periodEntity.periodEntity.periodeFra) && t.periodEntity.periodeTil.isEqual(
+    private fun findEntityWithEqualPeriod(periodEntity: T, periodEntities: List<T>): T? = periodEntities.find { t ->
+        t.periodEntity.periodeFra.isEqual(periodEntity.periodEntity.periodeFra) &&
+            t.periodEntity.periodeTil.isEqual(
                 periodEntity.periodEntity.periodeTil,
             )
-        }
     }
 
     private fun filterEntitiesByPeriod(
@@ -93,9 +85,8 @@ abstract class AbstractPeriodComparator<T : PeriodComparable<*, *>> {
         return filteredEntities
     }
 
-    private fun periodEntityStillExists(existingEntity: T, newEntities: List<T>): Boolean {
-        return findEntityWithEqualPeriod(existingEntity, newEntities) != null
-    }
+    private fun periodEntityStillExists(existingEntity: T, newEntities: List<T>): Boolean =
+        findEntityWithEqualPeriod(existingEntity, newEntities) != null
 
     abstract fun isEntitiesEqual(newEntity: T, existingEntity: T): Boolean
 }
@@ -109,16 +100,8 @@ class Period(override val periodeFra: LocalDate, override val periodeTil: LocalD
 
 open class PeriodComparable<PeriodEntity : IPeriod, Child>(val periodEntity: PeriodEntity, val children: List<Child>?)
 
-class ComparatorResult<T : PeriodComparable<*, *>>(
-    val expiredEntities: List<T>,
-    val updatedEntities: List<T>,
-    val equalEntities: List<T>,
-)
+class ComparatorResult<T : PeriodComparable<*, *>>(val expiredEntities: List<T>, val updatedEntities: List<T>, val equalEntities: List<T>)
 
-fun LocalDate.isAfterOrEqual(startDate: LocalDate): Boolean {
-    return this >= startDate
-}
+fun LocalDate.isAfterOrEqual(startDate: LocalDate): Boolean = this >= startDate
 
-fun LocalDate.isBeforeOrEqual(endDate: LocalDate): Boolean {
-    return this <= endDate
-}
+fun LocalDate.isBeforeOrEqual(endDate: LocalDate): Boolean = this <= endDate

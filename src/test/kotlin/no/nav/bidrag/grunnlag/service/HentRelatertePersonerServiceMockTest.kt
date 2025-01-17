@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpClientErrorException
@@ -31,29 +33,31 @@ class HentRelatertePersonerServiceMockTest {
 
     @Test
     fun `Skal returnere grunnlag og ikke feil når consumer-response er SUCCESS`() {
-        Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
+        `when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponse()))
-        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
+        `when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
-        Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(any()))
+        `when`(bidragPersonConsumerMock.hentNavnFødselOgDød(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
+        `when`(bidragPersonConsumerMock.hentSivilstand(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponse()))
 
         val relatertPersonRequestListe = listOf(TestUtil.byggPersonIdOgPeriodeRequest())
 
         val relatertPersonListe = hentRelatertePersonerService.hentRelatertePersoner(relatertPersonRequestListe = relatertPersonRequestListe)
 
-        Mockito.verify(bidragPersonConsumerMock, Mockito.times(1)).hentHusstandsmedlemmer(any())
-        Mockito.verify(bidragPersonConsumerMock, Mockito.times(4)).hentForelderBarnRelasjon(any())
-        Mockito.verify(bidragPersonConsumerMock, Mockito.times(3)).hentNavnFoedselOgDoed(any())
+        verify(bidragPersonConsumerMock, Mockito.times(1)).hentHusstandsmedlemmer(any())
+        verify(bidragPersonConsumerMock, Mockito.times(4)).hentForelderBarnRelasjon(any())
+        verify(bidragPersonConsumerMock, Mockito.times(3)).hentNavnFødselOgDød(any())
 
         assertAll(
             { assertThat(relatertPersonListe).isNotNull() },
             { assertThat(relatertPersonListe.grunnlagListe).isNotEmpty() },
             { assertThat(relatertPersonListe.grunnlagListe).hasSize(4) },
-            { assertThat(relatertPersonListe.grunnlagListe[0].relatertPersonPersonId).isEqualTo("111") },
-            { assertThat(relatertPersonListe.grunnlagListe[1].relatertPersonPersonId).isEqualTo("555") },
-            { assertThat(relatertPersonListe.grunnlagListe[2].relatertPersonPersonId).isEqualTo("222") },
-            { assertThat(relatertPersonListe.grunnlagListe[3].relatertPersonPersonId).isEqualTo("333") },
+            { assertThat(relatertPersonListe.grunnlagListe[0].gjelderPersonId).isEqualTo("111") },
+            { assertThat(relatertPersonListe.grunnlagListe[1].gjelderPersonId).isEqualTo("555") },
+            { assertThat(relatertPersonListe.grunnlagListe[2].gjelderPersonId).isEqualTo("222") },
+            { assertThat(relatertPersonListe.grunnlagListe[3].gjelderPersonId).isEqualTo("333") },
             { assertThat(relatertPersonListe.grunnlagListe[0].borISammeHusstandDtoListe).isNotEmpty },
             { assertThat(relatertPersonListe.grunnlagListe[1].borISammeHusstandDtoListe).isNotEmpty },
             { assertThat(relatertPersonListe.grunnlagListe[2].borISammeHusstandDtoListe).isEmpty() },
@@ -64,7 +68,7 @@ class HentRelatertePersonerServiceMockTest {
 
     @Test
     fun `Skal returnere feil og tomt grunnlag fra relatertePersoner når consumer-response er FAILURE`() {
-        Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any())).thenReturn(
+        `when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any())).thenReturn(
             RestResponse.Failure(
                 message = "Ikke funnet",
                 statusCode = HttpStatus.NOT_FOUND,
@@ -72,7 +76,15 @@ class HentRelatertePersonerServiceMockTest {
             ),
         )
 
-        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any())).thenReturn(
+        `when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any())).thenReturn(
+            RestResponse.Failure(
+                message = "Ikke funnet",
+                statusCode = HttpStatus.NOT_FOUND,
+                restClientException = HttpClientErrorException(HttpStatus.NOT_FOUND),
+            ),
+        )
+
+        `when`(bidragPersonConsumerMock.hentSivilstand(any())).thenReturn(
             RestResponse.Failure(
                 message = "Ikke funnet",
                 statusCode = HttpStatus.NOT_FOUND,
@@ -86,7 +98,7 @@ class HentRelatertePersonerServiceMockTest {
             relatertPersonRequestListe = relatertPersonRequestListe,
         )
 
-        Mockito.verify(bidragPersonConsumerMock, Mockito.times(1)).hentHusstandsmedlemmer(any())
+        verify(bidragPersonConsumerMock, Mockito.times(1)).hentHusstandsmedlemmer(any())
 
         assertAll(
             { assertThat(relatertPersonListe).isNotNull() },
@@ -118,18 +130,20 @@ class HentRelatertePersonerServiceMockTest {
             ),
         )
 
-        Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
+        `when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentToHusstandsmedlemmer()))
-        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
+        `when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
-        Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(any()))
+        `when`(bidragPersonConsumerMock.hentNavnFødselOgDød(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
+        `when`(bidragPersonConsumerMock.hentSivilstand(any()))
+            .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponse()))
 
         val relatertPersonListe = hentRelatertePersonerService.hentRelatertePersoner(relatertPersonRequestListe)
 
         assertAll(
             { assertThat(relatertPersonListe).isNotNull() },
-            { assertThat(relatertPersonListe.grunnlagListe[0].relatertPersonPersonId).isEqualTo("111") },
+            { assertThat(relatertPersonListe.grunnlagListe[0].gjelderPersonId).isEqualTo("111") },
             { assertThat(relatertPersonListe.grunnlagListe[0].borISammeHusstandDtoListe).isNotEmpty },
 
         )
@@ -145,19 +159,19 @@ class HentRelatertePersonerServiceMockTest {
             ),
         )
 
-        Mockito.`when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
+        `when`(bidragPersonConsumerMock.hentHusstandsmedlemmer(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerSærbidrag()))
-        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
+        `when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerResponse()))
-        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(Personident("111")))
+        `when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(Personident("111")))
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerForBarn()))
-        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(Personident("222")))
+        `when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(Personident("222")))
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerForBarn()))
-        Mockito.`when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(Personident("333")))
+        `when`(bidragPersonConsumerMock.hentForelderBarnRelasjon(Personident("333")))
             .thenReturn(RestResponse.Success(TestUtil.byggHentForelderBarnRelasjonerForBarn()))
-        Mockito.`when`(bidragPersonConsumerMock.hentNavnFoedselOgDoed(any()))
+        `when`(bidragPersonConsumerMock.hentNavnFødselOgDød(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentNavnFoedselOgDoedResponse()))
-        Mockito.`when`(bidragPersonConsumerMock.hentSivilstand(any()))
+        `when`(bidragPersonConsumerMock.hentSivilstand(any()))
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandMedRelatertVedSivilstand()))
 
         val relatertPersonListe =
@@ -165,40 +179,30 @@ class HentRelatertePersonerServiceMockTest {
 
         assertAll(
             { assertThat(relatertPersonListe).isNotNull() },
-            { assertThat(relatertPersonListe[0].relatertPersonPersonId).isEqualTo("111") },
             { assertThat(relatertPersonListe[0].gjelderPersonId).isEqualTo("111") },
-            { assertThat(relatertPersonListe[0].erBarnAvBmBp).isTrue() },
             { assertThat(relatertPersonListe[0].relasjon).isEqualTo(Familierelasjon.BARN) },
             { assertThat(relatertPersonListe[0].borISammeHusstandDtoListe).isNotEmpty },
 
-            { assertThat(relatertPersonListe[1].relatertPersonPersonId).isEqualTo("222") },
             { assertThat(relatertPersonListe[1].gjelderPersonId).isEqualTo("222") },
-            { assertThat(relatertPersonListe[1].erBarnAvBmBp).isTrue() },
             { assertThat(relatertPersonListe[1].relasjon).isEqualTo(Familierelasjon.BARN) },
             { assertThat(relatertPersonListe[1].borISammeHusstandDtoListe).isEmpty() },
 
-            { assertThat(relatertPersonListe[2].relatertPersonPersonId).isEqualTo("333") },
             { assertThat(relatertPersonListe[2].gjelderPersonId).isEqualTo("333") },
-            { assertThat(relatertPersonListe[2].erBarnAvBmBp).isTrue() },
             { assertThat(relatertPersonListe[2].relasjon).isEqualTo(Familierelasjon.BARN) },
             { assertThat(relatertPersonListe[2].borISammeHusstandDtoListe).isEmpty() },
 
-            { assertThat(relatertPersonListe[3].relatertPersonPersonId).isEqualTo("666") },
             { assertThat(relatertPersonListe[3].gjelderPersonId).isEqualTo("666") },
             { assertThat(relatertPersonListe[3].relasjon).isEqualTo(Familierelasjon.INGEN) },
             { assertThat(relatertPersonListe[3].borISammeHusstandDtoListe).isNotEmpty },
 
-            { assertThat(relatertPersonListe[4].relatertPersonPersonId).isEqualTo("777") },
             { assertThat(relatertPersonListe[4].gjelderPersonId).isEqualTo("777") },
             { assertThat(relatertPersonListe[4].relasjon).isEqualTo(Familierelasjon.EKTEFELLE) },
             { assertThat(relatertPersonListe[4].borISammeHusstandDtoListe).isNotEmpty },
 
-            { assertThat(relatertPersonListe[5].relatertPersonPersonId).isEqualTo("888") },
             { assertThat(relatertPersonListe[5].gjelderPersonId).isEqualTo("888") },
             { assertThat(relatertPersonListe[5].relasjon).isEqualTo(Familierelasjon.MOTPART_TIL_FELLES_BARN) },
             { assertThat(relatertPersonListe[5].borISammeHusstandDtoListe).isNotEmpty },
 
-            { assertThat(relatertPersonListe[6].relatertPersonPersonId).isEqualTo("999") },
             { assertThat(relatertPersonListe[6].gjelderPersonId).isEqualTo("999") },
             { assertThat(relatertPersonListe[6].relasjon).isEqualTo(Familierelasjon.MOR) },
             { assertThat(relatertPersonListe[6].borISammeHusstandDtoListe).isNotEmpty },

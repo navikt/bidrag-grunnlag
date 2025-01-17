@@ -59,15 +59,15 @@ class HentUtvidetBarnetrygdOgSmåbarnstilleggService(private val familieBaSakCon
         familieBaSakRespons: FamilieBaSakResponse,
         ident: String,
     ) {
-        familieBaSakRespons.perioder.forEach {
+        familieBaSakRespons.perioder.forEach { periode ->
             ubstListe.add(
                 UtvidetBarnetrygdOgSmåbarnstilleggGrunnlagDto(
                     personId = ident,
-                    type = it.stønadstype.toString(),
-                    periodeFra = LocalDate.parse("${it.fomMåned}-01"),
-                    periodeTil = it.tomMåned?.let { LocalDate.parse("$it-01").plusMonths(1) },
-                    beløp = BigDecimal.valueOf(it.beløp),
-                    manueltBeregnet = it.manueltBeregnet,
+                    type = periode.stønadstype.toString(),
+                    periodeFra = LocalDate.parse("${periode.fomMåned}-01"),
+                    periodeTil = periode.tomMåned?.let { LocalDate.parse("$it-01").plusMonths(1) },
+                    beløp = BigDecimal.valueOf(periode.beløp),
+                    manueltBeregnet = periode.manueltBeregnet,
                 ),
             )
         }
