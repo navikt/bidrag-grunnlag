@@ -28,6 +28,7 @@ Følgende grunnlag kan hentes på denne måten:
 * Sivilstand
 * Husstandsmedlemmer og egne barn
 * Arbeidsforhold
+* Tilleggsstønad
 
 Miljøer:
 * DEV-GCP-FEATURE ([https://bidrag-grunnlag-feature.intern.dev.nav.no/](https://bidrag-grunnlag-feature.dev.intern.nav.no/))
