@@ -1,10 +1,24 @@
-FROM ghcr.io/navikt/baseimages/temurin:21
+FROM ubuntu:22.04 AS locales
+RUN apt-get update && apt-get install -y locales
+RUN locale-gen nb_NO.UTF-8 && \
+    update-locale LANG=nb_NO.UTF-8 LANGUAGE="nb_NO:nb" LC_ALL=nb_NO.UTF-8
+
+FROM gcr.io/distroless/java21
 LABEL maintainer="Team Bidrag" \
       email="bidrag@nav.no"
+
+COPY --from=busybox /bin/sh /bin/sh
+COPY --from=busybox /bin/printenv /bin/printenv
+
+# Copy locale files from the locales stage
+COPY --from=locales /usr/lib/locale/ /usr/lib/locale/
+
+WORKDIR /app
 
 COPY ./target/bidrag-grunnlag-*.jar app.jar
 
 EXPOSE 8080
-
-ENV ENVOY_ADMIN_API=http://127.0.0.1:15000
+ENV LANG=nb_NO.UTF-8 LANGUAGE='nb_NO:nb' LC_ALL=nb_NO.UTF-8 TZ="Europe/Oslo"
 ENV SPRING_PROFILES_ACTIVE=nais
+
+CMD ["app.jar"]
