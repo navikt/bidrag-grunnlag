@@ -14,6 +14,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import java.net.URI
+import java.util.function.Supplier
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("InntektskomponentenConsumerTest")
@@ -33,12 +36,23 @@ internal class InntektskomponentenConsumerTest {
 
     private lateinit var inntektskomponentenConsumer: InntektskomponentenConsumer
 
+    @MockK
+    private lateinit var circuitBreakerFactoryMock: CircuitBreakerFactory<*, *>
+
+    @MockK
+    private lateinit var circuitBreakerMock: CircuitBreaker
+
     @BeforeEach
     fun setup() {
+        every { circuitBreakerFactoryMock.create(any()) } returns circuitBreakerMock
+        every { circuitBreakerMock.run(any<Supplier<RestResponse<HentInntektListeResponse>>>(), any()) } answers {
+            firstArg<Supplier<RestResponse<HentInntektListeResponse>>>().get()
+        }
         inntektskomponentenConsumer = InntektskomponentenConsumer(
             URI("http://localhost"),
             restTemplateMock,
             grunnlagConsumerMock,
+            circuitBreakerFactoryMock,
         )
     }
 
