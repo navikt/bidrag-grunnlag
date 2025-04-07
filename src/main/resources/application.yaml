@@ -145,13 +145,19 @@ spring:
   jpa:
     hibernate.connection.provider_class: org.hibernate.hikaricp.internal.HikariCPConnectionProvider
     database: postgresql
-resilience4j.circuitbreaker:
-  configs:
-    default:
-      slidingWindowSize: 10
-      failureRateThreshold: 50
-      waitDurationInOpenState: 10000
-      permittedNumberOfCallsInHalfOpenState: 3
-  instances:
-    inntektskomponenten:
-      baseConfig: default
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+    instances:
+      inntektskomponenten:
+        baseConfig: default
+  timelimiter:
+    instances:
+      inntektskomponenten:
+        timeoutDuration: 5s
+        cancelRunningFuture: true
