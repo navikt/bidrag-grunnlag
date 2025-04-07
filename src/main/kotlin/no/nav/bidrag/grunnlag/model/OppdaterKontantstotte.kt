@@ -60,6 +60,7 @@ class OppdaterKontantstotte(
                             val belopPerParn = ks.beløp.div(ks.barna.size)
                             ks.barna.forEach { barnPersonId ->
                                 antallPerioderFunnet++
+                                val periodeTil = if (ks.tomMåned != null && ks.tomMåned.isBefore(ks.fomMåned)) ks.fomMåned else ks.tomMåned
                                 persistenceService.opprettKontantstotte(
                                     KontantstotteBo(
                                         grunnlagspakkeId = grunnlagspakkeId,
@@ -67,7 +68,7 @@ class OppdaterKontantstotte(
                                         barnPersonId = barnPersonId,
                                         periodeFra = LocalDate.parse(ks.fomMåned.toString() + "-01"),
                                         // justerer frem tildato med én dag for å ha lik logikk som resten av appen. Tildato skal angis som til, men ikke inkludert, dato.
-                                        periodeTil = if (ks.tomMåned != null) LocalDate.parse(ks.tomMåned.toString() + "-01").plusMonths(1) else null,
+                                        periodeTil = if (ks.tomMåned != null) LocalDate.parse(periodeTil.toString() + "-01").plusMonths(1) else null,
                                         aktiv = true,
                                         brukFra = timestampOppdatering,
                                         belop = belopPerParn,
