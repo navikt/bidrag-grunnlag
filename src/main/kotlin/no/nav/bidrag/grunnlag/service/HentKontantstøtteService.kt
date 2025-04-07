@@ -73,12 +73,14 @@ class HentKontantstøtteService(private val familieKsSakConsumer: FamilieKsSakCo
         kontantstøtteRespons.infotrygdPerioder.forEach { ks ->
             val beløpPerParn = ks.beløp.div(ks.barna.size)
             ks.barna.forEach { barnPersonId ->
+                // Hvis tomMåned er før fomMåned settes tomMåned lik fomMåned. Dette for å håndtere feil i gamle data i Infotrygd der tom er før fom.
+                val periodeTil = if (ks.tomMåned != null && ks.tomMåned.isBefore(ks.fomMåned)) ks.fomMåned else ks.tomMåned
                 kontantstøtteListe.add(
                     KontantstøtteGrunnlagDto(
                         partPersonId = personIdOgPeriodeRequest.personId,
                         barnPersonId = barnPersonId,
                         periodeFra = LocalDate.parse("${ks.fomMåned}-01"),
-                        periodeTil = LocalDate.parse("${ks.tomMåned}-01").plusMonths(1) ?: null,
+                        periodeTil = LocalDate.parse("$periodeTil-01").plusMonths(1) ?: null,
                         beløp = beløpPerParn,
                     ),
                 )
