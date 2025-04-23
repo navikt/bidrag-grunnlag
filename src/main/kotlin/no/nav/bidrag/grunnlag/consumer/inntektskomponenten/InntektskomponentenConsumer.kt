@@ -74,11 +74,9 @@ class InntektskomponentenConsumer(
 
                         is RestResponse.Failure -> {
                             if (abonnerteInntekterRequest) {
-                                // Utelater feillogging ved 400 - Bad Request (inntektsabonnement finnes ikke for personen)
-                                // og 423 og 500 (inntektsabonnementet er ikke aktivt ennå)
-                                if (restResponse.statusCode == HttpStatus.NOT_FOUND ||
-                                    restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR ||
-                                    restResponse.statusCode == HttpStatus.BAD_REQUEST ||
+                                // Logger som warning i stedet for feil ved 400 - Bad Request (inntektsabonnement finnes ikke for personen)
+                                // og 423 Locked (inntektsabonnementet er ikke aktivt ennå)
+                                if (restResponse.statusCode == HttpStatus.BAD_REQUEST ||
                                     restResponse.statusCode == HttpStatus.LOCKED
                                 ) {
                                     InntektskomponentenService.LOGGER.warn(
@@ -148,7 +146,7 @@ class InntektskomponentenConsumer(
                 throwable,
             )
         } else {
-            SECURE_LOGGER.error("Circuit breaker aktivert for inntektskomponenten: ${throwable.message}", throwable)
+            SECURE_LOGGER.error("Circuitbreaker aktivert for inntektskomponenten: ${throwable.message}", throwable)
         }
 
         return RestResponse.Failure(

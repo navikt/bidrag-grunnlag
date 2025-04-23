@@ -70,7 +70,7 @@ class InntektskomponentenServiceMockTest {
         val hentInntektListeRequest = TestUtil.byggHentInntektListeRequest()
         val hentInntektListeResponse = TestUtil.byggHentInntektListeResponse()
         Mockito.`when`(inntektskomponentenConsumerMock.hentInntekter(hentInntektListeRequest, true))
-            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.NOT_FOUND, HttpClientErrorException(HttpStatus.NOT_FOUND)))
+            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.BAD_REQUEST, HttpClientErrorException(HttpStatus.BAD_REQUEST)))
         Mockito.`when`(inntektskomponentenConsumerMock.hentInntekter(hentInntektListeRequest, false))
             .thenReturn(RestResponse.Success(hentInntektListeResponse))
         val hentInntektListeResponsIntern = inntektskomponentenService.hentInntekt(hentInntektListeRequest)
@@ -109,9 +109,9 @@ class InntektskomponentenServiceMockTest {
     fun `Feil ved hent av abonnerte inntekter og feil ved hent av inntekter uten abonnement`() {
         val hentInntektListeRequest = TestUtil.byggHentInntektListeRequest()
         Mockito.`when`(inntektskomponentenConsumerMock.hentInntekter(hentInntektListeRequest, true))
-            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.NOT_FOUND, HttpClientErrorException(HttpStatus.NOT_FOUND)))
+            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.BAD_REQUEST, HttpClientErrorException(HttpStatus.BAD_REQUEST)))
         Mockito.`when`(inntektskomponentenConsumerMock.hentInntekter(hentInntektListeRequest, false))
-            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.NOT_FOUND, HttpClientErrorException(HttpStatus.NOT_FOUND)))
+            .thenReturn(RestResponse.Failure("Feilmelding", HttpStatus.BAD_REQUEST, HttpClientErrorException(HttpStatus.BAD_REQUEST)))
         val hentInntektListeResponsIntern = inntektskomponentenService.hentInntekt(hentInntektListeRequest)
 
         Mockito.verify(inntektskomponentenConsumerMock, Mockito.times(2))

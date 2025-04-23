@@ -149,15 +149,17 @@ resilience4j:
   circuitbreaker:
     configs:
       default:
-        slidingWindowSize: 10
+        slidingWindowSize: 20
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
+        ignoreExceptions:
+          - org.springframework.web.client.HttpClientErrorException
     instances:
       inntektskomponenten:
         baseConfig: default
   timelimiter:
     instances:
       inntektskomponenten:
-        timeoutDuration: 5s
+        timeoutDuration: 15s
         cancelRunningFuture: true
