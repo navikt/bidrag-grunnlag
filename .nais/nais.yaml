@@ -72,13 +72,15 @@ spec:
     enabled: true
   resources:
     limits:
-      cpu: 1000m
-      memory: 2048Mi
+      cpu: 2000m
+      memory: 2560Mi
     requests:
-      cpu: 400m
-      memory: 1024Mi
+      cpu: 800m
+      memory: 2048Mi
   replicas:
-    cpuThresholdPercentage: 80
+    scalingStrategy:
+      cpu:
+        thresholdPercentage: 70
     max: 4
     min: {{ spec.replicas.min }}
   ingresses:
