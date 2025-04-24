@@ -23,6 +23,9 @@ management:
 ####################################################################
 spring.config.activate.on-profile: live,lokal-nais
 
+management.metrics.distribution.percentiles-histogram.http.server.requests: true
+management.metrics.distribution.percentiles-histogram.http.client.requests: true
+
 no.nav.security.jwt:
   client:
     registration:
