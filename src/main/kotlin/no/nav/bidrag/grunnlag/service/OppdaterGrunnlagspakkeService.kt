@@ -1,5 +1,11 @@
 package no.nav.bidrag.grunnlag.service
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import no.nav.bidrag.commons.util.RequestContextAsyncContext
+import no.nav.bidrag.commons.util.SecurityCoroutineContext
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.grunnlag.consumer.bidragperson.BidragPersonConsumer
 import no.nav.bidrag.grunnlag.consumer.familiebasak.FamilieBaSakConsumer
@@ -33,74 +39,109 @@ class OppdaterGrunnlagspakkeService(
     private val familieKsSakConsumer: FamilieKsSakConsumer,
     private val familieEfSakConsumer: FamilieEfSakConsumer,
 ) {
-    fun oppdaterGrunnlagspakke(
+    suspend fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,
         oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
         timestampOppdatering: LocalDateTime,
         historiskeIdenterMap: Map<String, List<String>>,
+        oppdaterGrunnlagDtoListe: OppdaterGrunnlagspakke = OppdaterGrunnlagspakke(grunnlagspakkeId, timestampOppdatering),
     ): OppdaterGrunnlagspakkeDto {
-        val oppdaterGrunnlagDtoListe = OppdaterGrunnlagspakke(
-            grunnlagspakkeId = grunnlagspakkeId,
-            timestampOppdatering = timestampOppdatering,
-        )
-            .oppdaterAinntekt(
-                ainntektRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.AINNTEKT,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterSkattegrunnlag(
-                skattegrunnlagRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.SKATTEGRUNNLAG,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
-                utvidetBarnetrygdOgSmaabarnstilleggRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterBarnetillegg(
-                barnetilleggRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.BARNETILLEGG,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterKontantstotte(
-                kontantstotteRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.KONTANTSTØTTE,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterHusstandsmedlemmerOgEgneBarn(
-                relatertePersonerRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterSivilstand(
-                sivilstandRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.SIVILSTAND,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
-            .oppdaterBarnetilsyn(
-                barnetilsynRequestListe = hentRequestListeFor(
-                    type = GrunnlagRequestType.BARNETILSYN,
-                    oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
-                ),
-                historiskeIdenterMap = historiskeIdenterMap,
-            )
+        val scope = CoroutineScope(Dispatchers.IO + SecurityCoroutineContext() + RequestContextAsyncContext())
 
-        return OppdaterGrunnlagspakkeDto(grunnlagspakkeId = grunnlagspakkeId, grunnlagTypeResponsListe = oppdaterGrunnlagDtoListe)
+        return runBlocking {
+
+            val ainntektListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterAinntekt(
+                    ainntektRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.AINNTEKT,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            val skattegrunnlagListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterSkattegrunnlag(
+                    skattegrunnlagRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.SKATTEGRUNNLAG,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            val utvidetBarnetrygdListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterUtvidetBarnetrygdOgSmaabarnstillegg(
+                    utvidetBarnetrygdOgSmaabarnstilleggRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.UTVIDET_BARNETRYGD_OG_SMÅBARNSTILLEGG,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            val barnetilleggListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterBarnetillegg(
+                    barnetilleggRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.BARNETILLEGG,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            val kontantstotteListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterKontantstotte(
+                    kontantstotteRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.KONTANTSTØTTE,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            val husstandsmedlemmerListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterHusstandsmedlemmerOgEgneBarn(
+                    relatertePersonerRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.HUSSTANDSMEDLEMMER_OG_EGNE_BARN,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            val sivilstandListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterSivilstand(
+                    sivilstandRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.SIVILSTAND,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            val barnetilsynListe = scope.async {
+                oppdaterGrunnlagDtoListe.oppdaterBarnetilsyn(
+                    barnetilsynRequestListe = hentRequestListeFor(
+                        type = GrunnlagRequestType.BARNETILSYN,
+                        oppdaterGrunnlagspakkeRequestDto = oppdaterGrunnlagspakkeRequestDto,
+                    ),
+                    historiskeIdenterMap = historiskeIdenterMap,
+                )
+            }
+
+            // Await all deferred results to ensure completion
+            ainntektListe.await()
+            skattegrunnlagListe.await()
+            utvidetBarnetrygdListe.await()
+            barnetilleggListe.await()
+            kontantstotteListe.await()
+            husstandsmedlemmerListe.await()
+            sivilstandListe.await()
+            barnetilsynListe.await()
+
+            OppdaterGrunnlagspakkeDto(grunnlagspakkeId = grunnlagspakkeId, grunnlagTypeResponsListe = oppdaterGrunnlagDtoListe)
+        }
     }
 
     private fun hentRequestListeFor(

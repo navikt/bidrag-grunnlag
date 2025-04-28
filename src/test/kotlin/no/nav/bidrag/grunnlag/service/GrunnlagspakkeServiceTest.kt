@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.service
 
+import kotlinx.coroutines.runBlocking
 import no.nav.bidrag.domene.enums.inntekt.Inntektstype
 import no.nav.bidrag.domene.enums.inntekt.Skattegrunnlagstype
 import no.nav.bidrag.domene.enums.person.SivilstandskodePDL
@@ -412,10 +413,12 @@ class GrunnlagspakkeServiceTest {
         val grunnlagspakkeId =
             grunnlagspakkeService.opprettGrunnlagspakke(opprettGrunnlagspakkeRequestDto)
 
-        val oppdatertGrunnlagspakke = grunnlagspakkeService.oppdaterGrunnlagspakke(
-            grunnlagspakkeId,
-            TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg(),
-        )
+        val oppdatertGrunnlagspakke = runBlocking {
+            grunnlagspakkeService.oppdaterGrunnlagspakke(
+                grunnlagspakkeId,
+                TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg(),
+            )
+        }
 
         assertAll(
             { assertThat(oppdatertGrunnlagspakke.grunnlagspakkeId).isEqualTo(grunnlagspakkeId) },

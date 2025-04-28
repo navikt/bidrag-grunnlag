@@ -41,7 +41,7 @@ class GrunnlagspakkeService(
         return opprettetGrunnlagspakke.grunnlagspakkeId
     }
 
-    fun oppdaterGrunnlagspakke(
+    suspend fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,
         oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,
     ): OppdaterGrunnlagspakkeDto {
