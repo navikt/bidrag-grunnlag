@@ -1,6 +1,5 @@
 package no.nav.bidrag.grunnlag.service
 
-import kotlinx.coroutines.runBlocking
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestStatus
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.inntekt.Inntektstype
@@ -113,14 +112,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(TestUtil.byggHentInntektListeResponseIntern())
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestAInntekt(),
-                LocalDateTime.now(),
-                emptyMap(),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestAInntekt(),
+            LocalDateTime.now(),
+            emptyMap(),
+        )
 
         Mockito.verify(persistenceServiceMock, Mockito.times(1))
             .oppdaterAinntektForGrunnlagspakke(
@@ -174,14 +171,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSkattegrunnlagResponse()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSkattegrunnlag(),
-                LocalDateTime.now(),
-                emptyMap(),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSkattegrunnlag(),
+            LocalDateTime.now(),
+            emptyMap(),
+        )
 
         Mockito.verify(persistenceServiceMock, Mockito.times(1))
             .oppdaterSkattegrunnlagForGrunnlagspakke(
@@ -226,14 +221,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggFamilieBaSakResponse()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestUtvidetBarnetrygd(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val ubstListe = utvidetBarnetrygdOgSmaabarnstilleggBoCaptor.allValues
 
@@ -301,14 +294,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentBarnetilleggPensjonResponse()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetillegg(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val barnetilleggListe = barnetilleggBoCaptor.allValues
 
@@ -402,14 +393,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             )
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val relatertPersonListe = relatertPersonBoCaptor.allValues
 
@@ -481,14 +470,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentHusstandsmedlemmerResponseTestPerioder()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestHusstandsmedlemmerOgEgneBarn(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val husstandsmedlemListe = relatertPersonBoCaptor.allValues
 
@@ -545,14 +532,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponse()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -610,14 +595,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestSortering()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -680,14 +663,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerHistoriske()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -719,14 +700,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoer()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -758,14 +737,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -793,14 +770,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -828,14 +803,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestSivilstand(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val sivilstandListe = sivilstandBoCaptor.allValues
 
@@ -861,14 +834,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggKontantstøtteResponse()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestKontantstotte(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestKontantstotte(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val kontantstotteListe = kontantstotteBoCaptor.allValues
 
@@ -933,14 +904,12 @@ class OppdaterGrunnlagspakkeServiceTest {
             .thenReturn(RestResponse.Success(TestUtil.byggBarnetilsynResponse()))
 
         val grunnlagspakkeIdOpprettet = TestUtil.byggGrunnlagspakke().grunnlagspakkeId
-        val oppdatertGrunnlagspakke = runBlocking {
-            oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
-                grunnlagspakkeIdOpprettet,
-                TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetilsyn(),
-                LocalDateTime.now(),
-                mapOf("12345678910" to listOf("12345678910")),
-            )
-        }
+        val oppdatertGrunnlagspakke = oppdaterGrunnlagspakkeService.oppdaterGrunnlagspakke(
+            grunnlagspakkeIdOpprettet,
+            TestUtil.byggOppdaterGrunnlagspakkeRequestBarnetilsyn(),
+            LocalDateTime.now(),
+            mapOf("12345678910" to listOf("12345678910")),
+        )
 
         val barnetilsynListe = barnetilsynBoCaptor.allValues
 
