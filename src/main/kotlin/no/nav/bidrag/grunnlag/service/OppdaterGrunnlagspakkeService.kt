@@ -49,7 +49,6 @@ class OppdaterGrunnlagspakkeService(
         val scope = CoroutineScope(Dispatchers.IO + SecurityCoroutineContext() + RequestContextAsyncContext())
 
         return runBlocking {
-
             val ainntektListe = scope.async {
                 oppdaterGrunnlagDtoListe.oppdaterAinntekt(
                     ainntektRequestListe = hentRequestListeFor(

@@ -35,7 +35,7 @@ class OppdaterGrunnlagspakkeServiceTestAsynk {
         sigrunConsumerMock,
         bidragPersonConsumerMock,
         familieKsSakConsumerMock,
-        familieEfSakConsumerMock
+        familieEfSakConsumerMock,
     )
 
     @Test
@@ -51,7 +51,7 @@ class OppdaterGrunnlagspakkeServiceTestAsynk {
 
         // Spioner på OppdaterGrunnlagspakke instans for å følge metodekall
         val oppdaterGrunnlagspakkeSpy = spyk(
-            oppdaterGrunnlagspakkeService.OppdaterGrunnlagspakke(grunnlagspakkeId, timestamp)
+            oppdaterGrunnlagspakkeService.OppdaterGrunnlagspakke(grunnlagspakkeId, timestamp),
         )
 
         // Kall metoden som skal testes
@@ -60,7 +60,7 @@ class OppdaterGrunnlagspakkeServiceTestAsynk {
             oppdaterRequest,
             timestamp,
             historiskeIdenter,
-            oppdaterGrunnlagspakkeSpy
+            oppdaterGrunnlagspakkeSpy,
         )
 
         // verifiser at alle asynk-tjenester ble kalt og ventet på
