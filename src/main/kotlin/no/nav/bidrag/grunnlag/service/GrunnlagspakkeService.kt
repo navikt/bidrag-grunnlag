@@ -21,7 +21,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
-@Transactional
 class GrunnlagspakkeService(
     private val persistenceService: PersistenceService,
     private val oppdaterGrunnlagspakkeService: OppdaterGrunnlagspakkeService,
@@ -161,6 +160,7 @@ class GrunnlagspakkeService(
         )
     }
 
+    @Transactional
     fun lukkGrunnlagspakke(grunnlagspakkeId: Int): Int {
         // Validerer at grunnlagspakke eksisterer
         persistenceService.validerGrunnlagspakke(grunnlagspakkeId)
