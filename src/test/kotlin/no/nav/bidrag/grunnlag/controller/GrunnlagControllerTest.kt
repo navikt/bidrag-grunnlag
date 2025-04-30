@@ -123,7 +123,11 @@ class GrunnlagControllerTest {
     @Test
     fun `skal oppdatere grunnlagspakke`() {
         val request = TestUtil.byggOppdaterGrunnlagspakkeRequestKomplett()
-        `when`(grunnlagspakkeService.oppdaterGrunnlagspakke(grunnlagspakkeId = 1, oppdaterGrunnlagspakkeRequestDto = request))
+        `when`(
+            runBlocking {
+                grunnlagspakkeService.oppdaterGrunnlagspakke(grunnlagspakkeId = 1, oppdaterGrunnlagspakkeRequestDto = request)
+            },
+        )
             .thenReturn(OppdaterGrunnlagspakkeDto(grunnlagspakkeId = 1, grunnlagTypeResponsListe = emptyList()))
 
         val response = securedTestRestTemplate.exchange(
