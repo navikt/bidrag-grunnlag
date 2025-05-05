@@ -40,11 +40,10 @@ fun httpRetryTemplate(details: String? = null): RetryTemplate {
 class HttpRetryPolicy(
     private val maxAttempts: Int = 3,
     private val ignoreHttpStatus: List<HttpStatus> = listOf(HttpStatus.NOT_FOUND, HttpStatus.BAD_REQUEST),
-    // Exceptions med følgende feilmeldinger fra Inntektskomponenten skal føre til at det ikke gjøres retries:
+    // Exceptions med følgende feilmeldinger skal føre til at det ikke gjøres retries:
     private val ignoreMessagePatterns: List<String> = listOf(
         "det oppstod en feil under lesing fra A-ordningen",
-        "Oppslag på personidenten i PDL feilet med følgende feilmelding",
-        "Det har oppstått en ukjent feil",
+        "Oppslag på personidenten i PDL feilet med følgende feilmelding"
     ),
 ) : RetryPolicy {
     internal class HttpRetryContext(parent: RetryContext?) : RetryContextSupport(parent)
@@ -53,12 +52,9 @@ class HttpRetryPolicy(
         val throwable = context.lastThrowable
         val ignoreException =
             throwable != null &&
-                (
-                    throwable.cause is SocketTimeoutException ||
-                        throwable is HttpStatusCodeException &&
-                        ignoreHttpStatus.contains(throwable.statusCode) ||
-                        ignoreMessagePatterns.any { feilbeskrivelse -> throwable.message?.contains(feilbeskrivelse, ignoreCase = true) == true }
-                    )
+                (throwable.cause is SocketTimeoutException ||
+                    throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode) ||
+                    ignoreMessagePatterns.any { feilbeskrivelse -> throwable.message?.contains(feilbeskrivelse, ignoreCase = true) == true })
         val shouldRetry = context.retryCount < maxAttempts &&
             (context.lastThrowable == null || !ignoreException)
         if (!shouldRetry && throwable != null) {
