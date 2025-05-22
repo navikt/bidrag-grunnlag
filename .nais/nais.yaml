@@ -54,6 +54,8 @@ spec:
           namespace: teamfamilie
         - application: tilleggsstonader-sak
           namespace: tilleggsstonader
+        - application: logging
+          namespace: nais-system
   image: {{ image }}
   liveness:
     path: /actuator/health
