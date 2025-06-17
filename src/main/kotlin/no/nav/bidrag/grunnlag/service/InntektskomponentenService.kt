@@ -46,25 +46,31 @@ class InntektskomponentenService(private val inntektskomponentenConsumer: Inntek
                     }
                 }
                 is RestResponse.Failure -> {
-                    // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
-                    try {
-                        when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
-                            is RestResponse.Success -> {
-                                // Respons OK
-                                val inntekter = restResponse2Inntekt.body
-                                if (null != inntekter.arbeidsInntektMaaned) {
-                                    hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
+                    // Nytt kall mot Inntektskomponenten skal bare gjøres om responskoden fra første kall indikerer at abonnement ikke finnes:
+                    // 400 - Bad Request (inntektsabonnement finnes ikke for personen) eller 423 (inntektsabonnementet er ikke aktivt ennå)
+                    if (restResponseInntekt.statusCode == HttpStatus.BAD_REQUEST ||
+                        restResponseInntekt.statusCode == HttpStatus.LOCKED
+                    ) {
+                        // Abonnement mangler. Gjør nytt forsøk uten abonnement
+                        try {
+                            when (val restResponse2Inntekt = inntektskomponentenConsumer.hentInntekter(inntektListeRequest, false)) {
+                                is RestResponse.Success -> {
+                                    // Respons OK
+                                    val inntekter = restResponse2Inntekt.body
+                                    if (null != inntekter.arbeidsInntektMaaned) {
+                                        hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
+                                    }
+                                }
+                                is RestResponse.Failure -> {
+                                    httpStatus = restResponse2Inntekt.statusCode
+                                    melding = restResponse2Inntekt.message ?: ""
                                 }
                             }
-                            is RestResponse.Failure -> {
-                                httpStatus = restResponse2Inntekt.statusCode
-                                melding = restResponse2Inntekt.message ?: ""
-                            }
+                        } catch (e: Exception) {
+                            exceptionKastet = true
+                            melding = "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
+                                "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. ${e.message} "
                         }
-                    } catch (e: Exception) {
-                        exceptionKastet = true
-                        melding = "Feil ved henting av inntekter uten abonnement for ${inntektListeRequest.ident.identifikator} for perioden " +
-                            "${inntektListeRequest.maanedFom} - ${inntektListeRequest.maanedTom}. ${e.message} "
                     }
                 }
             }
