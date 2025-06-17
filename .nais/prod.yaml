@@ -7,9 +7,8 @@ azure:
   familiebasak_scope: prod-gcp.teamfamilie.familie-ba-sak
   familieefsak_url: familie-ef-sak.intern.nav.no
   familieefsak_scope: prod-gcp.teamfamilie.familie-ef-sak
-  inntektskomponenten_base_url: team-inntekt-proxy.prod-fss-pub.nais.io
-  inntektskomponenten_url: team-inntekt-proxy.prod-fss-pub.nais.io/proxy/inntektskomponenten
-  inntektskomponenten_scope: prod-fss.team-inntekt.inntektskomponenten
+  inntektskomponenten_url: ikomp.prod-fss-pub.nais.io
+  inntektskomponenten_scope: prod-fss.team-inntekt.ikomp
   sigrun_base_url: team-inntekt-proxy.prod-fss-pub.nais.io
   sigrun_url: team-inntekt-proxy.prod-fss-pub.nais.io/proxy/sigrun
   sigrun_scope: prod-fss.team-inntekt.sigrun
