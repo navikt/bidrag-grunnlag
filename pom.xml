@@ -31,7 +31,7 @@
     <springframework-cloud.version>4.3.0</springframework-cloud.version>
     <com.squareup.okhttp3.version>4.12.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
-    <ktlint.version>1.5.0</ktlint.version>
+    <ktlint.version>1.7.1</ktlint.version>
     <mockk.version>1.14.2</mockk.version>
     <kotest.version>5.9.1</kotest.version>
     <circuitbreaker.version>3.3.0</circuitbreaker.version>
