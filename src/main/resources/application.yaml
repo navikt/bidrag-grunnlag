@@ -12,7 +12,7 @@ management:
     web:
       exposure:
         include: "*"
-
+bidrag.rest.connect.timeout.seconds: 5
 ---
 ####################################################################
 # Profile: live
