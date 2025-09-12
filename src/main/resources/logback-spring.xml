@@ -66,7 +66,7 @@
         <appender-ref ref="team-logs" />
     </root>
 
-    <logger name="secureLogger" level="DEBUG" additivity="false" >
+    <logger name="secureLogger" level="INFO" additivity="false" >
         <appender-ref ref="secureLog" />
         <appender-ref ref="team-logs" />
     </logger>
