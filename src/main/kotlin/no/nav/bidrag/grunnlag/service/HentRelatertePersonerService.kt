@@ -41,6 +41,8 @@ class HentRelatertePersonerService(private val bidragPersonConsumer: BidragPerso
                     feilrapporteringListe = feilrapporteringListe,
                 ).forelderBarnRelasjon
 
+            SECURE_LOGGER.debug("forelderBarnRelasjoner for {} {}: ", personIdOgPeriode, forelderBarnRelasjoner)
+
             // Henter personid for eventuelle ektefeller
             val ektefelleListe = hentEktefelleListe(personIdOgPeriode.personId)
 
