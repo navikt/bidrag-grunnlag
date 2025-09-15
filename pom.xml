@@ -28,7 +28,7 @@
     <springdoc-openapi-ui.version>2.8.13</springdoc-openapi-ui.version>
     <nimbus-jose-jwt.version>10.3</nimbus-jose-jwt.version>
     <springframework-cloud.version>4.3.0</springframework-cloud.version>
-    <com.squareup.okhttp3.version>4.12.0</com.squareup.okhttp3.version>
+    <com.squareup.okhttp3.version>5.1.0</com.squareup.okhttp3.version>
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <ktlint.version>1.7.1</ktlint.version>
     <mockk.version>1.14.5</mockk.version>
