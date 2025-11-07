@@ -60,7 +60,7 @@ class NorgesBankConsumer(
         val periodeFra = dato.minusMonths(1).toYearMonth()
         val periodeTil = dato.toYearMonth()
         val url =
-            "EXR/B.$valutakode/NOK.SP?format=sdmx-json&startPeriod=$periodeFra&endPeriod=$periodeTil&locale=no"
+            "/api/data/EXR/B.$valutakode/NOK.SP?format=sdmx-json&startPeriod=$periodeFra&endPeriod=$periodeTil&locale=no"
         return url
     }
 }

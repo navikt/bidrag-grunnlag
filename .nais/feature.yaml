@@ -31,7 +31,7 @@ azure:
   tilleggsstonadersak_scope: dev-gcp.tilleggsstonader.tilleggsstonader-sak
   unsecure:
     ereg_url: ereg-services.dev-fss-pub.nais.io
-    norgesbank_url: data.norges-bank.no/api/data/
+    norgesbank_url: data.norges-bank.no
 dbname: bidrag-grunnlag-feature
 dbinstancename: bidrag-grunnlag-feature-2
 azureAccessInbound:
