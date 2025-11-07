@@ -7,8 +7,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
+import no.nav.bidrag.grunnlag.consumer.valutakurser.dto.HentValutakursRequest
+import no.nav.bidrag.grunnlag.consumer.valutakurser.dto.HentValutakursResponse
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
+import no.nav.bidrag.grunnlag.service.HentValutakursService
 import no.nav.bidrag.grunnlag.util.GrunnlagUtil.Companion.tilJson
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
@@ -26,7 +29,11 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Protected
-class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeService, private val hentGrunnlagService: HentGrunnlagService) {
+class GrunnlagController(
+    private val grunnlagspakkeService: GrunnlagspakkeService,
+    private val hentGrunnlagService: HentGrunnlagService,
+    private val hentValutakursService: HentValutakursService,
+) {
 
     @PostMapping(GRUNNLAGSPAKKE_NY)
     @Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Oppretter grunnlagspakke")
@@ -141,6 +148,31 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
         return hentGrunnlagDto
     }
 
+    @PostMapping(HENT_VALUTAKURS)
+    @Operation(
+        security = [SecurityRequirement(name = "bearer-key")],
+        summary = "Trigger innhenting av valutakurs fra Norges Bank",
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Grunnlag innhentet"),
+            ApiResponse(responseCode = "401", description = "Manglende eller utløpt id-token"),
+            ApiResponse(responseCode = "403", description = "Saksbehandler mangler tilgang til å lese data"),
+            ApiResponse(responseCode = "404", description = "Grunnlag ikke funnet"),
+            ApiResponse(responseCode = "500", description = "Serverfeil"),
+            ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
+        ],
+    )
+    suspend fun hentValutakurs(
+        @Valid @RequestBody
+        request: HentValutakursRequest,
+    ): HentValutakursResponse? {
+        SECURE_LOGGER.info("Henter grunnlag med request: ${tilJson(request)}")
+        val hentGrunnlagDto = hentValutakursService.hentValutakurs(request)
+        SECURE_LOGGER.info("Hent av grunnlag ga følgende respons: ${tilJson(hentGrunnlagDto)}")
+        return hentGrunnlagDto
+    }
+
     companion object {
 
         const val GRUNNLAGSPAKKE_NY = "/grunnlagspakke"
@@ -148,6 +180,7 @@ class GrunnlagController(private val grunnlagspakkeService: GrunnlagspakkeServic
         const val GRUNNLAGSPAKKE_HENT = "/grunnlagspakke/{grunnlagspakkeId}"
         const val GRUNNLAGSPAKKE_LUKK = "/grunnlagspakke/{grunnlagspakkeId}/lukk"
         const val HENT_GRUNNLAG = "/hentgrunnlag"
+        const val HENT_VALUTAKURS = "/hentvalutakurs"
         private val LOGGER = LoggerFactory.getLogger(GrunnlagController::class.java)
     }
 }

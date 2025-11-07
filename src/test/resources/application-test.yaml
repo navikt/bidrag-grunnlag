@@ -8,6 +8,7 @@ KONTANTSTOTTE_URL: http://localhost:${wiremock.server.port}/kontantstotte
 FAMILIEKSSAK_URL: http://localhost:${wiremock.server.port}/familiekssak
 AAREG_URL: http://localhost:${wiremock.server.https-port}/aareg
 EREG_URL: http://localhost:${wiremock.server.https-port}/ereg
+NORGESBANK_URL: http://localhost:${wiremock.server.https-port}/norgesbank
 BIDRAG_ORGANISASJON_URL: http://localhost:${wiremock.server.port}/organisasjon
 TILLEGGSSTONADERSAK_URL: http://localhost:${wiremock.server.https-port}/tilleggsstonadersak
 NAIS_APP_NAME: bidrag-grunnlag
