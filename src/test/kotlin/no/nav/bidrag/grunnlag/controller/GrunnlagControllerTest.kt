@@ -23,6 +23,7 @@ import no.nav.bidrag.grunnlag.controller.GrunnlagController.Companion.GRUNNLAGSP
 import no.nav.bidrag.grunnlag.controller.GrunnlagController.Companion.HENT_GRUNNLAG
 import no.nav.bidrag.grunnlag.service.GrunnlagspakkeService
 import no.nav.bidrag.grunnlag.service.HentGrunnlagService
+import no.nav.bidrag.grunnlag.service.HentValutakursService
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.OppdaterGrunnlagspakkeRequestDto
@@ -66,6 +67,9 @@ class GrunnlagControllerTest {
 
     @MockitoBean
     private lateinit var hentGrunnlagService: HentGrunnlagService
+
+    @MockitoBean
+    private lateinit var hentValutakursService: HentValutakursService
 
     @MockitoBean
     private lateinit var bidragPersonConsumer: BidragPersonConsumer

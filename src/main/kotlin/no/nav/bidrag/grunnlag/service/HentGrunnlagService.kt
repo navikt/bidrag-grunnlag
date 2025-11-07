@@ -8,6 +8,7 @@ import no.nav.bidrag.commons.util.RequestContextAsyncContext
 import no.nav.bidrag.commons.util.SecurityCoroutineContext
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.ident.Personident
+import no.nav.bidrag.domene.tid.ÅrMånedsperiode
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.ArbeidsforholdConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.EnhetsregisterConsumer
@@ -19,6 +20,9 @@ import no.nav.bidrag.grunnlag.consumer.familiekssak.FamilieKsSakConsumer
 import no.nav.bidrag.grunnlag.consumer.pensjon.PensjonConsumer
 import no.nav.bidrag.grunnlag.consumer.skattegrunnlag.SigrunConsumer
 import no.nav.bidrag.grunnlag.consumer.tilleggsstønad.TilleggsstønadConsumer
+import no.nav.bidrag.grunnlag.consumer.valutakurser.NorgesBankConsumer
+import no.nav.bidrag.grunnlag.consumer.valutakurser.dto.HentValutakursRequest
+import no.nav.bidrag.grunnlag.consumer.valutakurser.dto.HentValutakursResponse
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.behandling.grunnlag.request.GrunnlagRequestDto
 import no.nav.bidrag.transport.behandling.grunnlag.request.HentGrunnlagRequestDto

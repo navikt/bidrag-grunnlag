@@ -115,6 +115,13 @@ class GrunnlagConsumer {
         return HttpEntity(body, httpHeaders)
     }
 
+    fun <T> initHttpEntityNorgesBank(body: T): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+//        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
+        return HttpEntity(body, httpHeaders)
+    }
+
     private fun inntektsårIkkeStøttet(message: String?) = message?.contains(INNTEKTSAAR_IKKE_STØTTET) ?: false
 
     private fun fantIkkeSkattegrunnlag(message: String?): Boolean =

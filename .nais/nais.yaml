@@ -45,6 +45,7 @@ spec:
         - host: {{ azure.bidrag_organisasjon_url }}
         - host: {{ azure.tilleggsstonadersak_url }}
         - host: {{ azure.unsecure.ereg_url }}
+        - host: {{ azure.unsecure.norgesbank_url }}
       rules:
         - application: familie-ba-sak
           namespace: teamfamilie
@@ -132,6 +133,8 @@ spec:
       value: https://{{ azure.tilleggsstonadersak_url }}
     - name: TILLEGGSSTONADERSAK_SCOPE
       value: {{ azure.tilleggsstonadersak_scope }}
+    - name: NORGESBANK_URL
+      value: https://{{ azure.unsecure.norgesbank_url }}
   gcp:
     sqlInstances:
       - name: {{ dbinstancename }}
