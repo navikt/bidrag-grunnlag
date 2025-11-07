@@ -1,5 +1,6 @@
 package no.nav.bidrag.grunnlag.consumer.valutakurser
 
+import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.domene.tid.ÅrMånedsperiode
 import no.nav.bidrag.grunnlag.consumer.GrunnlagConsumer
 import no.nav.bidrag.grunnlag.consumer.arbeidsforhold.api.HentEnhetsregisterRequest
@@ -60,7 +61,8 @@ class NorgesBankConsumer(
         val periodeFra = dato.minusMonths(1).toYearMonth()
         val periodeTil = dato.toYearMonth()
         val url =
-            "/api/data/EXR/B.$valutakode/NOK.SP?format=sdmx-json&startPeriod=$periodeFra&endPeriod=$periodeTil&locale=no"
+            "/api/data/EXR/M.$valutakode.NOK.SP?format=sdmx-json&startPeriod=$periodeFra&endPeriod=$periodeTil&locale=no"
+        secureLogger.info { url }
         return url
     }
 }

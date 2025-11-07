@@ -271,49 +271,4 @@ class GrunnlagControllerTest {
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         return HttpEntity(body, httpHeaders)
     }
-
-//    @Test
-//    fun `should update grunnlagspakke`() {
-//        val request = OppdaterGrunnlagspakkeRequestDto()
-//        val response = OppdaterGrunnlagspakkeDto()
-//        `when`(grunnlagspakkeService.oppdaterGrunnlagspakke(1, request)).thenReturn(response)
-//
-//        mockMvc.perform(post("/grunnlagspakke/1/oppdater")
-//            .contentType("application/json")
-//            .content("""{}"""))
-//            .andExpect(status().isOk)
-//            .andExpect(content().json("""{}"""))
-//    }
-//
-//    @Test
-//    fun `should fetch grunnlagspakke`() {
-//        val response = HentGrunnlagspakkeDto()
-//        `when`(grunnlagspakkeService.hentGrunnlagspakke(1)).thenReturn(response)
-//
-//        mockMvc.perform(get("/grunnlagspakke/1"))
-//            .andExpect(status().isOk)
-//            .andExpect(content().json("""{}"""))
-//    }
-//
-//    @Test
-//    fun `should close grunnlagspakke`() {
-//        `when`(grunnlagspakkeService.lukkGrunnlagspakke(1)).thenReturn(1)
-//
-//        mockMvc.perform(post("/grunnlagspakke/1/lukk"))
-//            .andExpect(status().isOk)
-//            .andExpect(content().string("1"))
-//    }
-//
-//    @Test
-//    fun `should fetch grunnlag`() {
-//        val request = HentGrunnlagRequestDto()
-//        val response = HentGrunnlagDto()
-//        `when`(hentGrunnlagService.hentGrunnlag(request)).thenReturn(response)
-//
-//        mockMvc.perform(post("/hentgrunnlag")
-//            .contentType("application/json")
-//            .content("""{}"""))
-//            .andExpect(status().isOk)
-//            .andExpect(content().json("""{}"""))
-//    }
 }
