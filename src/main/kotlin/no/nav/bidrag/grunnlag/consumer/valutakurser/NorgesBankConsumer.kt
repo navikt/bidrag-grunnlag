@@ -58,8 +58,8 @@ class NorgesBankConsumer(
     }
 
     private fun byggNbUrl(valutakode: String, dato: LocalDate): String {
-        val periodeFra = dato.minusMonths(1).toYearMonth()
-        val periodeTil = dato.toYearMonth()
+        val periodeFra = dato.minusMonths(1).withDayOfMonth(1)
+        val periodeTil = dato.withDayOfMonth(1)
         val url =
             "/api/data/EXR/M.$valutakode.NOK.SP?format=sdmx-json&startPeriod=$periodeFra&endPeriod=$periodeTil&locale=no"
         secureLogger.info { url }
@@ -67,4 +67,5 @@ class NorgesBankConsumer(
     }
 }
 
-// https://data.norges-bank.no/api/data/EXR/M.USD.NOK.SP?format=sdmx-json&startPeriod=2025-09-01&endPeriod=2025-11-05&locale=no
+// https://data.norges-bank.no/api/data/EXR/M.USD.NOK.SP?format=sdmx-json&startPeriod=2025-10-01&endPeriod=2025-11-01&locale=no
+//                            /api/data/EXR/M.ISK.NOK.SP?format=sdmx-json&startPeriod=2025-10&endPeriod=2025-11&locale=no

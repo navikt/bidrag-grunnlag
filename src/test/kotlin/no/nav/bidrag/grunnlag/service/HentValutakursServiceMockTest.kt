@@ -7,7 +7,6 @@ import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxData
 import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxDataSet
 import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxDimension
 import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxDimensions
-import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxObservation
 import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxSeries
 import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxSimplified
 import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxStructure
@@ -46,10 +45,7 @@ class HentValutakursServiceMockTest {
                     SdmxDataSet(
                         series = mapOf(
                             "0:0:0:0" to SdmxSeries(
-                                values = listOf(
-                                    SdmxObservation(0, "10.5"),
-                                    SdmxObservation(1, "10.6"),
-                                ),
+                                observations = mapOf("0" to listOf("10.5")),
                             ),
                         ),
                     ),
@@ -57,7 +53,6 @@ class HentValutakursServiceMockTest {
                 structure = SdmxStructure(
                     dimensions = SdmxDimensions(
                         series = listOf(
-                            SdmxDimension("FREQ", listOf(SdmxValue("B"))),
                             SdmxDimension("BASE_CUR", listOf(SdmxValue("ISK"))),
                         ),
                     ),

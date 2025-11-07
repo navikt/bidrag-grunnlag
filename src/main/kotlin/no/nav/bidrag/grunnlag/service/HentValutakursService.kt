@@ -3,15 +3,12 @@ package no.nav.bidrag.grunnlag.service
 import no.nav.bidrag.domene.tid.ÅrMånedsperiode
 import no.nav.bidrag.grunnlag.consumer.valutakurser.NorgesBankConsumer
 import no.nav.bidrag.grunnlag.consumer.valutakurser.api.SdmxSimplified
-import no.nav.bidrag.grunnlag.consumer.valutakurser.api.toObservations
 import no.nav.bidrag.grunnlag.consumer.valutakurser.dto.HentValutakursRequest
 import no.nav.bidrag.grunnlag.consumer.valutakurser.dto.HentValutakursResponse
 import no.nav.bidrag.grunnlag.consumer.valutakurser.dto.HentetValutakurs
 import no.nav.bidrag.grunnlag.exception.RestResponse
 import no.nav.bidrag.transport.felles.toYearMonth
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
-import java.time.LocalDate
 
 @Service
 class HentValutakursService(private val norgesBankConsumer: NorgesBankConsumer) {
@@ -28,7 +25,7 @@ class HentValutakursService(private val norgesBankConsumer: NorgesBankConsumer) 
                     is RestResponse.Failure -> throw Exception("Feil ved henting av valutakurs: ${innhentetValutakurs.message}")
                 }
 
-            val valutakursSnitt = responsNb.data.dataSets.first().series.values.first().values.first().value.toBigDecimal()
+            val valutakursSnitt = responsNb.data.dataSets.first().series.values.first().observations.values.first().first().toBigDecimal()
             val valutakode = responsNb.data.structure.dimensions.series.first { it.id == "BASE_CUR" }.values.first().id
 
             // Sjekk om hentet valutakode er den samme som angitt i requesten

@@ -6,13 +6,11 @@ data class SdmxData(val dataSets: List<SdmxDataSet>, val structure: SdmxStructur
 
 data class SdmxDataSet(val series: Map<String, SdmxSeries>)
 
-data class SdmxSeries(val values: List<SdmxObservation>)
+// data class SdmxSeries(val values: List<SdmxObservation>)
 
-fun SdmxSeries.toObservations(): List<SdmxObservation> = this.values.mapIndexed { index, value ->
-    SdmxObservation(index, value.value)
-}
+data class SdmxSeries(val observations: Map<String, List<String>>)
 
-data class SdmxObservation(val index: Int, val value: String)
+// data class SdmxObservation(val index: Int, val value: String)
 
 data class SdmxStructure(val dimensions: SdmxDimensions)
 
