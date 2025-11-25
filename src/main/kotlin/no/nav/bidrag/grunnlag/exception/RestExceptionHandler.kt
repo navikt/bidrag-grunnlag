@@ -46,8 +46,11 @@ class HttpRetryPolicy(
     override fun canRetry(context: RetryContext): Boolean {
         val throwable = context.lastThrowable
         val ignoreException =
-            throwable != null &&
-                (throwable.cause is SocketTimeoutException || throwable is HttpStatusCodeException && ignoreHttpStatus.contains(throwable.statusCode))
+            (throwable != null) &&
+                (
+                    (throwable.cause is SocketTimeoutException) ||
+                        ((throwable is HttpStatusCodeException) && ignoreHttpStatus.contains(throwable.statusCode))
+                    )
         val shouldRetry = context.retryCount < maxAttempts &&
             (context.lastThrowable == null || !ignoreException)
         if (!shouldRetry && throwable != null) {

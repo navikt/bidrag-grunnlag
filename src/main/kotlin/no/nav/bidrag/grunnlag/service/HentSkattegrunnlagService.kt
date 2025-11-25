@@ -64,10 +64,14 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
                             SECURE_LOGGER.warn("Skattegrunnlag er ikke tilgjengelig ennå for ${it.personId} og år $inntektÅr")
 
                             // Legger ut tom liste hvis det ikke finnes data
-                        } else if ((restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) &&
-                            (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message)) ||
-                            (restResponseSkattegrunnlag.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
-                            (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message))
+                        } else if ((
+                                (restResponseSkattegrunnlag.statusCode == HttpStatus.NOT_FOUND) &&
+                                    (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message))
+                                ) ||
+                            (
+                                (restResponseSkattegrunnlag.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
+                                    (fantIkkeSkattegrunnlag(restResponseSkattegrunnlag.message))
+                                )
                         ) {
                             skattegrunnlagListe.add(
                                 SkattegrunnlagGrunnlagDto(

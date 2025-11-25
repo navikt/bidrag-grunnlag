@@ -45,6 +45,7 @@ class InntektskomponentenService(private val inntektskomponentenConsumer: Inntek
                         hentInntektListeResponse.addAll(abonnerteInntekter.arbeidsInntektMaaned)
                     }
                 }
+
                 is RestResponse.Failure -> {
                     // Respons ikke OK. Gjør nytt forsøk, med kall mot hentInntektListe
                     try {
@@ -56,6 +57,7 @@ class InntektskomponentenService(private val inntektskomponentenConsumer: Inntek
                                     hentInntektListeResponse.addAll(inntekter.arbeidsInntektMaaned)
                                 }
                             }
+
                             is RestResponse.Failure -> {
                                 httpStatus = restResponse2Inntekt.statusCode
                                 melding = restResponse2Inntekt.message ?: ""

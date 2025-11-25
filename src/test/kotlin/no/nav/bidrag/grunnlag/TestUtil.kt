@@ -82,7 +82,6 @@ import no.nav.tjenester.aordningen.inntektsinformasjon.inntekt.InntektType
 import no.nav.tjenester.aordningen.inntektsinformasjon.response.HentInntektListeResponse
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.Etterbetalingsperiode
 import no.nav.tjenester.aordningen.inntektsinformasjon.tilleggsinformasjondetaljer.TilleggsinformasjonDetaljerType
-import okhttp3.internal.immutableListOf
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -564,7 +563,7 @@ class TestUtil {
         )
 
         fun byggFamilieBaSakResponse() = FamilieBaSakResponse(
-            immutableListOf(
+            listOf(
                 UtvidetBarnetrygdPeriode(
                     stønadstype = BisysStønadstype.UTVIDET,
                     fomMåned = YearMonth.parse("2021-01"),
@@ -585,18 +584,18 @@ class TestUtil {
         )
 
         fun byggKontantstøtteResponse() = BisysResponsDto(
-            immutableListOf(
+            listOf(
                 InfotrygdPeriode(
                     fomMåned = YearMonth.parse("2022-01"),
                     tomMåned = YearMonth.parse("2022-12"),
                     beløp = 15001,
-                    immutableListOf(
+                    listOf(
                         "11223344551",
                         "15544332211",
                     ),
                 ),
             ),
-            immutableListOf(
+            listOf(
                 KsSakPeriode(
                     fomMåned = YearMonth.parse("2023-01"),
                     tomMåned = YearMonth.parse("2023-06"),
@@ -609,13 +608,13 @@ class TestUtil {
         )
 
         fun byggBarnetilsynResponse() = BarnetilsynResponse(
-            immutableListOf(
+            listOf(
                 BarnetilsynBisysPerioder(
                     periode = Periode(
                         fom = LocalDate.parse("2021-01-01"),
                         tom = LocalDate.parse("2021-07-31"),
                     ),
-                    barnIdenter = immutableListOf("01012212345", "01011034543"),
+                    barnIdenter = listOf("01012212345", "01011034543"),
                 ),
             ),
         )
@@ -624,7 +623,7 @@ class TestUtil {
             harInnvilgetVedtak = true,
         )
 
-        fun byggArbeidsforholdResponse() = immutableListOf(
+        fun byggArbeidsforholdResponse() = listOf(
             Arbeidsforhold(
                 ansettelsesdetaljer = emptyList(),
                 ansettelsesperiode = Ansettelsesperiode(startdato = LocalDate.now(), sluttdato = null),
@@ -682,10 +681,9 @@ class TestUtil {
             no.nav.tjenester.aordningen.inntektsinformasjon.Aktoer("", AktoerType.NATURLIG_IDENT),
         )
 
-        fun byggHentInntektListeResponseIntern() = byggArbeidsInntektMaanedListeIntern(HttpStatus.OK, byggArbeidsInntektMaanedListe())
+        fun byggHentInntektListeResponseIntern() = byggArbeidsInntektMaanedListeIntern(byggArbeidsInntektMaanedListe())
 
         private fun byggArbeidsInntektMaanedListeIntern(
-            httpStatus: HttpStatus,
             eksternRespons: List<ArbeidsInntektMaaned>,
         ): HentInntektListeResponseIntern {
             val arbeidsInntektMaanedListe = mutableListOf<ArbeidsInntektMaanedIntern>()
@@ -735,7 +733,7 @@ class TestUtil {
                     ),
                 )
             }
-            return HentInntektListeResponseIntern(httpStatus, "", arbeidsInntektMaanedListe, false)
+            return HentInntektListeResponseIntern(HttpStatus.OK, "", arbeidsInntektMaanedListe, false)
         }
 
         private fun byggArbeidsInntektMaanedListe(): List<ArbeidsInntektMaaned> {
@@ -759,7 +757,7 @@ class TestUtil {
             return arbeidsinntektliste
         }
 
-        private fun byggInntektListe() = immutableListOf(
+        private fun byggInntektListe() = listOf(
             Inntekt(
                 InntektType.LOENNSINNTEKT,
                 "",
@@ -798,14 +796,14 @@ class TestUtil {
             skatteoppgjoersdato = LocalDate.now().toString(),
         )
 
-        private fun byggSkattegrunnlagListe() = immutableListOf(
+        private fun byggSkattegrunnlagListe() = listOf(
             Skattegrunnlag(
                 beloep = "100000",
                 tekniskNavn = "tekniskNavn",
             ),
         )
 
-        fun byggSkattegrunnlagRepositoryListeForEnIdent() = immutableListOf(
+        fun byggSkattegrunnlagRepositoryListeForEnIdent() = listOf(
             no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
                 skattegrunnlagId = 1,
                 grunnlagspakkeId = 1,
@@ -813,7 +811,7 @@ class TestUtil {
             ),
         )
 
-        fun byggSkattegrunnlagRepositoryListeForToIdenter() = immutableListOf(
+        fun byggSkattegrunnlagRepositoryListeForToIdenter() = listOf(
             no.nav.bidrag.grunnlag.persistence.entity.Skattegrunnlag(
                 skattegrunnlagId = 1,
                 grunnlagspakkeId = 1,
@@ -826,7 +824,7 @@ class TestUtil {
             ),
         )
 
-        fun byggSkattegrunnlagspostRepositoryListe() = immutableListOf(
+        fun byggSkattegrunnlagspostRepositoryListe() = listOf(
             Skattegrunnlagspost(
                 skattegrunnlagspostId = 1,
                 skattegrunnlagId = 1,
@@ -864,7 +862,7 @@ class TestUtil {
         )
 
         fun byggHentForelderBarnRelasjonerResponse() = ForelderBarnRelasjonDto(
-            immutableListOf(
+            listOf(
                 ForelderBarnRelasjon(
                     relatertPersonsIdent = Personident("111"),
                     relatertPersonsRolle = Familierelasjon.BARN,
@@ -889,7 +887,7 @@ class TestUtil {
         )
 
         fun byggHentForelderBarnRelasjonerForBarn() = ForelderBarnRelasjonDto(
-            immutableListOf(
+            listOf(
                 ForelderBarnRelasjon(
                     relatertPersonsIdent = Personident("123456"),
                     relatertPersonsRolle = Familierelasjon.FAR,
@@ -911,7 +909,7 @@ class TestUtil {
         )
 
         fun byggHentHusstandsmedlemmerResponse() = HusstandsmedlemmerDto(
-            immutableListOf(
+            listOf(
                 Husstand(
                     gyldigFraOgMed = LocalDate.parse("2011-01-01"),
                     gyldigTilOgMed = LocalDate.parse("2011-10-01"),
@@ -923,7 +921,7 @@ class TestUtil {
                     bydelsnummer = "bydelsnummer1",
                     kommunenummer = "kommunenummer1",
                     matrikkelId = 12345,
-                    immutableListOf(
+                    listOf(
                         Husstandsmedlem(
                             gyldigFraOgMed = LocalDate.parse("2011-01-01"),
                             gyldigTilOgMed = LocalDate.parse("2011-02-01"),
@@ -965,7 +963,7 @@ class TestUtil {
                     bydelsnummer = "bydelsnummer2",
                     kommunenummer = "kommunenummer2",
                     matrikkelId = 54321,
-                    immutableListOf(
+                    listOf(
                         Husstandsmedlem(
                             gyldigFraOgMed = LocalDate.parse("2018-01-01"),
                             gyldigTilOgMed = null,
@@ -988,7 +986,7 @@ class TestUtil {
         )
 
         fun byggHentHusstandsmedlemmerResponseTestPerioder() = HusstandsmedlemmerDto(
-            immutableListOf(
+            listOf(
                 Husstand(
                     gyldigFraOgMed = LocalDate.parse("2011-01-01"),
                     gyldigTilOgMed = LocalDate.parse("2011-10-01"),
@@ -1000,7 +998,7 @@ class TestUtil {
                     bydelsnummer = "bydelsnummer1",
                     kommunenummer = "kommunenummer1",
                     matrikkelId = 12345,
-                    immutableListOf(
+                    listOf(
                         Husstandsmedlem(
                             gyldigFraOgMed = LocalDate.parse("2011-01-01"),
                             gyldigTilOgMed = LocalDate.parse("2011-02-01"),
@@ -1042,7 +1040,7 @@ class TestUtil {
                     bydelsnummer = "bydelsnummer2",
                     kommunenummer = "kommunenummer2",
                     matrikkelId = 54321,
-                    immutableListOf(
+                    listOf(
                         Husstandsmedlem(
                             gyldigFraOgMed = LocalDate.parse("2018-01-01"),
                             gyldigTilOgMed = LocalDate.parse("2021-04-17"),
@@ -1073,7 +1071,7 @@ class TestUtil {
         )
 
         fun byggHentToHusstandsmedlemmer() = HusstandsmedlemmerDto(
-            immutableListOf(
+            listOf(
                 Husstand(
                     gyldigFraOgMed = LocalDate.parse("2023-09-04"),
                     gyldigTilOgMed = LocalDate.parse("2023-11-12"),
@@ -1085,7 +1083,7 @@ class TestUtil {
                     bydelsnummer = "bydelsnummer1",
                     kommunenummer = "kommunenummer1",
                     matrikkelId = 12345,
-                    immutableListOf(
+                    listOf(
                         Husstandsmedlem(
                             gyldigFraOgMed = LocalDate.parse("2023-09-04"),
                             gyldigTilOgMed = LocalDate.parse("2023-11-29"),
@@ -1106,7 +1104,7 @@ class TestUtil {
         )
 
         fun byggHentHusstandsmedlemmerSærbidrag() = HusstandsmedlemmerDto(
-            immutableListOf(
+            listOf(
                 Husstand(
                     gyldigFraOgMed = LocalDate.parse("2023-09-04"),
                     gyldigTilOgMed = LocalDate.parse("2023-11-12"),
@@ -1118,7 +1116,7 @@ class TestUtil {
                     bydelsnummer = "bydelsnummer1",
                     kommunenummer = "kommunenummer1",
                     matrikkelId = 12345,
-                    immutableListOf(
+                    listOf(
                         Husstandsmedlem(
                             gyldigFraOgMed = LocalDate.parse("2023-09-04"),
                             gyldigTilOgMed = LocalDate.parse("2023-11-29"),
@@ -1160,7 +1158,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandResponse() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.SEPARERT_PARTNER,
                     gyldigFom = null,
@@ -1189,7 +1187,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandResponseTestSortering() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFom = LocalDate.parse("2017-07-17"),
@@ -1234,7 +1232,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerHistoriske() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.SKILT,
                     gyldigFom = null,
@@ -1256,7 +1254,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandResponseTestUtenDatoer() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.SKILT,
                     gyldigFom = null,
@@ -1278,7 +1276,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstHistorisk() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFom = null,
@@ -1291,7 +1289,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerMedRegistrertEnForekomstAktiv() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFom = null,
@@ -1304,7 +1302,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandResponseTestUtenDatoerUtenRegistrertEnForekomstHistorisk() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFom = null,
@@ -1317,7 +1315,7 @@ class TestUtil {
         )
 
         fun byggHentSivilstandMedRelatertVedSivilstand() = SivilstandPdlHistorikkDto(
-            immutableListOf(
+            listOf(
                 SivilstandPdlDto(
                     type = SivilstandskodePDL.GIFT,
                     gyldigFom = LocalDate.parse("2017-03-01"),
