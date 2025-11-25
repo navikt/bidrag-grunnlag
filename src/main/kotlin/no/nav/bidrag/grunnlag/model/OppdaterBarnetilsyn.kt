@@ -116,15 +116,12 @@ class OppdaterBarnetilsyn(
 
         if (alderErOver7Ar(fodselsdato) ||
             (
-                alderEr6Ar(fodselsdato) ||
-                    (
-                        alderEr5Ar(fodselsdato) &&
-                            fodtEtterForsteAugust(
-                                fodselsdato,
-                            )
-                        )
-                ) &&
-            barnetilsynGjelderFraFomForsteAugust(fom)
+                (
+                    alderEr6Ar(
+                        fodselsdato,
+                    ) || (alderEr5Ar(fodselsdato) && fodtEtterForsteAugust(fodselsdato))
+                    ) && barnetilsynGjelderFraFomForsteAugust(fom)
+                )
         ) {
             return Skolealder.OVER
         }

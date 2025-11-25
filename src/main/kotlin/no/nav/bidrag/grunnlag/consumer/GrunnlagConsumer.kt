@@ -40,10 +40,11 @@ class GrunnlagConsumer {
                         secureLogger.warn { "Skattegrunnlag er ikke tilgjengelig ennå for $ident og perioden $fom - $tom" }
 
                         // Legger ut tom liste hvis det ikke finnes data
-                    } else if (restResponse.statusCode == HttpStatus.NOT_FOUND &&
-                        fantIkkeSkattegrunnlag(restResponse.message) ||
-                        restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR &&
-                        fantIkkeSkattegrunnlag(restResponse.message)
+                    } else if (((restResponse.statusCode == HttpStatus.NOT_FOUND) && fantIkkeSkattegrunnlag(restResponse.message)) ||
+                        (
+                            (restResponse.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) &&
+                                fantIkkeSkattegrunnlag(restResponse.message)
+                            )
                     ) {
                         logger.warn("Fant ikke skattegrunnlag for personen")
                         secureLogger.warn { "Fant ikke skattegrunnlag for $ident og perioden $fom - $tom" }
