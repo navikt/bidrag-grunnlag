@@ -32,7 +32,7 @@
     <aordningen-inntektsinformasjon-v1.version>1.7</aordningen-inntektsinformasjon-v1.version>
     <ktlint.version>1.7.1</ktlint.version>
     <mockk.version>1.14.6</mockk.version>
-    <kotest.version>6.0.4</kotest.version>
+    <kotest.version>6.0.5</kotest.version>
     <circuitbreaker.version>3.3.0</circuitbreaker.version>
   </properties>
 
