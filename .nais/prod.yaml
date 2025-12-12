@@ -48,6 +48,9 @@ azureAccessInbound:
   - application: bidrag-bidragskalkulator-api
     namespace: bidrag
     cluster: prod-gcp
+  - application: bidrag-automatisk-jobb
+    namespace: bidrag
+    cluster: prod-gcp
 spec:
   replicas:
     min: 2
