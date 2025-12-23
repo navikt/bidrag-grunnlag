@@ -28,7 +28,13 @@ class HentBarnetilsynService(private val familieEfSakConsumer: FamilieEfSakConsu
                 val restResponseBarnetilsyn = familieEfSakConsumer.hentBarnetilsyn(hentBarnetilsynRequest)
             ) {
                 is RestResponse.Success -> {
-                    leggTilBarnetilsyn(barnetilsynListe = barnetilsynListe, barnetilsynRespons = restResponseBarnetilsyn.body, ident = it.personId)
+                    leggTilBarnetilsyn(
+                        barnetilsynListe = barnetilsynListe,
+                        barnetilsynRespons = restResponseBarnetilsyn.body,
+                        ident = it.personId,
+                        requestedPeriodeFra = it.periodeFra,
+                        requestedPeriodeTil = it.periodeTil,
+                    )
                 }
 
                 is RestResponse.Failure -> {
@@ -55,21 +61,38 @@ class HentBarnetilsynService(private val familieEfSakConsumer: FamilieEfSakConsu
         return HentGrunnlagGenericDto(grunnlagListe = barnetilsynListe, feilrapporteringListe = feilrapporteringListe)
     }
 
-    private fun leggTilBarnetilsyn(barnetilsynListe: MutableList<BarnetilsynGrunnlagDto>, barnetilsynRespons: BarnetilsynResponse, ident: String) {
-        barnetilsynRespons.barnetilsynBisysPerioder.forEach { bts ->
-            for (barnIdent in bts.barnIdenter) {
-                barnetilsynListe.add(
-                    BarnetilsynGrunnlagDto(
-                        partPersonId = ident,
-                        barnPersonId = barnIdent,
-                        periodeFra = bts.periode.fom,
-                        periodeTil = bts.periode.tom.plusMonths(1).withDayOfMonth(1) ?: null,
-                        beløp = null,
-                        tilsynstype = Tilsynstype.IKKE_ANGITT,
-                        skolealder = Skolealder.IKKE_ANGITT,
-                    ),
-                )
+    private fun leggTilBarnetilsyn(
+        barnetilsynListe: MutableList<BarnetilsynGrunnlagDto>,
+        barnetilsynRespons: BarnetilsynResponse,
+        ident: String,
+        requestedPeriodeFra: java.time.LocalDate,
+        requestedPeriodeTil: java.time.LocalDate,
+    ) {
+        barnetilsynRespons.barnetilsynBisysPerioder
+            .filter { bts -> perioderOverlapper(bts.periode, requestedPeriodeFra, requestedPeriodeTil) }
+            .forEach { bts ->
+                for (barnIdent in bts.barnIdenter) {
+                    barnetilsynListe.add(
+                        BarnetilsynGrunnlagDto(
+                            partPersonId = ident,
+                            barnPersonId = barnIdent,
+                            periodeFra = bts.periode.fom,
+                            periodeTil = bts.periode.tom.plusMonths(1).withDayOfMonth(1) ?: null,
+                            beløp = null,
+                            tilsynstype = Tilsynstype.IKKE_ANGITT,
+                            skolealder = Skolealder.IKKE_ANGITT,
+                        ),
+                    )
+                }
             }
-        }
+    }
+
+    private fun perioderOverlapper(
+        responsPeriode: no.nav.bidrag.grunnlag.consumer.familieefsak.api.Periode,
+        requestedPeriodeFra: java.time.LocalDate,
+        requestedPeriodeTil: java.time.LocalDate,
+    ): Boolean {
+        // Two periods overlap if: fom1 <= tom2 AND tom1 >= fom2
+        return responsPeriode.fom <= requestedPeriodeTil && responsPeriode.tom >= requestedPeriodeFra
     }
 }
