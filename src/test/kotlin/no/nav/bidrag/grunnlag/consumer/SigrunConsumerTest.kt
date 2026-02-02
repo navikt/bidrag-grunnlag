@@ -53,7 +53,7 @@ internal class SigrunConsumerTest {
         val httpEntity = HttpEntity(request)
         val responseEntity = ResponseEntity(response, HttpStatus.OK)
 
-        every { grunnlagConsumerMock.initHttpEntitySkattegrunnlag(request, request.personId) } returns httpEntity
+        every { grunnlagConsumerMock.initHttpEntitySkattegrunnlag(request) } returns httpEntity
 
         every {
             grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<HentSummertSkattegrunnlagResponse>>())
@@ -62,7 +62,7 @@ internal class SigrunConsumerTest {
         every {
             restTemplateMock.exchange(
                 uriBuilder(request),
-                HttpMethod.GET,
+                HttpMethod.POST,
                 httpEntity,
                 HentSummertSkattegrunnlagResponse::class.java,
             )
@@ -81,7 +81,7 @@ internal class SigrunConsumerTest {
         val request = TestUtil.byggHentSkattegrunnlagRequest()
         val httpEntity = HttpEntity(request)
 
-        every { grunnlagConsumerMock.initHttpEntitySkattegrunnlag(body = request, ident = request.personId) } returns httpEntity
+        every { grunnlagConsumerMock.initHttpEntitySkattegrunnlag(body = request) } returns httpEntity
 
         every {
             grunnlagConsumerMock.logResponse(any(), any(), any(), any(), any<RestResponse<HentSummertSkattegrunnlagResponse>>())
@@ -90,7 +90,7 @@ internal class SigrunConsumerTest {
         every {
             restTemplateMock.exchange(
                 uriBuilder(request),
-                HttpMethod.GET,
+                HttpMethod.POST,
                 httpEntity,
                 HentSummertSkattegrunnlagResponse::class.java,
             )
@@ -107,9 +107,6 @@ internal class SigrunConsumerTest {
     private fun uriBuilder(request: HentSummertSkattegrunnlagRequest) = UriComponentsBuilder
         .fromUri(uri)
         .pathSegment("api/v2/summertskattegrunnlag")
-        .queryParam("rettighetspakke", "navBidrag")
-        .queryParam("inntektsaar", request.inntektsAar)
-        .queryParam("stadie", "oppgjoer")
         .build()
         .toUriString()
 }

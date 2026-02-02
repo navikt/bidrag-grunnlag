@@ -1,6 +1,11 @@
 package no.nav.bidrag.grunnlag.consumer.skattegrunnlag.api
 
-data class HentSummertSkattegrunnlagRequest(val inntektsAar: String, val personId: String)
+data class HentSummertSkattegrunnlagRequest(
+    val inntektsAar: String,
+    val personId: String,
+    val stadie: String = "oppgjoer",
+    val rettighetspakke: String = "navBidrag",
+)
 
 data class HentSummertSkattegrunnlagResponse(
     val grunnlag: List<Skattegrunnlag>?,

@@ -15,10 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.time.LocalDate
 
-private const val INNTEKTSAAR = "inntektsaar"
-private const val RETTIGHETSPAKKE = "rettighetspakke"
-private const val STADIE = "stadie"
-
 @Service
 class SigrunConsumer(
     @Value("\${SIGRUN_URL}") private val sigrunUrl: URI,
@@ -30,16 +26,13 @@ class SigrunConsumer(
         val hentSummertSkattegrunnlagUri = UriComponentsBuilder
             .fromUri(sigrunUrl)
             .pathSegment("api/v2/summertskattegrunnlag")
-            .queryParam(RETTIGHETSPAKKE, "navBidrag")
-            .queryParam(INNTEKTSAAR, request.inntektsAar)
-            .queryParam(STADIE, "oppgjoer")
             .build()
             .toUriString()
 
         val restResponse = restTemplate.tryExchange(
             url = hentSummertSkattegrunnlagUri,
-            httpMethod = HttpMethod.GET,
-            httpEntity = grunnlagConsumer.initHttpEntitySkattegrunnlag(request, request.personId),
+            httpMethod = HttpMethod.POST,
+            httpEntity = grunnlagConsumer.initHttpEntitySkattegrunnlag(request),
             responseType = HentSummertSkattegrunnlagResponse::class.java,
             fallbackBody = HentSummertSkattegrunnlagResponse(emptyList(), emptyList(), null),
         )
