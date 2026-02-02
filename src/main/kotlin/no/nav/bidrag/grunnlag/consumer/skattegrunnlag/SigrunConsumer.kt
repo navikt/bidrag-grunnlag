@@ -39,8 +39,8 @@ class SigrunConsumer(
 
         grunnlagConsumer.logResponse(
             type = "Skattegrunnlag",
-            ident = request.personId,
-            fom = LocalDate.of(request.inntektsAar.toInt(), 1, 1),
+            ident = request.personident,
+            fom = LocalDate.of(request.inntektsaar.toInt(), 1, 1),
             tom = null,
             restResponse = restResponse,
         )
