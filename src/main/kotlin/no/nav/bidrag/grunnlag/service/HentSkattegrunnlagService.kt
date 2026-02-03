@@ -40,8 +40,8 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
 
             while (inntektÅr < sluttÅr) {
                 val hentSkattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
-                    inntektsAar = inntektÅr.toString(),
-                    personId = it.personId,
+                    inntektsaar = inntektÅr.toString(),
+                    personident = it.personId,
                 )
 
                 when (
@@ -85,9 +85,9 @@ class HentSkattegrunnlagService(private val sigrunConsumer: SigrunConsumer) {
                             feilrapporteringListe.add(
                                 FeilrapporteringDto(
                                     grunnlagstype = GrunnlagRequestType.SKATTEGRUNNLAG,
-                                    personId = hentSkattegrunnlagRequest.personId,
-                                    periodeFra = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsAar}-01-01"),
-                                    periodeTil = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsAar}-01-01").plusYears(1),
+                                    personId = hentSkattegrunnlagRequest.personident,
+                                    periodeFra = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsaar}-01-01"),
+                                    periodeTil = LocalDate.parse("${hentSkattegrunnlagRequest.inntektsaar}-01-01").plusYears(1),
                                     feiltype = evaluerFeiltype(
                                         melding = restResponseSkattegrunnlag.message,
                                         httpStatuskode = restResponseSkattegrunnlag.statusCode,

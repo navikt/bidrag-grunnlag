@@ -44,8 +44,8 @@ class OppdaterSkattegrunnlag(
 
             while (inntektAar < sluttAar) {
                 val skattegrunnlagRequest = HentSummertSkattegrunnlagRequest(
-                    inntektsAar = inntektAar.toString(),
-                    personId = personIdOgPeriode.personId,
+                    inntektsaar = inntektAar.toString(),
+                    personident = personIdOgPeriode.personId,
                 )
 
                 SECURE_LOGGER.info("Kaller Sigrun (skattegrunnlag) med request: ${tilJson(skattegrunnlagRequest)}")

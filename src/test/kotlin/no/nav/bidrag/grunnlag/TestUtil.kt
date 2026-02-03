@@ -786,8 +786,8 @@ class TestUtil {
         )
 
         fun byggHentSkattegrunnlagRequest() = HentSummertSkattegrunnlagRequest(
-            inntektsAar = "2021",
-            personId = "personId",
+            inntektsaar = "2021",
+            personident = "personId",
         )
 
         fun byggHentSkattegrunnlagResponse() = HentSummertSkattegrunnlagResponse(
