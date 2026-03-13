@@ -10,7 +10,7 @@ azure:
   inntektskomponenten_url: ikomp.prod-fss-pub.nais.io
   inntektskomponenten_scope: prod-fss.team-inntekt.ikomp
   sigrun_base_url: team-inntekt-proxy.prod-fss-pub.nais.io
-  sigrun_url: team-inntekt-proxy.prod-fss-pub.nais.io/proxy/sigrun
+  sigrun_url: sigrun.prod-fss-pub.nais.io
   sigrun_scope: prod-fss.team-inntekt.sigrun
   pensjon_url: pensjon-pen.prod-fss-pub.nais.io
   pensjon_scope: prod-fss.pensjondeployer.pensjon-pen
