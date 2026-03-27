@@ -40,7 +40,7 @@ class OppdaterGrunnlagspakkeService(
     private val familieKsSakConsumer: FamilieKsSakConsumer,
     private val familieEfSakConsumer: FamilieEfSakConsumer,
 ) {
-    @Transactional
+//    @Transactional
     suspend fun oppdaterGrunnlagspakke(
         grunnlagspakkeId: Int,
         oppdaterGrunnlagspakkeRequestDto: OppdaterGrunnlagspakkeRequestDto,

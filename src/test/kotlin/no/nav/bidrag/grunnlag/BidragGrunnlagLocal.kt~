@@ -70,10 +70,9 @@ fun stubHentIdenthistorikk() {
                 .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                 .withStatus(HttpStatus.OK.value())
                 .withBody(
-                    jsonToString(listOf(PersonidentDto("12345678901", false, Identgruppe.FOLKEREGISTERIDENT)))
+                    jsonToString(PersonidentDto("12345678901", false, Identgruppe.FOLKEREGISTERIDENT))),
                 ),
-        ),
-    )
+        )
 }
 
 private fun jsonToString(data: Any): String = try {

@@ -67,7 +67,7 @@ class GrunnlagController(
             ApiResponse(responseCode = "503", description = "Tjeneste utilgjengelig"),
         ],
     )
-    fun oppdaterGrunnlagspakke(
+    suspend fun oppdaterGrunnlagspakke(
         @PathVariable @NotNull
         grunnlagspakkeId: Int,
         @Valid @RequestBody
@@ -76,6 +76,7 @@ class GrunnlagController(
         SECURE_LOGGER.info("Oppdaterer grunnlagspakkeId: $grunnlagspakkeId med request: ${tilJson(request)}")
         val grunnlagspakkeOppdatert = grunnlagspakkeService.oppdaterGrunnlagspakke(grunnlagspakkeId, request)
         LOGGER.info("Følgende grunnlagspakke ble oppdatert: $grunnlagspakkeId")
+        SECURE_LOGGER.info("Følgende grunnlagspakke ble oppdatert: $grunnlagspakkeId")
         return grunnlagspakkeOppdatert
     }
 
