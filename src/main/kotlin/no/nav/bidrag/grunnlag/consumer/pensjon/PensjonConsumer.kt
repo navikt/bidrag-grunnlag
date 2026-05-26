@@ -18,7 +18,7 @@ import java.net.URI
 @Service
 class PensjonConsumer(
     @Value("\${PENSJON_URL}") pensjonUrl: URI,
-    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    @Qualifier("azure") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "pensjon") {
 

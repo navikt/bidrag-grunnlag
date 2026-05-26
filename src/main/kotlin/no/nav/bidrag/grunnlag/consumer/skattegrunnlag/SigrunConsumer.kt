@@ -18,7 +18,7 @@ import java.time.LocalDate
 @Service
 class SigrunConsumer(
     @Value("\${SIGRUN_URL}") private val sigrunUrl: URI,
-    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    @Qualifier("azure") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "sigrun") {
 

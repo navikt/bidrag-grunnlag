@@ -17,7 +17,7 @@ import java.net.URI
 @Service
 class FamilieKsSakConsumer(
     @Value("\${FAMILIEKSSAK_URL}") familieKsSakUrl: URI,
-    @Qualifier("azureService") private val restTemplate: RestTemplate,
+    @Qualifier("azure") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "familie-ks-sak") {
 
