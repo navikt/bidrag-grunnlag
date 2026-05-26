@@ -111,8 +111,8 @@ class InntektskomponentenConsumer(
             håndtereFeil(throwable)
         })
 
-    private fun håndtereFeil(throwable: Throwable): RestResponse<HentInntektListeResponse> {
-        SECURE_LOGGER.warn("Circuit breaker-logikk iverksatt for inntektskomponenten: ${throwable.message}")
+    private fun håndtereFeil(throwable: Throwable?): RestResponse<HentInntektListeResponse> {
+        SECURE_LOGGER.warn("Circuit breaker-logikk iverksatt for inntektskomponenten: ${throwable?.message}")
         return RestResponse.Failure("Inntektskomponenten svarer ikke", HttpStatus.SERVICE_UNAVAILABLE, ServiceUnavailableException())
     }
 }

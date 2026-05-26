@@ -25,7 +25,7 @@ import java.net.URI
 
 @Service
 class BidragPersonConsumer(
-    @Value("\${BIDRAGPERSON_URL}") bidragPersonUrl: URI,
+    @Value("\${BIDRAG_PERSON_URL}") bidragPersonUrl: URI,
     @Qualifier("azureService") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "bidrag-person") {

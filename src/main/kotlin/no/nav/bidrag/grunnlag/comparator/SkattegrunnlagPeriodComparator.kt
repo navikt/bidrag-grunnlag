@@ -1,9 +1,9 @@
 package no.nav.bidrag.grunnlag.comparator
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.bidrag.grunnlag.SECURE_LOGGER
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagBo
 import no.nav.bidrag.grunnlag.bo.SkattegrunnlagspostBo
+import no.nav.bidrag.transport.felles.commonObjectmapper
 
 class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable<SkattegrunnlagBo, SkattegrunnlagspostBo>>() {
     override fun isEntitiesEqual(
@@ -27,7 +27,7 @@ class SkattegrunnlagPeriodComparator : AbstractPeriodComparator<PeriodComparable
             differences.putAll(compareFields(newSkattegrunnlagspost.belop, existingSkattegrunnlagspost.belop, "belop"))
         }
         if (differences.isNotEmpty()) {
-            SECURE_LOGGER.debug(ObjectMapper().findAndRegisterModules().writeValueAsString(differences))
+            SECURE_LOGGER.debug(commonObjectmapper.findAndRegisterModules().writeValueAsString(differences))
         }
         return differences.isEmpty()
     }

@@ -1,18 +1,20 @@
 package no.nav.bidrag.grunnlag
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.bidrag.commons.service.organisasjon.SaksbehandlerInfoResponse
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.LOCAL_PROFILE
+import no.nav.bidrag.transport.felles.commonObjectmapper
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.junit.Assert
 import org.springframework.boot.SpringApplication
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
+import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.context.annotation.FilterType
@@ -20,16 +22,24 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 
-@SpringBootApplication(exclude = [SecurityAutoConfiguration::class, ManagementWebSecurityAutoConfiguration::class])
+@SpringBootApplication(
+    exclude = [
+        SecurityAutoConfiguration::class,
+        ManagementWebSecurityAutoConfiguration::class,
+        UserDetailsServiceAutoConfiguration::class,
+        ServletWebSecurityAutoConfiguration::class,
+    ],
+)
 @EnableAspectJAutoProxy
 @EnableJwtTokenValidation(ignore = ["org.springdoc", "org.springframework"])
 @ActiveProfiles(LOCAL_PROFILE)
-@ComponentScan(excludeFilters = [ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = [BidragGrunnlag::class, BidragGrunnlagTest::class])])
+@ComponentScan(basePackages = ["no.nav.bidrag.commons.util"])
 class BidragGrunnlagLocal {
     companion object {
         const val LOCAL_PROFILE = "local"
     }
 }
+
 fun main(args: Array<String>) {
     val wireMockServer = WireMockServer(
         WireMockConfiguration.wireMockConfig().dynamicPort().dynamicHttpsPort(),
@@ -57,8 +67,9 @@ fun stubHentSaksbehandler() {
         ),
     )
 }
+
 private fun jsonToString(data: Any): String = try {
-    ObjectMapper().findAndRegisterModules().writeValueAsString(data)
+    commonObjectmapper.findAndRegisterModules().writeValueAsString(data)
 } catch (e: JsonProcessingException) {
     Assert.fail(e.message)
     ""

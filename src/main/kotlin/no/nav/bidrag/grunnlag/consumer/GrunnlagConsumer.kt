@@ -78,21 +78,13 @@ class GrunnlagConsumer {
         }
     }
 
-    fun <T> initHttpEntity(body: T): HttpEntity<T> {
+    fun <T : Any> initHttpEntity(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         return HttpEntity(body, httpHeaders)
     }
 
-    fun <T> initHttpEntityInntektskomponenten(body: T): HttpEntity<T> {
-        val httpHeaders = HttpHeaders()
-        httpHeaders.contentType = MediaType.APPLICATION_JSON
-        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
-        httpHeaders.add(NAV_CONSUMER_ID, NAV_CONSUMER_ID_VERDI)
-        return HttpEntity(body, httpHeaders)
-    }
-
-    fun <T> initHttpEntitySkattegrunnlag(body: T): HttpEntity<T> {
+    fun <T : Any> initHttpEntityInntektskomponenten(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
@@ -100,7 +92,15 @@ class GrunnlagConsumer {
         return HttpEntity(body, httpHeaders)
     }
 
-    fun <T> initHttpEntityAareg(body: T, ident: String): HttpEntity<T> {
+    fun <T : Any> initHttpEntitySkattegrunnlag(body: T): HttpEntity<T> {
+        val httpHeaders = HttpHeaders()
+        httpHeaders.contentType = MediaType.APPLICATION_JSON
+        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
+        httpHeaders.add(NAV_CONSUMER_ID, NAV_CONSUMER_ID_VERDI)
+        return HttpEntity(body, httpHeaders)
+    }
+
+    fun <T : Any> initHttpEntityAareg(body: T, ident: String): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
@@ -108,14 +108,14 @@ class GrunnlagConsumer {
         return HttpEntity(body, httpHeaders)
     }
 
-    fun <T> initHttpEntityEreg(body: T): HttpEntity<T> {
+    fun <T : Any> initHttpEntityEreg(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())
         return HttpEntity(body, httpHeaders)
     }
 
-    fun <T> initHttpEntityNorgesBank(body: T): HttpEntity<T> {
+    fun <T : Any> initHttpEntityNorgesBank(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
 //        httpHeaders.add(NAV_CALL_ID, UUID.randomUUID().toString())

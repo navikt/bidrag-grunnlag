@@ -74,7 +74,7 @@ class HttpRetryPolicy(
     override fun toString(): String = ClassUtils.getShortName(javaClass) + "[maxAttempts=$maxAttempts, ignoreHttpStatus=$ignoreHttpStatus]"
 }
 
-fun <T> RestTemplate.tryExchange(
+fun <T : Any> RestTemplate.tryExchange(
     url: String,
     httpMethod: HttpMethod,
     httpEntity: HttpEntity<*>,
@@ -104,7 +104,7 @@ fun <T> RestTemplate.tryExchange(
 }
 
 // Brukes hvis responseType er en liste
-fun <T> RestTemplate.tryExchange(
+fun <T : Any> RestTemplate.tryExchange(
     url: String,
     httpMethod: HttpMethod,
     httpEntity: HttpEntity<*>,

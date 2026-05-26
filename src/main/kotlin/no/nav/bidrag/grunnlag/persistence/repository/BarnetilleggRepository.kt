@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDateTime
 
-interface BarnetilleggRepository : JpaRepository<Barnetillegg, Int?> {
+interface BarnetilleggRepository : JpaRepository<Barnetillegg, Int> {
 
     @Query(
         "select bt " +

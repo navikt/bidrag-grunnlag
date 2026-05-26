@@ -3,14 +3,14 @@ FAMILIEEFSAK_URL: http://localhost:${wiremock.server.port}/familieefsak
 PENSJON_URL: http://localhost:${wiremock.server.port}/pensjon
 INNTEKTSKOMPONENTEN_URL: http://localhost:${wiremock.server.port}/inntektskomponenten
 SIGRUN_URL: http://localhost:${wiremock.server.port}/sigrun
-BIDRAGPERSON_URL: http://localhost:${wiremock.server.port}/bidragperson
+BIDRAG_PERSON_URL: http://localhost:${wiremock.server.port}/bidragperson
 KONTANTSTOTTE_URL: http://localhost:${wiremock.server.port}/kontantstotte
 FAMILIEKSSAK_URL: http://localhost:${wiremock.server.port}/familiekssak
-AAREG_URL: http://localhost:${wiremock.server.https-port}/aareg
-EREG_URL: http://localhost:${wiremock.server.https-port}/ereg
-NORGESBANK_URL: http://localhost:${wiremock.server.https-port}/norgesbank
+AAREG_URL: http://localhost:${wiremock.server.port}/aareg
+EREG_URL: http://localhost:${wiremock.server.port}/ereg
+NORGESBANK_URL: http://localhost:${wiremock.server.port}/norgesbank
 BIDRAG_ORGANISASJON_URL: http://localhost:${wiremock.server.port}/organisasjon
-TILLEGGSSTONADERSAK_URL: http://localhost:${wiremock.server.https-port}/tilleggsstonadersak
+TILLEGGSSTONADERSAK_URL: http://localhost:${wiremock.server.port}/tilleggsstonadersak
 NAIS_APP_NAME: bidrag-grunnlag
 
 spring:
@@ -35,7 +35,7 @@ no.nav.security.jwt:
           client-secret: 123
           client-auth-method: client_secret_basic
       bidrag-person:
-        resource-url: ${BIDRAGPERSON_URL}
+        resource-url: ${BIDRAG_PERSON_URL}
         token-endpoint-url: http://localhost:${mock-oauth2-server.port}/aad/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: api://123/.default
