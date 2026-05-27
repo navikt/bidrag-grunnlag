@@ -9,10 +9,8 @@ import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
 import org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
-import org.springframework.context.annotation.ComponentScan
 
 @EnableJwtTokenValidation(ignore = ["org.springdoc", "org.springframework"])
-@ComponentScan(basePackages = ["no.nav.bidrag.commons.util"])
 @SpringBootApplication(
     exclude = [
         SecurityAutoConfiguration::class,
