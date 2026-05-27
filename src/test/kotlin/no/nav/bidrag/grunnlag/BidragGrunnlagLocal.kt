@@ -17,7 +17,6 @@ import org.springframework.boot.security.autoconfigure.actuate.web.servlet.Manag
 import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.EnableAspectJAutoProxy
-import org.springframework.context.annotation.FilterType
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles

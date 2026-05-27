@@ -64,7 +64,7 @@ import java.time.LocalDateTime
 class GrunnlagControllerTest {
 
     @Autowired
-    private lateinit var securedTestRestTemplate: HttpHeaderTestRestTemplate
+    private lateinit var securedTestRestTemplate: TestRestTemplate
 
     @MockitoBean
     private lateinit var grunnlagspakkeService: GrunnlagspakkeService

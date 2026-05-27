@@ -113,7 +113,6 @@ open class GrunnlagUtil {
         fun <T> any(): T = Mockito.any()
 
         fun tilJson(json: Any): String {
-//            val objectMapper = ObjectMapper()
             commonObjectmapper.registerKotlinModule()
             commonObjectmapper.writerWithDefaultPrettyPrinter()
             commonObjectmapper.registerModule(JavaTimeModule())
