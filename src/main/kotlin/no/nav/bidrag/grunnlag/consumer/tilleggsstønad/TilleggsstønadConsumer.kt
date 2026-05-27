@@ -17,7 +17,7 @@ import java.net.URI
 @Service
 class TilleggsstønadConsumer(
     @Value("\${TILLEGGSSTONADERSAK_URL}") tilleggsstønadUrl: URI,
-    @Qualifier("azure") private val restTemplate: RestTemplate,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "tilleggsstønad") {
 

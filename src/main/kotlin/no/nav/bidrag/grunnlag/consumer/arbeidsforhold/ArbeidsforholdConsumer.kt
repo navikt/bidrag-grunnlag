@@ -18,7 +18,7 @@ import java.net.URI
 @Service
 class ArbeidsforholdConsumer(
     @Value("\${AAREG_URL}") aaregUrl: URI,
-    @Qualifier("azure") private val restTemplate: RestTemplate,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "arbeidsforhold") {
 

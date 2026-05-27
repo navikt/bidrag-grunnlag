@@ -25,7 +25,7 @@ import javax.naming.ServiceUnavailableException
 @Service
 class InntektskomponentenConsumer(
     @Value("\${INNTEKTSKOMPONENTEN_URL}") inntektskomponentenUrl: URI,
-    @Qualifier("azure") private val restTemplate: RestTemplate,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
     private val circuitBreakerFactory: CircuitBreakerFactory<*, *>,
 ) : AbstractRestClient(restTemplate, "inntektskomponenten") {

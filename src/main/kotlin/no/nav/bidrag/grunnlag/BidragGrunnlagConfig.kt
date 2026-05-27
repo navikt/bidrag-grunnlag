@@ -13,14 +13,11 @@ import no.nav.bidrag.commons.web.DefaultCorsFilter
 import no.nav.bidrag.commons.web.UserMdcFilter
 import no.nav.bidrag.commons.web.config.RestOperationsAzure
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.http.client.observation.DefaultClientRequestObservationConvention
 import org.springframework.retry.annotation.EnableRetry
-import org.springframework.web.client.RestOperations
 import org.springframework.web.client.RestTemplate
 
 const val LIVE_PROFILE = "live"
@@ -49,8 +46,4 @@ class BidragGrunnlagConfig {
 
     @Bean
     fun restTemplate(): RestTemplate = RestTemplate()
-
-    @Bean
-    @Qualifier("azure")
-    fun azureRestOperations(restTemplateBuilder: RestTemplateBuilder): RestOperations = restTemplateBuilder.build()
 }

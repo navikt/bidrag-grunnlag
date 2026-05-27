@@ -17,7 +17,7 @@ import java.net.URI
 @Service
 class FamilieEfSakConsumer(
     @Value("\${FAMILIEEFSAK_URL}") familieEfSakUrl: URI,
-    @Qualifier("azure") private val restTemplate: RestTemplate,
+    @Qualifier("azureService") private val restTemplate: RestTemplate,
     private val grunnlagConsumer: GrunnlagConsumer,
 ) : AbstractRestClient(restTemplate, "familie-ef-sak") {
 
