@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDateTime
 
-interface RelatertPersonRepository : JpaRepository<RelatertPerson, Int?> {
+interface RelatertPersonRepository : JpaRepository<RelatertPerson, Int> {
 
     @Query(
         "select hm " +

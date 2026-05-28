@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDateTime
 
-interface KontantstotteRepository : JpaRepository<Kontantstotte, Int?> {
+interface KontantstotteRepository : JpaRepository<Kontantstotte, Int> {
 
     @Query(
         "select ks " +

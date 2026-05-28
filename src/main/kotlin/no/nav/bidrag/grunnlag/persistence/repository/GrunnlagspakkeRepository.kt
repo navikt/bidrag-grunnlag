@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDateTime
 
-interface GrunnlagspakkeRepository : JpaRepository<Grunnlagspakke, Int?> {
+interface GrunnlagspakkeRepository : JpaRepository<Grunnlagspakke, Int> {
 
     @Modifying
     @Query(

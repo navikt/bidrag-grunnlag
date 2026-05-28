@@ -108,7 +108,7 @@ spec:
       value: https://{{ azure.pensjon_url }}
     - name: PENSJON_SCOPE
       value: {{ azure.pensjon_scope }}
-    - name: BIDRAGPERSON_URL
+    - name: BIDRAG_PERSON_URL
       value: https://{{ azure.bidragperson_url }}
     - name: BIDRAGPERSON_SCOPE
       value: {{ azure.bidragperson_scope }}

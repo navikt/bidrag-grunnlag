@@ -26,8 +26,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.ActiveProfiles
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -39,7 +40,9 @@ import java.time.LocalDateTime
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @EnableMockOAuth2Server
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock(
+    ConfigureWireMock(name = "my-service", port = 0),
+)
 class GrunnlagspakkeServiceTest {
 
     @Autowired

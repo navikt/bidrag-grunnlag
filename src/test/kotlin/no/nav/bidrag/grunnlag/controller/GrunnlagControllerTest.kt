@@ -2,6 +2,7 @@ package no.nav.bidrag.grunnlag.controller
 
 import io.kotest.matchers.nulls.shouldNotBeNull
 import kotlinx.coroutines.runBlocking
+import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
 import no.nav.bidrag.domene.enums.grunnlag.GrunnlagRequestType
 import no.nav.bidrag.domene.enums.vedtak.Formål
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest
@@ -38,10 +39,9 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -49,6 +49,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.util.UriComponentsBuilder
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -56,7 +58,9 @@ import java.time.LocalDateTime
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(classes = [BidragGrunnlagTest::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableMockOAuth2Server
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock(
+    ConfigureWireMock(name = "my-service", port = 0),
+)
 class GrunnlagControllerTest {
 
     @Autowired
@@ -164,7 +168,7 @@ class GrunnlagControllerTest {
         val response = securedTestRestTemplate.exchange(
             fullUrlForHentGrunnlagspakke(1),
             HttpMethod.GET,
-            null,
+            HttpEntity.EMPTY,
             HentGrunnlagspakkeDto::class.java,
         )
 
@@ -266,7 +270,7 @@ class GrunnlagControllerTest {
 
     private fun makeFullContextPath() = "http://localhost:$port"
 
-    private fun <T> initHttpEntity(body: T): HttpEntity<T> {
+    private fun <T : Any> initHttpEntity(body: T): HttpEntity<T> {
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_JSON
         return HttpEntity(body, httpHeaders)

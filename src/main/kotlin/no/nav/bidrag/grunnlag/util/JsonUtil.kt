@@ -1,5 +1,5 @@
 package no.nav.bidrag.grunnlag.util
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.bidrag.transport.felles.commonObjectmapper
 
-fun <T> toJsonString(entity: T): String = ObjectMapper().findAndRegisterModules().writeValueAsString(entity)
+fun <T> toJsonString(entity: T): String = commonObjectmapper.findAndRegisterModules().writeValueAsString(entity)

@@ -62,7 +62,7 @@ class DefaultExceptionHandler {
     fun handleOtherExceptions(exception: Exception): ResponseEntity<*> {
         LOGGER.error(exception) { "Det skjedde en ukjent feil: ${exception.message}" }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, exception.message)
+            .header(HttpHeaders.WARNING, exception.message ?: "Ukjent feil")
             .body(exception.message ?: "Ukjent feil")
     }
 

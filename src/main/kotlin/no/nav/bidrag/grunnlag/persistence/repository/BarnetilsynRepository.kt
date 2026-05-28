@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDateTime
 
-interface BarnetilsynRepository : JpaRepository<Barnetilsyn, Int?> {
+interface BarnetilsynRepository : JpaRepository<Barnetilsyn, Int> {
 
     @Query(
         "select bts " +

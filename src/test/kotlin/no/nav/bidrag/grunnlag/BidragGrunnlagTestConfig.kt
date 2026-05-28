@@ -4,18 +4,20 @@ import com.nimbusds.jose.JOSEObjectType
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import no.nav.bidrag.commons.util.CustomJacksonHttpMessageConverter
+import no.nav.bidrag.commons.web.test.HttpHeaderTestRestTemplate
 import no.nav.bidrag.grunnlag.BidragGrunnlagLocal.Companion.LOCAL_PROFILE
 import no.nav.bidrag.grunnlag.BidragGrunnlagTest.Companion.TEST_PROFILE
+import no.nav.bidrag.transport.felles.commonObjectmapper
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.restclient.RestTemplateBuilder
+import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 
 @Configuration
 @OpenAPIDefinition(
@@ -28,14 +30,23 @@ class BidragGrunnlagTestConfig {
     @Autowired
     private lateinit var mockOAuth2Server: MockOAuth2Server
 
+    /*    @Bean
+        fun securedTestRestTemplate(): HttpHeaderTestRestTemplate? {
+            val testRestTemplate = TestRestTemplate(RestTemplateBuilder())
+            val httpHeaderTestRestTemplate = HttpHeaderTestRestTemplate(testRestTemplate)
+            httpHeaderTestRestTemplate.add(HttpHeaders.AUTHORIZATION) { generateTestToken() }
+            return httpHeaderTestRestTemplate
+        }*/
     @Bean
-    fun securedTestRestTemplate(): TestRestTemplate? = TestRestTemplate(
+    fun securedTestRestTemplate(): TestRestTemplate = TestRestTemplate(
         RestTemplateBuilder()
-            .additionalMessageConverters(MappingJackson2HttpMessageConverter())
             .additionalInterceptors({ request, body, execution ->
                 request.headers.add(HttpHeaders.AUTHORIZATION, generateTestToken())
                 execution.execute(request, body)
-            }),
+            })
+            .additionalMessageConverters(
+                CustomJacksonHttpMessageConverter(commonObjectmapper),
+            ),
     )
 
     protected fun generateTestToken(): String {

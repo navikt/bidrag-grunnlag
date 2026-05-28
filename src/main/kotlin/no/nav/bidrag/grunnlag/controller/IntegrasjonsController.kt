@@ -153,7 +153,7 @@ class IntegrasjonsController(
         tilleggsstønadConsumer.hentTilleggsstønad((request)),
     )
 
-    private fun <T> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> = when (restResponse) {
+    private fun <T : Any> handleRestResponse(restResponse: RestResponse<T>): ResponseEntity<T> = when (restResponse) {
         is RestResponse.Success -> ResponseEntity(restResponse.body, HttpStatus.OK)
         is RestResponse.Failure -> throw ResponseStatusException(restResponse.statusCode, restResponse.message)
     }

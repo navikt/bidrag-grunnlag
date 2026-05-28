@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import java.time.LocalDateTime
 
-interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetBarnetrygdOgSmaabarnstillegg, Int?> {
+interface UtvidetBarnetrygdOgSmaabarnstilleggRepository : JpaRepository<UtvidetBarnetrygdOgSmaabarnstillegg, Int> {
 
     @Query(
         "select ubst " +
