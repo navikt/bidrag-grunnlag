@@ -59,6 +59,12 @@ azureAccessInbound:
 spec:
   replicas:
     min: 2
+  resources:
+    limits:
+      memory: 736Mi
+    requests:
+      cpu: 135m
+      memory: 704Mi
   gcp:
     sqlInstances:
       diskSize: 15

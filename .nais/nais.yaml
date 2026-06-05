@@ -72,11 +72,10 @@ spec:
     path: /actuator/prometheus
   resources:
     limits:
-      cpu: 2000m
-      memory: 2560Mi
+      memory: {{ spec.resources.limits.memory }}
     requests:
-      cpu: 800m
-      memory: 2048Mi
+      cpu: {{ spec.resources.requests.cpu }}
+      memory: {{ spec.resources.requests.memory }}
   replicas:
     scalingStrategy:
       cpu:
