@@ -34,7 +34,7 @@
     <ktlint.version>1.8.0</ktlint.version>
     <mockk.version>1.14.11</mockk.version>
     <kotest.version>6.1.11</kotest.version>
-    <circuitbreaker.version>5.0.1</circuitbreaker.version>
+    <circuitbreaker.version>5.0.2</circuitbreaker.version>
     <swagger.version>2.2.50</swagger.version>
   </properties>
 
