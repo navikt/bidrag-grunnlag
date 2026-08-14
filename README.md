@@ -1,5 +1,11 @@
 # Bidrag Grunnlag
 
+## ⚠️ DETTE REPOET ER FLYTTET
+
+> **Dette repoet er flyttet til [navikt/bidrag-backend](https://github.com/navikt/bidrag-backend).**
+> Bruk det nye repoet for videre utvikling — dette repoet oppdateres ikke lenger.
+
+
 ![](https://github.com/navikt/bidrag-grunnlag/workflows/continuous%20integration/badge.svg)
 ![](https://github.com/navikt/bidrag-grunnlag/workflows/release%20bidrag-grunnlag/badge.svg)
 
