@@ -611,8 +611,8 @@ class TestUtil {
             listOf(
                 BarnetilsynBisysPerioder(
                     periode = Periode(
-                        fom = LocalDate.parse("2021-01-01"),
-                        tom = LocalDate.parse("2021-07-31"),
+                        fom = LocalDate.parse("2023-01-01"),
+                        tom = LocalDate.parse("2023-07-31"),
                     ),
                     barnIdenter = listOf("01012212345", "01011034543"),
                 ),
